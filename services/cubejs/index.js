@@ -1,0 +1,183 @@
+// const ServerCore = require('./src/serverCore');
+const ServerCore = require('@cubejs-backend/server-core');
+const pgConnectionString = require('pg-connection-string');
+const express = require('express');
+
+const jwt = require('jsonwebtoken');
+
+const PostgresDriver = require('@cubejs-backend/postgres-driver');
+const AthenaDriver = require('@cubejs-backend/athena-driver');
+const BigQueryDriver = require('@cubejs-backend/bigquery-driver');
+const ClickHouseDriver = require('@cubejs-backend/clickhouse-driver');
+const MongobiDriver = require('@cubejs-backend/mongobi-driver');
+const MSSqlDriver = require('@cubejs-backend/mssql-driver');
+const MySqlDriver = require('@cubejs-backend/mysql-driver');
+const JSum = require('jsum');
+
+const routes = require('./src/routes');
+const pool = require('./src/utils/pgPool');
+const { dataSchemaFiles, findDataSource, getSchemaVersion } = require('./src/utils/dataSourceHelpers');
+
+const { CUBEJS_SECRET } = process.env;
+const MSSQL_DEFAULT_PORT = 1433;
+
+const app = express();
+
+app.use(express.json({ limit: '50mb', extended: true }));
+app.use(express.urlencoded({ limit: '50mb', extended: true }));
+
+const logger = (msg, params) => {
+  const { queryKey, query, securityContext, cacheKey, sqlQuery, ...restParams } = params;
+  console.log(`${msg}: ${JSON.stringify(restParams)}`);
+};
+
+const context = {
+  pgClient: pool,
+};
+
+const setupAuthInfo = async (req, auth) => {
+  console.log(req.originalUrl);
+  const { authorization } = req.headers;
+  let jwtDecoded;
+
+  try {
+    jwtDecoded = jwt.verify(authorization, CUBEJS_SECRET);
+  } catch (err) {
+    return {
+      error: '403: Permissions denied',
+    };
+  }
+
+  const dataSourceId = parseInt(jwtDecoded.dataSourceId);
+
+  if (!dataSourceId) {
+    return {
+      error: 'Provide dataSourceId',
+    };
+  }
+
+  const dataSource = await findDataSource({ dataSourceId }, context);
+
+  if (!dataSource) {
+    return {
+      error: 'Not found',
+    };
+  }
+
+  const schemaVersion = await getSchemaVersion({ dataSourceId }, context);
+  const dataSourceVersion = JSum.digest(dataSource, 'SHA256', 'hex');
+
+  req.securityContext = { dataSourceId, dataSource, schemaVersion, dataSourceVersion };
+};
+
+const connParamValid = (port) => {
+  const portValidation = port >= 0 && port < 65536;
+  if (!portValidation) {
+    throw new Error(`Port should be >= 0 and < 65536. Received ${port}.`);
+  }
+};
+
+const driverFactory = ({ securityContext }) => {
+  const { dataSource } = securityContext;
+  let result;
+
+  // clean empty/false keys because of sideeffects
+  let dbConfig = Object.keys(dataSource.db_params || {})
+    .filter(key => !!dataSource.db_params[key])
+    .reduce((res, key) => (res[key] = dataSource.db_params[key], res), {});
+
+  if (dbConfig.port) {
+    connParamValid(dbConfig.port);
+  }
+
+  if (['redshift', 'postgres'].includes(dataSource.db_type)) {
+    if (dataSource.connection_string) {
+      dbConfig = pgConnectionString(dataSource.connection_string);
+    }
+
+    result = new PostgresDriver(dbConfig);
+  }
+
+  switch (dataSource.db_type) {
+    case 'mysql':
+      result = new MySqlDriver(dbConfig);
+      break;
+    case 'athena':
+      result = new AthenaDriver(dbConfig);
+      break;
+    case 'mongobi':
+      result = new MongobiDriver(dbConfig);
+      break;
+    case 'bigquery':
+      result = new BigQueryDriver({
+        ...dbConfig,
+        credentials: { ...dbConfig.keyFile }
+      });
+      break;
+    case 'mssql':
+      result = new MSSqlDriver({
+        ...dbConfig,
+        server: dbConfig.host,
+        port: parseInt(dbConfig.port) || MSSQL_DEFAULT_PORT
+      });
+      break;
+    case 'clickhouse':
+      result = new ClickHouseDriver(dbConfig);
+      break;
+    default:
+      break;
+  }
+
+  return result;
+};
+
+const dbType = ({ securityContext }) => {
+  const { dataSource } = securityContext;
+  return dataSource.db_type;
+};
+
+const basePath = `/cubejs/datasources`;
+
+const options = {
+  contextToAppId: (props) => {
+    const { securityContext } = props;
+    const { dataSourceVersion } = securityContext || {};
+
+    if (dataSourceVersion) {
+      return `CUBEJS_APP_${dataSourceVersion}`
+    }
+
+    return 'CUBEJS_APP';
+    // throw 'dataSourceVersion not found';
+  },
+  dbType,
+  devServer: false,
+  checkAuth: setupAuthInfo,
+  apiSecret: CUBEJS_SECRET,
+  basePath,
+  logger,
+  schemaVersion: ({ securityContext }) => securityContext.schemaVersion,
+  driverFactory,
+  repositoryFactory: ({ securityContext }) => {
+    const { dataSourceId } = securityContext;
+
+    return {
+      dataSchemaFiles: () => dataSchemaFiles({ dataSourceId }, context),
+    };
+  },
+  telemetry: false,
+  orchestratorOptions: {
+    queryCacheOptions: {
+      renewalThreshold: 60,
+      refreshKeyRenewalThreshold: 45,
+      backgroundRenew: false,
+    },
+  },
+};
+
+const cubejs = new ServerCore(options);
+
+app.use(routes({ basePath, setupAuthInfo, cubejs, context }));
+
+cubejs.initApp(app);
+app.listen(4000);

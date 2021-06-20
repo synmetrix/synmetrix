@@ -1,0 +1,137 @@
+name: aws-staging
+
+env:
+  ARTIFACT_LOCAL_PATH: /tmp/staging.tar.gz
+  ARTIFACT_BUCKET_PATH: s3://mlcraft-bi-exchange-bucket/staging.tar.gz
+  PROJECT_ROOT_PATH: /project
+  PROJECT_DIR: app
+  PRIMARY_DOMAIN: mlcraft.org
+
+on:
+  push:
+    branches:
+      - aws-staging
+      - feature/aws-staging
+
+jobs:
+  repo-sync:
+    runs-on: ubuntu-latest
+    container: amazon/aws-cli:2.0.7
+    steps:
+      - name: Install TAR
+        run: |
+          yum install -y tar gzip
+
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - name: Checkout Project
+        uses: actions/checkout@v2
+
+      - name: Make Tar of the repo and upload
+        run: |
+          mkdir ../build
+          cp -TR . ../build
+          tar -czvf $ARTIFACT_LOCAL_PATH ../build/   
+
+          [ -z '${{ secrets.AWS_ACCESS_KEY_ID }}' ] && echo '[ERROR] AWS_ACCESS_KEY_ID is empty'
+          [ -z '${{ secrets.AWS_SECRET_ACCESS_KEY }}' ] && echo '[ERROR] AWS_SECRET_ACCESS_KEY is empty'
+
+          aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws s3 cp $ARTIFACT_LOCAL_PATH $ARTIFACT_BUCKET_PATH
+
+  deploy:
+    needs: repo-sync
+    runs-on: ubuntu-latest
+    container: python:3.9-buster
+
+    strategy:
+      matrix:
+        nodes:
+          - node: ubuntu@i-0325650d56e709c85
+            name: master0
+            region: us-east-1
+    steps:
+      - name: Install environment
+        run: |
+          echo "==> Installing AWS-CLI"
+
+          echo "AWS-CLI Authorizing..."
+          mkdir -p ~/.aws/
+
+          echo "awscli" >> ./requirements.txt
+          echo "ec2instanceconnectcli" >> ./requirements.txt
+          echo "envsubst" >> ./requirements.txt
+          pip3 install -r requirements.txt
+
+          aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+          which mssh
+
+          echo "[SUCCESS] aws-cli configured"
+
+      - name: Prepare deployment script
+        run: |
+          cat >./deploy_repo <<'EOL'
+
+          echo "Authorizing..."
+          source ~/.profile
+
+          mkdir -p ~/.aws/
+
+          aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+          aws s3 cp $ARTIFACT_BUCKET_PATH $ARTIFACT_LOCAL_PATH
+
+          test -e $ARTIFACT_LOCAL_PATH || exit
+
+          # reset project dir
+          sudo rm -rf $PROJECT_ROOT_PATH/$PROJECT_DIR
+          mkdir -p $PROJECT_ROOT_PATH/$PROJECT_DIR
+
+          cd $PROJECT_ROOT_PATH
+          # extract archive to the project dir
+          tar xf $ARTIFACT_LOCAL_PATH -C $PROJECT_DIR --strip-components 1
+
+          cd $PROJECT_DIR
+
+          echo "Updating..."
+
+          export NODE_NAME=${{ matrix.nodes.name }}
+
+          export DOMAIN=$PRIMARY_DOMAIN 
+          export REGISTRY_HOST=127.0.0.1:50001
+
+          export PROTOCOL=https
+          export WS_PROTOCOL=wss
+
+          bash -i create-overlay-network.sh
+          bash -i run-registry.sh
+
+          # build images and push
+          export ENV=stage
+          python3 cli.py services push
+
+          # up the stack
+          python3 cli.py services up mlcraft_bi
+          EOL
+
+      - name: Prepare migration script
+        run: |
+          cat >./deploy_migrate <<'EOL'
+            echo "Migration..."
+            cd $PROJECT_ROOT_PATH/$PROJECT_DIR
+
+            bash -i migrate.sh
+          EOL
+
+      - name: Run Deployment
+        run: |
+          envsubst < ./deploy_repo > ./deploy_repo_exec
+          mssh ${{ matrix.nodes.node }} -oStrictHostKeyChecking=no -r ${{ matrix.nodes.region }} 'bash -s' < ./deploy_repo_exec
+
+      - name: Run DB migration
+        run: |
+          envsubst < ./deploy_migrate > ./deploy_migrate_exec
+          mssh ${{ matrix.nodes.node }} -oStrictHostKeyChecking=no -r ${{ matrix.nodes.region }} 'bash -s' < ./deploy_migrate_exec

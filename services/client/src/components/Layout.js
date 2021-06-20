@@ -1,0 +1,204 @@
+import React from 'react';
+import PropTypes from 'prop-types';
+
+import { useTranslation } from 'react-i18next';
+
+import { Layout, Avatar } from 'antd';
+
+import cx from 'classnames';
+
+import logoImage from 'assets/images/logo.svg';
+import logoBlackImage from 'assets/images/logo-black.svg';
+
+import useAuth from 'hooks/useAuth';
+import useDataSources from 'hooks/useDataSources';
+import useDataSourcesSubscription from 'hooks/useDataSourcesSubscription';
+import useGlobalStore from 'hooks/useGlobalStore';
+import useSider from 'hooks/useSider';
+import usePermissions from 'hooks/usePermissions';
+import MenuView from 'components/MenuView';
+
+import s from './Layout.module.css';
+
+const { Header, Content, Footer, Sider } = Layout;
+
+const UserMenu = ({ mode, restrictScopes = [] }) => {
+  const { logout } = useAuth({});
+  const { t } = useTranslation();
+
+  const accountSubMenu = [
+    {
+      path: '/d/profile',
+      title: t('Profile'),
+    }
+  ];
+
+
+  if (!restrictScopes.includes('team')) {
+    accountSubMenu.push({
+      path: '/d/team',
+      title: t('Team'),
+    });
+  }
+
+  accountSubMenu.push({
+    onClick: logout,
+    title: t('Logout'),
+  });
+
+  const routes = [
+    {
+      title: t('Account'),
+      children: accountSubMenu,
+    }
+  ];
+
+  return (
+    <MenuView
+      mode={mode}
+      className={s.header}
+      style={{ lineHeight: '64px' }}
+      nodes={routes}
+    />
+  );
+};
+
+const MainMenu = ({ mode, restrictScopes = [] }) => {
+  const { t } = useTranslation();
+
+  const {
+    lastUsedDashboardId,
+    lastUsedDataSourceId,
+    dashboardsCount,
+  } = useGlobalStore();
+
+  const {
+    all,
+    queries: {
+      executeQueryAll,
+    },
+  } = useDataSources({});
+
+  useDataSourcesSubscription(() => {
+    executeQueryAll({ requestPolicy: 'network-only' });
+  });
+
+  const dataSchemas = all.map(source => ({
+    dataSourceId: source.rowId,
+    path: `/d/schemas/${source.rowId}`,
+    title: source.name,
+  }));
+
+  const dataSourceId = lastUsedDataSourceId || (dataSchemas[0] || {}).dataSourceId || '';
+
+  let routes = [
+    {
+      path: `/d/explore/${dataSourceId}`,
+      title: t('Explore'),
+      scope: 'explore/header'
+    },
+    {
+      path: '/d/sources',
+      title: t('Data Sources'),
+      scope: 'datasources'
+    },
+    {
+      path: '/d/schemas',
+      title: t('Data Schemas'),
+      children: dataSchemas,
+      scope: 'dataschemas'
+    },
+  ];
+
+  if (dashboardsCount) {
+    routes.unshift({
+      path: `/d/dashboards/${lastUsedDashboardId || ''}`,
+      title: t('Dashboards'),
+      scope: 'dashboards'
+    });
+  }
+
+  routes = routes.filter(route => !restrictScopes.includes(route.scope));
+
+  return (
+    <>
+      <div
+        className={cx(
+          s.logo,
+          { [s.verticalLogo]: mode && mode === 'vertical' }
+        )}
+      >
+        <img
+          alt=''
+          style={{
+            height: 45,
+            paddingRight: 20
+          }}
+          src={logoImage}
+        />
+        <span style={{ paddingRight: 15 }}>MLCraft</span>
+      </div>
+      <MenuView
+        mode={mode}
+        className={s.header}
+        style={{ lineHeight: '64px' }}
+        nodes={routes.filter(Boolean)}
+      />
+    </>
+  );
+};
+
+const MainLayout = ({ children }) => {
+  const { state, onBreakpoint, onCollapse } = useSider();
+
+  const { restrictScopes } = usePermissions({});
+
+  return (
+    <Layout>
+      <Sider
+        className={s.sider}
+        breakpoint="md"
+        collapsedWidth={0}
+        onBreakpoint={onBreakpoint}
+        onCollapse={onCollapse}
+        collapsed={state.siderCollapsed}
+      >
+        <MainMenu
+          mode="vertical"
+          restrictScopes={restrictScopes}
+        />
+        <UserMenu
+          mode="vertical"
+          restrictScopes={restrictScopes}
+        />
+      </Sider>
+      <Layout style={{ minHeight: 'auto' }}>
+        <Header
+          className={cx(
+            s.header,
+            { [s.hidden]: state.brokenPoint },
+          )}
+        >
+          <div style={{ float: 'left' }}>
+            <MainMenu restrictScopes={restrictScopes} />
+          </div>
+          <div style={{ float: 'right' }}>
+            <UserMenu restrictScopes={restrictScopes} />
+          </div>
+        </Header>
+        <Content style={{ minHeight: 'auto', zIndex: 1 }}>
+          {children}
+        </Content>
+        <Footer style={{ textAlign: 'center' }}>
+          <Avatar src={logoBlackImage} size={20} />
+        </Footer>
+      </Layout>
+    </Layout>
+  );
+};
+
+MainLayout.propTypes = {
+  children: PropTypes.object.isRequired,
+};
+
+export default MainLayout;

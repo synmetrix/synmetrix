@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:12.2
+    ports:
+       - 5435:5432
+    volumes:
+      - pgstorage-data:/var/lib/postgresql/data
+      - ./etc/schema.sql:/docker-entrypoint-initdb.d/00-schema.sql
+      - ./etc/postgres.conf:/var/lib/postgresql/data/postgresql.conf
+    env_file:
+      - .dev.env
+    networks:
+      - mlcraft_default
+
+  postgraphile:
+    command: yarn start.dev
+    volumes:
+      - ./services/postgraphile/src:/app/src
+      - ./services/postgraphile/vendor:/app/vendor
+      - ./services/postgraphile/index.js:/app/index.js
+    ports:
+      - 5000:5000
+      - 9230:9229
+    env_file:
+      - .dev.env
+
+  cubejs:
+    command: yarn start.dev
+    volumes:
+      - ./services/cubejs:/app
+    ports:
+      - 4000:4000
+      - 9231:9229
+    env_file:
+      - .dev.env
+
+volumes:
+  pgstorage-data:

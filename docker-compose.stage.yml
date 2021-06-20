@@ -1,0 +1,72 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:12.2
+    deploy:
+      placement:
+        constraints: [node.role == manager]
+    ports:
+       - 5435:5432
+    volumes:
+      - pgstorage-data:/var/lib/postgresql/data
+      - ./etc/schema.sql:/docker-entrypoint-initdb.d/00-schema.sql
+      - ./etc/postgres.conf:/var/lib/postgresql/data/postgresql.conf
+    env_file:
+      - .stage.env
+    networks:
+      - mlcraft_default
+
+  nginx:
+    image: mesudip/nginx-proxy:latest
+    deploy:
+      placement:
+        constraints: [node.role == manager]
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - nginx-dhparam:/etc/nginx/dhparam
+      - nginx-ssl:/etc/ssl
+    networks:
+      - mlcraft_default
+    environment:
+      CLIENT_MAX_BODY_SIZE: 5m
+
+  postgraphile:
+    image: ${REGISTRY_HOST}/mlcraft/graphql-server:latest
+    deploy:
+      placement:
+        constraints: [node.role == manager]
+    command: yarn start
+    env_file:
+      - .stage.env
+    environment:
+      VIRTUAL_HOST1: ${PROTOCOL:-http}://api.${DOMAIN}/graphql -> :5000/graphql
+      VIRTUAL_HOST2: ${WS_PROTOCOL:-ws}://api.${DOMAIN}/graphql -> :5000/graphql
+      VIRTUAL_HOST3: ${PROTOCOL:-http}://api.${DOMAIN}/explorer -> :5000/graphiql
+
+  cubejs:
+    image: ${REGISTRY_HOST}/mlcraft/cubejs-server:latest
+    env_file:
+      - .stage.env
+
+  client:
+    image: ${REGISTRY_HOST}/mlcraft/app-client:latest
+    deploy:
+      placement:
+        constraints: [node.role == manager]
+    build:
+      context: ./services/client/
+    environment:
+      GRAPHQL_SERVER_URL: ${PROTOCOL:-http}://api.${DOMAIN}/graphql
+      GRAPHQL_WS_URL: ${WS_PROTOCOL:-ws}://api.${DOMAIN}/graphql
+      VIRTUAL_HOST: ${PROTOCOL:-http}://app.${DOMAIN} -> :80
+    networks:
+      - mlcraft_default
+
+volumes:
+  pgstorage-data:
+  nginx-dhparam:
+  nginx-ssl:

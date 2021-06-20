@@ -1,0 +1,23 @@
+.loginContainer {
+  margin: auto;
+  width: 400px;
+}
+
+.loginFormButtonWrapper {
+  display: flex;
+  justify-content: center;
+}
+
+.formHeader {
+  font-size: 3em;
+  text-align: center;
+}
+
+.signupContainer {
+  margin-top: 50px;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+  display: flex;
+  height: 160px;
+}

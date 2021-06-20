@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+  redis:
+    image: redis:5.0.8
+    restart: always
+    networks:
+      - mlcraft_default
+
+  postgraphile:
+    restart: always
+    build:
+      context: ./services/postgraphile
+    networks:
+      - mlcraft_default
+
+  cubejs:
+    restart: always
+    build:
+      context: ./services/cubejs
+    networks:
+      - mlcraft_default
+
+networks:
+  mlcraft_default:
+    external: true

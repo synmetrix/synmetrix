@@ -1,0 +1,37 @@
+encryptionsalt: v1:wUxgiwMWJko=:v1:F2fhIrmQIzxxlH7j:sa8sNszrg8kVS9YxWkTOeNX65aK1jg==
+config:
+  cluster:workerTokenPath: /tmp/swarm/worker_token
+  aws:profile: default
+  aws:region: us-east-1
+  s3:exchangeBucket: mlcraft-bi-exchange-bucket
+
+  # https://cloud-images.ubuntu.com/locator/ec2/
+  ec2:projectName: mlcraft-bi-stage
+  ec2:masters: 1
+  ec2:slaves: 0
+  ec2:default/ami: ami-0d777ad7d8b566f8c # ubuntu 20.04 x86
+  ec2:default/machineType: t2.medium
+  ec2:default/zone: us-east-1c
+  ec2:default/rootVolumeSize: 40
+  ec2:default/ebsVolumeSize: 70
+  ec2:default/ebsDeviseName: /dev/sdb
+
+  ec2:master0/machineType: t2.xlarge
+
+  route53:domainName: mlcraft.org.
+  rds:allocatedStorage: 30
+  rds:maxAllocatedStorage: 100
+  rds:engine: postgres
+  rds:engineVersion: 12.4
+  rds:engineGroupName: default.postgres12
+  rds:instanceClass: rds.t3.medium
+  rds:user:
+  rds:pass:
+  rds:databaseName:
+  rds:storageType: gp2
+  rds:backupRetentionPeriod: 3
+  rds:backupWindow: 03:00-04:00
+  rds:deleteAutomatedBackups: false
+  rds:deletionProtection: false
+  rds:finalSnapshotIdentifier: mlcraft-bi-rds-final-snapshot
+  rds:skipFinalSnapshot: true

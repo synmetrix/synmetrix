@@ -1,0 +1,23 @@
+.toolbar {
+  height: 50px;
+  padding: 5px;
+  border-bottom: 1px solid #ccc;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.error {
+  margin-left: 10px;
+  color: red;
+}
+
+.resizeHandler {
+  cursor: ns-resize;
+  text-align: center;
+  border-bottom: 1px solid #eee;
+}
+
+.resizeHandler i {
+  margin-right: 15px;
+}

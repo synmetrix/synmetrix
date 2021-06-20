@@ -1,0 +1,39 @@
+.pointer {
+  cursor: pointer;
+}
+
+.member {
+  color: dimgray !important;
+  font-size: 12px;
+  font-weight: 400;
+}
+
+.filter {
+  height: 17px !important;
+  line-height: 16px !important;
+  font-size: 12px !important;
+  text-transform: uppercase; 
+  vertical-align: middle;
+  display: inline-flex !important;
+}
+
+.memberActive {
+  /* border-bottom: 1px dashed #000; */
+  background: #fff;
+}
+
+.memberHovered {
+  color: #aaabbb !important;
+  background: #f6f6f7;
+  filter: brightness(96%);
+}
+
+.memberFocused {
+  background: #f6f6f7;
+  filter: brightness(90%);
+}
+
+.memberHovered.memberActive { 
+  background: #fff;
+  filter: brightness(99%);
+}
