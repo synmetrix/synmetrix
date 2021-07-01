@@ -56,7 +56,6 @@ const routes = ({ basePath, setupAuthInfo, cubejs, context }) => {
         await driver.release();
       }
 
-      // console.error(err);
       res.status(500).json({
         error: err.message
       });
@@ -119,7 +118,6 @@ const routes = ({ basePath, setupAuthInfo, cubejs, context }) => {
         await driver.release();
       }
 
-      // console.error(err);
       res.status(500).json({
         error: err.message
       });

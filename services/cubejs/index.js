@@ -36,7 +36,6 @@ const context = {
 };
 
 const setupAuthInfo = async (req, auth) => {
-  console.log(req.originalUrl);
   const { authorization } = req.headers;
   let jwtDecoded;
 
@@ -122,7 +121,15 @@ const driverFactory = ({ securityContext }) => {
       });
       break;
     case 'clickhouse':
-      result = new ClickHouseDriver(dbConfig);
+      result = new ClickHouseDriver({
+        host: dbConfig.host,
+        port: dbConfig.port,
+        auth: `${dbConfig.user}:${dbConfig.password}`,
+        protocol: dbConfig.ssl ? 'https:' : 'http:',
+        queryOptions: {
+          database: dbConfig.database || 'default'
+        },
+      });
       break;
     default:
       break;
