@@ -4,14 +4,12 @@ on:
   push:
     branches:
       - master
-      - feature/docker-public-images
 
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
-    # container: python:3.9-buster
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      # Checks-out repository under $GITHUB_WORKSPACE, so the job can access it
       - name: Checkout Project
         uses: actions/checkout@v2
 
