@@ -16,7 +16,12 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Build docker images and push to docker hub registry
+        uses: docker-practice/actions-setup-docker@master
         run: |
+          set -x
+
+          docker version
+
           [ -z '${{ secrets.DOCKER_USER }}' ] && echo '[ERROR] DOCKER_USER is empty'
           [ -z '${{ secrets.DOCKER_PASS }}' ] && echo '[ERROR] DOCKER_PASS is empty'
 
