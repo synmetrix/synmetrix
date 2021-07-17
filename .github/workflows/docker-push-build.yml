@@ -9,7 +9,7 @@ on:
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
-    container: python:3.9-buster
+    # container: python:3.9-buster
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - name: Checkout Project
@@ -23,4 +23,4 @@ jobs:
 
       - name: Build docker images and push to Docker Hub registry
         run: |
-          REGISTRY_HOST=index.docker.io python3 cli.py --env stage services push
+          REGISTRY_HOST=index.docker.io python cli.py --env stage services push
