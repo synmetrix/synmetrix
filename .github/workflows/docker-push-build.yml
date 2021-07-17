@@ -1,0 +1,25 @@
+name: Build and push
+
+on:
+  push:
+    branches:
+      - master
+      - feature/docker-public-images
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    container: python:3.9-buster
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - name: Checkout Project
+        uses: actions/checkout@v2
+
+      - name: Build docker images and push to docker hub registry
+        run: |
+          [ -z '${{ secrets.DOCKER_USER }}' ] && echo '[ERROR] DOCKER_USER is empty'
+          [ -z '${{ secrets.DOCKER_PASS }}' ] && echo '[ERROR] DOCKER_PASS is empty'
+
+          docker login -u ${{ secrets.DOCKER_USER }} -p ${{ secrets.DOCKER_PASS }}
+
+          REGISTRY_HOST=index.docker.io python3 cli.py --env stage services push
