@@ -1,6 +1,6 @@
 <p align="center"><a href="https://mlcraft.io"><img src="https://i.imgur.com/lVUNQtT.png" alt="Cube.js" width="300px"></a></p>
 
-[Website](https://mlcraft.io) • [Docs](./docs/SUMMARY.md) • [Cube.js Schema docs](https://cube.dev/docs/getting-started-cubejs-schema)
+[Website](https://mlcraft.io) • [Docs](./docs/SUMMARY.md) • [Cube.js Schema docs](https://cube.dev/docs/getting-started-cubejs-schema) • [Docker Hub](https://hub.docker.com/u/mlcraft)
 
 __MLCraft is an open-source low-code business intelligence tool and a data science workflow.__ 
 
