@@ -7,16 +7,18 @@ import { Empty, Icon, message, Popconfirm } from 'antd';
 import { getOr } from 'unchanged';
 
 import GridLayout from 'react-grid-layout';
+import useLocation from 'wouter/use-location';
 
+import equals from 'utils/equals';
 import Loader from 'components/Loader';
 import ContentHeader from 'components/ContentHeader';
 import PinnedItem from 'components/PinnedItem';
 import EditableField from 'components/EditableField';
 import ErrorFound from 'components/ErrorFound';
 
-import useLocation from 'wouter/use-location';
+import useCheckResponse from 'hooks/useCheckResponse';
 import useDashboards from 'hooks/useDashboards';
-import useGlobalStore from 'hooks/useGlobalStore';
+import useAuth from 'hooks/useAuth';
 import usePermissions from 'hooks/usePermissions';
 
 import 'react-grid-layout/css/styles.css';
@@ -32,12 +34,8 @@ const Dashboards = ({ params }) => {
   const { rowId } = params;
 
   const {
-    setDashboardsCount,
-    lastUsedDataSourceId,
     setLastUsedDashboardId,
-  } = useGlobalStore();
-
-  const [nameLoading, setNameLoading] = useState(false);
+  } = useAuth();
 
   const {
     all: dashboards,
@@ -45,8 +43,10 @@ const Dashboards = ({ params }) => {
     onChange,
     getItemGridData,
     queries: {
+      allData,
       executeQueryAll,
-      currentData, executeQueryCurrent
+      currentData,
+      executeQueryCurrent
     },
     mutations: {
       updateMutation, mExecUpdateMutation,
@@ -54,15 +54,33 @@ const Dashboards = ({ params }) => {
     },
   } = useDashboards({ editId: rowId, pauseQueryAll: false });
 
-  const relocation = useCallback((nextRowId) => {
-    setLocation(`${basePath}/${nextRowId}`);
-    setLastUsedDashboardId(nextRowId);
-  }, [setLastUsedDashboardId, setLocation]);
+  useEffect(() => {
+    setLastUsedDashboardId(dashboard.rowId);
+  }, [dashboard?.rowId]);
 
-  const relocationExplore = useCallback(() => {
-    setDashboardsCount(0);
-    setLocation(`/d/explore/${lastUsedDataSourceId}`);
-  }, [lastUsedDataSourceId, setDashboardsCount, setLocation]);
+  const onDelete = async (res, err) => {
+    if (res) {
+      await executeQueryAll();
+
+      if (dashboards.length - 1 <= 0) {
+        const firstDataSource = allData?.data?.allDatasources?.nodes?.[0]?.rowId;
+        setLocation(`/d/explore/${firstDataSource}`);
+      } else {
+        const firstDashboard = allData?.data?.allDashboards?.nodes?.[0]?.rowId;
+        setLocation(`/d/dashboards/${firstDashboard}`);
+      }
+
+      setLastUsedDashboardId(null);
+    }
+  };
+
+  useCheckResponse(updateMutation, () => {}, {
+    successMessage: null,
+  });
+
+  useCheckResponse(deleteMutation, onDelete, {
+    successMessage: t('Successfully deleted'),
+  });
 
   const pinnedItems = useMemo(() => (
     getOr([], 'pinnedItemsByDashboardId.nodes', dashboard)
@@ -72,56 +90,11 @@ const Dashboards = ({ params }) => {
     mExecUpdateMutation(dashboard.id, { name: dashboard.name, layout: newLayout });
   };
 
-  const onDelete = () => {
-    mExecuteDeleteMutation(dashboard.id);
-  };
-
   const onRename = (id, value) => {
     if (value.name !== dashboard.name) {
-      setNameLoading(true);
       mExecUpdateMutation(id, value);
     }
   };
-
-  useEffect(() => {
-    if (dashboards.length) {
-      setDashboardsCount(dashboards.length);
-      setLastUsedDashboardId(rowId);
-    }
-  }, [dashboards.length, rowId, setDashboardsCount, setLastUsedDashboardId]);
-
-  useEffect(() => {
-    if (updateMutation.error) {
-      message.error(updateMutation.error.message);
-    } else if (updateMutation.data) {
-      setNameLoading(false);
-      updateMutation.data = null;
-    }
-  }, [updateMutation, updateMutation.data]);
-
-  useEffect(() => {
-    if (deleteMutation.error) {
-      message.error(deleteMutation.error.message);
-    }
-    if (deleteMutation.data) {
-      if (dashboards.length - 1) {
-        const anyDashboard = dashboards.find(d => parseInt(d.rowId, 10) !== parseInt(rowId, 10));
-        relocation(anyDashboard.rowId);
-      } else {
-        relocationExplore();
-      }
-
-      executeQueryAll();
-      executeQueryCurrent();
-      deleteMutation.data = null;
-    }
-  }, [dashboards, deleteMutation.data, deleteMutation.error, executeQueryAll, executeQueryCurrent, relocation, relocationExplore, rowId]);
-
-  useEffect(() => {
-    if (!dashboard.rowId && dashboards.length) {
-      setLastUsedDashboardId(dashboards[0].rowId);
-    }
-  }, [dashboard.length, dashboard.rowId, dashboards, setLastUsedDashboardId]);
 
   const { fallback } = usePermissions({ scope: 'dashboards' });
   if (fallback) {
@@ -132,12 +105,14 @@ const Dashboards = ({ params }) => {
     return <ErrorFound status={404} />;
   }
 
+  const nameLoading = updateMutation.fetching;
+
   return (
     <>
       <Loader spinning={currentData.fetching}>
         <ContentHeader
           rowId={dashboard.rowId}
-          title={(
+          title={dashboard?.rowId && (
             <Loader spinning={nameLoading}>
               <div style={{ lineHeight: '32px', whiteSpace: 'nowrap' }}>
                 <EditableField
@@ -156,7 +131,7 @@ const Dashboards = ({ params }) => {
             <div style={{ display: 'flex', flex: 1, justifyContent: 'flex-end' }}>
               <Popconfirm
                 title={t('Are you sure delete this dashboard?')}
-                onConfirm={onDelete}
+                onConfirm={() => mExecuteDeleteMutation(dashboard.id)}
                 okText={t('Yes')}
                 okType="danger"
                 cancelText={t('No')}

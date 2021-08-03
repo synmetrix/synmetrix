@@ -28,17 +28,23 @@ const formConfig = {
 const UpdatePasswordForm = props => {
   const { form } = props;
   const formRef = useRef(null);
-  const { updatePasswordData, mExecUpdatePasswordMutation } = useAuth({});
+
+  const {
+    mutations: {
+      updatePasswordMutation,
+      execUpdatePassMutation,
+    },
+  } = useAuth();
 
   useEffect(
     () => {
-      if (updatePasswordData.error) {
-        message.error(updatePasswordData.error.message);
-      } else if (updatePasswordData.data) {
+      if (updatePasswordMutation.error) {
+        message.error(updatePasswordMutation.error.message);
+      } else if (updatePasswordMutation.data) {
         message.success('Password updated!');
       }
     },
-    [updatePasswordData]
+    [updatePasswordMutation]
   );
 
   const onSubmit = () => {
@@ -50,7 +56,7 @@ const UpdatePasswordForm = props => {
       }
 
       formObject.resetFields();
-      mExecUpdatePasswordMutation(values);
+      execUpdatePassMutation(values);
     });
   };
 
@@ -59,7 +65,7 @@ const UpdatePasswordForm = props => {
   return (
     <>
       <Form onSubmit={onSubmit}>
-        <Loader spinning={updatePasswordData.fetching}>
+        <Loader spinning={updatePasswordMutation.fetching}>
           {updatePasswordForm}
         </Loader>
       </Form>

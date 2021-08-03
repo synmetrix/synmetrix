@@ -8,7 +8,13 @@ import useAuthToken from 'hooks/useAuthToken';
 import styles from './Login.module.css';
 
 const SignUp = props => {
-  const { signUpData, executeSignUpMutation } = useAuth();
+  const { 
+    mutations: {
+      signUpMutation,
+      execSignUpMutation,
+    }
+  } = useAuth();
+
   const { setAuthToken } = useAuthToken();
 
   const submit = e => {
@@ -17,15 +23,14 @@ const SignUp = props => {
     props.form.validateFields((err, input) => {
       if (!err) {
         setAuthToken(null);
-        executeSignUpMutation({ input });
+        execSignUpMutation({ input });
       }
     });
   };
 
   const { form } = props;
   const { getFieldDecorator } = form;
-
-  const { errors } = signUpData;
+  const errors = signUpMutation?.error?.graphQLErrors || [];
 
   return (
     <div className={styles.loginContainer}>

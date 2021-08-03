@@ -33,7 +33,6 @@ const UserMenu = ({ mode, restrictScopes = [] }) => {
     }
   ];
 
-
   if (!restrictScopes.includes('team')) {
     accountSubMenu.push({
       path: '/d/team',
@@ -67,29 +66,34 @@ const MainMenu = ({ mode, restrictScopes = [] }) => {
   const { t } = useTranslation();
 
   const {
-    lastUsedDashboardId,
     lastUsedDataSourceId,
-    dashboardsCount,
-  } = useGlobalStore();
-
-  const {
-    all,
     queries: {
-      executeQueryAll,
+      currentUserData,
+      execCurrentUserQuery,
     },
-  } = useDataSources({});
+  } = useAuth({ checkMe: true });
+
+  const dataSources = currentUserData?.data?.allDatasources?.nodes || [];
+  const dashboards = currentUserData?.data?.allDashboards?.nodes || [];
+  const dashboardsCount = dashboards?.length || 0;
 
   useDataSourcesSubscription(() => {
-    executeQueryAll({ requestPolicy: 'network-only' });
+    execCurrentUserQuery({ requestPolicy: 'network-only' });
   });
 
-  const dataSchemas = all.map(source => ({
+  const dataSourceItems = dataSources.map(source => ({
     dataSourceId: source.rowId,
     path: `/d/schemas/${source.rowId}`,
     title: source.name,
   }));
 
-  const dataSourceId = lastUsedDataSourceId || (dataSchemas[0] || {}).dataSourceId || '';
+  const dashboardItems = dashboards.map(dashboard => ({
+    path: `/d/dashboards/${dashboard.rowId}`,
+    title: dashboard.name,
+  }));
+
+  const lastDataSource = dataSources.find(source => source.rowId === lastUsedDataSourceId);
+  const dataSourceId = lastDataSource?.rowId || dataSources?.[0]?.rowId || '';
 
   let routes = [
     {
@@ -105,15 +109,16 @@ const MainMenu = ({ mode, restrictScopes = [] }) => {
     {
       path: '/d/schemas',
       title: t('Data Schemas'),
-      children: dataSchemas,
+      children: dataSourceItems,
       scope: 'dataschemas'
     },
   ];
 
   if (dashboardsCount) {
     routes.unshift({
-      path: `/d/dashboards/${lastUsedDashboardId || ''}`,
+      path: `/d/dashboards`,
       title: t('Dashboards'),
+      children: dashboardItems,
       scope: 'dashboards'
     });
   }

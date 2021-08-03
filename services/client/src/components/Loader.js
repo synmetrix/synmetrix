@@ -21,7 +21,7 @@ Loader.propTypes = {
     PropTypes.element,
     PropTypes.arrayOf(PropTypes.string),
     PropTypes.arrayOf(PropTypes.element),
-  ]).isRequired,
+  ]),
   style: PropTypes.object
 };
 

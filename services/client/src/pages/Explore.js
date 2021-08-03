@@ -14,7 +14,7 @@ import ContentHeader from 'components/ContentHeader';
 import ExploreWorkspace from 'components/ExploreWorkspace';
 
 import useDataSources from 'hooks/useDataSources';
-import useGlobalStore from 'hooks/useGlobalStore';
+import useAuth from 'hooks/useAuth';
 import useDataSchemasSubscription from 'hooks/useDataSchemasSubscription';
 import usePermissions from 'hooks/usePermissions';
 
@@ -32,7 +32,7 @@ const Explore = (props) => {
   const {
     lastUsedDataSourceId,
     setLastUsedDataSourceId
-  } = useGlobalStore();
+  } = useAuth();
 
   const {
     all: dataSources,

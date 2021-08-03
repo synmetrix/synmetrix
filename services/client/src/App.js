@@ -32,22 +32,13 @@ import Profile from './pages/Profile';
 import Charts from './pages/Charts';
 import ErrorFound from './components/ErrorFound';
 
-import useGlobalStore from './hooks/useGlobalStore';
-
 const { __DEV__ } = process.env;
 
 const useCheckAuth = () => {
   const [path, navigate] = useLocation();
   const router = useRouter();
 
-  const { currentUser, dashboardsCount } = useAuth({ checkMe: true });
-  const { setDashboardsCount } = useGlobalStore();
-
-  useEffect(() => {
-    if (dashboardsCount) {
-      setDashboardsCount(dashboardsCount);
-    }
-  }, [dashboardsCount, setDashboardsCount]);
+  const { currentUser } = useAuth({ checkMe: true });
 
   router.currentUser = currentUser;
   router.lastTransition = { path };
@@ -67,8 +58,6 @@ const App = () => {
 
     return auth;
   };
-
-  console.log(window);
 
   const apiWsUrl = window.GRAPHQL_WS_URL || process.env.GRAPHQL_WS_URL;
 

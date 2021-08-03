@@ -1,11 +1,12 @@
 import { useMemo, useEffect, useCallback } from 'react';
 import { useQuery, useMutation } from 'urql';
-import { get, getOr } from 'unchanged';
+import { get } from 'unchanged';
 
+import { useLocalStorageState } from 'ahooks';
 import { useRouter } from 'wouter';
 import useLocation from 'wouter/use-location';
 import trackEvent from 'utils/trackEvent';
-import useGlobalStore from './useGlobalStore';
+
 import usePermissions from './usePermissions';
 import useAuthToken from './useAuthToken';
 
@@ -22,16 +23,19 @@ const CurrentUserQuery = `
         key
         restrictScopes
       }
-      dashboardsByUserId {
-        totalCount
+    }
+
+    allDatasources {
+      nodes {
+        rowId
+        name
       }
-      teamByTeamId {
-        memberIds
-        members {
-          dashboardsByUserId {
-            totalCount
-          }
-        }
+    }
+
+    allDashboards {
+      nodes {
+        rowId
+        name
       }
     }
   }
@@ -63,7 +67,7 @@ const revokeJWTMutation = `
   }
 `;
 
-const updatePasswordMutation = `
+const UpdatePasswordMutation = `
   mutation UpdatePasswordMutation($input: UpdatePasswordInput!) {
     updatePassword(input: $input)
   }
@@ -81,30 +85,39 @@ const getHomePath = (teamRole) => {
 };
 
 export default (options = {}) => {
+  const [
+    lastUsedDashboardId,
+    setLastUsedDashboardId
+  ] = useLocalStorageState('last-dashboard');
+
+  const [
+    lastUsedDataSourceId,
+    setLastUsedDataSourceId
+  ] = useLocalStorageState('last-datasource');
+
   const router = useRouter();
   const { setAuthToken } = useAuthToken();
   const [, navigate] = useLocation();
 
-  const { checkMe } = options;
-  const [signUpMutationData, executeSignUpMutation] = useMutation(SignUpMutation);
-  const [loginMutationData, executeLoginMutation] = useMutation(LoginMutation);
+  const { checkMe = false } = options;
+  const [signUpMutation, doSignUpMutation] = useMutation(SignUpMutation);
+  const [loginMutation, doLoginMutation] = useMutation(LoginMutation);
 
-  const mExecuteLoginMutation = useCallback(({ input }) => {
+  const execLoginMutation = useCallback(({ input }) => {
     trackEvent('Login');
 
-    executeLoginMutation({ input });
-  }, [executeLoginMutation]);
+    doLoginMutation({ input });
+  }, [doLoginMutation]);
 
-  const [currentUserData, execCurrentUserQuery] = useQuery({
+  const [currentUserData, doCurrentUserQuery] = useQuery({
     query: CurrentUserQuery,
     pause: true,
   });
 
   const { saveCachedRestrictScopes } = usePermissions({});
 
-  const { setLastUsedDataSourceId } = useGlobalStore();
   const logout = useCallback(() => {
-    setLastUsedDataSourceId('');
+    setLastUsedDataSourceId(null);
     setAuthToken(null);
     navigate('/login');
     saveCachedRestrictScopes([]);
@@ -115,69 +128,38 @@ export default (options = {}) => {
     saveCachedRestrictScopes
   ]);
 
-  const mExecCurrentUserQuery = useCallback(() => {
-    execCurrentUserQuery({ requestPolicy: 'network-only' });
-  }, [execCurrentUserQuery]);
+  const execCurrentUserQuery = useCallback(() => {
+    doCurrentUserQuery({ requestPolicy: 'network-only' });
+  }, [doCurrentUserQuery]);
 
-  const [revokeMutation, execRevokeJWTMutation] = useMutation(revokeJWTMutation);
-  const mExecRevokeJWTMutation = useCallback(() => {
+  const [revokeMutation, doRevokeJWTMutation] = useMutation(revokeJWTMutation);
+  const execRevokeJWTMutation = useCallback(() => {
     trackEvent('Revoke JWT');
 
-    execRevokeJWTMutation();
+    doRevokeJWTMutation();
     logout();
-  }, [execRevokeJWTMutation, logout]);
+  }, [doRevokeJWTMutation, logout]);
 
-  const [updatePasswordData, execUpdatePasswordMutation] = useMutation(updatePasswordMutation);
-  const mExecUpdatePasswordMutation = useCallback((input) => {
+  const [updatePasswordMutation, doUpdatePassMutation] = useMutation(UpdatePasswordMutation);
+  const execUpdatePassMutation = useCallback((input) => {
     trackEvent('Update Password');
 
-    execUpdatePasswordMutation({ input });
-  }, [execUpdatePasswordMutation]);
+    doUpdatePassMutation({ input });
+  }, [doUpdatePassMutation]);
 
   const currentUser = useMemo(() => get('currentUser', currentUserData.data) || {}, [currentUserData.data]);
 
-  const dashboardsCount = useMemo(() => {
-    const userDashboards = get('dashboardsByUserId.totalCount', currentUser);
-
-    if (userDashboards) {
-      return userDashboards;
-    }
-
-    const members = getOr([], 'teamByTeamId.members', currentUser);
-
-    const count = members.reduce((acc, cur) => {
-      const curCount = getOr(0, 'dashboardsByUserId.totalCount', cur);
-      return acc + curCount;
-    }, 0);
-
-    return count;
-  }, [currentUser]);
-
-  const loginData = useMemo(
-    () => ({
-      errors: getOr([], 'error.graphQLErrors', loginMutationData),
-    }),
-    [loginMutationData]
-  );
-
-  const signUpData = useMemo(
-    () => ({
-      errors: getOr([], 'error.graphQLErrors', signUpMutationData),
-    }),
-    [signUpMutationData]
-  );
-
   useEffect(() => {
-    const token = get('data.login.token', loginMutationData) || get('data.signup.token', signUpMutationData);
+    const token = get('data.login.token', loginMutation) || get('data.signup.token', signUpMutation);
 
     if (token) {
-      const teamRole = get('data.login.teamRole', loginMutationData) || get('data.signup.teamRole', signUpMutationData);
-      const restrictScopes = get('data.login.restrictScopes', loginMutationData) || get('data.signup.restrictScopes', signUpMutationData);
+      const teamRole = get('data.login.teamRole', loginMutation) || get('data.signup.teamRole', signUpMutation);
+      const restrictScopes = get('data.login.restrictScopes', loginMutation) || get('data.signup.restrictScopes', signUpMutation);
       saveCachedRestrictScopes(restrictScopes);
 
       setAuthToken(token);
-      loginMutationData.data = null;
-      signUpMutationData.data = null;
+      loginMutation.data = null;
+      signUpMutation.data = null;
 
       if (router.lastTransition && router.lastTransition.path) {
         navigate(router.lastTransition.path);
@@ -188,8 +170,8 @@ export default (options = {}) => {
   }, [
     setAuthToken,
     checkMe,
-    loginMutationData,
-    signUpMutationData,
+    loginMutation,
+    signUpMutation,
     navigate,
     router.lastTransition,
     saveCachedRestrictScopes
@@ -197,9 +179,9 @@ export default (options = {}) => {
 
   useEffect(() => {
     if (checkMe) {
-      mExecCurrentUserQuery();
+      execCurrentUserQuery();
     }
-  }, [checkMe, mExecCurrentUserQuery]);
+  }, [checkMe, execCurrentUserQuery]);
 
   useEffect(() => {
     if (checkMe && currentUserData.data) {
@@ -213,12 +195,25 @@ export default (options = {}) => {
   }, [checkMe, currentUserData.data, navigate]);
 
   return {
+    currentUser,
     logout,
-    dashboardsCount,
-    currentUser, mExecCurrentUserQuery,
-    loginData, mExecuteLoginMutation,
-    signUpData, executeSignUpMutation,
-    revokeMutation, mExecRevokeJWTMutation,
-    updatePasswordData, mExecUpdatePasswordMutation
+    queries: {
+      currentUserData,
+      execCurrentUserQuery,
+    },
+    mutations: {
+      loginMutation,
+      execLoginMutation,
+      signUpMutation,
+      execSignUpMutation: doSignUpMutation,
+      revokeMutation,
+      execRevokeJWTMutation,
+      updatePasswordMutation,
+      execUpdatePassMutation,
+    },
+    lastUsedDataSourceId,
+    setLastUsedDataSourceId,
+    lastUsedDashboardId,
+    setLastUsedDashboardId,
   };
 };
