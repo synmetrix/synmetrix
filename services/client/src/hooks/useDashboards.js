@@ -60,6 +60,11 @@ const dashboardsQuery = `
         name
       }
     }
+    allDatasources {
+      nodes {
+        rowId
+      }
+    }
   }
 `;
 
@@ -167,7 +172,7 @@ export default ({ editId, pauseQueryAll = false }) => {
       };
     }
 
-    const itemGridData = current.layout.find((v) => parseInt(v.i, 10) === itemId);
+    const itemGridData = current.layout?.find((v) => parseInt(v.i, 10) === itemId);
 
     if (!itemGridData) {
       let lowest = 0;

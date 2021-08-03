@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "@urql/exchange-graphcache": "^2.4.2",
+    "ahooks": "^2.10.9",
     "antd": "^3.26.6",
     "classnames": "^2.2.6",
     "core-js": "2.5.3",
@@ -37,7 +38,7 @@
     "react-vega-lite": "^6.1.0",
     "react-virtualized": "^9.21.1",
     "recharts": "^1.8.5",
-    "recoil": "^0.3.1",
+    "recoil": "^0.4.0",
     "relay-runtime": "^4.0.0",
     "subscriptions-transport-ws": "^0.9.16",
     "unchanged": "^2.1.0",
@@ -66,7 +67,7 @@
     ]
   },
   "devDependencies": {
-    "@neutrinojs/react": "^9.0.0-rc.1",
+    "@neutrinojs/react": "^9.4.0",
     "@urql/devtools": "^0.1.2",
     "babel-plugin-module-resolver": "^3.2.0",
     "babel-plugin-prismjs": "^1.1.1",
@@ -83,7 +84,7 @@
     "husky": "^2.2.0",
     "lint-staged": "^8.1.6",
     "monaco-editor-webpack-plugin": "^1.7.0",
-    "neutrino": "^9.0.0-rc.1",
+    "neutrino": "^9.4.0",
     "prettier": "^1.17.0",
     "relay-compiler": "^4.0.0",
     "webpack": "^4.41.2",

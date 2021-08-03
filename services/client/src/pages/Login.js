@@ -8,22 +8,26 @@ import useAuth from 'hooks/useAuth';
 import styles from './Login.module.css';
 
 const Login = props => {
-  const { loginData, mExecuteLoginMutation } = useAuth();
+  const { 
+    mutations: {
+      loginMutation,
+      execLoginMutation,
+    }
+  } = useAuth();
 
   const submit = e => {
     e.preventDefault();
 
     props.form.validateFields((err, input) => {
       if (!err) {
-        mExecuteLoginMutation({ input });
+        execLoginMutation({ input });
       }
     });
   };
 
   const { form } = props;
   const { getFieldDecorator } = form;
-
-  const { errors } = loginData;
+  const errors = loginMutation?.error?.graphQLErrors || [];
 
   return (
     <div className={styles.loginContainer}>

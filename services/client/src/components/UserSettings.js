@@ -10,17 +10,22 @@ import useAuth from 'hooks/useAuth';
 const Profile = () => {
   const { t } = useTranslation();
 
-  const { revokeMutation, mExecRevokeJWTMutation } = useAuth({});
+  const { 
+    mutations: {
+      revokeMutation,
+      execRevokeJWTMutation,
+    }
+  } = useAuth();
 
   const revokeTokens = useCallback(() => {
-    mExecRevokeJWTMutation();
+    execRevokeJWTMutation();
 
     if (revokeMutation.data) {
       message.success('Access tokens has been revoked');
     } else if (revokeMutation.error) {
       message.success('Something went wrong');
     }
-  }, [revokeMutation, mExecRevokeJWTMutation]);
+  }, [revokeMutation, execRevokeJWTMutation]);
 
   return (
     <>
