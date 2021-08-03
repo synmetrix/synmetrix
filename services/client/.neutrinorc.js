@@ -12,7 +12,7 @@ module.exports = {
     react({
       hot: true,
       html: {
-        title: 'MLCraft.io – Full-Stack DataScience Platform',
+        title: 'MLCraft',
       },
       babel: {
         plugins: [

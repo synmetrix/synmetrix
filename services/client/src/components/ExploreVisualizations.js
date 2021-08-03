@@ -138,9 +138,6 @@ const ExploreVisualizations = (props) => {
 
     setSectionState(prev => ({ ...prev, spec: newSpec }));
 
-    console.log('newSpec');
-    console.log(newSpec);
-
     if (newSpec.vconcat && newSpec.vconcat.length) {
       setSectionState(prev => {
         let newFormValues = prev.formValues;

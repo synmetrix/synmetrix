@@ -96,7 +96,12 @@ export default (options = {}) => {
   ] = useLocalStorageState('last-datasource');
 
   const router = useRouter();
-  const { setAuthToken } = useAuthToken();
+  const { 
+    setAuthToken,
+    userState,
+    setUserState,
+  } = useAuthToken();
+
   const [, navigate] = useLocation();
 
   const { checkMe = false } = options;
@@ -147,7 +152,13 @@ export default (options = {}) => {
     doUpdatePassMutation({ input });
   }, [doUpdatePassMutation]);
 
-  const currentUser = useMemo(() => get('currentUser', currentUserData.data) || {}, [currentUserData.data]);
+  useEffect(() => {
+    if (currentUserData.data) {
+      setUserState(currentUserData.data);
+    }
+  }, [currentUserData.data, setUserState]);
+
+  const currentUser = useMemo(() => userState?.currentUser, [userState]);
 
   useEffect(() => {
     const token = get('data.login.token', loginMutation) || get('data.signup.token', signUpMutation);
@@ -178,10 +189,10 @@ export default (options = {}) => {
   ]);
 
   useEffect(() => {
-    if (checkMe) {
+    if (checkMe && !userState) {
       execCurrentUserQuery();
     }
-  }, [checkMe, execCurrentUserQuery]);
+  }, [checkMe, execCurrentUserQuery, userState]);
 
   useEffect(() => {
     if (checkMe && currentUserData.data) {

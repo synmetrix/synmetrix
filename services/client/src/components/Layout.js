@@ -11,9 +11,8 @@ import logoImage from 'assets/images/logo.svg';
 import logoBlackImage from 'assets/images/logo-black.svg';
 
 import useAuth from 'hooks/useAuth';
-import useDataSources from 'hooks/useDataSources';
+import useAuthToken from 'hooks/useAuthToken';
 import useDataSourcesSubscription from 'hooks/useDataSourcesSubscription';
-import useGlobalStore from 'hooks/useGlobalStore';
 import useSider from 'hooks/useSider';
 import usePermissions from 'hooks/usePermissions';
 import MenuView from 'components/MenuView';
@@ -62,19 +61,23 @@ const UserMenu = ({ mode, restrictScopes = [] }) => {
   );
 };
 
-const MainMenu = ({ mode, restrictScopes = [] }) => {
+const MainMenu = (props) => {
+  const { mode, restrictScopes } = props;
   const { t } = useTranslation();
 
   const {
     lastUsedDataSourceId,
     queries: {
-      currentUserData,
       execCurrentUserQuery,
     },
-  } = useAuth({ checkMe: true });
+  } = useAuth();
 
-  const dataSources = currentUserData?.data?.allDatasources?.nodes || [];
-  const dashboards = currentUserData?.data?.allDashboards?.nodes || [];
+  const {
+    userState,
+  } = useAuthToken();
+
+  const dataSources = userState?.allDatasources?.nodes || [];
+  const dashboards = userState?.allDashboards?.nodes || [];
   const dashboardsCount = dashboards?.length || 0;
 
   useDataSourcesSubscription(() => {
@@ -82,17 +85,18 @@ const MainMenu = ({ mode, restrictScopes = [] }) => {
   });
 
   const dataSourceItems = dataSources.map(source => ({
-    dataSourceId: source.rowId,
+    key: source.rowId,
     path: `/d/schemas/${source.rowId}`,
     title: source.name,
   }));
 
   const dashboardItems = dashboards.map(dashboard => ({
+    key: dashboard.rowId,
     path: `/d/dashboards/${dashboard.rowId}`,
     title: dashboard.name,
   }));
 
-  const lastDataSource = dataSources.find(source => source.rowId === lastUsedDataSourceId);
+  const lastDataSource = dataSources.find(source => source.rowId == lastUsedDataSourceId);
   const dataSourceId = lastDataSource?.rowId || dataSources?.[0]?.rowId || '';
 
   let routes = [
@@ -123,7 +127,7 @@ const MainMenu = ({ mode, restrictScopes = [] }) => {
     });
   }
 
-  routes = routes.filter(route => !restrictScopes.includes(route.scope));
+  routes = routes.filter(route => !restrictScopes?.includes(route.scope));
 
   return (
     <>
@@ -153,7 +157,8 @@ const MainMenu = ({ mode, restrictScopes = [] }) => {
   );
 };
 
-const MainLayout = ({ children }) => {
+const MainLayout = (props) => {
+  const { children } = props;
   const { state, onBreakpoint, onCollapse } = useSider();
 
   const { restrictScopes } = usePermissions({});

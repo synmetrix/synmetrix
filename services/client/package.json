@@ -46,7 +46,7 @@
     "vega": "^5.10.1",
     "vega-lite": "^4.10.4",
     "vega-lite-api": "^0.11.0",
-    "wouter": "^2.3.0"
+    "wouter": "^2.7.4"
   },
   "scripts": {
     "start": "webpack-dev-server --mode development",

@@ -43,7 +43,7 @@ const useCheckAuth = () => {
   router.currentUser = currentUser;
   router.lastTransition = { path };
 
-  if (!currentUser.userId) {
+  if (!currentUser?.userId) {
     return ['/login', navigate];
   }
 

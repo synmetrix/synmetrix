@@ -26,11 +26,19 @@ export const currentUserTokenSelector = selector({
   }
 });
 
+export const userStateAtom = atom({
+  key: 'userState',
+  default: null,
+});
+
 export default () => {
   const [authToken, setAuthToken] = useRecoilState(currentUserTokenSelector);
+  const [userState, setUserState] = useRecoilState(userStateAtom);
 
   return {
     authToken,
     setAuthToken,
+    userState,
+    setUserState,
   };
 };
