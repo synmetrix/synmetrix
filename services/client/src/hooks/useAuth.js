@@ -27,6 +27,7 @@ const CurrentUserQuery = `
 
     allDatasources {
       nodes {
+        id
         rowId
         name
       }
@@ -34,6 +35,7 @@ const CurrentUserQuery = `
 
     allDashboards {
       nodes {
+        id
         rowId
         name
       }
@@ -134,7 +136,7 @@ export default (options = {}) => {
   ]);
 
   const execCurrentUserQuery = useCallback(() => {
-    doCurrentUserQuery({ requestPolicy: 'network-only' });
+    return doCurrentUserQuery({ requestPolicy: 'network-only' });
   }, [doCurrentUserQuery]);
 
   const [revokeMutation, doRevokeJWTMutation] = useMutation(revokeJWTMutation);

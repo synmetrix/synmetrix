@@ -60,13 +60,16 @@ const Dashboards = ({ params }) => {
 
   const onDelete = async (res, err) => {
     if (res) {
-      await executeQueryAll();
+      executeQueryAll();
 
       if (dashboards.length - 1 <= 0) {
         const firstDataSource = allData?.data?.allDatasources?.nodes?.[0]?.rowId;
         setLocation(`/d/explore/${firstDataSource}`);
       } else {
-        const firstDashboard = allData?.data?.allDashboards?.nodes?.[0]?.rowId;
+        const firstDashboard = allData?.data?.allDashboards?.nodes?.filter(
+          dashboard => dashboard.id !== res.deleteDashboard.deletedDashboardId
+        )?.[0]?.rowId;
+
         setLocation(`/d/dashboards/${firstDashboard}`);
       }
 

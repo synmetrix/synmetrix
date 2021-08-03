@@ -8,7 +8,7 @@ import { Button, Icon, Select, Input, Divider, message } from 'antd';
 import PopoverButton from 'components/PopoverButton';
 import useDashboards from 'hooks/useDashboards';
 import usePinnedItems from 'hooks/usePinnedItems';
-import useGlobalStore from 'hooks/useGlobalStore';
+import useAuth from 'hooks/useAuth';
 import useXState from 'hooks/useXState';
 
 const { Option } = Select;
@@ -16,10 +16,10 @@ const { Option } = Select;
 const SavePinnedItemButton = ({ spec, specConfig, type, explorationRowId, disabled }) => {
   const { t } = useTranslation();
   const {
-    setDashboardsCount,
     lastUsedDashboardId,
     setLastUsedDashboardId,
-  } = useGlobalStore();
+  } = useAuth();
+
   const [state, updateState] = useXState({
     chartName: '',
     selectOpen: false,
@@ -95,13 +95,12 @@ const SavePinnedItemButton = ({ spec, specConfig, type, explorationRowId, disabl
     } else if (createMutation.data) {
       const newDashboardId = get('data.createDashboard.dashboard.rowId', createMutation);
 
-      setDashboardsCount(dashboards.length + 1);
       onSelect(newDashboardId);
       executeQueryAll();
 
       createMutation.data = null;
     }
-  }, [createMutation, dashboards.length, executeQueryAll, onSelect, setDashboardsCount]);
+  }, [createMutation, dashboards.length, executeQueryAll, onSelect]);
 
   const saveDisabled = !state.selectedDashboard || !state.chartName || newPinnedItem.fetching || !Object.keys(spec).length;
   const selectValue = useMemo(() => {
