@@ -275,6 +275,24 @@ CREATE TRIGGER
   FOR EACH ROW
 EXECUTE PROCEDURE update_updated_at_column();
 
+drop trigger if exists dashboards_update_notification on public.dashboards;
+create trigger
+  dashboards_update_notification
+  after UPDATE on public.dashboards
+  for each row execute procedure notify_user_with_id('NEW', 'dashboardUpdated');
+
+drop trigger if exists dashboards_create_notification on public.dashboards;
+create trigger
+  dashboards_create_notification
+  after INSERT on public.dashboards
+  for each row execute procedure notify_user_with_id('NEW', 'dashboardUpdated');
+
+drop trigger if exists dashboards_delete_notification on public.dashboards;
+create trigger
+  dashboards_delete_notification
+  after DELETE on public.dashboards
+  for each row execute procedure notify_user_with_id('OLD', 'dashboardUpdated');
+
 --
 
 create table if not exists public.pinned_items (

@@ -1,3 +1,5 @@
+import { useEffect } from 'react';
+
 import {
   atom,
   useRecoilState,
@@ -34,6 +36,12 @@ export const userStateAtom = atom({
 export default () => {
   const [authToken, setAuthToken] = useRecoilState(currentUserTokenSelector);
   const [userState, setUserState] = useRecoilState(userStateAtom);
+
+  useEffect(() => {
+    if (!authToken) {
+      setUserState(null);
+    }
+  }, [authToken, setUserState]);
 
   return {
     authToken,

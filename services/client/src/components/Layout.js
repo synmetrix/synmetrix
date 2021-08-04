@@ -13,6 +13,7 @@ import logoBlackImage from 'assets/images/logo-black.svg';
 import useAuth from 'hooks/useAuth';
 import useAuthToken from 'hooks/useAuthToken';
 import useDataSourcesSubscription from 'hooks/useDataSourcesSubscription';
+import useDashboardsSubscription from 'hooks/useDashboardsSubscription';
 import useSider from 'hooks/useSider';
 import usePermissions from 'hooks/usePermissions';
 import MenuView from 'components/MenuView';
@@ -81,6 +82,10 @@ const MainMenu = (props) => {
   const dashboardsCount = dashboards?.length || 0;
 
   useDataSourcesSubscription(() => {
+    execCurrentUserQuery({ requestPolicy: 'network-only' });
+  });
+
+  useDashboardsSubscription(() => {
     execCurrentUserQuery({ requestPolicy: 'network-only' });
   });
 

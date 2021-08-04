@@ -14,7 +14,7 @@ const MenuView = (props) => {
 
   const getLink = (node) => {
     const linkProps = {
-      href: node.path,
+      href: node.path || '',
       onClick: (node.onClick && (() => node.onClick(node))) || noop,
     };
 

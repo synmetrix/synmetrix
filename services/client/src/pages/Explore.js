@@ -26,7 +26,7 @@ const Explore = (props) => {
   const tabId = urlParams.get('tabId');
   const chartId = urlParams.get('chart');
 
-  const [dataSourceId, explorationId, taskId] = getOr('', 'params.rest', props).split('/');
+  const [dataSourceId, explorationId, taskId] = (props?.params?.rest || '').split('/');
   const basePath = ['/d/explore', dataSourceId, explorationId].filter(v => !!v).join('/');
 
   const {
@@ -115,11 +115,11 @@ const Explore = (props) => {
 };
 
 Explore.propTypes = {
-  rest: PropTypes.string,
+  params: PropTypes.object,
 };
 
 Explore.defaultProps = {
-  rest: '',
+  params: {},
 };
 
 export default Explore;

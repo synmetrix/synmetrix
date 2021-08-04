@@ -64,6 +64,7 @@ const Dashboards = ({ params }) => {
 
       if (dashboards.length - 1 <= 0) {
         const firstDataSource = allData?.data?.allDatasources?.nodes?.[0]?.rowId;
+        setLastUsedDashboardId(null);
         setLocation(`/d/explore/${firstDataSource}`);
       } else {
         const firstDashboard = allData?.data?.allDashboards?.nodes?.filter(
@@ -72,8 +73,6 @@ const Dashboards = ({ params }) => {
 
         setLocation(`/d/dashboards/${firstDashboard}`);
       }
-
-      setLastUsedDashboardId(null);
     }
   };
 

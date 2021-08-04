@@ -12,6 +12,7 @@ import extendUsers from './src/plugins/extends/extendUsers';
 import extendExploration from './src/plugins/extends/extendExploration';
 import extendDataschema from './src/plugins/extends/extendDataschema';
 import extendTeam from './src/plugins/extends/extendTeam';
+import extendDashboard from './src/plugins/extends/extendDashboard';
 import authorizationResolver from './src/plugins/authorizationResolver';
 
 import lowerCaseKeys from './src/utils/lowerCaseKeys';
@@ -60,6 +61,7 @@ const options = {
     extendExploration,
     extendDataschema,
     extendTeam,
+    extendDashboard,
   ],
   graphiql: true,
   jwtSecret: process.env.JWT_SECRET,

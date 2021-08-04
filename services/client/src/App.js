@@ -75,6 +75,12 @@ const App = () => {
       User: data => data.userId || data.rowId,
       SqlQuery: () => null,
       DataCube: () => null,
+      ACLPayload: () => null,
+      Datasource: () => null,
+      Annotation: () => null,
+      Dashboard: () => null,
+      Exploration: () => null,
+      PinnedItem: () => null,
     },
   };
 
