@@ -1,5 +1,7 @@
 import { get, getOr } from 'unchanged';
+// import * as vl from 'vega-lite-api';
 import * as vl from 'vega-lite-api';
+console.log(vl);
 
 import { colors, getFieldType } from 'utils/vega/renderOptions';
 import pickKeys from 'utils/pickKeys';
@@ -319,8 +321,7 @@ const getMarkSettings = (layerConfig) => {
 };
 
 const getTooltipsLayer = (selectedMembers, firstLayer, chartConfig) => {
-  const selectionRule = vl.selectSingle('hover')
-      .empty('none')
+  const selectionRule = vl.selectPoint('hover')
       .on('mouseover')
       .nearest(chartConfig.nearest === 'yes');
 
@@ -335,7 +336,6 @@ const getTooltipsLayer = (selectedMembers, firstLayer, chartConfig) => {
 
   const tooltipLayer = vl.markRule()
       .name('tooltip')
-      .select(selectionRule)
       .encode(
         vl.x(selectionAxis),
         vl.tooltip(allTooltips),
@@ -343,7 +343,7 @@ const getTooltipsLayer = (selectedMembers, firstLayer, chartConfig) => {
           selection: { not: 'hover' },
           value: 'transparent'
         })
-      );
+      ).params(selectionRule);
 
   return tooltipLayer;
 };
@@ -551,6 +551,8 @@ class VegaSpec {
     const spec = vl.data(data).vconcat(
       ...charts,
     );
+
+    console.log(spec);
 
     return {
       ...chartSpec,

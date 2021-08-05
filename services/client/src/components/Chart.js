@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import { get, getOr } from 'unchanged';
 import cx from 'classnames';
 
-import { Vega } from 'react-vega';
+import { VegaLite } from 'react-vega';
 import ReactResizeDetector from 'react-resize-detector';
 import Loader from 'components/Loader';
 import TableView from 'components/TableView';
@@ -41,7 +41,7 @@ const Chart = ({ id, current, loading }) => {
 
       return (
         <div id={id}>
-          <Vega
+          <VegaLite
             spec={{
               ...current.spec,
               data,

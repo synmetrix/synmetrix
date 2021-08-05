@@ -1,4 +1,6 @@
 const react = require('@neutrinojs/react');
+const compileLoader = require('@neutrinojs/compile-loader');
+const { join } = require('path');
 const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin');
 const webpack = require('webpack');
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
@@ -32,6 +34,16 @@ module.exports = {
               root: ['./src'],
             },
           ],
+          '@babel/plugin-proposal-nullish-coalescing-operator'
+        ],
+        presets: [
+          [
+            '@babel/preset-env',
+            {
+              useBuiltIns: 'entry',
+              corejs: 3,
+            },
+          ],
         ],
       },
       devServer: {
@@ -40,6 +52,27 @@ module.exports = {
           '/graphql': 'http://localhost:5000/',
         },
       },
+    }),
+    compileLoader({
+      include: [
+        join(__dirname, 'node_modules/vega-lite')
+      ],
+      babel: {
+        plugins: [
+          '@babel/plugin-proposal-nullish-coalescing-operator'
+        ],
+        presets: [
+          [
+            '@babel/preset-env',
+            {
+              useBuiltIns: 'entry',
+              corejs: 3,
+            },
+          ],
+        ],
+      },
+      ruleId: 'vega-compile',
+      useId: 'babel',
     }),
     (neutrino) => {
       neutrino.config
