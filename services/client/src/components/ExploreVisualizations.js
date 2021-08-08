@@ -1,6 +1,6 @@
 import React, { useMemo, useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
-import { remove, get, getOr, set, add } from 'unchanged';
+import { get, getOr, set, add } from 'unchanged';
 
 import { Row, Col, Empty, Button, Icon } from 'antd';
 import { VegaLite } from 'react-vega';
@@ -15,7 +15,6 @@ import usePinnedItems from 'hooks/usePinnedItems';
 import Loader from 'components/Loader';
 import SimpleForm from 'components/SimpleForm';
 
-import fromPairs from 'utils/fromPairs';
 import vegaRenderOptions from 'utils/vega/renderOptions';
 import VegaSpec, { layerKeyRegex } from 'utils/vega/spec';
 import equals from 'utils/equals';
@@ -65,30 +64,6 @@ const ExploreVisualizations = (props) => {
     description: NONE_AXIS_DESC,
     isReadyToRender: false,
   });
-
-  console.log(baseMembers);
-
-  const normalizedRows = rows.map(row => {
-    const entries = Object.entries(row).map(([key, value]) => {
-      const keyType = baseMembers.index?.[key]?.type;
-      let keyValue = value;
-
-      if (keyType === 'time') {
-        keyValue = Date.parse(keyValue); 
-      }
-
-      if (keyType === 'number') {
-        keyValue = Number(keyValue); 
-      }
-
-      return [key, keyValue];
-    });
-
-    return fromPairs(entries);
-  });
-
-  console.log('normalizedRows');
-  console.log(normalizedRows);
 
   const formConfig = useMemo(
     () => vegaRenderOptions(baseMembers.allMembers, baseMembers.index, defaults, sectionState.formValues),
@@ -144,7 +119,7 @@ const ExploreVisualizations = (props) => {
     const element = { offsetWidth: width, offsetHeight: 400 };
 
     const data = {
-      values: normalizedRows,
+      values: rows,
     };
 
     let choosenAxis = Object.entries(values)
@@ -307,7 +282,7 @@ const ExploreVisualizations = (props) => {
     const newSpec = {
       ...current.spec,
       data: {
-        values: normalizedRows,
+        values: rows,
       }
     };
 
@@ -321,7 +296,7 @@ const ExploreVisualizations = (props) => {
       },
     }));
   },
-  [current, removeLayer, normalizedRows, setSectionState, updateState]
+  [current, removeLayer, rows, setSectionState, updateState]
   );
 
   useEffect(() => {

@@ -1,7 +1,6 @@
 import { get, getOr } from 'unchanged';
 // import * as vl from 'vega-lite-api';
 import * as vl from 'vega-lite-api';
-console.log(vl);
 
 import { colors, getFieldType } from 'utils/vega/renderOptions';
 import pickKeys from 'utils/pickKeys';
@@ -301,7 +300,7 @@ const getMarkSettings = (layerConfig) => {
 
   const res = {
     color: '#3D52B9',
-    order: false,
+    // order: false,
     clip: true,
   };
 
@@ -339,10 +338,7 @@ const getTooltipsLayer = (selectedMembers, firstLayer, chartConfig) => {
       .encode(
         vl.x(selectionAxis),
         vl.tooltip(allTooltips),
-        vl.color().condition({
-          selection: { not: 'hover' },
-          value: 'transparent'
-        })
+        vl.color().if(selectionRule.empty(false), { value: 'black' }).value('transparent')
       ).params(selectionRule);
 
   return tooltipLayer;
@@ -551,8 +547,6 @@ class VegaSpec {
     const spec = vl.data(data).vconcat(
       ...charts,
     );
-
-    console.log(spec);
 
     return {
       ...chartSpec,
