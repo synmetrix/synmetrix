@@ -1,0 +1,39 @@
+- table:
+    schema: auth
+    name: account_providers
+- table:
+    schema: auth
+    name: account_roles
+- table:
+    schema: auth
+    name: accounts
+- table:
+    schema: auth
+    name: providers
+- table:
+    schema: auth
+    name: refresh_tokens
+- table:
+    schema: auth
+    name: roles
+- table:
+    schema: public
+    name: dashboards
+- table:
+    schema: public
+    name: dataschemas
+- table:
+    schema: public
+    name: datasources
+- table:
+    schema: public
+    name: explorations
+- table:
+    schema: public
+    name: pinned_items
+- table:
+    schema: public
+    name: teams
+- table:
+    schema: public
+    name: users

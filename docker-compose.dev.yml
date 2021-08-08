@@ -7,19 +7,18 @@ services:
        - 5435:5432
     volumes:
       - pgstorage-data:/var/lib/postgresql/data
-      - ./etc/schema.sql:/docker-entrypoint-initdb.d/00-schema.sql
       - ./etc/postgres.conf:/var/lib/postgresql/data/postgresql.conf
     env_file:
       - .dev.env
     networks:
       - mlcraft_default
 
-  postgraphile:
+  actions_server:
     command: yarn start.dev
     volumes:
-      - ./services/postgraphile/src:/app/src
-      - ./services/postgraphile/vendor:/app/vendor
-      - ./services/postgraphile/index.js:/app/index.js
+      - ./services/actions_server/src:/app/src
+      - ./services/actions_server/vendor:/app/vendor
+      - ./services/actions_server/index.js:/app/index.js
     ports:
       - 5000:5000
       - 9230:9229
@@ -35,6 +34,44 @@ services:
       - 9231:9229
     env_file:
       - .dev.env
+
+  hasura_dev_console:
+    image: hasura_dev_console:latest
+    build:
+      context: ./scripts/containers/hasura_dev_console
+    ports:
+      - '9693:9693'
+      - '9695:9695'
+    restart: always
+    env_file:
+      - .dev.env
+    volumes:
+      - ./services/graphql_server/migrations:/hasura/migrations
+      - ./services/graphql_server/metadata:/hasura/metadata
+      - ./services/graphql_server/config.yaml:/hasura/config.yaml
+    depends_on:
+      - graphql_server
+    networks:
+      - mlcraft_default
+
+  graphql_server:
+    ports:
+       - 8080:8080
+    env_file:
+      - .dev.env
+    depends_on:
+      - postgres
+      - redis
+
+  graphql_server_plus:
+    build:
+      context: ./scripts/containers/hasura_backend_plus
+    ports:
+       - 8081:3000
+    env_file:
+      - .dev.env
+    depends_on:
+      - postgres
 
 volumes:
   pgstorage-data:

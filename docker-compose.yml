@@ -7,10 +7,11 @@ services:
     networks:
       - mlcraft_default
 
-  postgraphile:
+  actions_server:
     restart: always
+    image: actions_server:latest
     build:
-      context: ./services/postgraphile
+      context: ./services/actions_server/
     networks:
       - mlcraft_default
 
@@ -18,6 +19,28 @@ services:
     restart: always
     build:
       context: ./services/cubejs
+    networks:
+      - mlcraft_default
+
+  graphql_server:
+    restart: always
+    image: graphql_server:latest
+    build:
+      context: ./services/graphql_server
+    volumes:
+       - ./services/graphql_server/migrations:/hasura-migrations
+       - ./services/graphql_server/metadata:/hasura-metadata
+       - ./services/graphql_server/seeds:/seeds
+    networks:
+      - mlcraft_default
+
+  graphql_server_plus:
+    restart: always
+    image: graphql_server_plus:latest
+    build:
+      context: ./scripts/containers/hasura_backend_plus
+    volumes:
+       - ./scripts/containers/hasura_backend_plus/storage-rules/rules.yaml:/app/custom/storage-rules/rules.yaml
     networks:
       - mlcraft_default
 

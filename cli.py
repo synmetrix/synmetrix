@@ -29,6 +29,7 @@ from cli.utils import *
 from cli.services import commands as services_commands
 from cli.db import commands as db_commands
 from cli.docker import commands as docker_commands
+from cli.hasura import commands as hasura_commands
 
 PWD = os.path.dirname(os.path.abspath(__file__))
 # low-level API
@@ -40,6 +41,7 @@ console.log('Python Version: ', str(sys.version_info.major) + '.' + str(sys.vers
 console.log('Docker Build Time: ', docker_version_info['BuildTime'])
 console.log('Docker Version: ', docker_version_info['Version'])
 
+
 @click.group()
 @click.option('--env', envvar='ENV', default='dev', type=click.Choice(['dev', 'stage', 'prod']))
 @click.pass_context
@@ -47,14 +49,18 @@ def main(ctx, env):
     ctx.ensure_object(dict)
     ctx.obj['runtime_env'] = env
 
+
 main.add_command(db_commands.commands_group)
 main.add_command(services_commands.commands_group)
 main.add_command(docker_commands.commands_group)
+main.add_command(hasura_commands.commands_group)
+
 
 @main.command()
 @click.pass_context
 def ui(ctx):
     call_system('(cd services/client; yarn && yarn start)')
+
 
 if __name__ == "__main__":
     main()

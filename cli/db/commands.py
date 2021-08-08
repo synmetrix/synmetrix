@@ -16,9 +16,3 @@ def commands_group(ctx):
 @click.pass_context
 def psql(ctx, addr):
     ctx.invoke(services_commands.ex, name='postgres', cmd='psql %s' % (addr))
-
-@commands_group.command()
-@click.option('--addr', default='postgres://mlcraft:pg_pass@postgres/mlcraft')
-@click.pass_context
-def migrate(ctx, addr):
-    ctx.invoke(services_commands.ex, name='postgres', cmd='bash -c "cat /docker-entrypoint-initdb.d/00-schema.sql | psql %s"' % addr)
