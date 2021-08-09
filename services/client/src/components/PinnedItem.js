@@ -1,9 +1,10 @@
-import React, { Children, useEffect, useState } from 'react';
+import React, { useRef, Children, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 
 import { get } from 'unchanged';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'wouter';
+import { useSize } from 'ahooks';
 
 import { Icon, Popconfirm, message } from 'antd';
 import Loader from 'components/Loader';
@@ -15,6 +16,9 @@ import usePinnedItems from 'hooks/usePinnedItems';
 import s from './PinnedItem.module.css';
 
 const PinnedItem = ({ rowId, updateDashboard }) => {
+  const ref = useRef();
+  const size = useSize(ref);
+
   const { t } = useTranslation();
   const [renaming, setRenaming] = useState(false);
 
@@ -70,7 +74,7 @@ const PinnedItem = ({ rowId, updateDashboard }) => {
   }
 
   return (
-    <div className={s.pinnedItem}>
+    <div className={s.pinnedItem} ref={ref}>
       <div className={s.header}>
         {current.id && (
           <Loader spinning={renaming}>
@@ -108,7 +112,7 @@ const PinnedItem = ({ rowId, updateDashboard }) => {
           </Popconfirm>
         </div>
       </div>
-      <Chart current={current} loading={loadingPinnedItem} />
+      <Chart current={current} loading={loadingPinnedItem} size={size} />
     </div>
   );
 };

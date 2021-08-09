@@ -109,7 +109,7 @@ const constructTooltip = (selectedMembers, chartConfig) => {
   return tooltipFields;
 };
 
-const initChartSpec = (selectedMembers, config) => {
+const initChartSpec = (selectedMembers, config, sizes) => {
   const spec = {
     config: {
       axis: {
@@ -133,9 +133,11 @@ const initChartSpec = (selectedMembers, config) => {
         labelFont: 'Open Sans,Helvetica,Arial,sans-serif',
         labelColor: '#666666',
         orient: config.legendPosition,
+        direction: config.legendDirection,
         titleColor: '#666666',
         titleFontWeight: 'bold',
-        symbolSize: 150
+        symbolSize: 150,
+        zindex: 1,
       },
       range: {
         category: [
@@ -155,7 +157,12 @@ const initChartSpec = (selectedMembers, config) => {
         heatmap: ['#c6dafc', '#5e97f6', '#2a56c6'],
       },
       scale: { bandPaddingInner: 0, bandPaddingOuter: 0 },
-      text: { baseline: 'middle' }
+      text: { baseline: 'middle' },
+      // view: {
+      //   width: 'container',
+      //   height: 'container',
+      // },
+      autosize: { type: 'fit', contains:'content', resize: true },
     },
   };
 
@@ -512,7 +519,7 @@ class VegaSpec {
     config.dataSample = getRandomElements(data.values, 5);
     const layers = Object.values(layerConfigs).map(layerConfig => this.createLayer(layerConfig, config));
 
-    const chartSpec = initChartSpec(sizes, selectedMembers, config);
+    const chartSpec = initChartSpec(selectedMembers, config, sizes);
 
     if (config.tooltip === 'yes' && Object.values(layerConfigs).length) {
       const tooltipsLayer = getTooltipsLayer(selectedMembers, Object.values(layerConfigs)[0], config);
@@ -526,7 +533,6 @@ class VegaSpec {
 
     const mainChart = vl.layer(...layers.filter(Boolean))
         .resolve(resolve)
-        .width(sizes.chartWidth)
         .height(sizes.chartHeight);
 
     const charts = [
@@ -536,7 +542,6 @@ class VegaSpec {
     if (config.interactive === 'detailed') {
       const detailedLayer = getDetailedLayer(selectedMembers, Object.values(layerConfigs)[0], config);
       const detailedChart = vl.layer(detailedLayer)
-          .width(sizes.chartWidth)
           .height(60);
 
       charts.push(

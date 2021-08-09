@@ -408,7 +408,6 @@ export default (allMembers, allMembersIndex, defaults, formValues = {}) => {
     subSection: 'Legend',
     type: 'string',
     display: 'select',
-    showSearch: true,
     default: 'bottom',
     placeholder: 'bottom',
     values: [
@@ -416,6 +415,19 @@ export default (allMembers, allMembersIndex, defaults, formValues = {}) => {
       { Top: 'top' },
       { Left: 'left' },
       { Right: 'right' }
+    ]
+  };
+  chartFormConfig.legendDirection = {
+    label: 'Legend Direction',
+    section: 'Chart',
+    subSection: 'Legend',
+    type: 'string',
+    display: 'select',
+    default: 'vertical',
+    placeholder: 'vertical',
+    values: [
+      { Vertical: 'vertical' },
+      { Horizontal: 'horizontal' },
     ]
   };
   chartFormConfig.legendColumns = {
