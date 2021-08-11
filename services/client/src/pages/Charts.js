@@ -9,9 +9,11 @@ import Chart from 'components/Chart';
 import { rowHeight } from 'pages/Dashboards';
 
 import usePinnedItems from 'hooks/usePinnedItems';
+import useDimensions from 'hooks/useDimensions';
 
 const Charts = ({ params }) => {
   const { rowId } = params;
+  const [ref, size] = useDimensions();
 
   const {
     current,
@@ -49,8 +51,8 @@ const Charts = ({ params }) => {
       <div style={{ margin: '15px 20px' }}>
         <Breadcrumbs breadcrumbs={breadcrumbs} />
       </div>
-      <div style={{ height }}>
-        <Chart id='chart' current={current} loading={loadingPinnedItem} />
+      <div style={{ minHeight: height }} ref={ref}>
+        <Chart id="chart" current={current} loading={loadingPinnedItem} size={size} />
       </div>
     </>
   );

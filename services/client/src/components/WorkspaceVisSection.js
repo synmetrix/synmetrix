@@ -25,7 +25,6 @@ const WorkspaceVisSection = (props) => {
   });
 
   const {
-    width,
     explorationRowId,
     queryState,
     isQueryChanged,
@@ -72,7 +71,6 @@ const WorkspaceVisSection = (props) => {
       )}
     >
       <ExploreVisualizations
-        width={width}
         availableQueryMembers={availableQueryMembers}
         selectedQueryMembers={selectedQueryMembers}
         disabled={!!isQueryChanged}
@@ -99,7 +97,6 @@ WorkspaceVisSection.propTypes = {
   }).isRequired,
   explorationRowId: PropTypes.number,
   isQueryChanged: PropTypes.bool,
-  width: PropTypes.number,
   state: PropTypes.shape({
     filtersCount: PropTypes.number,
   }),
@@ -115,7 +112,6 @@ WorkspaceVisSection.defaultProps = {
   className: undefined,
   explorationRowId: null,
   isQueryChanged: false,
-  width: 300,
   state: {},
   queryState: {},
   isActive: true,

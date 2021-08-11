@@ -1,23 +1,22 @@
-import React, { useRef, Children, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 
 import { get } from 'unchanged';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'wouter';
-import { useSize } from 'ahooks';
 
 import { Icon, Popconfirm, message } from 'antd';
 import Loader from 'components/Loader';
 import Chart from 'components/Chart';
 import EditableField from 'components/EditableField';
 
+import useDimensions from 'hooks/useDimensions';
 import usePinnedItems from 'hooks/usePinnedItems';
 
 import s from './PinnedItem.module.css';
 
 const PinnedItem = ({ rowId, updateDashboard }) => {
-  const ref = useRef();
-  const size = useSize(ref);
+  const [, size] = useDimensions(document.querySelector(`#pinned-item-${rowId}`));
 
   const { t } = useTranslation();
   const [renaming, setRenaming] = useState(false);
@@ -74,7 +73,7 @@ const PinnedItem = ({ rowId, updateDashboard }) => {
   }
 
   return (
-    <div className={s.pinnedItem} ref={ref}>
+    <div className={s.pinnedItem} id={`pinned-item-${rowId}`}>
       <div className={s.header}>
         {current.id && (
           <Loader spinning={renaming}>

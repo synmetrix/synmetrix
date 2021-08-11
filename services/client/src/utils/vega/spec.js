@@ -45,7 +45,7 @@ const getFieldEncoding = (selectedMembers, field, chartConfig = {}, axis = null)
   };
 };
 
-const calculateChartSize = (element, selectedMembers, config) => {
+export const calculateChartSize = (element, selectedMembers, config) => {
   let chartHeight = element.offsetHeight * 0.96; // - 35
   let chartWidth = element.offsetWidth * 0.96 - 82;
 
@@ -162,7 +162,7 @@ const initChartSpec = (selectedMembers, config, sizes) => {
       //   width: 'container',
       //   height: 'container',
       // },
-      autosize: { type: 'fit', contains:'content', resize: true },
+      // autosize: { type: 'fit', contains:'content', resize: true },
     },
   };
 
@@ -533,6 +533,7 @@ class VegaSpec {
 
     const mainChart = vl.layer(...layers.filter(Boolean))
         .resolve(resolve)
+        .width(sizes.chartWidth)
         .height(sizes.chartHeight);
 
     const charts = [
@@ -542,6 +543,7 @@ class VegaSpec {
     if (config.interactive === 'detailed') {
       const detailedLayer = getDetailedLayer(selectedMembers, Object.values(layerConfigs)[0], config);
       const detailedChart = vl.layer(detailedLayer)
+          .width(sizes.chartWidth)
           .height(60);
 
       charts.push(

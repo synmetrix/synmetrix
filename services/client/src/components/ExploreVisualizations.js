@@ -16,7 +16,7 @@ import Loader from 'components/Loader';
 import SimpleForm from 'components/SimpleForm';
 
 import vegaRenderOptions from 'utils/vega/renderOptions';
-import VegaSpec, { layerKeyRegex } from 'utils/vega/spec';
+import VegaSpec, { layerKeyRegex, calculateChartSize } from 'utils/vega/spec';
 import equals from 'utils/equals';
 
 import s from './ExploreVisualizations.module.css';
@@ -34,7 +34,7 @@ const getTabConfig = (removeFunc) => ({
 
 const ExploreVisualizations = (props) => {
   const { t } = useTranslation();
-  const [ref, { width }] = useDimensions({});
+  const [, { width }] = useDimensions(document.querySelector('#chart'));
 
   const {
     rows,
@@ -113,10 +113,10 @@ const ExploreVisualizations = (props) => {
     }
   }, [emptyDesc, rows.length, updateState]);
 
+  const element = { offsetWidth: width, offsetHeight: 400 };
+
   const handleSubmit = (values) => {
     console.log('Received values of form: ', values);
-
-    const element = { offsetWidth: width, offsetHeight: 400 };
 
     const data = {
       values: rows,
@@ -321,13 +321,15 @@ const ExploreVisualizations = (props) => {
     [sectionState.formConfig]
   );
 
+  const sizes = calculateChartSize(element, baseMembers.index, sectionState.formValues);
+
   return (
     <Row key="form">
       <Col lg={16} md={16} sm={24} xs={24}>
         <Loader spinning={chartId && currentData.fetching}>
-          <div style={{ width: '100%' }} ref={ref}>
+          <div style={{ width: '100%' }} id="chart">
             {state.isReadyToRender ?
-              <VegaLite spec={sectionState.spec} />
+              <VegaLite spec={sectionState.spec} width={sizes.chartWidth} />
             :
               <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description={state.description} />}
           </div>

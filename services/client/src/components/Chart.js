@@ -1,4 +1,4 @@
-import React, { useMemo, useRef } from 'react';
+import React, { useMemo } from 'react';
 import PropTypes from 'prop-types';
 
 import { get, getOr } from 'unchanged';
@@ -18,28 +18,34 @@ const getSize = (size, diff) => {
 };
 
 const Chart = ({ id, current, loading, size }) => {
-  console.log(size);
-
   const data = {
     values: getOr([], 'explorationByExplorationId.dataCube.data', current)
   };
 
   const type = get('spec.type', current);
+
   const item = useMemo(() => {
     let width = 0;
     let height = 0;
 
     if (type === 'chart') {
       width = getSize(size.width, 100);
-      height = getSize(size.height, 105);
+
+      const vconcat = current.spec.vconcat.map(vc => {
+        vc.width = width;
+        return vc;
+      });
+
+      const spec = {
+        ...current.spec,
+        vconcat,
+        data,
+      };
 
       return (
         <div id={id}>
           <VegaLite
-            spec={{
-              ...current.spec,
-              data,
-            }}
+            spec={spec}
             actions={false}
             width={width}
           />
@@ -65,11 +71,18 @@ const Chart = ({ id, current, loading, size }) => {
   }, [current.spec, data, id, size.height, size.width, type]);
 
   return (
-    <div className={cx(s.content, loading && s.loading)}>
-      <Loader spinning={loading}>
-        {item}
-      </Loader>
-    </div>
+    <>
+      {loading && (
+        <div className={cx(s.content, loading && s.loading)}>
+          <Loader spinning={loading} />
+        </div>
+      )}
+      {!loading && (
+        <div className={cx(s.content)}>
+          {item}
+        </div>
+      )}
+    </>
   );
 };
 
