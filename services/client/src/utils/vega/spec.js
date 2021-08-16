@@ -1,5 +1,4 @@
 import { get, getOr } from 'unchanged';
-// import * as vl from 'vega-lite-api';
 import * as vl from 'vega-lite-api';
 
 import { colors, getFieldType } from 'utils/vega/renderOptions';
@@ -158,11 +157,6 @@ const initChartSpec = (selectedMembers, config, sizes) => {
       },
       scale: { bandPaddingInner: 0, bandPaddingOuter: 0 },
       text: { baseline: 'middle' },
-      // view: {
-      //   width: 'container',
-      //   height: 'container',
-      // },
-      // autosize: { type: 'fit', contains:'content', resize: true },
     },
   };
 
