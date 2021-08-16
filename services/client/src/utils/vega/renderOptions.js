@@ -263,7 +263,7 @@ export default (allMembers, allMembersIndex, defaults, formValues = {}) => {
     display: 'select',
     showSearch: false,
     allowClear: false,
-    default: 'no',
+    default: 'yes',
     placeholder: 'no',
     values: [
       { No: 'no' },
