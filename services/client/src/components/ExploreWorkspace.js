@@ -2,8 +2,6 @@
 import React, { useCallback, useMemo, useEffect } from 'react';
 import PropTypes from 'prop-types';
 
-import { useTranslation } from 'react-i18next';
-
 import { Row, Col, Icon, Collapse } from 'antd';
 
 import ErrorFound from 'components/ErrorFound';
@@ -25,8 +23,8 @@ import s from './ExploreWorkspace.module.css';
 const DEFAULT_ACTIVE_TAB = 0;
 
 const ExploreWorkspace = (props) => {
-  const { t } = useTranslation();
-  const [ref, { width }] = useDimensions({});
+  const [, size] = useDimensions(document.querySelector('#data-view'));
+  const { width } = size;
 
   const {
     header,
@@ -136,7 +134,6 @@ const ExploreWorkspace = (props) => {
       className={{
         [s.hidden]: (activeTab !== 0)
       }}
-      width={width}
       explorationRowId={explorationRowId}
       isQueryChanged={isQueryChanged}
       availableQueryMembers={availableQueryMembers}
@@ -173,7 +170,7 @@ const ExploreWorkspace = (props) => {
         </Col>
       )}
       <Col xs={24} {...workspaceLayout}>
-        <div ref={ref}>
+        <div id="data-view">
           <Collapse
             bordered={false}
             activeKey={collapseState.activePanelKey}

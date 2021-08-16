@@ -139,7 +139,7 @@ const WorkspaceDataSection = (props) => {
         />
       );
     },
-    [queryState, width, height, onQueryChange, tableEmptyDesc, t]
+    [queryState, querySettingsFallback, width, height, onQueryChange, tableEmptyDesc, t]
   );
 
   const Sql = useMemo(

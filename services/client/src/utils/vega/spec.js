@@ -44,7 +44,7 @@ const getFieldEncoding = (selectedMembers, field, chartConfig = {}, axis = null)
   };
 };
 
-const calculateChartSize = (element, selectedMembers, config) => {
+export const calculateChartSize = (element, selectedMembers, config) => {
   let chartHeight = element.offsetHeight * 0.96; // - 35
   let chartWidth = element.offsetWidth * 0.96 - 82;
 
@@ -108,7 +108,7 @@ const constructTooltip = (selectedMembers, chartConfig) => {
   return tooltipFields;
 };
 
-const initChartSpec = (selectedMembers, config) => {
+const initChartSpec = (selectedMembers, config, sizes) => {
   const spec = {
     config: {
       axis: {
@@ -132,9 +132,11 @@ const initChartSpec = (selectedMembers, config) => {
         labelFont: 'Open Sans,Helvetica,Arial,sans-serif',
         labelColor: '#666666',
         orient: config.legendPosition,
+        direction: config.legendDirection,
         titleColor: '#666666',
         titleFontWeight: 'bold',
-        symbolSize: 150
+        symbolSize: 150,
+        zindex: 1,
       },
       range: {
         category: [
@@ -154,7 +156,7 @@ const initChartSpec = (selectedMembers, config) => {
         heatmap: ['#c6dafc', '#5e97f6', '#2a56c6'],
       },
       scale: { bandPaddingInner: 0, bandPaddingOuter: 0 },
-      text: { baseline: 'middle' }
+      text: { baseline: 'middle' },
     },
   };
 
@@ -299,7 +301,7 @@ const getMarkSettings = (layerConfig) => {
 
   const res = {
     color: '#3D52B9',
-    order: false,
+    // order: false,
     clip: true,
   };
 
@@ -319,8 +321,7 @@ const getMarkSettings = (layerConfig) => {
 };
 
 const getTooltipsLayer = (selectedMembers, firstLayer, chartConfig) => {
-  const selectionRule = vl.selectSingle('hover')
-      .empty('none')
+  const selectionRule = vl.selectPoint('hover')
       .on('mouseover')
       .nearest(chartConfig.nearest === 'yes');
 
@@ -335,15 +336,11 @@ const getTooltipsLayer = (selectedMembers, firstLayer, chartConfig) => {
 
   const tooltipLayer = vl.markRule()
       .name('tooltip')
-      .select(selectionRule)
       .encode(
         vl.x(selectionAxis),
         vl.tooltip(allTooltips),
-        vl.color().condition({
-          selection: { not: 'hover' },
-          value: 'transparent'
-        })
-      );
+        vl.color().if(selectionRule.empty(false), { value: 'black' }).value('transparent')
+      ).params(selectionRule);
 
   return tooltipLayer;
 };
@@ -516,7 +513,7 @@ class VegaSpec {
     config.dataSample = getRandomElements(data.values, 5);
     const layers = Object.values(layerConfigs).map(layerConfig => this.createLayer(layerConfig, config));
 
-    const chartSpec = initChartSpec(sizes, selectedMembers, config);
+    const chartSpec = initChartSpec(selectedMembers, config, sizes);
 
     if (config.tooltip === 'yes' && Object.values(layerConfigs).length) {
       const tooltipsLayer = getTooltipsLayer(selectedMembers, Object.values(layerConfigs)[0], config);
