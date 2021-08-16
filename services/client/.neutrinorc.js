@@ -34,7 +34,8 @@ module.exports = {
               root: ['./src'],
             },
           ],
-          '@babel/plugin-proposal-nullish-coalescing-operator'
+          '@babel/plugin-transform-runtime',
+          '@babel/plugin-proposal-nullish-coalescing-operator',
         ],
         presets: [
           [
