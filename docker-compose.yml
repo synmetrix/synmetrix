@@ -7,11 +7,10 @@ services:
     networks:
       - mlcraft_default
 
-  actions_server:
+  postgraphile:
     restart: always
-    image: actions_server:latest
     build:
-      context: ./services/actions_server/
+      context: ./services/postgraphile/
     networks:
       - mlcraft_default
 
@@ -22,21 +21,21 @@ services:
     networks:
       - mlcraft_default
 
-  graphql_server:
+  hasura:
     restart: always
-    image: graphql_server:latest
     build:
-      context: ./services/graphql_server
+      context: ./services/hasura
     volumes:
-       - ./services/graphql_server/migrations:/hasura-migrations
-       - ./services/graphql_server/metadata:/hasura-metadata
-       - ./services/graphql_server/seeds:/seeds
+       - ./services/hasura/migrations:/hasura-migrations
+       - ./services/hasura/metadata:/hasura-metadata
+       - ./services/hasura/seeds:/seeds
+    environment:
+      ENABLE_TELEMETRY: "false"
     networks:
       - mlcraft_default
 
-  graphql_server_plus:
+  hasura_plus:
     restart: always
-    image: graphql_server_plus:latest
     build:
       context: ./scripts/containers/hasura_backend_plus
     volumes:

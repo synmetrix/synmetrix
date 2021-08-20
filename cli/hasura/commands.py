@@ -17,8 +17,8 @@ def commands_group(ctx):
 @commands_group.command()
 @click.pass_context
 @click.option('--admin-secret', envvar='HASURA_GRAPHQL_ADMIN_SECRET', required=True)
-@click.option('--hasura-dir', default=PROJECT_DIR + '/services/graphql_server')
-@click.option('--hasura-addr', default='http://graphql_server:8080')
+@click.option('--hasura-dir', default=PROJECT_DIR + '/services/hasura')
+@click.option('--hasura-addr', default='http://hasura:8080')
 @click.argument('cmd', nargs=-1)
 def cli(ctx, admin_secret, hasura_dir, hasura_addr, cmd):
     parsed_url = urlparse(hasura_addr)

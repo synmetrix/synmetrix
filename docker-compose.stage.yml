@@ -33,18 +33,14 @@ services:
     environment:
       CLIENT_MAX_BODY_SIZE: 5m
 
-  actions_server:
-    image: ${REGISTRY_HOST}/mlcraft/actions-server:latest
+  postgraphile:
+    image: ${REGISTRY_HOST}/mlcraft/postgraphile:latest
     deploy:
       placement:
         constraints: [node.role == manager]
     command: yarn start
     env_file:
       - .stage.env
-    environment:
-      VIRTUAL_HOST1: ${PROTOCOL:-http}://api.${DOMAIN}/graphql -> :5000/graphql
-      VIRTUAL_HOST2: ${WS_PROTOCOL:-ws}://api.${DOMAIN}/graphql -> :5000/graphql
-      VIRTUAL_HOST3: ${PROTOCOL:-http}://api.${DOMAIN}/explorer -> :5000/graphiql
 
   cubejs:
     image: ${REGISTRY_HOST}/mlcraft/cubejs-server:latest
@@ -59,22 +55,22 @@ services:
     build:
       context: ./services/client/
     environment:
-      GRAPHQL_SERVER_URL: ${PROTOCOL:-http}://api.${DOMAIN}/graphql
+      HASURA_URL: ${PROTOCOL:-http}://api.${DOMAIN}/graphql
       GRAPHQL_WS_URL: ${WS_PROTOCOL:-ws}://api.${DOMAIN}/graphql
       VIRTUAL_HOST: ${PROTOCOL:-http}://app.${DOMAIN} -> :80
     networks:
       - mlcraft_default
 
-  graphql_server:
-    image: ${REGISTRY_HOST}/mlcraft/graphql_server:latest
+  hasura:
+    image: ${REGISTRY_HOST}/mlcraft/hasura:latest
     env_file:
       - .stage.env
     environment:
       VIRTUAL_HOST1: ${PROTOCOL:-http}://api.${DOMAIN} -> :8080
       VIRTUAL_HOST2: ${WS_PROTOCOL:-ws}://api.${DOMAIN} -> :8080
 
-  graphql_server_plus:
-    image: ${REGISTRY_HOST}/mlcraft/graphql_server-plus:latest
+  hasura_plus:
+    image: ${REGISTRY_HOST}/mlcraft/hasura-plus:latest
     env_file:
       - .stage.env
     environment:

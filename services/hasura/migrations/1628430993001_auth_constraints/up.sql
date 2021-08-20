@@ -13,6 +13,17 @@ $BODY$
 $BODY$
 LANGUAGE plpgsql VOLATILE;
 
+CREATE OR REPLACE FUNCTION "public"."set_current_timestamp_updated_at"()
+RETURNS TRIGGER AS $$
+DECLARE
+  _new record;
+BEGIN
+  _new := NEW;
+  _new."updated_at" = NOW();
+  RETURN _new;
+END;
+$$ LANGUAGE plpgsql;
+
 SELECT create_constraint_if_not_exists('auth.account_providers', 'account_providers_account_id_auth_provider_key', 'UNIQUE (account_id, auth_provider);');
 SELECT create_constraint_if_not_exists('auth.account_providers', 'account_providers_auth_provider_auth_provider_unique_id_key', 'UNIQUE (auth_provider, auth_provider_unique_id);');
 SELECT create_constraint_if_not_exists('auth.account_providers', 'account_providers_pkey', 'PRIMARY KEY (id);');
