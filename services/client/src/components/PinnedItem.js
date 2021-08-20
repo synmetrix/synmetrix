@@ -1,4 +1,4 @@
-import React, { Children, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 
 import { get } from 'unchanged';
@@ -10,11 +10,14 @@ import Loader from 'components/Loader';
 import Chart from 'components/Chart';
 import EditableField from 'components/EditableField';
 
+import useDimensions from 'hooks/useDimensions';
 import usePinnedItems from 'hooks/usePinnedItems';
 
 import s from './PinnedItem.module.css';
 
 const PinnedItem = ({ rowId, updateDashboard }) => {
+  const [, size] = useDimensions(document.querySelector(`#pinned-item-${rowId}`));
+
   const { t } = useTranslation();
   const [renaming, setRenaming] = useState(false);
 
@@ -70,7 +73,7 @@ const PinnedItem = ({ rowId, updateDashboard }) => {
   }
 
   return (
-    <div className={s.pinnedItem}>
+    <div className={s.pinnedItem} id={`pinned-item-${rowId}`}>
       <div className={s.header}>
         {current.id && (
           <Loader spinning={renaming}>
@@ -108,7 +111,7 @@ const PinnedItem = ({ rowId, updateDashboard }) => {
           </Popconfirm>
         </div>
       </div>
-      <Chart current={current} loading={loadingPinnedItem} />
+      <Chart current={current} loading={loadingPinnedItem} size={size} />
     </div>
   );
 };
