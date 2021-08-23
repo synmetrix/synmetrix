@@ -7,16 +7,19 @@ import { Layout, Avatar } from 'antd';
 
 import cx from 'classnames';
 
+import { useRecoilValue } from 'recoil';
+
 import logoImage from 'assets/images/logo.svg';
 import logoBlackImage from 'assets/images/logo-black.svg';
 
 import useAuth from 'hooks/useAuth';
-import useAuthToken from 'hooks/useAuthToken';
 import useDataSourcesSubscription from 'hooks/useDataSourcesSubscription';
 import useDashboardsSubscription from 'hooks/useDashboardsSubscription';
 import useSider from 'hooks/useSider';
 import usePermissions from 'hooks/usePermissions';
 import MenuView from 'components/MenuView';
+
+import { currentUser } from '../recoil/currentUser';
 
 import s from './Layout.module.css';
 
@@ -73,9 +76,7 @@ const MainMenu = (props) => {
     },
   } = useAuth();
 
-  const {
-    userState,
-  } = useAuthToken();
+  const userState = useRecoilValue(currentUser);
 
   const dataSources = userState?.allDatasources?.nodes || [];
   const dashboards = userState?.allDashboards?.nodes || [];

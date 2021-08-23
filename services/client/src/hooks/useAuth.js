@@ -1,4 +1,4 @@
-import { useMemo, useEffect, useCallback } from 'react';
+import { useEffect, useCallback } from 'react';
 import { useQuery, useMutation } from 'urql';
 import { get } from 'unchanged';
 
@@ -7,8 +7,14 @@ import { useRouter } from 'wouter';
 import useLocation from 'wouter/use-location';
 import trackEvent from 'utils/trackEvent';
 
+import {
+  useSetRecoilState,
+  useRecoilState,
+} from 'recoil';
+
+import { currentToken, currentUser } from '../recoil/currentUser';
+
 import usePermissions from './usePermissions';
-import useAuthToken from './useAuthToken';
 
 const CurrentUserQuery = `
   query CurrentUserQuery {
@@ -98,11 +104,9 @@ export default (options = {}) => {
   ] = useLocalStorageState('last-datasource');
 
   const router = useRouter();
-  const { 
-    setAuthToken,
-    userState,
-    setUserState,
-  } = useAuthToken();
+
+  const setAuthToken = useSetRecoilState(currentToken);
+  const [userState, setUserState] = useRecoilState(currentUser);
 
   const [, navigate] = useLocation();
 
@@ -160,8 +164,6 @@ export default (options = {}) => {
     }
   }, [currentUserData.data, setUserState]);
 
-  const currentUser = useMemo(() => userState?.currentUser, [userState]);
-
   useEffect(() => {
     const token = get('data.login.token', loginMutation) || get('data.signup.token', signUpMutation);
 
@@ -208,7 +210,6 @@ export default (options = {}) => {
   }, [checkMe, currentUserData.data, navigate]);
 
   return {
-    currentUser,
     logout,
     queries: {
       currentUserData,

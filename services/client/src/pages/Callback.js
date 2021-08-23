@@ -1,13 +1,15 @@
 import React from 'react';
 import queryString from 'query-string';
+import { useSetRecoilState } from 'recoil';
 
 import { Redirect } from 'wouter';
-import { saveAuthToken } from '../utils/cookies';
+import { currentToken } from '../recoil/currentUser';
 
 const Callback = () => {
+  const setToken = useSetRecoilState(currentToken);
   const { token } = queryString.parse(window.location.search);
 
-  saveAuthToken(token);
+  setToken(token);
 
   return <Redirect to="/d/sources" />;
 };

@@ -1,9 +1,8 @@
 import { useEffect, useMemo } from 'react';
 
 import {
-  atom,
-  useRecoilState,
-  selector,
+  useSetRecoilState,
+  useRecoilValue,
 } from 'recoil';
 
 import {
@@ -18,38 +17,18 @@ import { makeOperation } from '@urql/core';
 import { authExchange } from '@urql/exchange-auth';
 import { SubscriptionClient } from 'subscriptions-transport-ws';
 
-import { saveAuthToken, removeAuthToken, getAuthToken } from '../utils/cookies';
-
-export const tokenStateAtom = atom({
-  key: 'tokenState',
-  default: getAuthToken(),
-});
-
-export const currentUserTokenSelector = selector({
-  key: 'currentUserTokenSelector',
-  get: ({ get }) => get(tokenStateAtom),
-  set: ({ set }, newToken) => {
-    removeAuthToken();
-    set(tokenStateAtom, newToken);
-
-    if (newToken) {
-      saveAuthToken(newToken);
-    } else {
-      saveAuthToken(null);
-    }
-  }
-});
-
-export const userStateAtom = atom({
-  key: 'userState',
-  default: null,
-});
+import {
+  currentToken,
+  currentUser,
+  jwtPayload
+} from '../recoil/currentUser';
 
 const { __DEV__ } = process.env;
 
 export default () => {
-  const [authToken, setAuthToken] = useRecoilState(currentUserTokenSelector);
-  const [userState, setUserState] = useRecoilState(userStateAtom);
+  const authToken = useRecoilValue(currentToken);
+  const setUserState = useSetRecoilState(currentUser);
+  const JWTpayload = useRecoilValue(jwtPayload);
 
   useEffect(() => {
     if (!authToken) {
@@ -85,8 +64,7 @@ export default () => {
             ? operation.context.fetchOptions()
             : operation.context.fetchOptions || {};
 
-          const payload = getAuthPayload();
-          const claims = payload['https://hasura.io/jwt/claims'] || {};
+          const claims = JWTpayload['https://hasura.io/jwt/claims'] || {};
 
           // we could pass role inside operation
           const role = operation?.context?.role;
@@ -97,7 +75,7 @@ export default () => {
           }
 
           if (claims['x-hasura-role'] !== 'anonymous') {
-            claims['Authorization'] = `Bearer ${authToken}`;
+            claims.Authorization = `Bearer ${authToken}`;
           }
 
           return makeOperation(
@@ -146,13 +124,7 @@ export default () => {
       url: process.env.GRAPHQL_SERVER_URL,
       exchanges,
     });
-  }, [authToken]);
+  }, [authToken, JWTpayload]);
 
-  return {
-    client,
-    authToken,
-    setAuthToken,
-    userState,
-    setUserState,
-  };
+  return client;
 };
