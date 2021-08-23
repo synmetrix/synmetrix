@@ -16,18 +16,16 @@ const Login = () => {
   const { t } = useTranslation();
   const [message, setMessage] = useState();
 
-  const { loading, run } = useRequest((values) => {
-    const formData = new FormData();
-
-    Object.entries(values).forEach(([key, value]) => {
-      formData.append(key, value);
+  const { loading, run } = useRequest(async (values) => {
+    const response = await fetch(`${GRAPHQL_PLUS_SERVER_URL}/auth/login`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(values),
     });
 
-    return {
-      url: `${GRAPHQL_PLUS_SERVER_URL}/auth/login`,
-      method: 'post',
-      body: formData,
-    };
+    return response.json();
   }, {
     manual: true,
   });
@@ -51,7 +49,14 @@ const Login = () => {
   };
 
   const handleSubmit = async (values) => {
-    run(values);
+    const res = await run(values);
+
+    console.log(res)
+    if (res.statusCode !== 200) {
+      setMessage(res.message);
+    } else {
+      // set token and go main page
+    }
   };
 
   const layout = {
@@ -71,6 +76,7 @@ const Login = () => {
           style={{ width: '100%' }}
           labelAlign="left"
           size="large"
+          loading={loading}
           {...layout}
         />
 

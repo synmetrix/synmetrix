@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useRequest } from 'ahooks';
 
-import { Button, notification } from 'antd';
+import { Button } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 
@@ -18,18 +18,16 @@ const SignUp = () => {
   const { t } = useTranslation();
   const [message, setMessage] = useState();
 
-  const { loading, run } = useRequest((values) => {
-    const formData = new FormData();
-
-    Object.entries(values).forEach(([key, value]) => {
-      formData.append(key, value);
+  const { loading, run } = useRequest(async (values) => {
+    const response = await fetch(`${GRAPHQL_PLUS_SERVER_URL}/auth/register`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(values),
     });
 
-    return {
-      url: `${GRAPHQL_PLUS_SERVER_URL}/auth/register`,
-      method: 'post',
-      body: formData,
-    };
+    return response.json();
   }, {
     manual: true,
   });
@@ -53,7 +51,14 @@ const SignUp = () => {
   };
 
   const handleSubmit = async (values) => {
-    run(values);
+    const res = await run(values);
+
+    console.log(res)
+    if (res.statusCode !== 200) {
+      setMessage(res.message);
+    } else {
+      // set token and go main page
+    }
   };
 
   const layout = {
@@ -73,6 +78,7 @@ const SignUp = () => {
           style={{ width: '100%' }}
           labelAlign="left"
           size="large"
+          loading={loading}
           {...layout}
         />
 
