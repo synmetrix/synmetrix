@@ -4,10 +4,11 @@ import PageInfo from 'components/PageInfo';
 import Container from 'components/Container';
 import UserSettings from 'components/UserSettings';
 
-import useAuthContext from 'hooks/useAuthContext';
+import { useRecoilValue } from 'recoil';
+import { currentUser as currentUserState } from 'recoil/currentUser';
 
 const Profile = () => {
-  const currentUser = useAuthContext();
+  const currentUser = useRecoilValue(currentUserState);
   const title = `${currentUser.name} (${currentUser.email})`;
 
   return (

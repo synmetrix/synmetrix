@@ -7,7 +7,8 @@ import nanoid from 'nanoid';
 import { useQuery, useMutation } from 'urql';
 import trackEvent from 'utils/trackEvent';
 
-import useAuthContext from './useAuthContext';
+import { useRecoilValue } from 'recoil';
+import { currentUser as currentUserState } from 'recoil/currentUser';
 
 const newDataSourceMutation = `
   mutation NewDataSourceMutation($input: CreateDatasourceInput!) {
@@ -100,7 +101,7 @@ const loadDatasourceCSVMutation = `
 `;
 
 export default ({ editId, pauseQueryAll, paginationVars }) => {
-  const currentUser = useAuthContext();
+  const currentUser = useRecoilValue(currentUserState);
 
   const [createMutation, executeNewMutation] = useMutation(newDataSourceMutation);
   const mExecuteNewMutation = datasource => {

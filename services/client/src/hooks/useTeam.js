@@ -4,7 +4,8 @@ import { get } from 'unchanged';
 
 import trackEvent from 'utils/trackEvent';
 
-import useAuthContext from './useAuthContext';
+import { useRecoilValue } from 'recoil';
+import { currentUser as currentUserState } from 'recoil/currentUser';
 
 const TeamQuery = `
   query TeamQuery($rowId: Int!) {
@@ -66,7 +67,7 @@ const removeTeamMember = `
 `;
 
 export default () => {
-  const currentUser = useAuthContext();
+  const currentUser = useRecoilValue(currentUserState);
 
   const [inviteMutation, execInviteMutation] = useMutation(inviteTeamMember);
   const mExecInviteMutation = useCallback(input => {

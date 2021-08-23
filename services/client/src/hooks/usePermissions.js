@@ -1,14 +1,15 @@
 import React, { useMemo } from 'react';
 import { getOr } from 'unchanged';
 
-import useAuthContext from './useAuthContext';
+import { useRecoilValue } from 'recoil';
+import { currentUser as currentUserState } from 'recoil/currentUser';
 
 import ErrorFound from '../components/ErrorFound';
 
 const usePermissions = ({ scope = '' }) => {
   let fallback = null;
 
-  const currentUser = useAuthContext();
+  const currentUser = useRecoilValue(currentUserState);
   const cachedRestrictScopes = (localStorage.getItem('restrictScopes') || '').split(',');
   const restrictScopes = useMemo(() => getOr(cachedRestrictScopes, 'ACL.restrictScopes', currentUser), [currentUser, cachedRestrictScopes]);
 

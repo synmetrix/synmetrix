@@ -3,14 +3,16 @@ import PropTypes from 'prop-types';
 
 import { Row, Col, Select, Checkbox, Button, Modal } from 'antd';
 
+import { useRecoilValue } from 'recoil';
+import { currentUser as currentUserState } from 'recoil/currentUser';
+
 import formatDistanceToNow from 'utils/formatDistanceToNow';
-import useAuthContext from 'hooks/useAuthContext';
 import TableList from 'components/TableList';
 
 const { confirm } = Modal;
 
 const TeamTable = ({ data, disableManagement, onChange, onRemove, loading }) => {
-  const currentUser = useAuthContext();
+  const currentUser = useRecoilValue(currentUserState);
 
   const showConfirm = record => {
     confirm({

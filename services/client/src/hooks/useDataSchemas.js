@@ -7,7 +7,8 @@ import nanoid from 'nanoid';
 import { useQuery, useMutation } from 'urql';
 import trackEvent from 'utils/trackEvent';
 
-import useAuthContext from './useAuthContext';
+import { useRecoilValue } from 'recoil';
+import { currentUser as currentUserState } from 'recoil/currentUser';
 
 const newDataSchemaMutation = `
   mutation NewDataSchemaMutation($input: CreateDataschemaInput!) {
@@ -87,7 +88,7 @@ const validateDataschemasMutation = `
 `;
 
 export default ({ dataSourceId, editId, pauseQueryAll }) => {
-  const currentUser = useAuthContext();
+  const currentUser = useRecoilValue(currentUserState);
 
   const [createMutation, execNewMutation] = useMutation(newDataSchemaMutation);
   const mExecNewMutation = dataschema => {

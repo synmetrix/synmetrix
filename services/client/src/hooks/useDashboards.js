@@ -8,7 +8,8 @@ import useLocation from 'wouter/use-location';
 
 import trackEvent from 'utils/trackEvent';
 
-import useAuthContext from './useAuthContext';
+import { useRecoilValue } from 'recoil';
+import { currentUser as currentUserState } from 'recoil/currentUser';
 
 const newDashboardMutation = `
   mutation NewDashboardMutation($input: CreateDashboardInput!) {
@@ -78,7 +79,7 @@ const deleteDashboardMutation = `
 
 export default ({ editId, pauseQueryAll = false }) => {
   const [, setLocation] = useLocation();
-  const currentUser = useAuthContext();
+  const currentUser = useRecoilValue(currentUserState);
 
   const [createMutation, executeNewMutation] = useMutation(newDashboardMutation);
   const mExecuteNewMutation = useCallback(dashboard => {

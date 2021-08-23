@@ -10,7 +10,8 @@ import { message } from 'antd';
 
 import trackEvent from 'utils/trackEvent';
 
-import useAuthContext from './useAuthContext';
+import { useRecoilValue } from 'recoil';
+import { currentUser as currentUserState } from 'recoil/currentUser';
 
 const newExplorationMutation = `
   mutation NewExplorationMutation($input: CreateExplorationInput!) {
@@ -84,7 +85,7 @@ const explorationsQuery = `
 
 export default ({ dataSourceId, editId, pauseQueryAll, pauseQueryCurrent, rowsLimit, offset }) => {
   const [, setLocation] = useLocation();
-  const currentUser = useAuthContext();
+  const currentUser = useRecoilValue(currentUserState);
 
   const [createMutation, executeNewMutation] = useMutation(newExplorationMutation);
   const mExecuteNewMutation = useCallback(exploration => {

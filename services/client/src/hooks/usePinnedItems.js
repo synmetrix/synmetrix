@@ -6,7 +6,8 @@ import { get, getOr } from 'unchanged';
 
 import trackEvent from 'utils/trackEvent';
 
-import useAuthContext from './useAuthContext';
+import { useRecoilValue } from 'recoil';
+import { currentUser as currentUserState } from 'recoil/currentUser';
 
 const newPinnedItemMutation = `
   mutation NewPinnedItemMutation($input: CreatePinnedItemInput!) {
@@ -80,7 +81,7 @@ const updatePinnedItemMutation = `
 `;
 
 export default ({ rowId }) => {
-  const currentUser = useAuthContext();
+  const currentUser = useRecoilValue(currentUserState);
 
   const [createMutation, executeNewMutation] = useMutation(newPinnedItemMutation);
   const mExecuteNewMutation = useCallback(pinnedItem => {
