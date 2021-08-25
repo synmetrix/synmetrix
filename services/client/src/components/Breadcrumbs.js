@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import useLocation from 'wouter/use-location';
+import useLocation from 'hooks/useLocation';
 import { Breadcrumb } from 'antd';
 
 const Breadcrumbs = ({ breadcrumbs }) => {

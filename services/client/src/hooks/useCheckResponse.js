@@ -1,5 +1,6 @@
+
 import { useEffect } from 'react';
-import useLocation from 'wouter/use-location';
+import useLocation from 'hooks/useLocation';
 import { useTranslation } from 'react-i18next';
 
 import { message } from 'antd';
@@ -26,7 +27,7 @@ const useCheckResponse = (response, cb = noop, meta = {}) => {
       response.data = null;
     }
   },
-    [response.data]
+  [cb, response.data, successMessage]
   );
 
   useEffect(() => {
@@ -43,7 +44,7 @@ const useCheckResponse = (response, cb = noop, meta = {}) => {
       response.error = null;
     }
   },
-    [response.error]
+  [cb, errorMessage, response.error, setLocation]
   );
 };
 

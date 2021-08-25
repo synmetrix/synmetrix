@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import { Button, Icon } from 'antd';
 
 import { useTranslation } from 'react-i18next';
-import useLocation from 'wouter/use-location';
+import useLocation from 'hooks/useLocation';
 
 import DataSourceModal from 'components/DataSourceModal';
 import DataSourcesTable from 'components/DataSourcesTable';
@@ -15,8 +15,9 @@ import usePermissions from 'hooks/usePermissions';
 
 import iconDataSources from 'assets/images/icon_data_sources.svg';
 
-const DataSources = ({ params }) => {
+const DataSources = ({ match }) => {
   const { t } = useTranslation();
+  const { params = {} } = match || {};
   const [location, setLocation] = useLocation();
   const basePath = '/d/sources';
 
@@ -26,7 +27,7 @@ const DataSources = ({ params }) => {
   }
 
   const onModalOpen = record => {
-    setLocation(`${basePath}/${record.rowId || ''}`);
+    setLocation(`${basePath}/${record.id || ''}`);
   };
 
   const onModalClose = () => {
@@ -37,7 +38,7 @@ const DataSources = ({ params }) => {
     setLocation(`${basePath}/new/${(dbType || '').toLowerCase()}`);
   };
 
-  const showNewForm = location.includes('/new');
+  const showNewForm = location.pathname.includes('/new');
 
   const breadcrumbs = [
     { path: basePath, title: 'Data Sources' },
@@ -68,7 +69,7 @@ const DataSources = ({ params }) => {
         title={t('New Data Source')}
         dataSource={{}}
         initialValues={{
-          dbType: (params?.dbType || '').toUpperCase(),
+          db_type: (params?.dbType || '').toUpperCase(),
         }}
         breadcrumbs={breadcrumbs}
         onChange={onConnectNewClick}
@@ -86,7 +87,7 @@ const DataSources = ({ params }) => {
 };
 
 DataSources.propTypes = {
-  params: PropTypes.object.isRequired,
+  match: PropTypes.object.isRequired,
 };
 
 DataSources.defaultProps = {};

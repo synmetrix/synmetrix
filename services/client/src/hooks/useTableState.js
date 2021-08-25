@@ -1,19 +1,18 @@
 import { useEffect } from 'react';
-
-import useXState from 'hooks/useXState';
+import { useSetState } from 'ahooks';
 
 const defaultPageSize = 10;
 
 export default ({ customPageSize }) => {
   const pageSize = customPageSize || defaultPageSize;
 
-  const [tableState, updateTableState, setTableState] = useXState({
+  const [tableState, updateTableState] = useSetState({
     allTags: [],
     loading: false,
     selectedTags: [],
     currentPage: 1,
     paginationVars: {
-      first: pageSize,
+      limit: pageSize,
       offset: 0,
     },
     pageSize,
@@ -22,7 +21,7 @@ export default ({ customPageSize }) => {
   useEffect(() => {
     updateTableState({
       paginationVars: {
-        first: pageSize,
+        limit: pageSize,
         offset: pageSize * (tableState.currentPage - 1)
       }
     });
@@ -35,7 +34,6 @@ export default ({ customPageSize }) => {
   return {
     tableState,
     onPageChange,
-    setTableState,
     updateTableState,
   };
 };

@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 
+import { useTranslation } from 'react-i18next';
 import { Row, Col, message } from 'antd';
 
-import useDataSources from 'hooks/useDataSources';
+import useSources from 'hooks/useSources';
 import useTableState from 'hooks/useTableState';
-import useDataSourcesSubscription from 'hooks/useDataSourcesSubscription';
+import useCheckResponse from 'hooks/useCheckResponse';
 
 import DataSourceModal from 'components/DataSourceModal';
 import TableList from 'components/TableList';
@@ -13,6 +14,7 @@ import TableList from 'components/TableList';
 import formatDistanceToNow from '../utils/formatDistanceToNow';
 
 const DataSourcesTable = ({ editId, onModalClose, onModalOpen }) => {
+  const { t } = useTranslation();
   const initModal = id => ({
     editId: id,
     visibleModal: !!id,
@@ -34,6 +36,7 @@ const DataSourcesTable = ({ editId, onModalClose, onModalOpen }) => {
     onPageChange,
   } = useTableState({});
 
+  console.log(state);
   const {
     all: dataSources,
     totalCount,
@@ -45,20 +48,29 @@ const DataSourcesTable = ({ editId, onModalClose, onModalOpen }) => {
       currentData: {
         fetching: currentLoading
       },
-      executeQueryAll,
+      execQueryAll,
     },
     mutations: {
-      editMutation, mExecuteEditMutation,
-    }
-  } = useDataSources({ editId: state.editId, paginationVars });
-
-  useDataSourcesSubscription(() => {
-    executeQueryAll({ requestPolicy: 'network-only' });
+      updateMutation, execUpdateMutation,
+    },
+    subscription,
+  } = useSources({
+    params: {
+      editId: state.editId,
+    },
+    pagination: paginationVars,
+    disableSubscription: false,
   });
+
+  // useEffect(() => {
+  //   if (subscription.data) {
+  //     execQueryAll({ requestPolicy: 'network-only' });
+  //   }
+  // }, [execQueryAll, subscription.data]);
 
   const onDataSourceOpen = (record) => {
     onModalOpen(record);
-    setState(prev => ({ ...prev, editId: record.rowId, visibleModal: true }));
+    setState(prev => ({ ...prev, editId: record.id, visibleModal: true }));
   };
 
   const onDataSourceClose = () => {
@@ -67,27 +79,20 @@ const DataSourcesTable = ({ editId, onModalClose, onModalOpen }) => {
   };
 
   const onSave = (_record, values) => {
-    mExecuteEditMutation(values);
+    execUpdateMutation({ 
+      pk_columns: state.editId,
+      _set: values,
+    });
   };
 
   const onDelete = () => {
     onDataSourceClose();
-    // https://formidable.com/open-source/urql/docs#refetching-data
-    executeQueryAll({ requestPolicy: 'cache-and-network' });
+    execQueryAll({ requestPolicy: 'cache-and-network' });
   };
 
-  useEffect(
-    () => {
-      if (editMutation.data) {
-        message.success('Saved');
-      }
-
-      if (editMutation.error) {
-        message.error('Something went wrong');
-      }
-    },
-    [editMutation]
-  );
+  useCheckResponse(updateMutation, () => {}, {
+    successMessage: t('Saved')
+  });
 
   const columns = [
     {
@@ -97,24 +102,24 @@ const DataSourcesTable = ({ editId, onModalClose, onModalOpen }) => {
     },
     {
       title: 'Type',
-      dataIndex: 'dbType',
-      key: 'dbType',
+      dataIndex: 'db_type',
+      key: 'db_type',
     },
     {
       title: 'Updated At',
-      dataIndex: 'updatedAt',
-      key: 'updatedAt',
+      dataIndex: 'updated_at',
+      key: 'updated_at',
       render: (_, record) => {
-        const updatedAt = formatDistanceToNow(record.updatedAt);
+        const updatedAt = formatDistanceToNow(record.updated_at);
         return updatedAt;
       },
     },
     {
       title: 'Created At',
-      dataIndex: 'createdAt',
-      key: 'createdAt',
+      dataIndex: 'created_at',
+      key: 'created_at',
       render: (_, record) => {
-        const createdAt = formatDistanceToNow(record.createdAt);
+        const createdAt = formatDistanceToNow(record.created_at);
         return createdAt;
       },
     },
@@ -127,18 +132,18 @@ const DataSourcesTable = ({ editId, onModalClose, onModalOpen }) => {
       dataSource={dataSource}
       onCancel={onDataSourceClose}
       visible={state.visibleModal}
-      loading={currentLoading || editMutation.fetching}
+      loading={currentLoading || updateMutation.fetching}
       onSave={onSave}
       onDelete={onDelete}
       initialValues={{
-        rowId: editId,
+        id: editId,
       }}
     />,
     <Row type="flex" justify="space-around" align="top" gutter={24} key="1">
       <Col span={24}>
         <TableList
           loading={allLoading}
-          rowKey={row => row.rowId}
+          rowKey={row => row.id}
           columns={columns}
           dataSource={Object.values(dataSources)}
           onRow={record => ({

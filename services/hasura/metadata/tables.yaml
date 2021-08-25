@@ -25,6 +25,9 @@
   - name: role
     using:
       foreign_key_constraint_on: default_role
+  - name: user
+    using:
+      foreign_key_constraint_on: user_id
   array_relationships:
   - name: account_providers
     using:
@@ -47,6 +50,9 @@
         table:
           schema: auth
           name: refresh_tokens
+- table:
+    schema: auth
+    name: migrations
 - table:
     schema: auth
     name: providers
@@ -86,173 +92,30 @@
 - table:
     schema: public
     name: dashboards
-  object_relationships:
-  - name: user
-    using:
-      foreign_key_constraint_on: user_id
-  array_relationships:
-  - name: pinned_items
-    using:
-      foreign_key_constraint_on:
-        column: dashboard_id
-        table:
-          schema: public
-          name: pinned_items
-  insert_permissions:
-  - role: user
-    permission:
-      check: {}
-      set:
-        team_id: x-hasura-Team-Id
-        user_id: x-hasura-User-Id
-      columns:
-      - layout
-      - name
-      backend_only: false
-  select_permissions:
-  - role: user
-    permission:
-      columns:
-      - layout
-      - name
-      - created_at
-      - updated_at
-      - id
-      - team_id
-      - user_id
-      filter:
-        _or:
-        - user_id:
-            _eq: X-Hasura-User-Id
-        - team_id:
-            _eq: X-Hasura-Team-Id
-  update_permissions:
-  - role: user
-    permission:
-      columns:
-      - layout
-      - name
-      filter:
-        _or:
-        - user_id:
-            _eq: X-Hasura-User-Id
-        - team_id:
-            _eq: X-Hasura-Team-Id
-      check:
-        _or:
-        - user_id:
-            _eq: X-Hasura-User-Id
-        - team_id:
-            _eq: X-Hasura-Team-Id
-  delete_permissions:
-  - role: user
-    permission:
-      filter:
-        _or:
-        - user_id:
-            _eq: X-Hasura-User-Id
-        - team_id:
-            _eq: X-Hasura-Team-Id
 - table:
     schema: public
     name: dataschemas
-  object_relationships:
-  - name: datasource
-    using:
-      foreign_key_constraint_on: datasource_id
-  - name: user
-    using:
-      foreign_key_constraint_on: user_id
-  insert_permissions:
-  - role: user
-    permission:
-      check: {}
-      set:
-        team_id: x-hasura-Team-Id
-        user_id: x-hasura-User-Id
-      columns:
-      - code
-      - datasource_id
-      - name
-      backend_only: false
-  select_permissions:
-  - role: user
-    permission:
-      columns:
-      - code
-      - name
-      - created_at
-      - updated_at
-      - datasource_id
-      - id
-      - team_id
-      - user_id
-      filter:
-        _or:
-        - user_id:
-            _eq: X-Hasura-User-Id
-        - team_id:
-            _eq: X-Hasura-Team-Id
-  update_permissions:
-  - role: user
-    permission:
-      columns:
-      - code
-      - name
-      filter:
-        _or:
-        - user_id:
-            _eq: X-Hasura-User-Id
-        - team_id:
-            _eq: X-Hasura-Team-Id
-      check:
-        _or:
-        - user_id:
-            _eq: X-Hasura-User-Id
-        - team_id:
-            _eq: X-Hasura-Team-Id
-  delete_permissions:
-  - role: user
-    permission:
-      filter:
-        _or:
-        - user_id:
-            _eq: X-Hasura-User-Id
-        - team_id:
-            _eq: X-Hasura-Team-Id
 - table:
     schema: public
     name: datasources
   object_relationships:
+  - name: team
+    using:
+      foreign_key_constraint_on: team_id
   - name: user
     using:
       foreign_key_constraint_on: user_id
-  array_relationships:
-  - name: dataschemas
-    using:
-      foreign_key_constraint_on:
-        column: datasource_id
-        table:
-          schema: public
-          name: dataschemas
-  - name: explorations
-    using:
-      foreign_key_constraint_on:
-        column: datasource_id
-        table:
-          schema: public
-          name: explorations
   insert_permissions:
   - role: user
     permission:
       check: {}
       set:
-        team_id: x-hasura-Team-Id
-        user_id: x-hasura-User-Id
+        user_id: x-hasura-user-id
       columns:
       - db_params
       - db_type
       - name
+      - user_id
       backend_only: false
   select_permissions:
   - role: user
@@ -270,8 +133,11 @@
         _or:
         - user_id:
             _eq: X-Hasura-User-Id
-        - team_id:
-            _eq: X-Hasura-Team-Id
+        - team:
+            members:
+              user_id:
+                _eq: X-Hasura-User-Id
+      allow_aggregations: true
   update_permissions:
   - role: user
     permission:
@@ -283,14 +149,18 @@
         _or:
         - user_id:
             _eq: X-Hasura-User-Id
-        - team_id:
-            _eq: X-Hasura-Team-Id
+        - team:
+            members:
+              user_id:
+                _eq: X-Hasura-User-Id
       check:
         _or:
         - user_id:
             _eq: X-Hasura-User-Id
-        - team_id:
-            _eq: X-Hasura-Team-Id
+        - team:
+            members:
+              user_id:
+                _eq: X-Hasura-User-Id
   delete_permissions:
   - role: user
     permission:
@@ -298,263 +168,40 @@
         _or:
         - user_id:
             _eq: X-Hasura-User-Id
-        - team_id:
-            _eq: X-Hasura-Team-Id
+        - team:
+            members:
+              user_id:
+                _eq: X-Hasura-User-Id
 - table:
     schema: public
     name: explorations
-  object_relationships:
-  - name: datasource
-    using:
-      foreign_key_constraint_on: datasource_id
-  - name: user
-    using:
-      foreign_key_constraint_on: user_id
-  array_relationships:
-  - name: pinned_items
-    using:
-      foreign_key_constraint_on:
-        column: exploration_id
-        table:
-          schema: public
-          name: pinned_items
-  insert_permissions:
-  - role: user
-    permission:
-      check: {}
-      set:
-        team_id: x-hasura-Team-Id
-        user_id: x-hasura-User-Id
-      columns:
-      - datasource_id
-      - playground_settings
-      - playground_state
-      - slug
-      backend_only: false
-  select_permissions:
-  - role: user
-    permission:
-      columns:
-      - playground_settings
-      - playground_state
-      - slug
-      - created_at
-      - updated_at
-      - datasource_id
-      - id
-      - team_id
-      - user_id
-      filter:
-        _or:
-        - user_id:
-            _eq: X-Hasura-User-Id
-        - team_id:
-            _eq: X-Hasura-Team-Id
-  update_permissions:
-  - role: user
-    permission:
-      columns:
-      - playground_settings
-      - playground_state
-      - slug
-      filter:
-        _or:
-        - user_id:
-            _eq: X-Hasura-User-Id
-        - team_id:
-            _eq: X-Hasura-Team-Id
-      check:
-        _or:
-        - user_id:
-            _eq: X-Hasura-User-Id
-        - team_id:
-            _eq: X-Hasura-Team-Id
-  delete_permissions:
-  - role: user
-    permission:
-      filter:
-        _or:
-        - user_id:
-            _eq: X-Hasura-User-Id
-        - team_id:
-            _eq: X-Hasura-Team-Id
+- table:
+    schema: public
+    name: members
 - table:
     schema: public
     name: pinned_items
-  object_relationships:
-  - name: dashboard
-    using:
-      foreign_key_constraint_on: dashboard_id
-  - name: exploration
-    using:
-      foreign_key_constraint_on: exploration_id
-  - name: user
-    using:
-      foreign_key_constraint_on: user_id
-  insert_permissions:
-  - role: user
-    permission:
-      check: {}
-      set:
-        team_id: x-hasura-Team-Id
-        user_id: x-hasura-User-Id
-      columns:
-      - dashboard_id
-      - exploration_id
-      - name
-      - spec
-      backend_only: false
-  select_permissions:
-  - role: user
-    permission:
-      columns:
-      - spec
-      - name
-      - created_at
-      - updated_at
-      - dashboard_id
-      - exploration_id
-      - id
-      - team_id
-      - user_id
-      filter:
-        _or:
-        - team_id:
-            _eq: X-Hasura-Team-Id
-        - user_id:
-            _eq: X-Hasura-User-Id
-  update_permissions:
-  - role: user
-    permission:
-      columns:
-      - name
-      - spec
-      filter:
-        _or:
-        - team_id:
-            _eq: X-Hasura-Team-Id
-        - user_id:
-            _eq: X-Hasura-User-Id
-      check:
-        _or:
-        - team_id:
-            _eq: X-Hasura-Team-Id
-        - user_id:
-            _eq: X-Hasura-User-Id
-  delete_permissions:
-  - role: user
-    permission:
-      filter:
-        _or:
-        - team_id:
-            _eq: X-Hasura-Team-Id
-        - user_id:
-            _eq: X-Hasura-User-Id
 - table:
     schema: public
     name: teams
   array_relationships:
-  - name: users
+  - name: members
     using:
       foreign_key_constraint_on:
         column: team_id
         table:
           schema: public
-          name: users
-  select_permissions:
-  - role: user
-    permission:
-      columns:
-      - id
-      - name
-      - created_at
-      - updated_at
-      filter:
-        id:
-          _eq: X-Hasura-Team-Id
-  update_permissions:
-  - role: user
-    permission:
-      columns:
-      - name
-      filter:
-        id:
-          _eq: X-Hasura-Team-Id
-      check:
-        id:
-          _eq: X-Hasura-Team-Id
-  delete_permissions:
-  - role: user
-    permission:
-      filter:
-        id:
-          _eq: X-Hasura-Team-Id
+          name: members
 - table:
     schema: public
     name: users
   object_relationships:
-  - name: team
+  - name: account
     using:
-      foreign_key_constraint_on: team_id
-  array_relationships:
-  - name: dashboards
-    using:
-      foreign_key_constraint_on:
-        column: user_id
-        table:
-          schema: public
-          name: dashboards
-  - name: dataschemas
-    using:
-      foreign_key_constraint_on:
-        column: user_id
-        table:
-          schema: public
-          name: dataschemas
-  - name: datasources
-    using:
-      foreign_key_constraint_on:
-        column: user_id
-        table:
-          schema: public
-          name: datasources
-  - name: explorations
-    using:
-      foreign_key_constraint_on:
-        column: user_id
-        table:
-          schema: public
-          name: explorations
-  - name: pinned_items
-    using:
-      foreign_key_constraint_on:
-        column: user_id
-        table:
-          schema: public
-          name: pinned_items
-  select_permissions:
-  - role: user
-    permission:
-      columns:
-      - id
-      - created_at
-      - updated_at
-      - display_name
-      - avatar_url
-      - team_id
-      - team_role
-      filter:
-        id:
-          _eq: X-Hasura-User-Id
-  update_permissions:
-  - role: user
-    permission:
-      columns:
-      - avatar_url
-      - display_name
-      filter:
-        id:
-          _eq: X-Hasura-User-Id
-      check:
-        id:
-          _eq: X-Hasura-User-Id
+      manual_configuration:
+        remote_table:
+          schema: auth
+          name: accounts
+        insertion_order: null
+        column_mapping:
+          id: user_id

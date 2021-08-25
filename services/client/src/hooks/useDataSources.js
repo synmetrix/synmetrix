@@ -92,14 +92,6 @@ const runSQLDatasourceMutation = `
   }
 `;
 
-const loadDatasourceCSVMutation = `
-  mutation loadDatasourceCSVMutation($input: LoadCSVInput!) {
-    loadCSV(input: $input) {
-      jobsIds
-    }
-  }
-`;
-
 export default ({ editId, pauseQueryAll, paginationVars }) => {
   const currentUser = useRecoilValue(currentUserState);
 
@@ -212,25 +204,6 @@ export default ({ editId, pauseQueryAll, paginationVars }) => {
     [execRunSQLMutation]
   );
 
-  const [loadCSVMutation, execLoadCSVMutation] = useMutation(loadDatasourceCSVMutation);
-  const mExecLoadCSVMutation = useCallback(
-    input => {
-      const { csvDefinition = {}, ...restInput } = input;
-      trackEvent('Load CSV');
-
-      execLoadCSVMutation({
-        input: {
-          csvDefinition: {
-            delimiter: csvDefinition.delimiter || ',',
-            ...csvDefinition,
-          },
-          ...restInput,
-        },
-      });
-    },
-    [execLoadCSVMutation]
-  );
-
   return {
     all,
     current,
@@ -246,7 +219,6 @@ export default ({ editId, pauseQueryAll, paginationVars }) => {
       deleteMutation, mExecuteDeleteMutation,
       testMutation, mExecuteTestMutation,
       runSQLMutation, mExecRunSQLMutation,
-      loadCSVMutation, mExecLoadCSVMutation,
     },
   };
 };
