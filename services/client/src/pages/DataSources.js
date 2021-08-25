@@ -42,7 +42,7 @@ const DataSources = ({ params }) => {
   const breadcrumbs = [
     { path: basePath, title: 'Data Sources' },
     { path: `${basePath}/new`, title: 'New' },
-    params.dbType && { path: `${basePath}/new/${params.dbType}`, title: params.dbType },
+    params?.dbType && { path: `${basePath}/new/${params?.dbType}`, title: params?.dbType },
   ].filter(v => !!v);
 
   return (
@@ -68,7 +68,7 @@ const DataSources = ({ params }) => {
         title={t('New Data Source')}
         dataSource={{}}
         initialValues={{
-          dbType: (params.dbType || '').toUpperCase(),
+          dbType: (params?.dbType || '').toUpperCase(),
         }}
         breadcrumbs={breadcrumbs}
         onChange={onConnectNewClick}
@@ -77,7 +77,7 @@ const DataSources = ({ params }) => {
         visible={showNewForm}
       />
       <DataSourcesTable
-        editId={params.rowId}
+        editId={params?.rowId}
         onModalOpen={onModalOpen}
         onModalClose={onModalClose}
       />

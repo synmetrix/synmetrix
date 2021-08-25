@@ -11,7 +11,7 @@ import {
   Provider as URQLProvider,
 } from 'urql';
 
-import useSubscriptionClient from './hooks/useSubscriptionClient';
+import useGraphQLClient from './hooks/useGraphQLClient';
 
 import Layout from './components/Layout';
 
@@ -28,7 +28,7 @@ import Charts from './pages/Charts';
 import ErrorFound from './components/ErrorFound';
 
 const App = () => {
-  const client = useSubscriptionClient();
+  const client = useGraphQLClient();
 
   return (
     <URQLProvider value={client}>

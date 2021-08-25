@@ -41,7 +41,8 @@ export const jwtPayload = selector({
     const auth = { Authorization: `Bearer ${token}` };
     const payload = jwtDecode(token);
 
-    if (dayjs().isAfter(payload.exp)) {
+    if (dayjs().isAfter((payload.exp * 1000))) {
+      console.error('JWT is expired');
       return null;
     }
 

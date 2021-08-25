@@ -5,7 +5,7 @@ import { Button } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 
-// import useAuth from '../hooks/useAuth';
+import useAuthToken from '../hooks/useAuthToken';
 import SimpleForm from '../components/SimpleForm';
 
 import s from './Login.module.css';
@@ -13,6 +13,7 @@ import s from './Login.module.css';
 const { GRAPHQL_PLUS_SERVER_URL } = process.env;
 
 const Login = () => {
+  const { doAuth } = useAuthToken();
   const { t } = useTranslation();
   const [message, setMessage] = useState();
 
@@ -51,11 +52,11 @@ const Login = () => {
   const handleSubmit = async (values) => {
     const res = await run(values);
 
-    console.log(res)
-    if (res.statusCode !== 200) {
+    if (res.statusCode && res.statusCode !== 200) {
       setMessage(res.message);
     } else {
-      // set token and go main page
+      setMessage(null);
+      doAuth(res.jwt_token);
     }
   };
 

@@ -64,7 +64,7 @@ export default () => {
             ? operation.context.fetchOptions()
             : operation.context.fetchOptions || {};
 
-          const claims = JWTpayload['https://hasura.io/jwt/claims'] || {};
+          const claims = { ...JWTpayload };
 
           // we could pass role inside operation
           const role = operation?.context?.role;
