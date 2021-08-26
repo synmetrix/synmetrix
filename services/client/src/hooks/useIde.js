@@ -19,11 +19,11 @@ export default ({ dataSourceId, dataSchemaName }) => {
     changeActiveTab
   } = useTabs({ activeTab: defaultTabId });
 
-  // const {
-  //   current: dataSource,
-  //   queries: sourceQueries,
-  //   mutations: sourceMutations
-  // } = useDataSources({ pauseQueryAll: true, editId: dataSourceId });
+  const {
+    current: dataSource,
+    queries: sourceQueries,
+    mutations: sourceMutations
+  } = useDataSources({ pauseQueryAll: true, editId: dataSourceId });
 
   const {
     all: allSchemas,
@@ -147,14 +147,14 @@ export default ({ dataSourceId, dataSchemaName }) => {
     [editMutation.data, editMutation.error, openSchema]
   );
 
-  // useEffect(
-  //   () => {
-  //     if (dataSource.rowId) {
-  //       execQueryTables({ requestPolicy: 'cache-and-network' });
-  //     }
-  //   },
-  //   [dataSource, execQueryTables]
-  // );
+  useEffect(
+    () => {
+      if (dataSource.rowId) {
+        execQueryTables({ requestPolicy: 'cache-and-network' });
+      }
+    },
+    [dataSource, execQueryTables]
+  );
 
   useEffect(
     () => {

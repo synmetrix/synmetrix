@@ -73,8 +73,6 @@ const MainMenu = (props) => {
     currentUser,
   } = useCurrentUser();
 
-  console.log('currentUser');
-  console.log(currentUser);
   const dataSources = currentUser?.datasources || [];
   const dashboards = currentUser?.dashboards || [];
   const dashboardsCount = dashboards?.length || 0;

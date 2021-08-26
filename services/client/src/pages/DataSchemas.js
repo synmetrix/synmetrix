@@ -1,4 +1,4 @@
-import React, { useMemo, useEffect, useState } from 'react';
+import React, { useMemo, useEffect, useState, useCallback } from 'react';
 import PropTypes from 'prop-types';
 
 import { useTranslation } from 'react-i18next';
@@ -42,7 +42,6 @@ const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
   );
 
   const onModalClose = () => setLocation(`${basePath}/${dataSourceId}`);
-
   const dataSchemaName = reservedSlugs.indexOf(slug) === -1 && slug || null;
 
   const {
@@ -50,6 +49,8 @@ const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
     editTab,
     activeTab,
     changeActiveTab,
+    openTab,
+    closeTab,
     openedTabs,
     openSchema,
   } = useSchemasIde({ dataSourceId });
@@ -91,6 +92,17 @@ const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
   [all, openedTabs]
   );
 
+  console.log(openedTabs)
+  useEffect(() => {
+    if (dataSchemaName) {
+      const schemaObj = all.find(schema => schema.name === dataSchemaName);
+
+      if (schemaObj && !Object.keys(openedTabs).includes(schemaObj.id)) {
+        openTab(schemaObj);
+      }
+    }
+  }, [all, dataSchemaName, openTab, openedTabs]);
+
   useEffect(() => {
     if (subscription.data) {
       execQueryAll();
@@ -100,6 +112,16 @@ const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
   useCheckResponse(createMutation, () => {}, {
     successMessage: t('Schema created')
   });
+
+
+  // const onCloseTab = useCallback(id => {
+  //   const fallbackId = getTabId(all.find(scema => scema.id !== id)) || 'sqlrunner';
+  //   closeTab(id, fallbackId);
+  //
+  //   return fallbackId;
+  // },
+  // [getTabId, all, closeTab]
+  // );
 
   // const {
   //   loading,
