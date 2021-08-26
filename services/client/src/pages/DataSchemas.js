@@ -2,7 +2,6 @@ import React, { useMemo, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 
 import { useTranslation } from 'react-i18next';
-import useLocation from 'wouter/use-location';
 import { Tabs } from 'antd';
 
 import { get, getOr } from 'unchanged';
@@ -10,8 +9,12 @@ import { get, getOr } from 'unchanged';
 import withSizes from 'react-sizes';
 import compose from 'utils/compose';
 
-import useIde from 'hooks/useIde';
+// import useIde from 'hooks/useIde';
+import useSchemas from 'hooks/useSchemas';
+import useSchemasIde from 'hooks/useSchemasIde';
 import usePermissions from 'hooks/usePermissions';
+import useLocation from 'hooks/useLocation';
+import useCheckResponse from 'hooks/useCheckResponse';
 
 import Loader from 'components/Loader';
 import ModalView from 'components/ModalView';
@@ -26,11 +29,13 @@ import s from './DataSchemas.module.css';
 
 const reservedSlugs = ['sqlrunner', 'genschema'];
 
-const DataSchemas = ({ editorWidth, editorHeight, params, ...restProps }) => {
+const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
   const { t } = useTranslation();
   const [, setLocation] = useLocation();
   const basePath = '/d/schemas';
   const [isConsoleOpen, toggleConsole] = useState(false);
+
+  const { params = {} } = match;
 
   const [dataSourceId, slug] = useMemo(() => getOr('', 'rest', params).split('/'),
     [params]
@@ -39,6 +44,62 @@ const DataSchemas = ({ editorWidth, editorHeight, params, ...restProps }) => {
   const onModalClose = () => setLocation(`${basePath}/${dataSourceId}`);
 
   const dataSchemaName = reservedSlugs.indexOf(slug) === -1 && slug || null;
+
+  const {
+    getTabId,
+    editTab,
+    activeTab,
+    changeActiveTab,
+    openedTabs,
+    openSchema,
+  } = useSchemasIde({ dataSourceId });
+
+  const {
+    all,
+    queries: {
+      allData,
+      execQueryAll,
+    },
+    mutations: {
+      createMutation,
+      execCreateMutation,
+      execUpdateMutation,
+      deleteMutation,
+      execDeleteMutation,
+      runSQLMutation,
+      execRunSQLMutation,
+    },
+    subscription,
+  } = useSchemas({
+    params: {
+
+    },
+    pauseQueryAll: false,
+    disableSubscription: false,
+  });
+
+  const schemaIdToCode = useMemo(() => all.reduce((acc, curr) => {
+    acc[curr.id] = { name: curr.name, code: curr.code };
+    return acc;
+  }, {}),
+  [all]
+  );
+
+  const openedSchemas = useMemo(() => Object.keys(openedTabs)
+      .map(id => all.find(schema => schema.id === id))
+      .filter(Boolean),
+  [all, openedTabs]
+  );
+
+  useEffect(() => {
+    if (subscription.data) {
+      execQueryAll();
+    }
+  }, [execQueryAll, subscription.data]);
+
+  useCheckResponse(createMutation, () => {}, {
+    successMessage: t('Schema created')
+  });
 
   // const {
   //   loading,
@@ -58,13 +119,14 @@ const DataSchemas = ({ editorWidth, editorHeight, params, ...restProps }) => {
   //   sourceMutations,
   // } = useIde({ dataSourceId, dataSchemaName, slug });
 
-  const validationError = useMemo(
-    () => {
-      const { validateMutation } = schemaMutations;
-      return get('error.message', validateMutation);
-    },
-    [schemaMutations]
-  );
+  const validationError = '';
+  // const validationError = useMemo(
+  //   () => {
+  //     const { validateMutation } = schemaMutations;
+  //     return get('error.message', validateMutation);
+  //   },
+  //   [schemaMutations]
+  // );
 
   useEffect(
     () => {
@@ -72,12 +134,6 @@ const DataSchemas = ({ editorWidth, editorHeight, params, ...restProps }) => {
     },
     [validationError]
   );
-
-  const editTab = (id, action) => {
-    if (action === 'remove') {
-      closeTab(id);
-    }
-  };
 
   // const sqlResult = useMemo(
   //   () => getOr([], 'runSQL.data', sourceMutations.runSQLMutation.data),
@@ -100,24 +156,56 @@ const DataSchemas = ({ editorWidth, editorHeight, params, ...restProps }) => {
     onModalClose();
   };
 
-  const onCodeSave = (id, code) => {
-    // schemaMutations.mExecEditMutation(id, { code });
-  };
-
   const { fallback } = usePermissions({ scope: 'dataschemas' });
   if (fallback) {
     return fallback;
   }
 
   const loading = false;
-  const fetching = false;
+  const fetching = allData.fetching || deleteMutation.fetching || createMutation.fetching;
 
-  if (!loading && !allSchemas.length && !dataSource.id) {
+  if (!loading && !all.length && !dataSourceId) {
     return <ErrorFound status={404} />;
   }
 
   // const fetching = loading || schemaMutations.genMutation.fetching || sourceQueries.tablesData.fetching ||
   //   schemaMutations.delMutation.fetching;
+
+  const tableSchemas = {};
+  const sqlResult = [];
+
+  const onClickCreate = values => {
+    const data = {
+      ...values,
+      code: '',
+      datasource_id: dataSourceId,
+    };
+
+    execCreateMutation({ object: data });
+  };
+
+  const onClickUpdate = (editId, values) => {
+    execUpdateMutation({
+      pk_columns: { id: editId },
+      _set: values,
+    });
+  };
+
+  const onClickDelete = id => {
+    execDeleteMutation({ id });
+  };
+
+  const onCodeSave = (id, code) => {
+    onClickUpdate(id, { code });
+  };
+
+  const onRunSQL = (query, limit) => {
+    execRunSQLMutation({
+      datasource_id: dataSourceId,
+      query,
+      limit,
+    });
+  };
 
   return [
     <ModalView
@@ -128,7 +216,7 @@ const DataSchemas = ({ editorWidth, editorHeight, params, ...restProps }) => {
       loading={fetching}
       content={(
         <GenDataSchemasForm
-          schemas={(sourceQueries.tablesData.data || {}).allDatasourceTables}
+          schemas={tableSchemas}
           onSubmit={onGenSubmit}
         />
       )}
@@ -138,11 +226,11 @@ const DataSchemas = ({ editorWidth, editorHeight, params, ...restProps }) => {
       <div className={s.root}>
         <div className={s.sidebar}>
           <IdeSchemasList
-            schemas={allSchemas}
+            schemas={all}
             onItemClick={openSchema}
-            onCreate={schemaMutations.mExecNewMutation}
-            onEdit={schemaMutations.mExecEditMutation}
-            onDelete={schemaMutations.mExecDelMutation}
+            onCreate={onClickCreate}
+            onEdit={onClickUpdate}
+            onDelete={onClickDelete}
             moreMenu={routes}
           />
         </div>
@@ -170,9 +258,9 @@ const DataSchemas = ({ editorWidth, editorHeight, params, ...restProps }) => {
                 data={sqlResult}
                 width={editorWidth}
                 height={editorHeight}
-                onRun={(query, limit) => sourceMutations.mExecRunSQLMutation(dataSource.rowId, query, limit)}
-                error={sourceMutations.runSQLMutation.error}
-                loading={sourceMutations.runSQLMutation.fetching}
+                onRun={onRunSQL}
+                error={runSQLMutation.error}
+                loading={runSQLMutation.fetching}
               />
             </Tabs.TabPane>
           </Tabs>
@@ -191,11 +279,11 @@ const DataSchemas = ({ editorWidth, editorHeight, params, ...restProps }) => {
 DataSchemas.propTypes = {
   editorWidth: PropTypes.number.isRequired,
   editorHeight: PropTypes.number.isRequired,
-  params: PropTypes.object,
+  match: PropTypes.object,
 };
 
 DataSchemas.defaultProps = {
-  params: {},
+  match: {},
 };
 
 const mapSizesToProps = ({ width, height }) => ({

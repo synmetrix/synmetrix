@@ -15,6 +15,7 @@ const allSchemasQuery = `
     dataschemas (offset: $offset, limit: $limit, where: $where, order_by: $order_by) {
       id
       name
+      code
       created_at
       updated_at
     }
@@ -42,8 +43,7 @@ const editSchemaQuery = `
     dataschemas_by_pk(id: $id) {
       id
       name
-      db_type
-      db_params
+      code
       created_at
       updated_at
     }
@@ -53,6 +53,14 @@ const editSchemaQuery = `
 const delSchemaMutation = `
   mutation ($id: uuid!) {
     delete_dataschemas_by_pk(id: $id) {
+      id
+    }
+  }
+`;
+
+const runSourceSQLMutation = `
+  mutation ($datasource_id: uuid!, $query: String!, $limit: Int!) {
+    run_sql(datasource_id: $datasource_id, query: $query, limit: $limit) {
       id
     }
   }
@@ -104,6 +112,11 @@ export default ({ pauseQueryAll, pagination = {}, params = {}, disableSubscripti
   const execDeleteMutation = useCallback((input) => {
     doDeleteMutation(input, { role });
   }, [doDeleteMutation]);
+
+  const [runSQLMutation, doRunSQLMutation] = useMutation(runSourceSQLMutation);
+  const execRunSQLMutation = useCallback((input) => {
+    doRunSQLMutation(input, { role });
+  }, [doRunSQLMutation]);
 
   const [allData, doQueryAll] = useQuery({
     query: allSchemasQuery,
@@ -167,6 +180,8 @@ export default ({ pauseQueryAll, pagination = {}, params = {}, disableSubscripti
       execDeleteMutation,
       updateMutation,
       execUpdateMutation,
+      runSQLMutation,
+      execRunSQLMutation,
     },
     subscription,
   };

@@ -133,6 +133,29 @@
   - name: team
     using:
       foreign_key_constraint_on: team_id
+  insert_permissions:
+  - role: user
+    permission:
+      check:
+        _or:
+        - user_id:
+            _eq: X-Hasura-User-Id
+        - team:
+            members:
+              user_id:
+                _eq: X-Hasura-User-Id
+      set:
+        user_id: x-hasura-user-id
+      columns:
+      - id
+      - created_at
+      - updated_at
+      - user_id
+      - datasource_id
+      - name
+      - code
+      - team_id
+      backend_only: false
   select_permissions:
   - role: user
     permission:
@@ -154,6 +177,39 @@
               user_id:
                 _eq: X-Hasura-User-Id
       allow_aggregations: true
+  update_permissions:
+  - role: user
+    permission:
+      columns:
+      - code
+      - name
+      filter:
+        _or:
+        - user_id:
+            _eq: X-Hasura-User-Id
+        - team:
+            members:
+              user_id:
+                _eq: X-Hasura-User-Id
+      check:
+        _or:
+        - user_id:
+            _eq: X-Hasura-User-Id
+        - team:
+            members:
+              user_id:
+                _eq: X-Hasura-User-Id
+  delete_permissions:
+  - role: user
+    permission:
+      filter:
+        _or:
+        - user_id:
+            _eq: X-Hasura-User-Id
+        - team:
+            members:
+              user_id:
+                _eq: X-Hasura-User-Id
 - table:
     schema: public
     name: datasources
@@ -167,7 +223,14 @@
   insert_permissions:
   - role: user
     permission:
-      check: {}
+      check:
+        _or:
+        - user_id:
+            _eq: X-Hasura-User-Id
+        - team:
+            members:
+              user_id:
+                _eq: X-Hasura-User-Id
       set:
         user_id: x-hasura-user-id
       columns:
