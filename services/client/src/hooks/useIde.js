@@ -2,7 +2,7 @@ import { useMemo, useCallback, useEffect } from 'react';
 import { message } from 'antd';
 
 import { get, getOr } from 'unchanged';
-import useLocation from 'wouter/use-location';
+import useLocation from 'hooks/useLocation';
 
 import useTabs from 'hooks/useTabs';
 import useDataSources from 'hooks/useDataSources';
@@ -19,11 +19,11 @@ export default ({ dataSourceId, dataSchemaName }) => {
     changeActiveTab
   } = useTabs({ activeTab: defaultTabId });
 
-  const {
-    current: dataSource,
-    queries: sourceQueries,
-    mutations: sourceMutations
-  } = useDataSources({ pauseQueryAll: true, editId: dataSourceId });
+  // const {
+  //   current: dataSource,
+  //   queries: sourceQueries,
+  //   mutations: sourceMutations
+  // } = useDataSources({ pauseQueryAll: true, editId: dataSourceId });
 
   const {
     all: allSchemas,
@@ -67,7 +67,7 @@ export default ({ dataSourceId, dataSchemaName }) => {
   const changePath = useCallback((activeKey) => {
     const basePath = ['/d/schemas', dataSourceId, activeKey].filter(v => !!v).join('/');
 
-    if (location !== basePath) {
+    if (location.pathname !== basePath) {
       setLocation(basePath);
     }
   },
@@ -147,14 +147,14 @@ export default ({ dataSourceId, dataSchemaName }) => {
     [editMutation.data, editMutation.error, openSchema]
   );
 
-  useEffect(
-    () => {
-      if (dataSource.rowId) {
-        execQueryTables({ requestPolicy: 'cache-and-network' });
-      }
-    },
-    [dataSource, execQueryTables]
-  );
+  // useEffect(
+  //   () => {
+  //     if (dataSource.rowId) {
+  //       execQueryTables({ requestPolicy: 'cache-and-network' });
+  //     }
+  //   },
+  //   [dataSource, execQueryTables]
+  // );
 
   useEffect(
     () => {

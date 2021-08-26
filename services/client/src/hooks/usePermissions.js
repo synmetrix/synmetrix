@@ -1,17 +1,15 @@
 import React, { useMemo } from 'react';
 import { getOr } from 'unchanged';
 
-import { useRecoilValue } from 'recoil';
-import { currentUser as currentUserState } from 'recoil/currentUser';
-
+import useCurrentUserState from 'hooks/useCurrentUserState';
 import ErrorFound from '../components/ErrorFound';
 
 const usePermissions = ({ scope = '' }) => {
   let fallback = null;
 
-  const currentUser = useRecoilValue(currentUserState);
+  const { currentUserState } = useCurrentUserState();
   const cachedRestrictScopes = (localStorage.getItem('restrictScopes') || '').split(',');
-  const restrictScopes = useMemo(() => getOr(cachedRestrictScopes, 'ACL.restrictScopes', currentUser), [currentUser, cachedRestrictScopes]);
+  const restrictScopes = useMemo(() => getOr(cachedRestrictScopes, 'ACL.restrictScopes', currentUserState), [currentUserState, cachedRestrictScopes]);
 
   if (restrictScopes.includes(scope)) {
     fallback = (<ErrorFound status={403} />);

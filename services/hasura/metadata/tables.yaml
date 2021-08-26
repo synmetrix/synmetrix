@@ -50,6 +50,16 @@
         table:
           schema: auth
           name: refresh_tokens
+  select_permissions:
+  - role: user
+    permission:
+      columns:
+      - email
+      - mfa_enabled
+      filter:
+        user:
+          id:
+            _eq: X-Hasura-User-Id
 - table:
     schema: auth
     name: migrations
@@ -92,9 +102,58 @@
 - table:
     schema: public
     name: dashboards
+  object_relationships:
+  - name: team
+    using:
+      foreign_key_constraint_on: team_id
+  select_permissions:
+  - role: user
+    permission:
+      columns:
+      - id
+      - created_at
+      - updated_at
+      - user_id
+      - name
+      - layout
+      - team_id
+      filter:
+        _or:
+        - user_id:
+            _eq: X-Hasura-User-Id
+        - team:
+            members:
+              user_id:
+                _eq: X-Hasura-User-Id
+      allow_aggregations: true
 - table:
     schema: public
     name: dataschemas
+  object_relationships:
+  - name: team
+    using:
+      foreign_key_constraint_on: team_id
+  select_permissions:
+  - role: user
+    permission:
+      columns:
+      - id
+      - created_at
+      - updated_at
+      - user_id
+      - datasource_id
+      - name
+      - code
+      - team_id
+      filter:
+        _or:
+        - user_id:
+            _eq: X-Hasura-User-Id
+        - team:
+            members:
+              user_id:
+                _eq: X-Hasura-User-Id
+      allow_aggregations: true
 - table:
     schema: public
     name: datasources
@@ -175,12 +234,64 @@
 - table:
     schema: public
     name: explorations
+  object_relationships:
+  - name: team
+    using:
+      foreign_key_constraint_on: team_id
+  select_permissions:
+  - role: user
+    permission:
+      columns:
+      - id
+      - created_at
+      - updated_at
+      - user_id
+      - datasource_id
+      - playground_state
+      - playground_settings
+      - slug
+      - team_id
+      filter:
+        _or:
+        - user_id:
+            _eq: X-Hasura-User-Id
+        - team:
+            members:
+              user_id:
+                _eq: X-Hasura-User-Id
+      allow_aggregations: true
 - table:
     schema: public
     name: members
 - table:
     schema: public
     name: pinned_items
+  object_relationships:
+  - name: team
+    using:
+      foreign_key_constraint_on: team_id
+  select_permissions:
+  - role: user
+    permission:
+      columns:
+      - id
+      - created_at
+      - updated_at
+      - user_id
+      - dashboard_id
+      - exploration_id
+      - name
+      - spec
+      - team_id
+      filter:
+        _or:
+        - user_id:
+            _eq: X-Hasura-User-Id
+        - team:
+            members:
+              user_id:
+                _eq: X-Hasura-User-Id
+      allow_aggregations: true
 - table:
     schema: public
     name: teams
@@ -205,3 +316,15 @@
         insertion_order: null
         column_mapping:
           id: user_id
+  select_permissions:
+  - role: user
+    permission:
+      columns:
+      - id
+      - created_at
+      - updated_at
+      - display_name
+      - avatar_url
+      filter:
+        id:
+          _eq: X-Hasura-User-Id

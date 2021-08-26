@@ -7,26 +7,26 @@ import { Layout, Avatar } from 'antd';
 
 import cx from 'classnames';
 
-import { useRecoilValue } from 'recoil';
-
 import logoImage from 'assets/images/logo.svg';
 import logoBlackImage from 'assets/images/logo-black.svg';
 
-import useAuth from 'hooks/useAuth';
-import useDataSourcesSubscription from 'hooks/useDataSourcesSubscription';
-import useDashboardsSubscription from 'hooks/useDashboardsSubscription';
+import useCurrentUserState from 'hooks/useCurrentUserState';
+import useAuthToken from 'hooks/useAuthToken';
+
+// import useDataSourcesSubscription from 'hooks/useDataSourcesSubscription';
+// import useDashboardsSubscription from 'hooks/useDashboardsSubscription';
 import useSider from 'hooks/useSider';
 import usePermissions from 'hooks/usePermissions';
-import MenuView from 'components/MenuView';
+import useCurrentUser from 'hooks/useCurrentUser';
 
-import { currentUser } from '../recoil/currentUser';
+import MenuView from 'components/MenuView';
 
 import s from './Layout.module.css';
 
 const { Header, Content, Footer, Sider } = Layout;
 
 const UserMenu = ({ mode, restrictScopes = [] }) => {
-  const { logout } = useAuth({});
+  const { doLogout } = useAuthToken();
   const { t } = useTranslation();
 
   const accountSubMenu = [
@@ -44,7 +44,7 @@ const UserMenu = ({ mode, restrictScopes = [] }) => {
   }
 
   accountSubMenu.push({
-    onClick: logout,
+    onClick: doLogout,
     title: t('Logout'),
   });
 
@@ -70,40 +70,39 @@ const MainMenu = (props) => {
   const { t } = useTranslation();
 
   const {
-    lastUsedDataSourceId,
-    queries: {
-      execCurrentUserQuery,
-    },
-  } = useAuth();
+    currentUser,
+  } = useCurrentUser();
 
-  const userState = useRecoilValue(currentUser);
-
-  const dataSources = userState?.allDatasources?.nodes || [];
-  const dashboards = userState?.allDashboards?.nodes || [];
+  console.log('currentUser');
+  console.log(currentUser);
+  const dataSources = currentUser?.datasources || [];
+  const dashboards = currentUser?.dashboards || [];
   const dashboardsCount = dashboards?.length || 0;
 
-  useDataSourcesSubscription(() => {
-    execCurrentUserQuery({ requestPolicy: 'network-only' });
-  });
-
-  useDashboardsSubscription(() => {
-    execCurrentUserQuery({ requestPolicy: 'network-only' });
-  });
+  // useDataSourcesSubscription(() => {
+  //   execCurrentUserQuery({ requestPolicy: 'network-only' });
+  // });
+  //
+  // useDashboardsSubscription(() => {
+  //   execCurrentUserQuery({ requestPolicy: 'network-only' });
+  // });
 
   const dataSourceItems = dataSources.map(source => ({
-    key: source.rowId,
-    path: `/d/schemas/${source.rowId}`,
+    key: source.id,
+    path: `/d/schemas/${source.id}`,
     title: source.name,
   }));
 
   const dashboardItems = dashboards.map(dashboard => ({
-    key: dashboard.rowId,
-    path: `/d/dashboards/${dashboard.rowId}`,
+    key: dashboard.id,
+    path: `/d/dashboards/${dashboard.id}`,
     title: dashboard.name,
   }));
 
-  const lastDataSource = dataSources.find(source => source.rowId == lastUsedDataSourceId);
-  const dataSourceId = lastDataSource?.rowId || dataSources?.[0]?.rowId || '';
+  const lastUsedDataSourceId = null;
+
+  const lastDataSource = dataSources.find(source => source.id == lastUsedDataSourceId);
+  const dataSourceId = lastDataSource?.id || dataSources?.[0]?.id || '';
 
   let routes = [
     {
@@ -167,6 +166,7 @@ const MainLayout = (props) => {
   const { children } = props;
   const { state, onBreakpoint, onCollapse } = useSider();
 
+  useCurrentUser();
   const { restrictScopes } = usePermissions({});
 
   return (

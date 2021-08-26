@@ -105,7 +105,6 @@ export default (options = {}) => {
 
   const router = useRouter();
 
-  const setAuthToken = useSetRecoilState(currentToken);
   const [userState, setUserState] = useRecoilState(currentUser);
 
   const [, navigate] = useLocation();
@@ -133,7 +132,6 @@ export default (options = {}) => {
     navigate('/login');
     saveCachedRestrictScopes([]);
   }, [
-    setAuthToken,
     setLastUsedDataSourceId,
     navigate,
     saveCachedRestrictScopes
@@ -172,7 +170,6 @@ export default (options = {}) => {
       const restrictScopes = get('data.login.restrictScopes', loginMutation) || get('data.signup.restrictScopes', signUpMutation);
       saveCachedRestrictScopes(restrictScopes);
 
-      setAuthToken(token);
       loginMutation.data = null;
       signUpMutation.data = null;
 
@@ -183,7 +180,6 @@ export default (options = {}) => {
       }
     }
   }, [
-    setAuthToken,
     checkMe,
     loginMutation,
     signUpMutation,

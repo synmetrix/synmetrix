@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 
 import { getOr } from 'unchanged';
 
-import { Link } from 'wouter';
+import { Link } from 'react-router-dom';
 import { Menu } from 'antd';
 
 import pickKeys from 'utils/pickKeys';
@@ -14,7 +14,7 @@ const MenuView = (props) => {
 
   const getLink = (node) => {
     const linkProps = {
-      href: node.path || '',
+      to: node.path || '',
       onClick: (node.onClick && (() => node.onClick(node))) || noop,
     };
 

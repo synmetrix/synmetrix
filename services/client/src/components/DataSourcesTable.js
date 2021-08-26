@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 
 import { useTranslation } from 'react-i18next';
-import { Row, Col, message } from 'antd';
+import { Row, Col } from 'antd';
 
 import useSources from 'hooks/useSources';
 import useTableState from 'hooks/useTableState';
@@ -36,7 +36,6 @@ const DataSourcesTable = ({ editId, onModalClose, onModalOpen }) => {
     onPageChange,
   } = useTableState({});
 
-  console.log(state);
   const {
     all: dataSources,
     totalCount,
@@ -49,6 +48,7 @@ const DataSourcesTable = ({ editId, onModalClose, onModalOpen }) => {
         fetching: currentLoading
       },
       execQueryAll,
+      execQueryCurrent,
     },
     mutations: {
       updateMutation, execUpdateMutation,
@@ -62,15 +62,16 @@ const DataSourcesTable = ({ editId, onModalClose, onModalOpen }) => {
     disableSubscription: false,
   });
 
-  // useEffect(() => {
-  //   if (subscription.data) {
-  //     execQueryAll({ requestPolicy: 'network-only' });
-  //   }
-  // }, [execQueryAll, subscription.data]);
+  useEffect(() => {
+    if (subscription.data) {
+      execQueryAll({ requestPolicy: 'network-only' });
+    }
+  }, [execQueryAll, subscription.data]);
 
   const onDataSourceOpen = (record) => {
     onModalOpen(record);
     setState(prev => ({ ...prev, editId: record.id, visibleModal: true }));
+    execQueryCurrent();
   };
 
   const onDataSourceClose = () => {

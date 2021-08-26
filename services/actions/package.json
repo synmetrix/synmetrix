@@ -1,0 +1,22 @@
+{
+  "name": "proxy-server",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "start": "nodemon --es-module-specifier-resolution=node index.js",
+    "start.dev": "nodemon -L --es-module-specifier-resolution=node --inspect=0.0.0.0"
+  },
+  "dependencies": {
+    "cabin": "^8.0.7",
+    "express": "^4.17.1",
+    "express-request-id": "^1.4.1",
+    "ioredis": "^4.19.2",
+    "node-fetch": "^2.6.1",
+    "nodemon": "^2.0.4",
+    "pino": "^6.6.1",
+    "request-received": "^0.0.3",
+    "response-time": "^2.3.2",
+    "signale": "^1.4.0"
+  }
+}

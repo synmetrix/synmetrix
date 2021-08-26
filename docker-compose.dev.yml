@@ -13,6 +13,17 @@ services:
     networks:
       - mlcraft_default
 
+  actions:
+    restart: always
+    command: yarn start.dev
+    volumes:
+      - ./services/actions/src:/app/src
+      - ./services/actions/index.js:/app/index.js
+    ports:
+      - 3001:3000
+    env_file:
+      - .dev.env
+
   postgraphile:
     restart: always
     command: yarn start.dev

@@ -41,10 +41,10 @@ const DataSourceModal = (props) => {
 
   const onCreate = (res) => {
     if (res) {
-      onSave(res);
+      props.onCancel();
     }
   };
-
+  
   useCheckResponse(createMutation, onCreate, {
     successMessage: t('Source created')
   });
@@ -106,11 +106,11 @@ const DataSourceModal = (props) => {
       <Col span={12} style={{ textAlign: 'left' }}>
         {dataSource.id && (
           <>
-            <Button onClick={() => execCheckMutation(dataSource.id)} loading={checkMutation.fetching}>
+            <Button onClick={() => execCheckMutation({ id: dataSource.id })} loading={checkMutation.fetching}>
               <Icon type="api" />
               {t('Test Connection')}
             </Button>
-            <Button type="danger" onClick={() => execDeleteMutation(dataSource.id)} loading={deleteMutation.fetching}>
+            <Button type="danger" onClick={() => execDeleteMutation({ id: dataSource.id })} loading={deleteMutation.fetching}>
               <Icon type="disconnect" />
               {t('Remove')}
             </Button>

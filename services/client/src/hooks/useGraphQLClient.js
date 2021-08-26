@@ -19,7 +19,6 @@ import { SubscriptionClient } from 'subscriptions-transport-ws';
 
 import {
   currentToken,
-  currentUser,
   jwtPayload
 } from '../recoil/currentUser';
 
@@ -27,27 +26,20 @@ const { __DEV__ } = process.env;
 
 export default () => {
   const authToken = useRecoilValue(currentToken);
-  const setUserState = useSetRecoilState(currentUser);
   const JWTpayload = useRecoilValue(jwtPayload);
-
-  useEffect(() => {
-    if (!authToken) {
-      setUserState(null);
-    }
-  }, [authToken, setUserState]);
 
   const client = useMemo(() => {
     const subscriptionClient = new SubscriptionClient(
       process.env.GRAPHQL_WS_URL,
       {
-        reconnect: false,
+        reconnect: true,
         timeout: 30000,
         connectionParams: () => ({
           headers: {
             Authorization: `Bearer ${authToken}`,
             'content-type': 'application/json',
           },
-          lazy: false,
+          lazy: true,
         }),
       },
     );

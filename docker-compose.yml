@@ -3,26 +3,28 @@ version: '3.8'
 services:
   redis:
     image: redis:5.0.8
-    restart: always
     networks:
       - mlcraft_default
 
   postgraphile:
-    restart: always
     build:
       context: ./services/postgraphile/
     networks:
       - mlcraft_default
 
+  actions:
+    build:
+      context: ./services/actions/
+    networks:
+      - mlcraft_default
+
   cubejs:
-    restart: always
     build:
       context: ./services/cubejs
     networks:
       - mlcraft_default
 
   hasura:
-    restart: always
     build:
       context: ./services/hasura
     volumes:
@@ -35,7 +37,6 @@ services:
       - mlcraft_default
 
   hasura_plus:
-    restart: always
     build:
       context: ./scripts/containers/hasura_backend_plus
     volumes:

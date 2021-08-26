@@ -4,8 +4,8 @@ import dayjs from 'dayjs';
 
 import { saveAuthToken, removeAuthToken, getAuthToken } from '../utils/storage';
 
-export const currentUser = atom({
-  key: 'currentUser',
+export const currentUserAtom = atom({
+  key: 'currentUserAtom',
   default: null,
 });
 
@@ -24,7 +24,7 @@ export const currentToken = selector({
     if (newToken) {
       saveAuthToken(newToken);
     } else {
-      set(currentUser, null);
+      set(currentUserAtom, null);
     }
   }
 });

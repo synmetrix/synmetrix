@@ -1,27 +1,24 @@
 import { useCallback, useEffect, useMemo } from 'react';
-
-import { get, getOr } from 'unchanged';
 import { useQuery, useMutation, useSubscription } from 'urql';
 
-const newdatasourceMutation = `
-  mutation ($object: datasources_insert_input!) {
-    insert_datasources_one(object: $object) {
+const newSchemaMutation = `
+  mutation ($object: dataschemas_insert_input!) {
+    insert_dataschemas_one(object: $object) {
       id
       name
     }
   }
 `;
 
-const datasourcesQuery = `
-  query ($offset: Int, $limit: Int, $where: datasources_bool_exp, $order_by: [datasources_order_by!]) {
-    datasources (offset: $offset, limit: $limit, where: $where, order_by: $order_by) {
+const allSchemasQuery = `
+  query ($offset: Int, $limit: Int, $where: dataschemas_bool_exp, $order_by: [dataschemas_order_by!]) {
+    dataschemas (offset: $offset, limit: $limit, where: $where, order_by: $order_by) {
       id
       name
-      db_type
       created_at
       updated_at
     }
-    datasources_aggregate (where: $where) {
+    dataschemas_aggregate (where: $where) {
       aggregate {
         count
       }
@@ -29,31 +26,20 @@ const datasourcesQuery = `
   }
 `;
 
-const editdatasourceMutation = `
+const editSchemaMutation = `
   mutation (
-    $pk_columns: datasources_pk_columns_input!,
-    $_set: datasources_set_input!
+    $pk_columns: dataschemas_pk_columns_input!,
+    $_set: dataschemas_set_input!
   ) {
-    update_datasources_by_pk(pk_columns: $pk_columns, _set: $_set) {
+    update_dataschemas_by_pk(pk_columns: $pk_columns, _set: $_set) {
       id
     }
   }
 `;
 
-const checkdatasourceMutation = `
-  mutation (
-    $id: uuid!,
-  ) {
-    check_datasource(id: $id) {
-      message
-      status
-    }
-  }
-`;
-
-const editdatasourceQuery = `
+const editSchemaQuery = `
   query ($id: uuid!) {
-    datasources_by_pk(id: $id) {
+    dataschemas_by_pk(id: $id) {
       id
       name
       db_type
@@ -64,17 +50,17 @@ const editdatasourceQuery = `
   }
 `;
 
-const deldatasourceMutation = `
+const delSchemaMutation = `
   mutation ($id: uuid!) {
-    delete_datasources_by_pk(id: $id) {
+    delete_dataschemas_by_pk(id: $id) {
       id
     }
   }
 `;
 
-const datasourcesSubscription = `
-  subscription ($offset: Int, $limit: Int, $where: datasources_bool_exp, $order_by: [datasources_order_by!]) {
-    datasources (offset: $offset, limit: $limit, where: $where, order_by: $order_by) {
+const allSchemasSubscription = `
+  subscription ($offset: Int, $limit: Int, $where: dataschemas_bool_exp, $order_by: [dataschemas_order_by!]) {
+    dataschemas (offset: $offset, limit: $limit, where: $where, order_by: $order_by) {
       id
       name
     }
@@ -104,34 +90,29 @@ const role = 'user';
 export default ({ pauseQueryAll, pagination = {}, params = {}, disableSubscription = true }) => {
   const { editId } = params;
 
-  const [createMutation, doCreateMutation] = useMutation(newdatasourceMutation);
+  const [createMutation, doCreateMutation] = useMutation(newSchemaMutation);
   const execCreateMutation = useCallback((input) => {
     return doCreateMutation(input, { role });
   }, [doCreateMutation]);
 
-  const [updateMutation, doUpdateMutation] = useMutation(editdatasourceMutation);
+  const [updateMutation, doUpdateMutation] = useMutation(editSchemaMutation);
   const execUpdateMutation = useCallback((input) => {
     doUpdateMutation(input, { role });
   }, [doUpdateMutation]);
 
-  const [deleteMutation, doDeleteMutation] = useMutation(deldatasourceMutation);
+  const [deleteMutation, doDeleteMutation] = useMutation(delSchemaMutation);
   const execDeleteMutation = useCallback((input) => {
     doDeleteMutation(input, { role });
   }, [doDeleteMutation]);
 
-  const [checkMutation, doCheckMutation] = useMutation(checkdatasourceMutation);
-  const execCheckMutation = useCallback((input) => {
-    doCheckMutation(input, { role });
-  }, [doCheckMutation]);
-
   const [allData, doQueryAll] = useQuery({
-    query: datasourcesQuery,
+    query: allSchemasQuery,
     pause: true,
     variables: getListVariables(pagination),
   });
 
   const [subscription] = useSubscription({
-    query: datasourcesSubscription,
+    query: allSchemasSubscription,
     variables: getListVariables(pagination),
     pause: disableSubscription,
   }, handleSubscription);
@@ -146,11 +127,11 @@ export default ({ pauseQueryAll, pagination = {}, params = {}, disableSubscripti
     }
   }, [pauseQueryAll, execQueryAll]);
 
-  const all = useMemo(() => getOr([], 'data.datasources', allData), [allData]);
-  const totalCount = useMemo(() => getOr([], 'data.datasources_aggregate.aggregate.count', allData), [allData]);
+  const all = useMemo(() => allData.data?.dataschemas || [], [allData]);
+  const totalCount = useMemo(() => allData.data?.dataschemas_aggregate.aggregate.count, [allData]);
 
   const [currentData, doQueryCurrent] = useQuery({
-    query: editdatasourceQuery,
+    query: editSchemaQuery,
     variables: {
       id: editId,
     },
@@ -161,10 +142,7 @@ export default ({ pauseQueryAll, pagination = {}, params = {}, disableSubscripti
     doQueryCurrent({ requestPolicy: 'cache-and-network', role, ...context });
   }, [doQueryCurrent]);
 
-  const current = useMemo(() => {
-    const datasource = get('data.datasources_by_pk', currentData) || {};
-    return datasource;
-  }, [currentData]);
+  const current = useMemo(() => currentData.data?.dataschemas_by_pk || {}, [currentData]);
 
   useEffect(() => {
     if (editId) {
@@ -189,8 +167,6 @@ export default ({ pauseQueryAll, pagination = {}, params = {}, disableSubscripti
       execDeleteMutation,
       updateMutation,
       execUpdateMutation,
-      checkMutation,
-      execCheckMutation,
     },
     subscription,
   };

@@ -3,9 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@urql/core": "^2.3.0",
+    "@urql/core": "^2.3.1",
     "@urql/exchange-auth": "^0.1.6",
-    "@urql/exchange-graphcache": "^2.4.2",
+    "@urql/exchange-graphcache": "^4.3.0",
     "ahooks": "^2.10.9",
     "antd": "^3.26.20",
     "classnames": "^2.2.6",
@@ -44,6 +44,7 @@
     "vega": "^5.20.2",
     "vega-lite": "^5.1.0",
     "vega-lite-api": "^5.0.0",
+    "wonka": "^4.0.15",
     "wouter": "^2.7.4"
   },
   "scripts": {

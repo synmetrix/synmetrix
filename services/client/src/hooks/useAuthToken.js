@@ -1,3 +1,5 @@
+import { useCallback } from 'react';
+
 import {
   useRecoilState,
 } from 'recoil';
@@ -14,9 +16,18 @@ export default () => {
     setLocation('/d/sources');
   };
 
+  const doLogout = useCallback(() => {
+    setAuthToken(null);
+    setLocation('/login');
+  }, [
+    setAuthToken,
+    setLocation,
+  ]);
+
   return {
     authToken,
     setAuthToken,
     doAuth,
+    doLogout,
   };
 };

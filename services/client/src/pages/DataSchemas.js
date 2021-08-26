@@ -40,23 +40,23 @@ const DataSchemas = ({ editorWidth, editorHeight, params, ...restProps }) => {
 
   const dataSchemaName = reservedSlugs.indexOf(slug) === -1 && slug || null;
 
-  const {
-    loading,
-    getTabId,
-    activeTab,
-    closeTab,
-    changeActiveTab,
-
-    allSchemas,
-    schemaIdToCode,
-    openedSchemas,
-    openSchema,
-    schemaMutations,
-
-    dataSource,
-    sourceQueries,
-    sourceMutations,
-  } = useIde({ dataSourceId, dataSchemaName, slug });
+  // const {
+  //   loading,
+  //   getTabId,
+  //   activeTab,
+  //   closeTab,
+  //   changeActiveTab,
+  //
+  //   allSchemas,
+  //   schemaIdToCode,
+  //   openedSchemas,
+  //   openSchema,
+  //   schemaMutations,
+  //
+  //   dataSource,
+  //   sourceQueries,
+  //   sourceMutations,
+  // } = useIde({ dataSourceId, dataSchemaName, slug });
 
   const validationError = useMemo(
     () => {
@@ -79,10 +79,10 @@ const DataSchemas = ({ editorWidth, editorHeight, params, ...restProps }) => {
     }
   };
 
-  const sqlResult = useMemo(
-    () => getOr([], 'runSQL.data', sourceMutations.runSQLMutation.data),
-    [sourceMutations.runSQLMutation.data]
-  );
+  // const sqlResult = useMemo(
+  //   () => getOr([], 'runSQL.data', sourceMutations.runSQLMutation.data),
+  //   [sourceMutations.runSQLMutation.data]
+  // );
 
   const routes = [
     {
@@ -96,12 +96,12 @@ const DataSchemas = ({ editorWidth, editorHeight, params, ...restProps }) => {
       name: v,
     }));
 
-    schemaMutations.mExecGenMutation(tables);
+    // schemaMutations.mExecGenMutation(tables);
     onModalClose();
   };
 
   const onCodeSave = (id, code) => {
-    schemaMutations.mExecEditMutation(id, { code });
+    // schemaMutations.mExecEditMutation(id, { code });
   };
 
   const { fallback } = usePermissions({ scope: 'dataschemas' });
@@ -109,12 +109,15 @@ const DataSchemas = ({ editorWidth, editorHeight, params, ...restProps }) => {
     return fallback;
   }
 
+  const loading = false;
+  const fetching = false;
+
   if (!loading && !allSchemas.length && !dataSource.id) {
     return <ErrorFound status={404} />;
   }
 
-  const fetching = loading || schemaMutations.genMutation.fetching || sourceQueries.tablesData.fetching ||
-    schemaMutations.delMutation.fetching;
+  // const fetching = loading || schemaMutations.genMutation.fetching || sourceQueries.tablesData.fetching ||
+  //   schemaMutations.delMutation.fetching;
 
   return [
     <ModalView

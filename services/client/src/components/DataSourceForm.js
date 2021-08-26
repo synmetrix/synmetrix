@@ -38,7 +38,7 @@ const defaultFormItems = {
   },
   'db_params.password': {
     label: 'Password',
-    required: true,
+    required: false,
     placeholder: 'db_password',
   },
   'db_params.ssl': {
