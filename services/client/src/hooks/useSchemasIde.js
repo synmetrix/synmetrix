@@ -41,21 +41,20 @@ export default ({ dataSourceId }) => {
   const editTab = useCallback((id, action) => {
     if (action === 'remove') {
       const anyOtherTab = Object.keys(tabsState.tabs).find(tabId => tabId !== id);
-      console.log(tabsState.tabs);
-      console.log('anyOtherTab');
-      console.log(anyOtherTab);
       closeTab(id);
 
-      if (tabsState.activeTab?.id !== id) {
-        changePath(tabsState.activeTab.name);
-      } else if (anyOtherTab) {
+      // if we're closing active tab
+      if (tabsState.activeTab?.id === id && tabsState.activeTab?.name) {
         openSchema({ id: anyOtherTab, name: tabsState.tabs[anyOtherTab] });
-      } else {
+      } else if (!anyOtherTab) {
+      // if it's not the active tab but no other tabs
         changePath(defaultTabId);
         changeActiveTab(defaultTabId);
+      // if it's not the active tab and any other tabs
+      } else if (tabsState.activeTab?.name && anyOtherTab) {
+        changePath(tabsState.activeTab.name);
+        openSchema({ id: anyOtherTab, name: tabsState.tabs[anyOtherTab] });
       }
-
-      // changeActiveTab(anyOtherTab);
     }
   }, [changeActiveTab, changePath, closeTab, openSchema, tabsState.activeTab, tabsState.tabs]);
 
