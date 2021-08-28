@@ -11,6 +11,7 @@ import ContentHeader from 'components/ContentHeader';
 import ExploreWorkspace from 'components/ExploreWorkspace';
 
 import useLocation from 'hooks/useLocation';
+import useAppSettings from 'hooks/useAppSettings';
 import useCurrentUserState from 'hooks/useCurrentUserState';
 import useSources from 'hooks/useSources';
 import usePermissions from 'hooks/usePermissions';
@@ -18,6 +19,7 @@ import usePermissions from 'hooks/usePermissions';
 const Explore = (props) => {
   const { t } = useTranslation();
   const [, setLocation] = useLocation();
+  const { withAuthPrefix } = useAppSettings();
   const { match } = props;
   const { params = {} } = match;
 
@@ -26,7 +28,7 @@ const Explore = (props) => {
   const chartId = urlParams.get('chart');
 
   const [dataSourceId, explorationId, taskId] = (params?.rest || '').split('/');
-  const basePath = ['/d/explore', dataSourceId, explorationId].filter(v => !!v).join('/');
+  const basePath = [withAuthPrefix('/explore'), dataSourceId, explorationId].filter(v => !!v).join('/');
 
   const { currentUserState: currentUser } = useCurrentUserState();
 

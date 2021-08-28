@@ -13,6 +13,7 @@ import {
 } from 'urql';
 
 import useGraphQLClient from './hooks/useGraphQLClient';
+import useAppSettings from './hooks/useAppSettings';
 
 import Layout from './components/Layout';
 
@@ -30,6 +31,7 @@ import ErrorFound from './components/ErrorFound';
 
 const App = () => {
   const client = useGraphQLClient();
+  const { withAuthPrefix } = useAppSettings();
 
   return (
     <URQLProvider value={client}>
@@ -40,28 +42,28 @@ const App = () => {
           <Route path="/404" component={ErrorFound} />
 
           <Route
-            path="/d/:rest*"
+            path={withAuthPrefix('/:rest*')}
             children={() => {
               return (
                 <>
                   <Router>
                     <Layout>
                       <Switch>
-                        <Route path="/d/explore/:rest*" component={Explore} />
+                        <Route path={withAuthPrefix('/explore/:rest*')} component={Explore} />
 
-                        <Route path="/d/sources/new/:dbType?" component={DataSources} />
-                        <Route path="/d/sources/upload/:format?" component={DataSources} />
-                        <Route path="/d/sources/:editId?/upload/:format?" component={DataSources} />
-                        <Route path="/d/sources/:rowId?" component={DataSources} />
+                        <Route path={withAuthPrefix('/sources/new/:dbType?')} component={DataSources} />
+                        <Route path={withAuthPrefix('/sources/upload/:format?')} component={DataSources} />
+                        <Route path={withAuthPrefix('/sources/:editId?/upload/:format?')} component={DataSources} />
+                        <Route path={withAuthPrefix('/sources/:rowId?')} component={DataSources} />
 
-                        <Route path="/d/team/invite" component={Team} />
-                        <Route path="/d/team/settings" component={Team} />
-                        <Route path="/d/team" component={Team} />
+                        <Route path={withAuthPrefix('/team/invite')} component={Team} />
+                        <Route path={withAuthPrefix('/team/settings')} component={Team} />
+                        <Route path={withAuthPrefix('/team')} component={Team} />
 
-                        <Route path="/d/profile" component={Profile} />
-                        <Route path="/d/schemas/:rest*" component={DataSchemas} />
-                        <Route path="/d/dashboards/:rowId?" component={Dashboards} />
-                        <Route path="/d/charts/:rowId?" component={Charts} />
+                        <Route path={withAuthPrefix('/profile')} component={Profile} />
+                        <Route path={withAuthPrefix('/schemas/:rest*')} component={DataSchemas} />
+                        <Route path={withAuthPrefix('/dashboards/:rowId?')} component={Dashboards} />
+                        <Route path={withAuthPrefix('/charts/:rowId?')} component={Charts} />
 
                         <Route path="/403" component={() => <ErrorFound status={403} />} />
                       </Switch>

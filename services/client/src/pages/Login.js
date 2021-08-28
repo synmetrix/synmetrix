@@ -1,35 +1,21 @@
 import React, { useState } from 'react';
-import { useRequest } from 'ahooks';
 
 import { Button } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 
 import useAuthToken from '../hooks/useAuthToken';
+import useAuth from '../hooks/useAuth';
 import SimpleForm from '../components/SimpleForm';
 
 import s from './Login.module.css';
 
-const { GRAPHQL_PLUS_SERVER_URL } = process.env;
-
 const Login = () => {
   const { doAuth } = useAuthToken();
+  const { login } = useAuth();
+
   const { t } = useTranslation();
   const [message, setMessage] = useState();
-
-  const { loading, run } = useRequest(async (values) => {
-    const response = await fetch(`${GRAPHQL_PLUS_SERVER_URL}/auth/login`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(values),
-    });
-
-    return response.json();
-  }, {
-    manual: true,
-  });
 
   const formConfig = {
     email: {
@@ -50,13 +36,13 @@ const Login = () => {
   };
 
   const handleSubmit = async (values) => {
-    const res = await run(values);
+    const res = await login.run(values);
 
     if (res.statusCode && res.statusCode !== 200) {
       setMessage(res.message);
     } else {
       setMessage(null);
-      doAuth(res.jwt_token);
+      doAuth(res.jwt_token, res.refresh_token);
     }
   };
 
@@ -77,7 +63,7 @@ const Login = () => {
           style={{ width: '100%' }}
           labelAlign="left"
           size="large"
-          loading={loading}
+          loading={login.loading}
           {...layout}
         />
 

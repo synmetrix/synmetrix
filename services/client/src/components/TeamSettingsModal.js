@@ -66,7 +66,7 @@ TeamSettingsModal.propTypes = {
   onCancel: PropTypes.func,
   visible: PropTypes.bool,
   loading: PropTypes.bool,
-  currentTeam: {}
+  currentTeam: PropTypes.object,
 };
 
 TeamSettingsModal.defaultProps = {

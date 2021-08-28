@@ -20,6 +20,7 @@ import useCheckResponse from 'hooks/useCheckResponse';
 import useDashboards from 'hooks/useDashboards';
 import useAuth from 'hooks/useAuth';
 import usePermissions from 'hooks/usePermissions';
+import useAppSettings from 'hooks/useAppSettings';
 
 import 'react-grid-layout/css/styles.css';
 import 'react-resizable/css/styles.css';
@@ -30,12 +31,12 @@ export const rowHeight = 30;
 const Dashboards = ({ params }) => {
   const { t } = useTranslation();
   const [, setLocation] = useLocation();
-  const basePath = '/d/dashboards';
+  const { withAuthPrefix } = useAppSettings();
   const { rowId } = params;
 
-  const {
-    setLastUsedDashboardId,
-  } = useAuth();
+  // const {
+  //   setLastUsedDashboardId,
+  // } = useAuth();
 
   const {
     all: dashboards,
@@ -54,9 +55,9 @@ const Dashboards = ({ params }) => {
     },
   } = useDashboards({ editId: rowId, pauseQueryAll: false });
 
-  useEffect(() => {
-    setLastUsedDashboardId(dashboard.rowId);
-  }, [dashboard?.rowId]);
+  // useEffect(() => {
+  //   setLastUsedDashboardId(dashboard.rowId);
+  // }, [dashboard?.rowId]);
 
   const onDelete = async (res, err) => {
     if (res) {
@@ -64,14 +65,14 @@ const Dashboards = ({ params }) => {
 
       if (dashboards.length - 1 <= 0) {
         const firstDataSource = allData?.data?.allDatasources?.nodes?.[0]?.rowId;
-        setLastUsedDashboardId(null);
-        setLocation(`/d/explore/${firstDataSource}`);
+        // setLastUsedDashboardId(null);
+        setLocation(withAuthPrefix(`/explore/${firstDataSource}`));
       } else {
         const firstDashboard = allData?.data?.allDashboards?.nodes?.filter(
           dashboard => dashboard.id !== res.deleteDashboard.deletedDashboardId
         )?.[0]?.rowId;
 
-        setLocation(`/d/dashboards/${firstDashboard}`);
+        setLocation(withAuthPrefix(`/dashboards/${firstDashboard}`));
       }
     }
   };

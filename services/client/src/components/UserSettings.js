@@ -6,26 +6,27 @@ import { useTranslation } from 'react-i18next';
 import UpdatePasswordForm from 'components/UpdatePasswordForm';
 
 import useAuth from 'hooks/useAuth';
+import useAuthToken from 'hooks/useAuthToken';
 
 const Profile = () => {
   const { t } = useTranslation();
 
   const { 
-    mutations: {
-      revokeMutation,
-      execRevokeJWTMutation,
-    }
+    revoke,
   } = useAuth();
 
-  const revokeTokens = useCallback(() => {
-    execRevokeJWTMutation();
+  const { cleanTokens } = useAuthToken();
 
-    if (revokeMutation.data) {
-      message.success('Access tokens has been revoked');
-    } else if (revokeMutation.error) {
-      message.success('Something went wrong');
+  const revokeTokens = useCallback(async () => {
+    const data = await revoke.run();
+
+    if (data.statusCode >= 200 && data.statusCode <= 300) {
+      message.success('All tokens expired');
+      cleanTokens();
+    } else {
+      message.error(data.message);
     }
-  }, [revokeMutation, execRevokeJWTMutation]);
+  }, [cleanTokens, revoke]);
 
   return (
     <>

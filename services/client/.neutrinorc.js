@@ -9,6 +9,7 @@ const __DEV__ = process.env.NODE_ENV !== 'production';
 const GRAPHQL_SERVER_URL = __DEV__ ? 'http://localhost:8080/v1/graphql' : process.env.GRAPHQL_SERVER_URL;
 const GRAPHQL_PLUS_SERVER_URL = __DEV__ ? 'http://localhost:8081' : process.env.GRAPHQL_PLUS_SERVER_URL;
 const GRAPHQL_WS_URL = __DEV__ ? 'ws://localhost:8080/v1/graphql' : process.env.GRAPHQL_WS_URL;
+const AUTH_PREFIX = process.env.AUTH_PREFIX || '/~';
 
 module.exports = {
   use: [
@@ -96,6 +97,7 @@ module.exports = {
           GRAPHQL_SERVER_URL: JSON.stringify(GRAPHQL_SERVER_URL),
           GRAPHQL_PLUS_SERVER_URL: JSON.stringify(GRAPHQL_PLUS_SERVER_URL),
           GRAPHQL_WS_URL: JSON.stringify(GRAPHQL_WS_URL),
+          AUTH_PREFIX: JSON.stringify(AUTH_PREFIX),
           __DEV__: JSON.stringify(__DEV__),
         },
       }]);

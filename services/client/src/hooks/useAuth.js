@@ -1,229 +1,120 @@
-import { useEffect, useCallback } from 'react';
-import { useQuery, useMutation } from 'urql';
-import { get } from 'unchanged';
-
-import { useLocalStorageState } from 'ahooks';
-import { useRouter } from 'wouter';
-import useLocation from 'wouter/use-location';
-import trackEvent from 'utils/trackEvent';
-
+import { useRequest } from 'ahooks';
 import {
-  useSetRecoilState,
-  useRecoilState,
+  useRecoilValue,
 } from 'recoil';
 
-import { currentToken, currentUser } from '../recoil/currentUser';
+import { currentRefreshToken, currentToken } from '../recoil/currentUser';
 
-import usePermissions from './usePermissions';
+const { GRAPHQL_PLUS_SERVER_URL } = process.env;
 
-const CurrentUserQuery = `
-  query CurrentUserQuery {
-    currentUser {
-      userId: rowId
-      teamId
-      teamRole
-      name
-      email
-      role
-      ACL {
-        key
-        restrictScopes
-      }
-    }
+export default () => {
+  const refreshToken = useRecoilValue(currentRefreshToken);
+  const authToken = useRecoilValue(currentToken);
 
-    allDatasources {
-      nodes {
-        id
-        rowId
-        name
-      }
-    }
+  const login = useRequest(async (values) => {
+    const response = await fetch(`${GRAPHQL_PLUS_SERVER_URL}/auth/login`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        ...values,
+        cookie: false,
+      }),
+    });
 
-    allDashboards {
-      nodes {
-        id
-        rowId
-        name
-      }
-    }
-  }
-`;
-
-const LoginMutation = `
-  mutation LoginMutation($input: LoginInput!) {
-    login(input: $input) {
-      token
-      teamRole
-      restrictScopes
-    }
-  }
-`;
-
-const SignUpMutation = `
-  mutation SignUpMutation($input: SignupInput!) {
-    signup(input: $input) {
-      token
-      teamRole
-      restrictScopes
-    }
-  }
-`;
-
-const revokeJWTMutation = `
-  mutation revokeTokensMutation {
-    revokeTokens
-  }
-`;
-
-const UpdatePasswordMutation = `
-  mutation UpdatePasswordMutation($input: UpdatePasswordInput!) {
-    updatePassword(input: $input)
-  }
-`;
-
-const HOME_VIEWER_PATH = '/d/profile';
-const HOME_BASE_PATH = '/d/sources';
-
-const getHomePath = (teamRole) => {
-  if (['viewer', 'client'].includes(teamRole)) {
-    return HOME_VIEWER_PATH;
-  }
-
-  return HOME_BASE_PATH;
-};
-
-export default (options = {}) => {
-  const [
-    lastUsedDashboardId,
-    setLastUsedDashboardId
-  ] = useLocalStorageState('last-dashboard');
-
-  const [
-    lastUsedDataSourceId,
-    setLastUsedDataSourceId
-  ] = useLocalStorageState('last-datasource');
-
-  const router = useRouter();
-
-  const [userState, setUserState] = useRecoilState(currentUser);
-
-  const [, navigate] = useLocation();
-
-  const { checkMe = false } = options;
-  const [signUpMutation, doSignUpMutation] = useMutation(SignUpMutation);
-  const [loginMutation, doLoginMutation] = useMutation(LoginMutation);
-
-  const execLoginMutation = useCallback(({ input }) => {
-    trackEvent('Login');
-
-    doLoginMutation({ input });
-  }, [doLoginMutation]);
-
-  const [currentUserData, doCurrentUserQuery] = useQuery({
-    query: CurrentUserQuery,
-    pause: true,
+    return response.json();
+  }, {
+    manual: true,
   });
 
-  const { saveCachedRestrictScopes } = usePermissions({});
+  const register = useRequest(async (values) => {
+    const response = await fetch(`${GRAPHQL_PLUS_SERVER_URL}/auth/register`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        ...values,
+        cookie: false,
+      }),
+    });
 
-  const logout = useCallback(() => {
-    setLastUsedDataSourceId(null);
-    setAuthToken(null);
-    navigate('/login');
-    saveCachedRestrictScopes([]);
-  }, [
-    setLastUsedDataSourceId,
-    navigate,
-    saveCachedRestrictScopes
-  ]);
+    return response.json();
+  }, {
+    manual: true,
+  });
 
-  const execCurrentUserQuery = useCallback(() => {
-    return doCurrentUserQuery({ requestPolicy: 'network-only' });
-  }, [doCurrentUserQuery]);
+  const validateResponse = async response => {
+    let data = {};
 
-  const [revokeMutation, doRevokeJWTMutation] = useMutation(revokeJWTMutation);
-  const execRevokeJWTMutation = useCallback(() => {
-    trackEvent('Revoke JWT');
-
-    doRevokeJWTMutation();
-    logout();
-  }, [doRevokeJWTMutation, logout]);
-
-  const [updatePasswordMutation, doUpdatePassMutation] = useMutation(UpdatePasswordMutation);
-  const execUpdatePassMutation = useCallback((input) => {
-    trackEvent('Update Password');
-
-    doUpdatePassMutation({ input });
-  }, [doUpdatePassMutation]);
-
-  useEffect(() => {
-    if (currentUserData.data) {
-      setUserState(currentUserData.data);
-    }
-  }, [currentUserData.data, setUserState]);
-
-  useEffect(() => {
-    const token = get('data.login.token', loginMutation) || get('data.signup.token', signUpMutation);
-
-    if (token) {
-      const teamRole = get('data.login.teamRole', loginMutation) || get('data.signup.teamRole', signUpMutation);
-      const restrictScopes = get('data.login.restrictScopes', loginMutation) || get('data.signup.restrictScopes', signUpMutation);
-      saveCachedRestrictScopes(restrictScopes);
-
-      loginMutation.data = null;
-      signUpMutation.data = null;
-
-      if (router.lastTransition && router.lastTransition.path) {
-        navigate(router.lastTransition.path);
-      } else {
-        navigate(getHomePath(teamRole));
+    try {
+      data = await response.json();
+    } catch (err) {
+      if (response.status === 204) {
+        console.log('HTTP status: ', response.status);
+        return {
+          statusCode: response.status,
+        };
       }
-    }
-  }, [
-    checkMe,
-    loginMutation,
-    signUpMutation,
-    navigate,
-    router.lastTransition,
-    saveCachedRestrictScopes
-  ]);
 
-  useEffect(() => {
-    if (checkMe && !userState) {
-      execCurrentUserQuery();
+      return err;
     }
-  }, [checkMe, execCurrentUserQuery, userState]);
 
-  useEffect(() => {
-    if (checkMe && currentUserData.data) {
-      const userId = get('currentUser.userId', currentUserData.data);
+    return data;
+  };
 
-      if (!userId) {
-        navigate('/login');
-        currentUserData.data = null;
-      }
-    }
-  }, [checkMe, currentUserData.data, navigate]);
+  const logout = useRequest(async (values) => {
+    const response = await fetch(`${GRAPHQL_PLUS_SERVER_URL}/auth/logout?refresh_token=${refreshToken}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${authToken}`,
+      },
+      body: JSON.stringify(values),
+    });
+
+    return validateResponse(response);
+  }, {
+    manual: true,
+  });
+
+  const revoke = useRequest(async (values) => {
+    const response = await fetch(`${GRAPHQL_PLUS_SERVER_URL}/auth/token/revoke?refresh_token=${refreshToken}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${authToken}`,
+      },
+      body: JSON.stringify(values),
+    });
+
+    return validateResponse(response);
+  }, {
+    manual: true,
+  });
+
+  const changePass = useRequest(async (values) => {
+    const response = await fetch(`${GRAPHQL_PLUS_SERVER_URL}/auth/change-password`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${authToken}`,
+      },
+      body: JSON.stringify(values),
+    });
+
+    return validateResponse(response);
+  }, {
+    manual: true,
+  });
 
   return {
+    refreshToken,
+    changePass,
+    login,
+    register,
     logout,
-    queries: {
-      currentUserData,
-      execCurrentUserQuery,
-    },
-    mutations: {
-      loginMutation,
-      execLoginMutation,
-      signUpMutation,
-      execSignUpMutation: doSignUpMutation,
-      revokeMutation,
-      execRevokeJWTMutation,
-      updatePasswordMutation,
-      execUpdatePassMutation,
-    },
-    lastUsedDataSourceId,
-    setLastUsedDataSourceId,
-    lastUsedDashboardId,
-    setLastUsedDashboardId,
+    revoke,
   };
 };

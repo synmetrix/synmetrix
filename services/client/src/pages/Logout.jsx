@@ -1,21 +1,15 @@
 import React, { useEffect } from 'react';
-import PropTypes from 'prop-types';
-import useLocation from 'wouter/use-location';
-import { useSetRecoilState } from 'recoil';
 
 import { Result } from 'antd';
 import { SmileOutlined } from '@ant-design/icons';
 
-import { currentToken } from '../recoil/currentUser';
+import useAuthToken from 'hooks/useAuthToken';
 
 const Logout = () => {
-  const setToken = useSetRecoilState(currentToken);
-
-  const [, setLocation] = useLocation();
+  const { doLogout } = useAuthToken();
 
   useEffect(() => {
-    setToken(null);
-    setLocation('/');
+    doLogout();
   });
 
   return (

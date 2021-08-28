@@ -5,6 +5,7 @@ import { Button, Icon } from 'antd';
 
 import { useTranslation } from 'react-i18next';
 import useLocation from 'hooks/useLocation';
+import useAppSettings from 'hooks/useAppSettings';
 
 import DataSourceModal from 'components/DataSourceModal';
 import DataSourcesTable from 'components/DataSourcesTable';
@@ -19,7 +20,8 @@ const DataSources = ({ match }) => {
   const { t } = useTranslation();
   const { params = {} } = match || {};
   const [location, setLocation] = useLocation();
-  const basePath = '/d/sources';
+  const { withAuthPrefix } = useAppSettings();
+  const basePath = withAuthPrefix('/sources');
 
   const { fallback } = usePermissions({ scope: 'datasources' });
   if (fallback) {

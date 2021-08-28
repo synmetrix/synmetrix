@@ -15,6 +15,7 @@ import usePermissions from 'hooks/usePermissions';
 import useLocation from 'hooks/useLocation';
 import useCheckResponse from 'hooks/useCheckResponse';
 import useCurrentUserState from 'hooks/useCurrentUserState';
+import useAppSettings from 'hooks/useAppSettings';
 
 import Loader from 'components/Loader';
 import ModalView from 'components/ModalView';
@@ -33,7 +34,9 @@ const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
   const { t } = useTranslation();
   const { currentUserState: currentUser } = useCurrentUserState();
   const [, setLocation] = useLocation();
-  const basePath = '/d/schemas';
+  const { withAuthPrefix } = useAppSettings();
+
+  const basePath = withAuthPrefix('/schemas');
   const [isConsoleOpen, toggleConsole] = useState(false);
 
   const { params = {} } = match;
@@ -134,7 +137,7 @@ const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
 
   const routes = [
     {
-      path: `/d/schemas/${dataSourceId}/genschema`,
+      path: `${basePath}/${dataSourceId}/genschema`,
       title: t('Generate Schema'),
     },
   ];

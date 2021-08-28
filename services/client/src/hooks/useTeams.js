@@ -1,37 +1,29 @@
 import { useCallback, useEffect, useMemo } from 'react';
 import { useQuery, useMutation } from 'urql';
 
-const newPinnedItemMutation = `
-  mutation ($object: pinned_items_insert_input!) {
-    insert_pinned_items_one(object: $object) {
+const newTeamMutation = `
+  mutation ($object: teams_insert_input!) {
+    insert_teams_one(object: $object) {
       id
       name
     }
   }
 `;
 
-const editPinnedItemMutation = `
+const editTeamMutation = `
   mutation (
-    $pk_columns: pinned_items_pk_columns_input!,
-    $_set: pinned_items_set_input!
+    $pk_columns: teams_pk_columns_input!,
+    $_set: teams_set_input!
   ) {
-    update_pinned_items_by_pk(pk_columns: $pk_columns, _set: $_set) {
+    update_teams_by_pk(pk_columns: $pk_columns, _set: $_set) {
       id
     }
   }
 `;
 
-const delPinnedItemMutation = `
-  mutation ($id: uuid!) {
-    delete_pinned_items_by_pk(id: $id) {
-      id
-    }
-  }
-`;
-
-const editPinnedItemQuery = `
+const editTeamQuery = `
   query ($id: uuid!) {
-    pinned_items_by_pk(id: $id) {
+    teams_by_pk(id: $id) {
       id
       created_at
       updated_at
@@ -44,23 +36,18 @@ export default (props = {}) => {
   const { params = {} } = props;
   const { editId } = params;
 
-  const [createMutation, doCreateMutation] = useMutation(newPinnedItemMutation);
+  const [createMutation, doCreateMutation] = useMutation(newTeamMutation);
   const execCreateMutation = useCallback((input) => {
     return doCreateMutation(input, { role });
   }, [doCreateMutation]);
 
-  const [updateMutation, doUpdateMutation] = useMutation(editPinnedItemMutation);
+  const [updateMutation, doUpdateMutation] = useMutation(editTeamMutation);
   const execUpdateMutation = useCallback((input) => {
     doUpdateMutation(input, { role });
   }, [doUpdateMutation]);
 
-  const [deleteMutation, doDeleteMutation] = useMutation(delPinnedItemMutation);
-  const execDeleteMutation = useCallback((input) => {
-    doDeleteMutation(input, { role });
-  }, [doDeleteMutation]);
-
   const [currentData, doQueryCurrent] = useQuery({
-    query: editPinnedItemQuery,
+    query: editTeamQuery,
     variables: {
       id: editId,
     },
@@ -71,7 +58,7 @@ export default (props = {}) => {
     doQueryCurrent({ requestPolicy: 'cache-and-network', role, ...context });
   }, [doQueryCurrent]);
 
-  const current = useMemo(() => currentData.data?.pinned_items_by_pk, [currentData.data]);
+  const current = useMemo(() => currentData.data?.teams_by_pk, [currentData.data]);
 
   useEffect(() => {
     if (editId) {
@@ -88,8 +75,6 @@ export default (props = {}) => {
     mutations: {
       createMutation,
       execCreateMutation,
-      deleteMutation,
-      execDeleteMutation,
       updateMutation,
       execUpdateMutation,
     },

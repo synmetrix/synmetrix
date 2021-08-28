@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 
 import { useTranslation } from 'react-i18next';
@@ -11,10 +11,10 @@ import logoImage from 'assets/images/logo.svg';
 import logoBlackImage from 'assets/images/logo-black.svg';
 
 import useAuthToken from 'hooks/useAuthToken';
+import useLocation from 'hooks/useLocation';
+import useAppSettings from 'hooks/useAppSettings';
 import useCurrentUserState from 'hooks/useCurrentUserState';
 
-// import useDataSourcesSubscription from 'hooks/useDataSourcesSubscription';
-// import useDashboardsSubscription from 'hooks/useDashboardsSubscription';
 import useSider from 'hooks/useSider';
 import usePermissions from 'hooks/usePermissions';
 import useCurrentUser from 'hooks/useCurrentUser';
@@ -28,17 +28,18 @@ const { Header, Content, Footer, Sider } = Layout;
 const UserMenu = ({ mode, restrictScopes = [] }) => {
   const { doLogout } = useAuthToken();
   const { t } = useTranslation();
+  const { withAuthPrefix } = useAppSettings();
 
   const accountSubMenu = [
     {
-      path: '/d/profile',
+      path: withAuthPrefix('/profile'),
       title: t('Profile'),
     }
   ];
 
   if (!restrictScopes.includes('team')) {
     accountSubMenu.push({
-      path: '/d/team',
+      path: withAuthPrefix('/team'),
       title: t('Team'),
     });
   }
@@ -73,19 +74,21 @@ const MainMenu = (props) => {
     currentUserState: currentUser,
   } = useCurrentUserState();
 
+  const { withAuthPrefix } = useAppSettings();
+
   const dataSources = currentUser?.datasources || [];
   const dashboards = currentUser?.dashboards || [];
   const dashboardsCount = dashboards?.length || 0;
 
   const dataSourceItems = dataSources.map(source => ({
     key: source.id,
-    path: `/d/schemas/${source.id}`,
+    path: withAuthPrefix(`/schemas/${source.id}`),
     title: source.name,
   }));
 
   const dashboardItems = dashboards.map(dashboard => ({
     key: dashboard.id,
-    path: `/d/dashboards/${dashboard.id}`,
+    path: withAuthPrefix(`/dashboards/${dashboard.id}`),
     title: dashboard.name,
   }));
 
@@ -96,17 +99,17 @@ const MainMenu = (props) => {
 
   let routes = [
     {
-      path: `/d/explore/${dataSourceId}`,
+      path: withAuthPrefix(`/explore/${dataSourceId}`),
       title: t('Explore'),
       scope: 'explore/header'
     },
     {
-      path: '/d/sources',
+      path: withAuthPrefix('/sources'),
       title: t('Data Sources'),
       scope: 'datasources'
     },
     {
-      path: '/d/schemas',
+      path: withAuthPrefix('/schemas'),
       title: t('Data Schemas'),
       children: dataSourceItems,
       scope: 'dataschemas'
@@ -115,7 +118,7 @@ const MainMenu = (props) => {
 
   if (dashboardsCount) {
     routes.unshift({
-      path: `/d/dashboards`,
+      path: withAuthPrefix('/dashboards'),
       title: t('Dashboards'),
       children: dashboardItems,
       scope: 'dashboards'
@@ -157,6 +160,15 @@ const MainLayout = (props) => {
   const { state, onBreakpoint, onCollapse } = useSider();
 
   useCurrentUser();
+  const [location] = useLocation();
+  const { authToken } = useAuthToken();
+
+  useEffect(() =>{
+    if (!authToken) {
+      window.location.href = '/login';
+    }
+  }, [authToken, location.pathname]);
+
   const { restrictScopes } = usePermissions({});
 
   return (

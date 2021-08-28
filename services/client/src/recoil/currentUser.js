@@ -2,7 +2,15 @@ import { atom, selector } from 'recoil';
 import jwtDecode from 'jwt-decode';
 import dayjs from 'dayjs';
 
-import { saveAuthToken, removeAuthToken, getAuthToken } from '../utils/storage';
+import { 
+  saveAuthToken,
+  removeAuthToken,
+  getAuthToken,
+
+  saveRefreshToken,
+  removeRefreshToken,
+  getRefreshToken 
+} from '../utils/storage';
 
 export const currentUserAtom = atom({
   key: 'currentUserAtom',
@@ -12,6 +20,26 @@ export const currentUserAtom = atom({
 export const currentTokenAtom = atom({
   key: 'currentTokenAtom',
   default: getAuthToken(),
+});
+
+export const currentRefreshTokenAtom = atom({
+  key: 'currentRefreshTokenAtom',
+  default: getRefreshToken(),
+});
+
+export const currentRefreshToken = selector({
+  key: 'currentRefreshToken',
+  get: ({ get }) => get(currentRefreshTokenAtom),
+  set: ({ set }, newToken) => {
+    removeRefreshToken();
+    set(currentRefreshTokenAtom, newToken);
+
+    if (newToken) {
+      saveRefreshToken(newToken);
+    } else {
+      set(currentRefreshTokenAtom, null);
+    }
+  }
 });
 
 export const currentToken = selector({
@@ -39,14 +67,20 @@ export const jwtPayload = selector({
     }
 
     const auth = { Authorization: `Bearer ${token}` };
-    const payload = jwtDecode(token);
+    let payload = {};
 
-    if (dayjs().isAfter((payload.exp * 1000))) {
-      console.error('JWT is expired');
-      return null;
+    try {
+      payload = jwtDecode(token);
+
+      if (dayjs().isAfter((payload.exp * 1000))) {
+        console.error('JWT is expired');
+        return null;
+      }
+    } catch (err) {
+      console.error('JWT is broken, reload the application data');
     }
 
-    const { hasura } = payload;
+    const { hasura = {} } = payload;
 
     return {
       ...auth,
