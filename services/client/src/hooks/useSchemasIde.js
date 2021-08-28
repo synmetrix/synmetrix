@@ -1,4 +1,4 @@
-import { useMemo, useCallback, useEffect } from 'react';
+import { useCallback } from 'react';
 
 import useLocation from 'hooks/useLocation';
 import useTabs from 'hooks/useTabs';
@@ -40,23 +40,30 @@ export default ({ dataSourceId }) => {
 
   const editTab = useCallback((id, action) => {
     if (action === 'remove') {
-      const anyOtherTab = Object.keys(tabsState.tabs).find(tabId => tabId !== id);
+      const { activeTab } = tabsState;
       closeTab(id);
 
-      // if we're closing active tab
-      if (tabsState.activeTab?.id === id && tabsState.activeTab?.name) {
-        openSchema({ id: anyOtherTab, name: tabsState.tabs[anyOtherTab] });
-      } else if (!anyOtherTab) {
-      // if it's not the active tab but no other tabs
-        changePath(defaultTabId);
-        changeActiveTab(defaultTabId);
-      // if it's not the active tab and any other tabs
-      } else if (tabsState.activeTab?.name && anyOtherTab) {
-        changePath(tabsState.activeTab.name);
-        openSchema({ id: anyOtherTab, name: tabsState.tabs[anyOtherTab] });
+      const anyOtherTab = Object.keys(tabsState.tabs).find(tabId => tabId !== id);
+      const anyOtherTabName = tabsState.tabs[anyOtherTab] || defaultTabId;
+
+      // if we're closing the active tab and there are any other tabs
+      if (activeTab === id && anyOtherTabName) {
+        changeActiveTab(anyOtherTabName);
+
+        // if other tab is not the default one then open it
+        if (anyOtherTabName !== defaultTabId) {
+          openSchema({ id: anyOtherTab, name: anyOtherTabName });
+        // else change path only
+        } else {
+          changePath(anyOtherTabName);
+        }
+      // else move to active
+      } else {
+        const activeTabName = tabsState.tabs[activeTab];
+        changePath(activeTabName);
       }
     }
-  }, [changeActiveTab, changePath, closeTab, openSchema, tabsState.activeTab, tabsState.tabs]);
+  }, [changeActiveTab, changePath, closeTab, openSchema, tabsState]);
 
   return {
     openSchema,
