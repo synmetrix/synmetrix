@@ -95,7 +95,7 @@ const WorkspaceDataSection = (props) => {
         });
       }
 
-      if (progress.error) {
+      if (progress?.error) {
         messages.push({
           type: 'error',
           text: progress.error

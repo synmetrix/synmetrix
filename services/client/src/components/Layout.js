@@ -10,8 +10,8 @@ import cx from 'classnames';
 import logoImage from 'assets/images/logo.svg';
 import logoBlackImage from 'assets/images/logo-black.svg';
 
-import useCurrentUserState from 'hooks/useCurrentUserState';
 import useAuthToken from 'hooks/useAuthToken';
+import useCurrentUserState from 'hooks/useCurrentUserState';
 
 // import useDataSourcesSubscription from 'hooks/useDataSourcesSubscription';
 // import useDashboardsSubscription from 'hooks/useDashboardsSubscription';
@@ -70,20 +70,12 @@ const MainMenu = (props) => {
   const { t } = useTranslation();
 
   const {
-    currentUser,
-  } = useCurrentUser();
+    currentUserState: currentUser,
+  } = useCurrentUserState();
 
   const dataSources = currentUser?.datasources || [];
   const dashboards = currentUser?.dashboards || [];
   const dashboardsCount = dashboards?.length || 0;
-
-  // useDataSourcesSubscription(() => {
-  //   execCurrentUserQuery({ requestPolicy: 'network-only' });
-  // });
-  //
-  // useDashboardsSubscription(() => {
-  //   execCurrentUserQuery({ requestPolicy: 'network-only' });
-  // });
 
   const dataSourceItems = dataSources.map(source => ({
     key: source.id,

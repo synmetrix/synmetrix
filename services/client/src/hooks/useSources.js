@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo } from 'react';
 
+import { useUpdateEffect } from 'ahooks';
 import { get, getOr } from 'unchanged';
 import { useQuery, useMutation, useSubscription } from 'urql';
 
@@ -20,6 +21,11 @@ const datasourcesQuery = `
       db_type
       created_at
       updated_at
+
+      dataschemas {
+        id
+        name
+      }
     }
     datasources_aggregate (where: $where) {
       aggregate {
@@ -166,7 +172,7 @@ export default ({ pauseQueryAll, pagination = {}, params = {}, disableSubscripti
     return datasource;
   }, [currentData]);
 
-  useEffect(() => {
+  useUpdateEffect(() => {
     if (editId) {
       execQueryCurrent();
     }

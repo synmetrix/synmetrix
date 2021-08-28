@@ -1,168 +1,98 @@
-import { useCallback, useMemo, useEffect } from 'react';
-
-import nanoid from 'nanoid';
-import { useMutation, useQuery } from 'urql';
-import { get, getOr } from 'unchanged';
-
-import trackEvent from 'utils/trackEvent';
-
-import { useRecoilValue } from 'recoil';
-import { currentUser as currentUserState } from 'recoil/currentUser';
+import { useCallback, useEffect, useMemo } from 'react';
+import { useQuery, useMutation } from 'urql';
 
 const newPinnedItemMutation = `
-  mutation NewPinnedItemMutation($input: CreatePinnedItemInput!) {
-    createPinnedItem(input: $input) {
-      pinnedItem {
-          id
-          name
-      }
-    }
-  }
-`;
-
-const currentPinnedItemQuery = `
-  query CurrentPinnedItem($rowId: Int!) {
-    pinnedItemByRowId(rowId: $rowId) {
+  mutation ($object: dataschemas_insert_input!) {
+    insert_dataschemas_one(object: $object) {
       id
-      rowId
       name
-      spec
-      specConfig
-      explorationByExplorationId {
-        datasourceId
-        slug
-        dataCube {
-          data
-          progress {
-            loading
-            stage
-            timeElapsed
-            error
-          }
-        }
-      }
-      dashboardByDashboardId {
-        rowId
-        name
-        layout
-      }
     }
   }
 `;
 
-const pinnedItemsQuery = `
-  query allPinnedItems {
-    allPinnedItems {
-      nodes {
-        id
-        rowId
-        name
-      }
+const editPinnedItemMutation = `
+  mutation (
+    $pk_columns: dataschemas_pk_columns_input!,
+    $_set: dataschemas_set_input!
+  ) {
+    update_dataschemas_by_pk(pk_columns: $pk_columns, _set: $_set) {
+      id
     }
   }
 `;
 
-const deletePinnedItemMutation = `
-  mutation DeletePinnedItemMutation($input: DeletePinnedItemByRowIdInput!) {
-    deletePinnedItemByRowId(input: $input) {
-      deletedPinnedItemId
+const delPinnedItemMutation = `
+  mutation ($id: uuid!) {
+    delete_dataschemas_by_pk(id: $id) {
+      id
     }
   }
 `;
 
-const updatePinnedItemMutation = `
-  mutation updatePinnedItem($input: UpdatePinnedItemInput!) {
-    updatePinnedItem(input: $input) {
-      pinnedItem {
-        name
-      }
+const editPinnedItemQuery = `
+  query ($id: uuid!) {
+    pinned_items_by_pk(id: $id) {
+      id
+      created_at
+      updated_at
     }
   }
 `;
 
-export default ({ rowId }) => {
-  const currentUser = useRecoilValue(currentUserState);
+const role = 'user';
+export default (props = {}) => {
+  const { params = {} } = props;
+  const { editId } = params;
 
-  const [createMutation, executeNewMutation] = useMutation(newPinnedItemMutation);
-  const mExecuteNewMutation = useCallback(pinnedItem => {
-    const clientMutationId = nanoid();
-    trackEvent('Create pinned item');
+  const [createMutation, doCreateMutation] = useMutation(newPinnedItemMutation);
+  const execCreateMutation = useCallback((input) => {
+    return doCreateMutation(input, { role });
+  }, [doCreateMutation]);
 
-    executeNewMutation({
-      input: {
-        clientMutationId,
-        pinnedItem: {
-          ...pinnedItem,
-          userId: currentUser.userId,
-        },
-      }
-    });
-  }, [currentUser.userId, executeNewMutation]);
+  const [updateMutation, doUpdateMutation] = useMutation(editPinnedItemMutation);
+  const execUpdateMutation = useCallback((input) => {
+    doUpdateMutation(input, { role });
+  }, [doUpdateMutation]);
 
-  const [allData, executeQueryAll] = useQuery({
-    query: pinnedItemsQuery,
-    pause: true,
-  });
+  const [deleteMutation, doDeleteMutation] = useMutation(delPinnedItemMutation);
+  const execDeleteMutation = useCallback((input) => {
+    doDeleteMutation(input, { role });
+  }, [doDeleteMutation]);
 
-  const all = useMemo(() => getOr([], 'data.allPinnedItems.nodes', allData), [allData]);
 
-  const [currentData, executeQueryCurrent] = useQuery({
-    query: currentPinnedItemQuery,
+  const [currentData, doQueryCurrent] = useQuery({
+    query: editPinnedItemQuery,
     variables: {
-      rowId: parseInt(rowId, 10),
+      id: editId,
     },
     pause: true,
   });
 
-  const current = useMemo(() => get('data.pinnedItemByRowId', currentData) || {}, [currentData]);
-  const currentProgress = useMemo(
-    () => get('data.pinnedItemByRowId.explorationByExplorationId.dataCube.progress', currentData) || {},
-    [currentData]
-  );
+  const execQueryCurrent = useCallback((context) => {
+    doQueryCurrent({ requestPolicy: 'cache-and-network', role, ...context });
+  }, [doQueryCurrent]);
 
-  const [deleteMutation, executeDeleteMutation] = useMutation(deletePinnedItemMutation);
-  const mExecuteDeleteMutation = useCallback(id => {
-    trackEvent('Delete Pinned Item');
-
-    executeDeleteMutation({
-      input: { rowId: id },
-    });
-  }, [executeDeleteMutation]);
-
-  const [updateMutation, execUpdateMutation] = useMutation(updatePinnedItemMutation);
-  const mExecUpdateMutation = useCallback((id, input = {}) => {
-    execUpdateMutation({
-      input: {
-        id,
-        pinnedItemPatch: input
-      },
-    });
-  }, [execUpdateMutation]);
+  const current = useMemo(() => currentData.data?.pinned_items_by_pk, [currentData.data]);
 
   useEffect(() => {
-    if (rowId || updateMutation.data) {
-      executeQueryCurrent({ requestPolicy: 'cache-and-network' });
+    if (editId) {
+      execQueryCurrent();
     }
-  }, [rowId, executeQueryCurrent, updateMutation.data]);
-
-  useEffect(() => {
-    if (currentProgress && currentProgress.loading) {
-      executeQueryCurrent({ requestPolicy: 'network-only' });
-    }
-  }, [currentProgress, executeQueryCurrent]);
+  }, [editId, execQueryCurrent]);
 
   return {
-    all,
     current,
-    currentProgress,
     queries: {
-      allData, executeQueryAll,
-      currentData
+      currentData,
+      execQueryCurrent,
     },
     mutations: {
-      createMutation, mExecuteNewMutation,
-      deleteMutation, mExecuteDeleteMutation,
-      updateMutation, mExecUpdateMutation
+      createMutation,
+      execCreateMutation,
+      deleteMutation,
+      execDeleteMutation,
+      updateMutation,
+      execUpdateMutation,
     },
   };
 };

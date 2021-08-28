@@ -1,9 +1,9 @@
 import { useMemo, useCallback, useEffect } from 'react';
 
 import { getOr } from 'unchanged';
+import { useSetState } from 'ahooks';
 
 import useCollapse from 'hooks/useCollapse';
-import useXState from 'hooks/useXState';
 
 const FILTERS_SEC = 'filtersSec';
 const DATA_SEC = 'dataSec';
@@ -25,7 +25,7 @@ export default ({ selectedQueryMembers }) => {
     onToggleSection 
   } = useCollapse([]);
 
-  const [state, updateState, setState] = useXState({
+  const [state, updateState] = useSetState({
     modelingSection: 'modelDefinition',
     dataSection: 'results',
     filtersCount: 0,
@@ -45,7 +45,7 @@ export default ({ selectedQueryMembers }) => {
   );
 
   useEffect(
-    () => setState(prev => {
+    () => updateState(prev => {
       const { filtersCount: prevFiltersCount } = prev;
 
       if (prevFiltersCount !== filtersCount) {
@@ -66,7 +66,7 @@ export default ({ selectedQueryMembers }) => {
 
       return prev;
     }),
-    [filtersCount, getSectionIndex, onToggleSection, setState]
+    [filtersCount, getSectionIndex, onToggleSection, updateState]
   );
 
   const onDataSectionChange = useCallback(e => {
@@ -86,15 +86,14 @@ export default ({ selectedQueryMembers }) => {
   );
 
   const incExperimentsCnt = useCallback(() => {
-    setState(prev => ({ ...prev, experimentsCount: (prev.experimentsCount || 0) + 1 }));
+    updateState(prev => ({ ...prev, experimentsCount: (prev.experimentsCount || 0) + 1 }));
   },
-  [setState]
+  [updateState]
   );
 
   return {
     collapseState,
     state,
-    setState,
     updateState,
     incExperimentsCnt,
     onToggleSection,

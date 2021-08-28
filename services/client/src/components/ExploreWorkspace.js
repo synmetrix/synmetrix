@@ -15,7 +15,7 @@ import useTabs from 'hooks/useTabs';
 import useDimensions from 'hooks/useDimensions';
 import useExploreWorkspace from 'hooks/useExploreWorkspace';
 import usePlayground from 'hooks/usePlayground';
-import useDataSchemas from 'hooks/useDataSchemas';
+import useSchemas from 'hooks/useSchemas';
 import usePermissions from 'hooks/usePermissions';
 
 import s from './ExploreWorkspace.module.css';
@@ -69,15 +69,21 @@ const ExploreWorkspace = (props) => {
 
   const {
     mutations: {
-      validateMutation, mExecValidateMutation
+      validateMutation,
+      execValidateMutation,
     }
-  } = useDataSchemas({ dataSourceId: dataSource.rowId });
+  } = useSchemas({ 
+    params: {
+      dataSourceId: dataSource.id,
+    },
+    pauseQueryAll: true,
+  });
 
   useEffect(() => {
-    if (dataSource.rowId) {
-      mExecValidateMutation();
+    if (dataSource.id) {
+      execValidateMutation();
     }
-  }, [dataSource.rowId, mExecValidateMutation]);
+  }, [dataSource.id, execValidateMutation]);
 
   const onRunQuery = (e) => {
     runQuery();
@@ -118,7 +124,7 @@ const ExploreWorkspace = (props) => {
   const { fallback: cubesFallback } = usePermissions({ scope: 'explore/workspace/cubes' });
   const { fallback: filtersFallback } = usePermissions({ scope: 'explore/workspace/filters' });
 
-  if (!loading && (!dataSource || !dataSource.rowId)) {
+  if (!loading && (!dataSource || !dataSource.id)) {
     return <ErrorFound status={404} />;
   }
 

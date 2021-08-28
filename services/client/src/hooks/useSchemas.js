@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo } from 'react';
 import { useQuery, useMutation, useSubscription } from 'urql';
+import { set } from 'unchanged';
 
 const newSchemaMutation = `
   mutation ($object: dataschemas_insert_input!) {
@@ -38,22 +39,18 @@ const editSchemaMutation = `
   }
 `;
 
-const editSchemaQuery = `
-  query ($id: uuid!) {
-    dataschemas_by_pk(id: $id) {
-      id
-      name
-      code
-      created_at
-      updated_at
-    }
-  }
-`;
-
 const delSchemaMutation = `
   mutation ($id: uuid!) {
     delete_dataschemas_by_pk(id: $id) {
       id
+    }
+  }
+`;
+
+const validateSchemaMutation = `
+  mutation ($id: uuid!) {
+    validate_dataschemas_by_pk(id: $id) {
+      message
     }
   }
 `;
@@ -75,7 +72,7 @@ const allSchemasSubscription = `
   }
 `;
 
-const getListVariables = (pagination) => {
+const getListVariables = (pagination, params) => {
   let res = {
     order_by: {
       created_at: 'asc',
@@ -89,14 +86,18 @@ const getListVariables = (pagination) => {
     };
   }
 
+  if (params.dataSourceId) {
+    res = set('where.datasource_id._eq', params.dataSourceId, res);
+  }
+  
   return res;
 };
 
 const handleSubscription = (_, response) => response;
 
 const role = 'user';
-export default ({ pauseQueryAll, pagination = {}, params = {}, disableSubscription = true }) => {
-  const { editId } = params;
+export default (props = {}) => {
+  const { pauseQueryAll, pagination = {}, params = {}, disableSubscription = true } = props;
 
   const [createMutation, doCreateMutation] = useMutation(newSchemaMutation);
   const execCreateMutation = useCallback((input) => {
@@ -118,15 +119,20 @@ export default ({ pauseQueryAll, pagination = {}, params = {}, disableSubscripti
     doRunSQLMutation(input, { role });
   }, [doRunSQLMutation]);
 
+  const [validateMutation, doValidateMutation] = useMutation(validateSchemaMutation);
+  const execValidateMutation = useCallback((input) => {
+    doValidateMutation(input, { role });
+  }, [doValidateMutation]);
+
   const [allData, doQueryAll] = useQuery({
     query: allSchemasQuery,
     pause: true,
-    variables: getListVariables(pagination),
+    variables: getListVariables(pagination, params),
   });
 
   const [subscription] = useSubscription({
     query: allSchemasSubscription,
-    variables: getListVariables(pagination),
+    variables: getListVariables(pagination, params),
     pause: disableSubscription,
   }, handleSubscription);
 
@@ -143,35 +149,12 @@ export default ({ pauseQueryAll, pagination = {}, params = {}, disableSubscripti
   const all = useMemo(() => allData.data?.dataschemas || [], [allData]);
   const totalCount = useMemo(() => allData.data?.dataschemas_aggregate.aggregate.count, [allData]);
 
-  const [currentData, doQueryCurrent] = useQuery({
-    query: editSchemaQuery,
-    variables: {
-      id: editId,
-    },
-    pause: true,
-  });
-
-  const execQueryCurrent = useCallback((context) => {
-    doQueryCurrent({ requestPolicy: 'cache-and-network', role, ...context });
-  }, [doQueryCurrent]);
-
-  const current = useMemo(() => currentData.data?.dataschemas_by_pk || {}, [currentData]);
-
-  useEffect(() => {
-    if (editId) {
-      execQueryCurrent();
-    }
-  }, [editId, execQueryCurrent]);
-
   return {
     all,
-    current,
     totalCount,
     queries: {
       allData,
       execQueryAll,
-      currentData,
-      execQueryCurrent,
     },
     mutations: {
       createMutation,
@@ -182,6 +165,8 @@ export default ({ pauseQueryAll, pagination = {}, params = {}, disableSubscripti
       execUpdateMutation,
       runSQLMutation,
       execRunSQLMutation,
+      validateMutation,
+      execValidateMutation,
     },
     subscription,
   };

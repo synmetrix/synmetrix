@@ -1,161 +1,161 @@
 import { useCallback, useEffect, useMemo } from 'react';
-import { message } from 'antd';
 
-import nanoid from 'nanoid';
-import { get, getOr } from 'unchanged';
-import { useQuery, useMutation } from 'urql';
-import useLocation from 'wouter/use-location';
-
-import trackEvent from 'utils/trackEvent';
-
-import { useRecoilValue } from 'recoil';
-import { currentUser as currentUserState } from 'recoil/currentUser';
+import { getOr } from 'unchanged';
+import { useQuery, useMutation, useSubscription } from 'urql';
+import useLocation from './useLocation';
 
 const newDashboardMutation = `
-  mutation NewDashboardMutation($input: CreateDashboardInput!) {
-    createDashboard(input: $input) {
-      dashboard {
-        id
-        rowId
-        name
-      }
-    }
-  }
-`;
-
-const updateDashboardMutation = `
-  mutation UpdateDashboardMutation($input: UpdateDashboardInput!) {
-    updateDashboard(input: $input) {
-      dashboard {
-        id
-        rowId
-        name
-        layout
-      }
-    }
-  }
-`;
-
-const editDashboardQuery = `
-  query EditDashboardQuery($rowId: Int!) {
-    dashboardByRowId(rowId: $rowId) {
+  mutation ($object: dashboards_insert_input!) {
+    insert_dashboards_one(object: $object) {
       id
-      rowId
       name
-      layout
-      pinnedItemsByDashboardId {
-        nodes {
-          rowId
-        }
-      }
     }
   }
 `;
 
 const dashboardsQuery = `
-  query DashboardsQuery {
-    allDashboards {
-      nodes {
-        id
-        rowId
-        name
-      }
+  query ($offset: Int, $limit: Int, $where: dashboards_bool_exp, $order_by: [dashboards_order_by!]) {
+    dashboards (offset: $offset, limit: $limit, where: $where, order_by: $order_by) {
+      id
+      name
+      db_type
+      created_at
+      updated_at
     }
-    allDatasources {
-      nodes {
-        rowId
+    dashboards_aggregate (where: $where) {
+      aggregate {
+        count
       }
     }
   }
 `;
 
-const deleteDashboardMutation = `
-  mutation DeleteDashboardMutation($input: DeleteDashboardInput!) {
-    deleteDashboard(input: $input) {
-      deletedDashboardId
+const editDashboardMutation = `
+  mutation (
+    $pk_columns: dashboards_pk_columns_input!,
+    $_set: dashboards_set_input!
+  ) {
+    update_dashboards_by_pk(pk_columns: $pk_columns, _set: $_set) {
+      id
     }
   }
 `;
 
-export default ({ editId, pauseQueryAll = false }) => {
+const editDashboardQuery = `
+  query ($id: uuid!) {
+    dashboards_by_pk(id: $id) {
+      id
+      name
+      db_type
+      db_params
+      created_at
+      updated_at
+    }
+  }
+`;
+
+const delDashboardMutation = `
+  mutation ($id: uuid!) {
+    delete_dashboards_by_pk(id: $id) {
+      id
+    }
+  }
+`;
+
+const dashboardsSubscription = `
+  subscription ($offset: Int, $limit: Int, $where: dashboards_bool_exp, $order_by: [dashboards_order_by!]) {
+    dashboards (offset: $offset, limit: $limit, where: $where, order_by: $order_by) {
+      id
+      name
+    }
+  }
+`;
+
+const getListVariables = (pagination) => {
+  let res = {
+    order_by: {
+      created_at: 'asc',
+    },
+  };
+
+  if (pagination) {
+    res = {
+      ...res,
+      ...pagination,
+    };
+  }
+
+  return res;
+};
+
+const handleSubscription = (_, response) => response;
+
+const role = 'user';
+export default (props = {}) => {
+  const { pauseQueryAll, pagination = {}, params = {}, disableSubscription = true } = props;
+
+  const { editId } = params;
   const [, setLocation] = useLocation();
-  const currentUser = useRecoilValue(currentUserState);
 
-  const [createMutation, executeNewMutation] = useMutation(newDashboardMutation);
-  const mExecuteNewMutation = useCallback(dashboard => {
-    const clientMutationId = nanoid();
-    trackEvent('Create dashboard');
+  const [createMutation, doCreateMutation] = useMutation(newDashboardMutation);
+  const execCreateMutation = useCallback((input) => {
+    return doCreateMutation(input, { role });
+  }, [doCreateMutation]);
 
-    executeNewMutation({
-      input: {
-        clientMutationId,
-        dashboard: {
-          ...dashboard,
-          userId: currentUser.userId,
-        },
-      }
-    });
-  }, [currentUser.userId, executeNewMutation]);
+  const [updateMutation, doUpdateMutation] = useMutation(editDashboardMutation);
+  const execUpdateMutation = useCallback((input) => {
+    doUpdateMutation(input, { role });
+  }, [doUpdateMutation]);
 
-  const [updateMutation, execUpdateMutation] = useMutation(updateDashboardMutation);
-  const mExecUpdateMutation = useCallback((id, dashboardPatch) => {
-    execUpdateMutation({
-      input: {
-        id,
-        dashboardPatch,
-      },
-    });
-  }, [execUpdateMutation]);
+  const [deleteMutation, doDeleteMutation] = useMutation(delDashboardMutation);
+  const execDeleteMutation = useCallback((input) => {
+    doDeleteMutation(input, { role });
+  }, [doDeleteMutation]);
 
-  const [allData, executeQueryAll] = useQuery({
+  const [allData, doQueryAll] = useQuery({
     query: dashboardsQuery,
     pause: true,
-    requestPolicy: 'network-only'
+    variables: getListVariables(pagination),
   });
+
+  const [subscription] = useSubscription({
+    query: dashboardsSubscription,
+    variables: getListVariables(pagination),
+    pause: disableSubscription,
+  }, handleSubscription);
+
+  const execQueryAll = useCallback((context) => {
+    doQueryAll({ requestPolicy: 'cache-and-network', role, ...context });
+  }, [doQueryAll]);
 
   useEffect(() => {
     if (!pauseQueryAll) {
-      executeQueryAll();
+      execQueryAll();
     }
-  }, [pauseQueryAll, executeQueryAll]);
+  }, [pauseQueryAll, execQueryAll]);
 
-  const all = useMemo(() => getOr([], 'data.allDashboards.nodes', allData), [allData]);
+  const all = useMemo(() => allData.data?.dashboards || [], [allData]);
+  const totalCount = useMemo(() => allData.data?.dashboards_aggregate.aggregate.count, [allData]);
 
-  const [currentData, executeQueryCurrent] = useQuery({
+  const [currentData, doQueryCurrent] = useQuery({
     query: editDashboardQuery,
     variables: {
-      rowId: parseInt(editId, 10),
+      id: editId,
     },
     pause: true,
-    requestPolicy: 'network-only',
   });
 
-  const current = useMemo(() => get('data.dashboardByRowId', currentData) || {}, [currentData]);
+  const execQueryCurrent = useCallback((context) => {
+    doQueryCurrent({ requestPolicy: 'cache-and-network', role, ...context });
+  }, [doQueryCurrent]);
 
-  const [deleteMutation, executeDeleteMutation] = useMutation(deleteDashboardMutation);
-  const mExecuteDeleteMutation = useCallback(id => {
-    trackEvent('Delete Dashboard');
-
-    executeDeleteMutation({
-      input: { id },
-    });
-  }, [executeDeleteMutation]);
+  const current = useMemo(() => currentData.data?.dashboards_by_pk || {}, [currentData]);
 
   useEffect(() => {
     if (editId) {
-      executeQueryCurrent();
+      execQueryCurrent();
     }
-  }, [editId, executeQueryCurrent]);
-
-  useEffect(() => {
-    if (currentData.error) {
-      message.error(currentData.error.message);
-    }
-  }, [currentData, currentData.error]);
-
-  const onChange = useCallback((key) => {
-    setLocation(`/d/dashboards/${key}`);
-  }, [setLocation]);
+  }, [editId, execQueryCurrent]);
 
   const getItemGridData = useCallback((itemId) => {
     const defaultGridData = {
@@ -194,19 +194,30 @@ export default ({ editId, pauseQueryAll = false }) => {
     return itemGridData;
   }, [current]);
 
+  const onChange = useCallback((key) => {
+    setLocation(`/d/dashboards/${key}`);
+  }, [setLocation]);
+
   return {
     all,
     current,
+    totalCount,
     onChange,
     getItemGridData,
     queries: {
-      allData, executeQueryAll,
-      currentData, executeQueryCurrent,
+      allData,
+      execQueryAll,
+      currentData,
+      execQueryCurrent,
     },
     mutations: {
-      createMutation, mExecuteNewMutation,
-      updateMutation, mExecUpdateMutation,
-      deleteMutation, mExecuteDeleteMutation
+      createMutation,
+      execCreateMutation,
+      deleteMutation,
+      execDeleteMutation,
+      updateMutation,
+      execUpdateMutation,
     },
+    subscription,
   };
 };

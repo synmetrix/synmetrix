@@ -7,6 +7,7 @@ import { Row, Col } from 'antd';
 import useSources from 'hooks/useSources';
 import useTableState from 'hooks/useTableState';
 import useCheckResponse from 'hooks/useCheckResponse';
+import useCurrentUserState from 'hooks/useCurrentUserState';
 
 import DataSourceModal from 'components/DataSourceModal';
 import TableList from 'components/TableList';
@@ -21,6 +22,7 @@ const DataSourcesTable = ({ editId, onModalClose, onModalOpen }) => {
   });
 
   const [state, setState] = useState(initModal(editId));
+  const { currentUserState: currentUser } = useCurrentUserState();
 
   useEffect(
     () => setState(initModal(editId)),
@@ -53,20 +55,19 @@ const DataSourcesTable = ({ editId, onModalClose, onModalOpen }) => {
     mutations: {
       updateMutation, execUpdateMutation,
     },
-    subscription,
   } = useSources({
     params: {
       editId: state.editId,
     },
     pagination: paginationVars,
-    disableSubscription: false,
+    pauseQueryAll: true,
   });
 
   useEffect(() => {
-    if (subscription.data) {
+    if (currentUser?.datasources?.length) {
       execQueryAll({ requestPolicy: 'network-only' });
     }
-  }, [execQueryAll, subscription.data]);
+  }, [currentUser.datasources, execQueryAll]);
 
   const onDataSourceOpen = (record) => {
     onModalOpen(record);
@@ -88,7 +89,6 @@ const DataSourcesTable = ({ editId, onModalClose, onModalOpen }) => {
 
   const onDelete = () => {
     onDataSourceClose();
-    execQueryAll({ requestPolicy: 'cache-and-network' });
   };
 
   useCheckResponse(updateMutation, () => {}, {

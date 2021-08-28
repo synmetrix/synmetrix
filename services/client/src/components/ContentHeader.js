@@ -7,14 +7,14 @@ import PopoverButton from 'components/PopoverButton';
 
 import s from './ContentHeader.module.css';
 
-const ContentHeader = ({ rowId, title, entities, onChange, extra }) => {
+const ContentHeader = ({ selectedId, title, entities, onChange, extra }) => {
   const onClick = ({ key }) => {
     onChange(key);
   };
 
   const overlay = entities.length > 1 && (
     <Menu onClick={onClick}>
-      {entities.map(d => d.rowId !== rowId && <Menu.Item key={d.rowId}>{d.name}</Menu.Item>)}
+      {entities.map(d => d.id !== selectedId && <Menu.Item key={d.id}>{d.name}</Menu.Item>)}
     </Menu>
   );
 
@@ -72,7 +72,7 @@ const ContentHeader = ({ rowId, title, entities, onChange, extra }) => {
 };
 
 ContentHeader.propTypes = {
-  rowId: PropTypes.number,
+  selectedId: PropTypes.string,
   title: PropTypes.oneOfType([
     PropTypes.string,
     PropTypes.element,
@@ -85,7 +85,7 @@ ContentHeader.propTypes = {
 ContentHeader.defaultProps = {
   entities: [],
   title: '',
-  rowId: null,
+  selectedId: null,
   extra: null
 };
 

@@ -1,20 +1,20 @@
-import React, { useMemo, useEffect, useState, useCallback } from 'react';
+import React, { useMemo, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 
 import { useTranslation } from 'react-i18next';
 import { Tabs } from 'antd';
 
-import { get, getOr } from 'unchanged';
+import { getOr } from 'unchanged';
 
 import withSizes from 'react-sizes';
 import compose from 'utils/compose';
 
-// import useIde from 'hooks/useIde';
 import useSchemas from 'hooks/useSchemas';
 import useSchemasIde from 'hooks/useSchemasIde';
 import usePermissions from 'hooks/usePermissions';
 import useLocation from 'hooks/useLocation';
 import useCheckResponse from 'hooks/useCheckResponse';
+import useCurrentUserState from 'hooks/useCurrentUserState';
 
 import Loader from 'components/Loader';
 import ModalView from 'components/ModalView';
@@ -31,6 +31,7 @@ const reservedSlugs = ['sqlrunner', 'genschema'];
 
 const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
   const { t } = useTranslation();
+  const { currentUserState: currentUser } = useCurrentUserState();
   const [, setLocation] = useLocation();
   const basePath = '/d/schemas';
   const [isConsoleOpen, toggleConsole] = useState(false);
@@ -50,7 +51,6 @@ const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
     activeTab,
     changeActiveTab,
     openTab,
-    closeTab,
     openedTabs,
     openSchema,
   } = useSchemasIde({ dataSourceId });
@@ -70,13 +70,12 @@ const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
       runSQLMutation,
       execRunSQLMutation,
     },
-    subscription,
   } = useSchemas({
     params: {
-
+      dataSourceId,
     },
-    pauseQueryAll: false,
-    disableSubscription: false,
+    pauseQueryAll: true,
+    disableSubscription: true,
   });
 
   const schemaIdToCode = useMemo(() => all.reduce((acc, curr) => {
@@ -92,7 +91,6 @@ const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
   [all, openedTabs]
   );
 
-  console.log(openedTabs)
   useEffect(() => {
     if (dataSchemaName) {
       const schemaObj = all.find(schema => schema.name === dataSchemaName);
@@ -104,42 +102,14 @@ const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
   }, [all, dataSchemaName, openTab, openedTabs]);
 
   useEffect(() => {
-    if (subscription.data) {
-      execQueryAll();
+    if (currentUser?.dataschemas) {
+      execQueryAll({ requestPolicy: 'cache-and-network' });
     }
-  }, [execQueryAll, subscription.data]);
+  }, [currentUser.dataschemas, execQueryAll]);
 
   useCheckResponse(createMutation, () => {}, {
     successMessage: t('Schema created')
   });
-
-
-  // const onCloseTab = useCallback(id => {
-  //   const fallbackId = getTabId(all.find(scema => scema.id !== id)) || 'sqlrunner';
-  //   closeTab(id, fallbackId);
-  //
-  //   return fallbackId;
-  // },
-  // [getTabId, all, closeTab]
-  // );
-
-  // const {
-  //   loading,
-  //   getTabId,
-  //   activeTab,
-  //   closeTab,
-  //   changeActiveTab,
-  //
-  //   allSchemas,
-  //   schemaIdToCode,
-  //   openedSchemas,
-  //   openSchema,
-  //   schemaMutations,
-  //
-  //   dataSource,
-  //   sourceQueries,
-  //   sourceMutations,
-  // } = useIde({ dataSourceId, dataSchemaName, slug });
 
   const validationError = '';
   // const validationError = useMemo(

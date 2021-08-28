@@ -6,7 +6,7 @@ import { saveAuthToken, removeAuthToken, getAuthToken } from '../utils/storage';
 
 export const currentUserAtom = atom({
   key: 'currentUserAtom',
-  default: null,
+  default: {},
 });
 
 export const currentTokenAtom = atom({
@@ -24,7 +24,7 @@ export const currentToken = selector({
     if (newToken) {
       saveAuthToken(newToken);
     } else {
-      set(currentUserAtom, null);
+      set(currentUserAtom, {});
     }
   }
 });

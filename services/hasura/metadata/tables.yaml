@@ -220,6 +220,14 @@
   - name: user
     using:
       foreign_key_constraint_on: user_id
+  array_relationships:
+  - name: dataschemas
+    using:
+      foreign_key_constraint_on:
+        column: datasource_id
+        table:
+          schema: public
+          name: dataschemas
   insert_permissions:
   - role: user
     permission:

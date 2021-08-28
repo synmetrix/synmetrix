@@ -46,7 +46,7 @@ export const getColumns = (selectedQueryMembers, settings = {}) => [
   ...Object.values(selectedQueryMembers.measures || {})
 ].map(c => ({ id: c.name, Header: getTitle(settings, c), accessor: (row) => row[c.name], colId: c.name, type: c.type }));
 
-export default ({ dataSource = {}, pauseQueryCurrent, editId, rowsLimit, offset }) => {
+export default ({ dataSource = {}, editId, rowsLimit, offset }) => {
   const [settings, dispatchSettings] = useReducer(reducer, initialSettings);
 
   const {
@@ -56,18 +56,19 @@ export default ({ dataSource = {}, pauseQueryCurrent, editId, rowsLimit, offset 
       currentData: {
         fetching: explorationLoading,
       },
-      executeQueryCurrent: loadExploration,
+      execQueryAll: loadExploration,
     },
     mutations: {
-      mExecuteNewMutation: newExploration,
+      execCreateMutation: newExploration,
     }
   } = useExplorations({
-    dataSourceId: dataSource.rowId,
-    editId,
+    params: {
+      dataSourceId: dataSource.rowId,
+      editId,
+      rowsLimit,
+      offset,
+    },
     pauseQueryAll: true,
-    pauseQueryCurrent,
-    rowsLimit,
-    offset,
   });
 
   const playgroundSettings = useMemo(() => get('playgroundSettings', exploration) || {}, [exploration]);
@@ -109,7 +110,7 @@ export default ({ dataSource = {}, pauseQueryCurrent, editId, rowsLimit, offset 
 
     return getColumns(selectedQueryMembers, settings);
   },
-    [selectedQueryMembers, settings]
+  [selectedQueryMembers, settings]
   );
 
   const explorationState = useMemo(() => ({
@@ -123,7 +124,7 @@ export default ({ dataSource = {}, pauseQueryCurrent, editId, rowsLimit, offset 
     skippedMembers,
     settings
   }),
-    [explorationLoading, explorationProgress, exploration.rawSql, hitLimit, columns, rows, currPlaygroundState, skippedMembers, settings]
+  [explorationLoading, explorationProgress, exploration.rawSql, hitLimit, columns, rows, currPlaygroundState, skippedMembers, settings]
   );
 
   const [isQueryChanged, setChangedStatus] = useState(false);

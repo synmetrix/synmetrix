@@ -1,65 +1,70 @@
 import React, { useCallback, useEffect } from 'react';
 import PropTypes from 'prop-types';
 
-import useLocation from 'wouter/use-location';
 import { useTranslation } from 'react-i18next';
 
-import { getOr } from 'unchanged';
-
-import { Link } from 'wouter';
+import { Link } from 'react-router-dom';
 import { Empty, Button } from 'antd';
 
 import Loader from 'components/Loader';
 import ContentHeader from 'components/ContentHeader';
 import ExploreWorkspace from 'components/ExploreWorkspace';
 
-import useDataSources from 'hooks/useDataSources';
-import useAuth from 'hooks/useAuth';
-import useDataSchemasSubscription from 'hooks/useDataSchemasSubscription';
+import useLocation from 'hooks/useLocation';
+import useCurrentUserState from 'hooks/useCurrentUserState';
+import useSources from 'hooks/useSources';
 import usePermissions from 'hooks/usePermissions';
 
 const Explore = (props) => {
   const { t } = useTranslation();
   const [, setLocation] = useLocation();
+  const { match } = props;
+  const { params = {} } = match;
 
   const urlParams = new URLSearchParams(window.location.search);
   const tabId = urlParams.get('tabId');
   const chartId = urlParams.get('chart');
 
-  const [dataSourceId, explorationId, taskId] = (props?.params?.rest || '').split('/');
+  const [dataSourceId, explorationId, taskId] = (params?.rest || '').split('/');
   const basePath = ['/d/explore', dataSourceId, explorationId].filter(v => !!v).join('/');
 
-  const {
-    lastUsedDataSourceId,
-    setLastUsedDataSourceId
-  } = useAuth();
+  const { currentUserState: currentUser } = useCurrentUserState();
+
+  // const {
+  //   lastUsedDataSourceId,
+  //   setLastUsedDataSourceId
+  // } = useAuth();
+
+  // useEffect(() => {
+  //   if (dataSourceId && lastUsedDataSourceId !== dataSourceId) {
+  //     setLastUsedDataSourceId(dataSourceId);
+  //   }
+  // }, [dataSourceId, lastUsedDataSourceId, setLastUsedDataSourceId]);
 
   const {
-    all: dataSources,
     current: dataSource,
     queries: {
       currentData: {
         fetching: loadingDataSource
       },
-      executeQueryCurrent: loadDataSource,
+      execQueryCurrent: loadDataSource,
     },
-  } = useDataSources({ editId: dataSourceId });
-
-  useDataSchemasSubscription(() => {
-    if (dataSourceId) {
-      loadDataSource({ requestPolicy: 'network-only' });
-    }
+  } = useSources({
+    params: {
+      editId: dataSourceId,
+    },
+    pauseQueryAll: true,
   });
 
-  const onChange = useCallback((key = dataSource.rowId) => {
-    setLocation(`/d/explore/${key}`);
-  }, [dataSource.rowId, setLocation]);
-
   useEffect(() => {
-    if (dataSourceId && lastUsedDataSourceId !== dataSourceId) {
-      setLastUsedDataSourceId(dataSourceId);
+    if (currentUser?.dataschemas) {
+      loadDataSource({ requestPolicy: 'network-only' });
     }
-  }, [dataSourceId, lastUsedDataSourceId, setLastUsedDataSourceId]);
+  }, [currentUser.dataschemas, loadDataSource]);
+
+  const onChange = useCallback((key = dataSource.id) => {
+    setLocation(`/d/explore/${key}`);
+  }, [dataSource.id, setLocation]);
 
   const { fallback } = usePermissions({ scope: 'explore' });
   if (fallback) {
@@ -94,9 +99,9 @@ const Explore = (props) => {
         basePath={basePath}
         header={(
           <ContentHeader
-            rowId={dataSource.rowId}
+            selectedId={dataSource.id}
             title={dataSource.name || 'Select DataSource'}
-            entities={dataSources}
+            entities={currentUser?.datasources}
             onChange={onChange}
           />
         )}
@@ -115,11 +120,11 @@ const Explore = (props) => {
 };
 
 Explore.propTypes = {
-  params: PropTypes.object,
+  match: PropTypes.object,
 };
 
 Explore.defaultProps = {
-  params: {},
+  match: {},
 };
 
 export default Explore;

@@ -1,188 +1,134 @@
-import { useCallback, useMemo, useEffect } from 'react';
-
-import { get, getOr } from 'unchanged';
-
-import nanoid from 'nanoid';
-
-import useLocation from 'wouter/use-location';
+import { useCallback, useEffect, useMemo } from 'react';
 import { useQuery, useMutation } from 'urql';
-import { message } from 'antd';
-
-import trackEvent from 'utils/trackEvent';
-
-import { useRecoilValue } from 'recoil';
-import { currentUser as currentUserState } from 'recoil/currentUser';
+import { set } from 'unchanged';
+import useLocation from './useLocation';
 
 const newExplorationMutation = `
-  mutation NewExplorationMutation($input: CreateExplorationInput!) {
-    createExploration(input: $input) {
-      explorationEdge {
-        node {
-          id
-          slug
-        }
+  mutation ($object: explorations_insert_input!) {
+    insert_explorations_one(object: $object) {
+      id
+      name
+    }
+  }
+`;
+
+const allExplorationsQuery = `
+  query ($offset: Int, $limit: Int, $where: explorations_bool_exp, $order_by: [explorations_order_by!]) {
+    explorations (offset: $offset, limit: $limit, where: $where, order_by: $order_by) {
+      id
+      name
+      code
+      created_at
+      updated_at
+    }
+    explorations_aggregate (where: $where) {
+      aggregate {
+        count
       }
     }
   }
 `;
 
 const editExplorationQuery = `
-  query EditExplorationQuery($slug: String!, $rowsLimit: Int, $offset: Int) {
-    explorationBySlug(slug: $slug) {
+  query ($id: uuid!) {
+    explorations_by_pk(id: $id) {
       id
-      rowId
-      datasourceId
-      playgroundState
-      playgroundSettings
-      slug
-      dataCube(limit: $rowsLimit, offset: $offset) {
-        data
-        hitLimit
-        annotation {
-          skippedMembers
-          measures
-          dimensions
-          timeDimensions
-          segments
-        }
-        progress {
-          loading
-          stage
-          timeElapsed
-          error
-        }
-        resourcesAdvice {
-          CPURate
-          RAMRate
-        }
-      }
-      rawSql {
-        sql
-      }
-      createdAt
+      name
+      code
+      created_at
+      updated_at
     }
   }
 `;
 
-// TODO: add isPublic and expirationTime for explorations: allow user to share their queries
-const explorationsQuery = `
-  query explorationsQuery($first: Int, $offset: Int) {
-    allExplorations(
-      orderBy: CREATED_AT_DESC,
-      first: $first,
-      offset: $offset
-    ) {
-      nodes {
-        id
-        rowId
-        datasourceId,
-        slug
-        createdAt
-      }
-    }
-  }
-`;
+const getListVariables = (pagination, params) => {
+  let res = {
+    order_by: {
+      created_at: 'asc',
+    },
+  };
 
-export default ({ dataSourceId, editId, pauseQueryAll, pauseQueryCurrent, rowsLimit, offset }) => {
+  if (pagination) {
+    res = {
+      ...res,
+      ...pagination,
+    };
+  }
+
+  if (params.dataSourceId) {
+    res = set('where.datasource_id._eq', params.dataSourceId, res);
+  }
+  
+  return res;
+};
+
+const role = 'user';
+export default ({ pauseQueryAll, pagination = {}, params = {} }) => {
   const [, setLocation] = useLocation();
-  const currentUser = useRecoilValue(currentUserState);
+  const { editId, dataSourceId } = params;
 
-  const [createMutation, executeNewMutation] = useMutation(newExplorationMutation);
-  const mExecuteNewMutation = useCallback(exploration => {
-    const clientMutationId = nanoid();
+  const [createMutation, doCreateMutation] = useMutation(newExplorationMutation);
+  const execCreateMutation = useCallback((input) => {
+    return doCreateMutation(input, { role });
+  }, [doCreateMutation]);
 
-    trackEvent('Create exploration');
-
-    executeNewMutation({
-      input: {
-        clientMutationId,
-        exploration: {
-          ...exploration,
-          // inner postgraphile column
-          userId: currentUser.userId,
-          datasourceId: dataSourceId,
-        },
-      }
-    });
-  }, [dataSourceId, currentUser.userId, executeNewMutation]);
-
-  const [allData, executeQueryAll] = useQuery({
-    query: explorationsQuery,
-    pause: !!pauseQueryAll,
-    variables: {
-      fisrt: 50,
-    }
+  const [allData, doQueryAll] = useQuery({
+    query: allExplorationsQuery,
+    pause: true,
+    variables: getListVariables(pagination, params),
   });
+
+  const execQueryAll = useCallback((context) => {
+    doQueryAll({ requestPolicy: 'cache-and-network', role, ...context });
+  }, [doQueryAll]);
 
   useEffect(() => {
     if (!pauseQueryAll) {
-      executeQueryAll();
+      execQueryAll();
     }
-  }, [pauseQueryAll, executeQueryAll]);
+  }, [pauseQueryAll, execQueryAll]);
 
-  const [currentData, executeQueryCurrent] = useQuery({
+  const all = useMemo(() => allData.data?.explorations || [], [allData]);
+  const totalCount = useMemo(() => allData.data?.explorations_aggregate.aggregate.count, [allData]);
+
+  const [currentData, doQueryCurrent] = useQuery({
     query: editExplorationQuery,
     variables: {
-      slug: editId,
-      rowsLimit: rowsLimit ? parseInt(rowsLimit, 10) : undefined,
-      offset: offset ? parseInt(offset, 10) : undefined,
+      id: editId,
     },
     pause: true,
   });
 
-  const current = useMemo(
-    () => get('data.explorationBySlug', currentData) || {},
-    [currentData]
-  );
+  const execQueryCurrent = useCallback((context) => {
+    doQueryCurrent({ requestPolicy: 'cache-and-network', role, ...context });
+  }, [doQueryCurrent]);
 
-  const currentProgress = useMemo(
-    () => get('data.explorationBySlug.dataCube.progress', currentData) || {},
-    [currentData]
-  );
+  const current = useMemo(() => currentData.data?.explorations_by_pk || {}, [currentData]);
 
   useEffect(() => {
-    if (editId && !pauseQueryCurrent) {
-      trackEvent('Query current exploration');
-      executeQueryCurrent();
+    if (editId) {
+      execQueryCurrent();
     }
-  }, [editId, executeQueryCurrent, pauseQueryCurrent]);
-
-  useEffect(() => {
-    if (currentData.error) {
-      message.error(currentData.error.message);
-      currentData.error = null;
-    }
-  }, [currentData.error, executeQueryCurrent]);
-
-  useEffect(() => {
-    if (currentProgress && currentProgress.loading) {
-      executeQueryCurrent({ requestPolicy: 'network-only' });
-    }
-  }, [currentProgress, executeQueryCurrent]);
+  }, [editId, execQueryCurrent]);
 
   const reset = useCallback(
     (explorationId) => setLocation(`/d/explore/${dataSourceId}/${explorationId}`),
     [dataSourceId, setLocation],
   );
 
-  useEffect(() => {
-    if (createMutation.data) {
-      const { slug } = getOr({}, 'createExploration.explorationEdge.node', createMutation.data);
-
-      reset(slug);
-      createMutation.data = null;
-    }
-  }, [createMutation.data, reset]);
-
   return {
+    all,
+    totalCount,
     current,
-    currentProgress,
     queries: {
-      allData, executeQueryAll,
-      currentData, executeQueryCurrent,
+      allData,
+      execQueryAll,
+      currentData,
+      execQueryCurrent,
     },
     mutations: {
-      createMutation, mExecuteNewMutation,
+      createMutation,
+      execCreateMutation,
     },
     reset,
   };

@@ -1,9 +1,11 @@
-import { useCallback, useMemo, useEffect } from 'react';
+import { useEffect } from 'react';
 
 import {
   useRecoilValue,
   useRecoilState,
 } from 'recoil';
+
+import { useDebounceFn, useUpdateEffect } from 'ahooks';
 
 import { useQuery } from 'urql';
 
@@ -13,6 +15,8 @@ import {
 } from '../recoil/currentUser';
 
 import useAuthToken from './useAuthToken';
+import useSources from './useSources';
+import useDashboards from './useDashboards';
 
 const currentUserQuery = `
   query ($id: uuid!) {
@@ -25,11 +29,22 @@ const currentUserQuery = `
       id
       name
     }
+
+    dataschemas (order_by: { created_at: desc }) {
+      id
+      name
+    }
+
+    dashboards (order_by: { created_at: desc }) {
+      id
+      name
+    }
   }
 `;
 
 const role = 'user';
-export default () => {
+export default (props = {}) => {
+  const { pauseQuery = true } = props;
   const [currentUser, setCurrentUser] = useRecoilState(currentUserAtom);
   const { authToken } = useAuthToken();
 
@@ -38,7 +53,7 @@ export default () => {
 
   const [currentUserData, doQueryCurrentUser] = useQuery({
     query: currentUserQuery,
-    pause: true,
+    pause: pauseQuery,
     variables: {
       id: userId,
     },
@@ -50,19 +65,44 @@ export default () => {
     if (userData) {
       setCurrentUser(userData);
     } else {
-      setCurrentUser(null);
+      setCurrentUser({});
     }
   }, [currentUserData.data, setCurrentUser]);
 
-  const execQueryCurrentUser = useCallback((context) => {
+  const { run: execQueryCurrentUser } = useDebounceFn((context) => {
     doQueryCurrentUser({ requestPolicy: 'cache-and-network', role, ...context });
-  }, [doQueryCurrentUser]);
+  }, {
+    wait: 500,
+  });
 
-  useEffect(() => {
+  useUpdateEffect(() => {
     if (authToken) {
       execQueryCurrentUser();
     }
   }, [authToken, execQueryCurrentUser]);
+
+  const { subscription: sourcesSubscription } = useSources({
+    pauseQueryAll: true,
+    disableSubscription: false,
+  });
+
+  const { subscription: dashboardsSubscription } = useDashboards({
+    pauseQueryAll: true,
+    disableSubscription: false,
+  });
+
+  useUpdateEffect(() => {
+    const anyData = sourcesSubscription.data || dashboardsSubscription.data;
+
+    if (anyData) {
+      sourcesSubscription.data = null;
+      dashboardsSubscription.data = null;
+      execQueryCurrentUser();
+    }
+  }, [sourcesSubscription.data, dashboardsSubscription.data]);
+
+  console.log('currentUser');
+  console.log(currentUser);
 
   return {
     currentUser,
