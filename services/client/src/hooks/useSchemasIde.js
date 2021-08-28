@@ -2,9 +2,11 @@ import { useCallback } from 'react';
 
 import useLocation from 'hooks/useLocation';
 import useTabs from 'hooks/useTabs';
+import useAppSettings from 'hooks/useAppSettings';
 
 export default ({ dataSourceId }) => {
   const [location, setLocation] = useLocation();
+  const { withAuthPrefix } = useAppSettings();
   const defaultTabId = 'sqlrunner';
 
   const {
@@ -15,13 +17,13 @@ export default ({ dataSourceId }) => {
   } = useTabs({ activeTab: defaultTabId });
 
   const changePath = useCallback((activeKey) => {
-    const basePath = ['/d/schemas', dataSourceId, activeKey].filter(v => !!v).join('/');
+    const basePath = [withAuthPrefix('/schemas'), dataSourceId, activeKey].filter(v => !!v).join('/');
 
     if (location.pathname !== basePath) {
       setLocation(basePath);
     }
   },
-  [dataSourceId, setLocation, location]
+  [withAuthPrefix, dataSourceId, location.pathname, setLocation]
   );
 
   const openSchema = useCallback(
