@@ -135,7 +135,7 @@ const Team = () => {
     <Container>
       <PageInfo
         justify={disableManagement ? 'center' : 'start'}
-        title={`${currentTeam?.name} ${t('Team')}`}
+        title={`${currentTeam?.name || ''} ${t('Team')}`.trim()}
         description={(
           <>
             {!disableManagement && (
@@ -143,11 +143,11 @@ const Team = () => {
                 <ul>
                   <li>Manage your Team</li>
                   <li>Grant roles and manage personal access</li>
-                </ul>,
+                </ul>
                 <Button style={{ marginRight: 10 }} type="primary" size="small" shape="round" onClick={() => onInviteOpen()}>
                   <Icon type="plus" />
                   {t('Invite a Team Member')}
-                </Button>,
+                </Button>
                 <Button type="primary" disabled={!isTeamExists} size="small" shape="round" onClick={() => onSettingsOpen()}>
                   <Icon type="setting" />
                   {t('Team Settings')}
