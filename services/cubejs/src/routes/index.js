@@ -29,6 +29,8 @@ const routes = ({ basePath, setupAuthInfo, cubejs, context }) => {
 
   router.get(`${basePath}/v1/test`, async (req, res) => {
     const { securityContext } = req;
+    console.log('securityContext');
+    console.log(securityContext);
     const driver = cubejs.options.driverFactory({ securityContext });
 
     try {
@@ -38,6 +40,7 @@ const routes = ({ basePath, setupAuthInfo, cubejs, context }) => {
         message: 'OK',
       });
     } catch (err) {
+      console.log(err);
       res.status(500).json({
         error: err.message
       });

@@ -1,6 +1,8 @@
 import jwt from 'jsonwebtoken';
 // import { get, getOr } from 'unchanged';
 import cubejsClientCore from '@cubejs-client/core';
+import timeoutSignal from 'timeout-signal';
+import fetch from 'node-fetch';
 
 import pickKeys from './pickKeys.js';
 import dateParser from './dateParser.js';
@@ -73,18 +75,25 @@ const cubejsApi = ({ dataSourceId }) => {
   const apiUrl = `${CUBEJS_URI}/cubejs/datasources/v1`;
   const init = new CubejsApiClient(cubejsToken, { apiUrl, headers: reqHeaders });
 
-  const fetchCubeJS = ({ route, method = 'get', params }) => {
+  const fetchCubeJS = async ({ route, method = 'get', params }) => {
     const url = `${apiUrl}${route}`;
+    let res;
 
     if (method === 'get') {
-      // return getJson(url, params, {
-      //   headers: reqHeaders,
-      // });
+      res = await fetch(url, {
+        headers: reqHeaders,
+        params,
+        signal: timeoutSignal(10000),
+      });
+    } else {
+      res = await fetch(url, {
+        headers: reqHeaders,
+        body: JSON.stringify(params),
+        signal: timeoutSignal(10000),
+      });
     }
 
-    // return postJson(url, params, {
-    //   headers: reqHeaders,
-    // });
+    return res.json();
   };
 
   return {
@@ -111,7 +120,7 @@ const cubejsApi = ({ dataSourceId }) => {
 
       let data;
 
-      if (fileType === 'sql') {
+      if (fileType === 'sql') {unchangedunchanged
         const resultSet = await init.sql(query, options);
         const { sql: [rawSql, params], ...restProps } = resultSet?.sqlQuery?.sql;
 

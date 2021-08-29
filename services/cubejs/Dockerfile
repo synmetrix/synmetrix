@@ -1,4 +1,4 @@
-FROM node:12.11.0-stretch
+FROM node:16.8.0-stretch
 
 WORKDIR /tmp
 COPY ./package.json ./yarn.lock /tmp/

@@ -37,30 +37,27 @@ app.post('/rpc/:method', async (req, res) => {
   const modulePath = `./src/rpc/${hyphensToCamelCase(method)}`;
   const module = await import(modulePath);
 
-  try {
-    if (!module) {
-      return {};
-    }
-
-    const data = module.default(session, input);
-
-    if (data) {
-      return res.json(data);
-    }
-
-    return res.status(400).json({
-      code: 'method_has_no_output',
-      message: `No output from the method "${method}". Check the script`,
-    });
-  } catch(err) {
-    logger.error(`Error in module "${modulePath}"`);
-    logger.error(err.stack || err);
-
-    return res.status(500).json({
-      code: 'method_has_error',
-      message: `Errors found in "${method}" module. Check the server logs`,
+  if (!module) {
+    return res.status(404).json({
+      code: 'method_not_found',
+      message: `Module "${modulePath}" not found. Check the server logs`,
     });
   }
+
+  const data = await module.default(session, input);
+
+  if (data) {
+    if (data.error) {
+      return res.status(400).json(data);
+    }
+
+    return res.json(data);
+  }
+
+  return res.status(400).json({
+    code: 'method_has_no_output',
+    message: `No output from the method "${method}". Check the script`,
+  });
 });
 
 app.listen(port);

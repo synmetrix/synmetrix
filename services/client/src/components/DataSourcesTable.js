@@ -82,7 +82,7 @@ const DataSourcesTable = ({ editId, onModalClose, onModalOpen }) => {
 
   const onSave = (_record, values) => {
     execUpdateMutation({ 
-      pk_columns: state.editId,
+      pk_columns: { id: state.editId },
       _set: values,
     });
   };

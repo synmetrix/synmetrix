@@ -23,6 +23,8 @@
     "pino": "^6.6.1",
     "request-received": "^0.0.3",
     "response-time": "^2.3.2",
-    "signale": "^1.4.0"
+    "signale": "^1.4.0",
+    "timeout-signal": "^1.1.0",
+    "unchanged": "^2.2.1"
   }
 }

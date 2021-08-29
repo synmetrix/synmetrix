@@ -1,4 +1,3 @@
-// const ServerCore = require('./src/serverCore');
 const ServerCore = require('@cubejs-backend/server-core');
 const pgConnectionString = require('pg-connection-string');
 const express = require('express');
@@ -55,7 +54,10 @@ const setupAuthInfo = async (req, auth) => {
     };
   }
 
+  console.log('dataSource fetching')
+  console.log(dataSourceId)
   const dataSource = await findDataSource({ dataSourceId }, context);
+  console.log(dataSource)
 
   if (!dataSource) {
     return {
@@ -163,10 +165,10 @@ const options = {
   apiSecret: CUBEJS_SECRET,
   basePath,
   logger,
-  schemaVersion: ({ securityContext }) => securityContext.schemaVersion,
+  schemaVersion: ({ securityContext }) => securityContext?.schemaVersion,
   driverFactory,
   repositoryFactory: ({ securityContext }) => {
-    const { dataSourceId } = securityContext;
+    const { dataSourceId } = securityContext || {};
 
     return {
       dataSchemaFiles: () => dataSchemaFiles({ dataSourceId }, context),
