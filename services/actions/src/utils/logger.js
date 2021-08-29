@@ -1,5 +1,6 @@
-const Cabin = require('cabin');
-const signale = require('signale');
+import Cabin from 'cabin';
+import signale from 'signale';
+import pino from 'pino';
 
 const { Signale } = signale;
 
@@ -32,7 +33,7 @@ const loggerOptions = {
   }
 };
 
-const pino = require('pino')({
+const pinoObj = pino({
   customLevels: {
     log: 30
   },
@@ -53,9 +54,9 @@ const env = process.env.NODE_ENV || 'development';
 
 const logger = new Cabin({
   axe: {
-    logger: env === 'production' ? pino : (new Signale(loggerOptions)),
+    logger: env === 'production' ? pinoObj : (new Signale(loggerOptions)),
     appInfo: false,
   }
 });
 
-module.exports = logger;
+export default logger;

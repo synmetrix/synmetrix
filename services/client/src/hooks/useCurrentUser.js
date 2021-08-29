@@ -44,7 +44,7 @@ const currentUserQuery = `
 
 const role = 'user';
 export default (props = {}) => {
-  const { pauseQuery = false } = props;
+  const { pauseQuery = true } = props;
   const [currentUser, setCurrentUser] = useRecoilState(currentUserAtom);
   const { authToken } = useAuthToken();
 

@@ -1,11 +1,11 @@
-const express = require('express');
+import express from 'express';
 
-const requestReceived = require('request-received');
-const responseTime = require('response-time');
-const requestId = require('express-request-id');
+import requestReceived from 'request-received';
+import responseTime from 'response-time';
+import requestId from 'express-request-id';
 
-const logger = require('./src/utils/logger');
-const services = require('./src/services');
+import logger from './src/utils/logger';
+import hyphensToCamelCase from './src/utils/hyphensToCamelCase';
 
 const port = parseInt(process.env.PORT, 10) || 3000;
 const dev = process.env.NODE_ENV !== 'production';
@@ -26,44 +26,42 @@ app.use(express.urlencoded({ extended: true })) // for parsing application/x-www
 
 app.use(logger.middleware);
 
-const actionsMiddleware = async (req, res, next) => {
-  const { input, action } = req.body;
+app.post('/rpc/:method', async (req, res) => {
+  const { method } = req.params;
 
-  console.log('services');
-  console.log(services);
+  const { 
+    session_variables: session,
+    input,
+  } = req.body;
 
-  if (!action) {
-    next();
-  }
-
-  const { name } = action;
-  logger.log(`Calling action ${name}`)
+  const modulePath = `./src/rpc/${hyphensToCamelCase(method)}`;
+  const module = await import(modulePath);
 
   try {
-    const data = await services[name](input);
-
-    if (data.error) {
-      logger.error(data);
-
-      return res.status(400).json({
-        code: String(data.statusCode),
-        message: data.message,
-      });
+    if (!module) {
+      return {};
     }
 
-    return res.json(data);
-  } catch (err) {
-    logger.error(err);
+    const data = module.default(session, input);
 
-    res.status(500).json({
-      code: '500',
-      message: err.message || err,
-    })
+    if (data) {
+      return res.json(data);
+    }
+
+    return res.status(400).json({
+      code: 'method_has_no_output',
+      message: `No output from the method "${method}". Check the script`,
+    });
+  } catch(err) {
+    logger.error(`Error in module "${modulePath}"`);
+    logger.error(err.stack || err);
+
+    return res.status(500).json({
+      code: 'method_has_error',
+      message: `Errors found in "${method}" module. Check the server logs`,
+    });
   }
-};
-
-// try to parse as the Hasura action first
-app.use(actionsMiddleware);
+});
 
 app.listen(port);
 

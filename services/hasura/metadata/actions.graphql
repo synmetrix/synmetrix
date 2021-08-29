@@ -1,0 +1,11 @@
+type Mutation {
+  check_source(
+    id: uuid!
+  ): CheckSourceOutput
+}
+
+type CheckSourceOutput {
+  message: String
+  code: Int
+}
+

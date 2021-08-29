@@ -1,11 +1,12 @@
 import jwt from 'jsonwebtoken';
 // import { get, getOr } from 'unchanged';
-import { CubejsApi: CubejsApiClient } from '@cubejs-client/core';
+import cubejsClientCore from '@cubejs-client/core';
 
 import pickKeys from './pickKeys.js';
 import dateParser from './dateParser.js';
 // import { getJson, postJson } from './request.js';
 
+const { CubejsApi: CubejsApiClient } = cubejsClientCore;
 const CUBEJS_SECRET = process.env.CUBEJS_SECRET || 'testToken';
 const CUBEJS_URI = process.env.CUBEJS_URI || 'http://cubejs:4000';
 export const CUBEJS_DATA_LIMIT = 10000;

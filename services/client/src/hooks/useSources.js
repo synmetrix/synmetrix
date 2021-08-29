@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useMemo } from 'react';
 
-import { useUpdateEffect } from 'ahooks';
 import { get, getOr } from 'unchanged';
 import { useQuery, useMutation, useSubscription } from 'urql';
 
@@ -50,9 +49,9 @@ const checkdatasourceMutation = `
   mutation (
     $id: uuid!,
   ) {
-    check_datasource(id: $id) {
+    check_source(id: $id) {
       message
-      status
+      code
     }
   }
 `;
@@ -172,7 +171,7 @@ export default ({ pauseQueryAll, pagination = {}, params = {}, disableSubscripti
     return datasource;
   }, [currentData]);
 
-  useUpdateEffect(() => {
+  useEffect(() => {
     if (editId) {
       execQueryCurrent();
     }

@@ -1,6 +1,13 @@
-actions: []
+actions:
+- name: check_source
+  definition:
+    kind: synchronous
+    handler: http://actions:3000/rpc/check_source
+  permissions:
+  - role: user
 custom_types:
   enums: []
   input_objects: []
-  objects: []
+  objects:
+  - name: CheckSourceOutput
   scalars: []
