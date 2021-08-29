@@ -334,6 +334,73 @@
 - table:
     schema: public
     name: members
+  object_relationships:
+  - name: team
+    using:
+      foreign_key_constraint_on: team_id
+  - name: user
+    using:
+      foreign_key_constraint_on: user_id
+  select_permissions:
+  - role: user
+    permission:
+      columns:
+      - roles
+      - created_at
+      - updated_at
+      - id
+      - team_id
+      - user_id
+      filter:
+        _or:
+        - user_id:
+            _eq: X-Hasura-User-Id
+        - team:
+            members:
+              user_id:
+                _eq: X-Hasura-User-Id
+      allow_aggregations: true
+  update_permissions:
+  - role: user
+    permission:
+      columns:
+      - roles
+      filter:
+        _and:
+        - team:
+            members:
+              user_id:
+                _eq: X-Hasura-User-Id
+        - team:
+            members:
+              roles:
+                _contains:
+                - OWNER
+      check:
+        _and:
+        - team:
+            members:
+              user_id:
+                _eq: X-Hasura-User-Id
+        - team:
+            members:
+              roles:
+                _contains:
+                - OWNER
+  delete_permissions:
+  - role: user
+    permission:
+      filter:
+        _and:
+        - team:
+            members:
+              user_id:
+                _eq: X-Hasura-User-Id
+        - team:
+            members:
+              roles:
+                _contains:
+                - OWNER
 - table:
     schema: public
     name: pinned_items
