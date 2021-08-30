@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 
+import { useUpdateEffect } from 'ahooks';
 import { useTranslation } from 'react-i18next';
 import { Row, Col } from 'antd';
 
@@ -60,14 +61,17 @@ const DataSourcesTable = ({ editId, onModalClose, onModalOpen }) => {
       editId: state.editId,
     },
     pagination: paginationVars,
-    pauseQueryAll: true,
+    pauseQueryAll: false,
   });
 
-  useEffect(() => {
-    if (currentUser?.datasources?.length) {
+  const userSourcesCount = currentUser.datasources?.length || 0; 
+  const sourcesCount = dataSources?.length || 0; 
+
+  useUpdateEffect(() => {
+    if (sourcesCount && userSourcesCount && userSourcesCount !== sourcesCount) {
       execQueryAll({ requestPolicy: 'network-only' });
     }
-  }, [currentUser.datasources, execQueryAll]);
+  }, [userSourcesCount, sourcesCount, execQueryAll]);
 
   const onDataSourceOpen = (record) => {
     onModalOpen(record);

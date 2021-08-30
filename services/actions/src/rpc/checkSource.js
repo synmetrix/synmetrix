@@ -2,10 +2,6 @@ import fetch from 'node-fetch';
 import cubejsApi from '../utils/cubejsApi';
 
 export default async (session, input) => {
-  console.log('======================')
-  console.log(session)
-  console.log(input)
-
   const { id: dataSourceId } = input || {};
   const userId = session?.['x-hasura-user-id'];
   console.log('result');
@@ -19,10 +15,7 @@ export default async (session, input) => {
     console.log('result');
     console.log(result);
 
-    return {
-      code: 'OK',
-      message: 'OK',
-    };
+    return result;
   } catch (error) {
     if (error.name === 'AbortError') {
       return {

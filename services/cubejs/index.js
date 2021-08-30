@@ -14,7 +14,7 @@ const MySqlDriver = require('@cubejs-backend/mysql-driver');
 const JSum = require('jsum');
 
 const routes = require('./src/routes');
-const pool = require('./src/utils/pgPool');
+const { fetchGraphQL } = require('./src/utils/graphql');
 const { dataSchemaFiles, findDataSource, getSchemaVersion } = require('./src/utils/dataSourceHelpers');
 
 const { CUBEJS_SECRET } = process.env;
@@ -30,42 +30,39 @@ const logger = (msg, params) => {
   console.log(`${msg}: ${JSON.stringify(restParams)}`);
 };
 
-const context = {
-  pgClient: pool,
+const pushError = (req, error) => {
+  req.securityContext = { error };
+  return null;
 };
 
 const setupAuthInfo = async (req, auth) => {
   const { authorization } = req.headers;
   let jwtDecoded;
+  let error;
 
   try {
     jwtDecoded = jwt.verify(authorization, CUBEJS_SECRET);
   } catch (err) {
-    return {
-      error: '403: Permissions denied',
-    };
+    return pushError(req, err.message);
   }
 
-  const dataSourceId = parseInt(jwtDecoded.dataSourceId);
+  const { dataSourceId } = jwtDecoded || {};
 
   if (!dataSourceId) {
-    return {
-      error: 'Provide dataSourceId',
-    };
+    error = 'Provide dataSourceId';
+
+    return pushError(req, error);
   }
 
-  console.log('dataSource fetching')
-  console.log(dataSourceId)
-  const dataSource = await findDataSource({ dataSourceId }, context);
-  console.log(dataSource)
+  const dataSource = await findDataSource({ dataSourceId });
 
   if (!dataSource) {
-    return {
-      error: 'Not found',
-    };
+    error = `Source "${dataSourceId}" not found`;
+
+    return pushError(req, error);
   }
 
-  const schemaVersion = await getSchemaVersion({ dataSourceId }, context);
+  const schemaVersion = await getSchemaVersion({ dataSourceId });
   const dataSourceVersion = JSum.digest(dataSource, 'SHA256', 'hex');
 
   req.securityContext = { dataSourceId, dataSource, schemaVersion, dataSourceVersion };
@@ -79,62 +76,84 @@ const connParamValid = (port) => {
 };
 
 const driverFactory = ({ securityContext }) => {
-  const { dataSource } = securityContext;
+  const { dataSource, error: securityError } = securityContext || {};
+
+  if (securityError) {
+    return {
+      testConnection: () => { throw new Error(securityError); },
+    }
+  }
+
   let result;
+  let error;
 
   // clean empty/false keys because of sideeffects
   let dbConfig = Object.keys(dataSource.db_params || {})
     .filter(key => !!dataSource.db_params[key])
     .reduce((res, key) => (res[key] = dataSource.db_params[key], res), {});
 
-  if (dbConfig.port) {
-    connParamValid(dbConfig.port);
-  }
-
-  if (['redshift', 'postgres'].includes(dataSource.db_type)) {
-    if (dataSource.connection_string) {
-      dbConfig = pgConnectionString(dataSource.connection_string);
+  try {
+    if (dbConfig.port) {
+        connParamValid(dbConfig.port);
     }
 
-    result = new PostgresDriver(dbConfig);
+    const dbType = dataSource.db_type?.toUpperCase();
+
+    if (['REDSHIFT', 'POSTGRES'].includes(dbType)) {
+      if (dbConfig.connection_string) {
+        dbConfig = pgConnectionString(dbConfig.connection_string);
+      }
+
+      result = new PostgresDriver(dbConfig);
+    }
+
+    switch (dbType) {
+      case 'MYSQL':
+        result = new MySqlDriver(dbConfig);
+        break;
+      case 'ATHENA':
+        result = new AthenaDriver(dbConfig);
+        break;
+      case 'MONGOBI':
+        result = new MongobiDriver(dbConfig);
+        break;
+      case 'BIGQUERY':
+        result = new BigQueryDriver({
+          ...dbConfig,
+          credentials: { ...dbConfig.keyFile }
+        });
+        break;
+      case 'MSSQL':
+        result = new MSSqlDriver({
+          ...dbConfig,
+          server: dbConfig.host,
+          port: parseInt(dbConfig.port) || MSSQL_DEFAULT_PORT
+        });
+        break;
+      case 'CLICKHOUSE':
+        result = new ClickHouseDriver({
+          host: dbConfig.host,
+          port: dbConfig.port,
+          auth: `${dbConfig.user}:${dbConfig.password}`,
+          protocol: dbConfig.ssl ? 'https:' : 'http:',
+          queryOptions: {
+            database: dbConfig.database || 'default'
+          },
+        });
+        break;
+      default:
+        break;
+    }
+
+  } catch (err) {
+    console.error(err);
+    error = err.message;
   }
 
-  switch (dataSource.db_type) {
-    case 'mysql':
-      result = new MySqlDriver(dbConfig);
-      break;
-    case 'athena':
-      result = new AthenaDriver(dbConfig);
-      break;
-    case 'mongobi':
-      result = new MongobiDriver(dbConfig);
-      break;
-    case 'bigquery':
-      result = new BigQueryDriver({
-        ...dbConfig,
-        credentials: { ...dbConfig.keyFile }
-      });
-      break;
-    case 'mssql':
-      result = new MSSqlDriver({
-        ...dbConfig,
-        server: dbConfig.host,
-        port: parseInt(dbConfig.port) || MSSQL_DEFAULT_PORT
-      });
-      break;
-    case 'clickhouse':
-      result = new ClickHouseDriver({
-        host: dbConfig.host,
-        port: dbConfig.port,
-        auth: `${dbConfig.user}:${dbConfig.password}`,
-        protocol: dbConfig.ssl ? 'https:' : 'http:',
-        queryOptions: {
-          database: dbConfig.database || 'default'
-        },
-      });
-      break;
-    default:
-      break;
+  if (error) {
+    return {
+      testConnection: () => { throw new Error(error); },
+    };
   }
 
   return result;
@@ -171,7 +190,7 @@ const options = {
     const { dataSourceId } = securityContext || {};
 
     return {
-      dataSchemaFiles: () => dataSchemaFiles({ dataSourceId }, context),
+      dataSchemaFiles: () => dataSchemaFiles({ dataSourceId }),
     };
   },
   telemetry: false,
@@ -186,7 +205,7 @@ const options = {
 
 const cubejs = new ServerCore(options);
 
-app.use(routes({ basePath, setupAuthInfo, cubejs, context }));
+app.use(routes({ basePath, setupAuthInfo, cubejs }));
 
 cubejs.initApp(app);
 app.listen(4000);

@@ -50,8 +50,10 @@ const DataSourceModal = (props) => {
   });
 
   const onCheck = (res) => {
-    if (res?.message) {
-      message.success('Connection is OK');
+    if (res?.check_source?.code === 'ok') {
+      message.success(res?.check_source?.message);
+    } else if (res?.check_source?.message) {
+      message.error(res?.check_source?.message);
     }
   };
 

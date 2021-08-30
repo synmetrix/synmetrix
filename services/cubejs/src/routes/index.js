@@ -4,7 +4,7 @@ const express = require('express');
 const router = express.Router();
 const { updateJoins } = require('../utils/compiler');
 
-const routes = ({ basePath, setupAuthInfo, cubejs, context }) => {
+const routes = ({ basePath, setupAuthInfo, cubejs, context = {} }) => {
   const { pgClient } = context;
 
   router.use(async (req, res, next) => {
@@ -29,20 +29,21 @@ const routes = ({ basePath, setupAuthInfo, cubejs, context }) => {
 
   router.get(`${basePath}/v1/test`, async (req, res) => {
     const { securityContext } = req;
-    console.log('securityContext');
-    console.log(securityContext);
     const driver = cubejs.options.driverFactory({ securityContext });
 
     try {
       await driver.testConnection();
 
       res.json({
+        code: 'ok',
         message: 'OK',
       });
     } catch (err) {
       console.log(err);
+
       res.status(500).json({
-        error: err.message
+        code: 'connection_test_failed',
+        message: err.message
       });
     }
   });

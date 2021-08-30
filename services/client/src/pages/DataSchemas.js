@@ -1,6 +1,7 @@
 import React, { useMemo, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 
+import { useUpdateEffect } from 'ahooks';
 import { useTranslation } from 'react-i18next';
 import { Tabs } from 'antd';
 
@@ -77,8 +78,7 @@ const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
     params: {
       dataSourceId,
     },
-    pauseQueryAll: true,
-    disableSubscription: true,
+    pauseQueryAll: false,
   });
 
   const schemaIdToCode = useMemo(() => all.reduce((acc, curr) => {
@@ -104,11 +104,15 @@ const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
     }
   }, [all, dataSchemaName, openTab, openedTabs]);
 
-  useEffect(() => {
-    if (currentUser?.dataschemas) {
+
+  const userSchemasCount = currentUser.dataschemas?.length || 0; 
+  const schemasCount = all?.length || 0; 
+
+  useUpdateEffect(() => {
+    if (schemasCount && userSchemasCount && userSchemasCount !== schemasCount) {
       execQueryAll({ requestPolicy: 'cache-and-network' });
     }
-  }, [currentUser.dataschemas, execQueryAll]);
+  }, [currentUser.dataschemas, execQueryAll, schemasCount, userSchemasCount]);
 
   useCheckResponse(createMutation, () => {}, {
     successMessage: t('Schema created')
