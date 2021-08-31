@@ -1,11 +1,94 @@
 type Mutation {
-  check_source(
+  check_connection(
+    datasource_id: uuid!
+  ): CheckConnectionOutput
+}
+
+type Query {
+  fetch_meta(
+    datasource_id: uuid!
+  ): SourceMetaOutput
+}
+
+type Query {
+  fetch_tables(
+    datasource_id: uuid!
+  ): SourceTablesOutput
+}
+
+type Mutation {
+  gen_dataschemas(
+    datasource_id: uuid!
+    tables: [SourceTable!]!
+    overwrite: Boolean
+  ): GenSourceSchemaOutput
+}
+
+type Mutation {
+  run_query(
+    datasource_id: uuid!
+    query: String!
+    limit: Int!
+  ): RunSourceQueryOutput
+}
+
+type Mutation {
+  validate_datasource(
     id: uuid!
-  ): CheckSourceOutput
+  ): ValidateSourceOutput
+}
+
+input cubeJoin {
+  primaryKey: String!
+  primaryKeyType: String!
+  primaryRelation: String!
+  foreignKey: String!
+}
+
+input SourceTable {
+  name: String!
+  addCubeJoins: [cubeJoin]
 }
 
 type CheckSourceOutput {
   message: String
-  code: Int
+  code: String!
+}
+
+type GenSourceSchemaOutput {
+  message: String
+  code: String!
+}
+
+type SourceTablesOutput {
+  schema: json
+}
+
+type SourceMetaOutput {
+  cubes: json
+}
+
+type RunSourceQueryOutput {
+  result: json
+}
+
+type ValidateSourceSchemaOutput {
+  code: String!
+  message: String
+}
+
+type ValidateSourceSchemasOutput {
+  code: String!
+  message: String
+}
+
+type ValidateSourceOutput {
+  code: String!
+  message: String
+}
+
+type CheckConnectionOutput {
+  message: String
+  code: String!
 }
 

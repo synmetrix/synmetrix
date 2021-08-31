@@ -47,22 +47,6 @@ const delSchemaMutation = `
   }
 `;
 
-const validateSchemaMutation = `
-  mutation ($id: uuid!) {
-    validate_dataschemas_by_pk(id: $id) {
-      message
-    }
-  }
-`;
-
-const runSourceSQLMutation = `
-  mutation ($datasource_id: uuid!, $query: String!, $limit: Int!) {
-    run_sql(datasource_id: $datasource_id, query: $query, limit: $limit) {
-      id
-    }
-  }
-`;
-
 const allSchemasSubscription = `
   subscription ($offset: Int, $limit: Int, $where: dataschemas_bool_exp, $order_by: [dataschemas_order_by!]) {
     dataschemas (offset: $offset, limit: $limit, where: $where, order_by: $order_by) {
@@ -114,16 +98,6 @@ export default (props = {}) => {
     doDeleteMutation(input, { role });
   }, [doDeleteMutation]);
 
-  const [runSQLMutation, doRunSQLMutation] = useMutation(runSourceSQLMutation);
-  const execRunSQLMutation = useCallback((input) => {
-    doRunSQLMutation(input, { role });
-  }, [doRunSQLMutation]);
-
-  const [validateMutation, doValidateMutation] = useMutation(validateSchemaMutation);
-  const execValidateMutation = useCallback((input) => {
-    doValidateMutation(input, { role });
-  }, [doValidateMutation]);
-
   const [allData, doQueryAll] = useQuery({
     query: allSchemasQuery,
     pause: true,
@@ -163,10 +137,6 @@ export default (props = {}) => {
       execDeleteMutation,
       updateMutation,
       execUpdateMutation,
-      runSQLMutation,
-      execRunSQLMutation,
-      validateMutation,
-      execValidateMutation,
     },
     subscription,
   };

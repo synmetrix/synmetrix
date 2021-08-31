@@ -23,14 +23,35 @@ const allSchemasQuery = `
   }
 `;
 
-const findDataSource = async ({ dataSourceId }) => {
-  let dataSource = await fetchGraphQL(sourceQuery, { id: dataSourceId });
-  dataSource = dataSource?.data?.datasources_by_pk;
 
-  return dataSource;
+const upsertSchemaMutation = `
+  mutation ($object: dataschemas_insert_input!) {
+    insert_dataschemas_one(
+      object: $object,
+      on_conflict: {constraint: dataschemas_datasource_id_branch_name_key, update_columns: code}
+    ) {
+      id
+    }
+  }
+`;
+
+const findDataSource = async ({ dataSourceId }) => {
+  let res = await fetchGraphQL(sourceQuery, { id: dataSourceId });
+  res = res?.data?.datasources_by_pk;
+
+  return res;
 };
 
 exports.findDataSource = findDataSource;
+
+const createDataSchema = async (object) => {
+  let res = await fetchGraphQL(upsertSchemaMutation, { object });
+  res = res?.data?.insert_dataschemas_one;
+
+  return res;
+};
+
+exports.createDataSchema = createDataSchema;
 
 const findDataSchemas = async (args) => {
   let vars = {
@@ -63,8 +84,8 @@ const dataSchemaFiles = async (args) => {
 
 exports.dataSchemaFiles = dataSchemaFiles;
 
-const getSchemaVersion = async (args, context) => {
-  const files = await dataSchemaFiles(args, context);
+const getSchemaVersion = async (args) => {
+  const files = await dataSchemaFiles(args);
 
   return createMd5Hex(files);
 };

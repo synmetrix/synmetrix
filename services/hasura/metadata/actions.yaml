@@ -1,13 +1,56 @@
 actions:
-- name: check_source
+- name: check_connection
   definition:
     kind: synchronous
-    handler: http://actions:3000/rpc/check_source
+    handler: http://actions:3000/rpc/check_connection
+- name: fetch_meta
+  definition:
+    kind: ""
+    handler: http://actions:3000/rpc/fetch_meta
+    forward_client_headers: true
+  permissions:
+  - role: user
+- name: fetch_tables
+  definition:
+    kind: ""
+    handler: http://actions:3000/rpc/fetch_tables
+    forward_client_headers: true
+  permissions:
+  - role: user
+- name: gen_dataschemas
+  definition:
+    kind: synchronous
+    handler: http://actions:3000/rpc/gen_schemas
+    forward_client_headers: true
+  permissions:
+  - role: user
+- name: run_query
+  definition:
+    kind: synchronous
+    handler: http://actions:3000/rpc/run_query
+    forward_client_headers: true
+  permissions:
+  - role: user
+- name: validate_datasource
+  definition:
+    kind: synchronous
+    handler: http://actions:3000/rpc/validate_source
+    forward_client_headers: true
   permissions:
   - role: user
 custom_types:
   enums: []
-  input_objects: []
+  input_objects:
+  - name: cubeJoin
+  - name: SourceTable
   objects:
   - name: CheckSourceOutput
+  - name: GenSourceSchemaOutput
+  - name: SourceTablesOutput
+  - name: SourceMetaOutput
+  - name: RunSourceQueryOutput
+  - name: ValidateSourceSchemaOutput
+  - name: ValidateSourceSchemasOutput
+  - name: ValidateSourceOutput
+  - name: CheckConnectionOutput
   scalars: []

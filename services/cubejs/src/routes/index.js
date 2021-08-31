@@ -3,10 +3,9 @@ const express = require('express');
 
 const router = express.Router();
 const { updateJoins } = require('../utils/compiler');
+const { findDataSchemas, createDataSchema } = require('../utils/dataSourceHelpers');
 
-const routes = ({ basePath, setupAuthInfo, cubejs, context = {} }) => {
-  const { pgClient } = context;
-
+const routes = ({ basePath, setupAuthInfo, cubejs }) => {
   router.use(async (req, res, next) => {
     await setupAuthInfo(req);
     next();
@@ -36,7 +35,7 @@ const routes = ({ basePath, setupAuthInfo, cubejs, context = {} }) => {
 
       res.json({
         code: 'ok',
-        message: 'OK',
+        message: 'Connection is OK',
       });
     } catch (err) {
       console.log(err);
@@ -68,7 +67,7 @@ const routes = ({ basePath, setupAuthInfo, cubejs, context = {} }) => {
 
   router.post(`${basePath}/v1/generate-dataschema`, async (req, res) => {
     const { securityContext } = req;
-    const { dataSource } = securityContext;
+    const { dataSource, user } = securityContext;
 
     const driver = cubejs.options.driverFactory({ securityContext });
 
@@ -76,7 +75,7 @@ const routes = ({ basePath, setupAuthInfo, cubejs, context = {} }) => {
       const schema = await driver.tablesSchema();
       const { tables = [], overWrite = false } = (req.body || {});
 
-      const ScaffoldingTemplate = await require('../schema-compiler/scaffolding/ScaffoldingTemplate');
+      const ScaffoldingTemplate = await require('@cubejs-backend/schema-compiler/scaffolding/ScaffoldingTemplate.js');
       const scaffoldingTemplate = new ScaffoldingTemplate(
         schema,
         driver,
@@ -86,26 +85,18 @@ const routes = ({ basePath, setupAuthInfo, cubejs, context = {} }) => {
         tables,
       );
 
-      const { rows: dataschemas } = await pgClient.query(
-        'SELECT name FROM public.dataschemas WHERE datasource_id=$1',
-        [dataSource.id]
-      );
-
-      const existedFiles = dataschemas.map(row => row.name);
-
-      const schemaUpdateQueries = files.map(file => {
-        if (!existedFiles.includes(file.fileName)) {
-          return pgClient.query(
-            'INSERT INTO public.dataschemas(datasource_id, name, code, user_id) VALUES ($1, $2, $3, $4)',
-            [dataSource.id, file.fileName, file.content, dataSource.user_id]
-          );
-        } else if (overWrite) {
-          return pgClient.query(
-            'UPDATE public.dataschemas SET code = $1 WHERE datasource_id = $2 AND name = $3',
-            [file.content, dataSource.id, file.fileName]
-          );
-        }
+      const dataSchemas = await findDataSchemas({
+        dataSourceId: dataSource.id,
       });
+
+      const existedFiles = dataSchemas.map(row => row.name);
+
+      const schemaUpdateQueries = files.map(file => createDataSchema({
+        datasource_id: dataSource.id,
+        name: file.fileName,
+        code: file.content,
+        user_id: user.id,
+      }));
 
       if (schemaUpdateQueries.length) {
         await Promise.all(schemaUpdateQueries);
@@ -116,14 +107,15 @@ const routes = ({ basePath, setupAuthInfo, cubejs, context = {} }) => {
         cubejs.compilerCache.prune();
       }
 
-      res.json({ status: 'ok' });
+      res.json({ code: 'ok', message: 'Generation finished' });
     } catch (err) {
       if (driver.release) {
         await driver.release();
       }
 
       res.status(500).json({
-        error: err.message
+        code: 'generate_schema_error',
+        message: err.message
       });
     }
   });
@@ -134,8 +126,9 @@ const routes = ({ basePath, setupAuthInfo, cubejs, context = {} }) => {
         cubejs.compilerCache.prune();
       }
     } catch (err) {
-      return res.status(500).json({
-        error: err.message
+      res.status(500).json({
+        code: 'code_validation_error',
+        message: err.message
       });
     }
 
@@ -143,10 +136,10 @@ const routes = ({ basePath, setupAuthInfo, cubejs, context = {} }) => {
 
     try {
       await compilerApi.metaConfig();
-      res.json({ status: 'ok' });
+      res.json({ code: 'ok', message: 'Validation is OK' });
     } catch (error) {
       const { messages } = error;
-      res.json({ status: 'err', messages });
+      res.json({ code: 'code_validation_error', message: messages });
     }
   });
 

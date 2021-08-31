@@ -24,19 +24,6 @@ services:
     env_file:
       - .dev.env
 
-  postgraphile:
-    restart: always
-    command: yarn start.dev
-    volumes:
-      - ./services/postgraphile/src:/app/src
-      - ./services/postgraphile/vendor:/app/vendor
-      - ./services/postgraphile/index.js:/app/index.js
-    ports:
-      - 5000:5000
-      - 9230:9229
-    env_file:
-      - .dev.env
-
   cubejs:
     restart: always
     command: yarn start.dev

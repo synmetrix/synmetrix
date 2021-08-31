@@ -33,15 +33,6 @@ services:
     environment:
       CLIENT_MAX_BODY_SIZE: 5m
 
-  postgraphile:
-    image: ${REGISTRY_HOST}/mlcraft/postgraphile:latest
-    deploy:
-      placement:
-        constraints: [node.role == manager]
-    command: yarn start
-    env_file:
-      - .stage.env
-
   cubejs:
     image: ${REGISTRY_HOST}/mlcraft/cubejs-server:latest
     env_file:

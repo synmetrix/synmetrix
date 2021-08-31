@@ -10,6 +10,7 @@ import { getOr } from 'unchanged';
 import withSizes from 'react-sizes';
 import compose from 'utils/compose';
 
+import useSources from 'hooks/useSources';
 import useSchemas from 'hooks/useSchemas';
 import useSchemasIde from 'hooks/useSchemasIde';
 import usePermissions from 'hooks/usePermissions';
@@ -71,14 +72,24 @@ const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
       execUpdateMutation,
       deleteMutation,
       execDeleteMutation,
-      runSQLMutation,
-      execRunSQLMutation,
     },
   } = useSchemas({
     params: {
       dataSourceId,
     },
     pauseQueryAll: false,
+  });
+
+  const {
+    mutations: {
+      runQueryMutation,
+      execRunQueryMutation,
+      validateMutation,
+      execValidateMutation,
+    },
+  } = useSources({
+    pauseQueryAll: true,
+    disableSubscription: true,
   });
 
   const schemaIdToCode = useMemo(() => all.reduce((acc, curr) => {
@@ -118,14 +129,10 @@ const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
     successMessage: t('Schema created')
   });
 
-  const validationError = '';
-  // const validationError = useMemo(
-  //   () => {
-  //     const { validateMutation } = schemaMutations;
-  //     return get('error.message', validateMutation);
-  //   },
-  //   [schemaMutations]
-  // );
+  const validationError = useMemo(
+    () => validateMutation?.error?.message,
+    [validateMutation.error]
+  );
 
   useEffect(
     () => {
@@ -134,10 +141,10 @@ const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
     [validationError]
   );
 
-  // const sqlResult = useMemo(
-  //   () => getOr([], 'runSQL.data', sourceMutations.runSQLMutation.data),
-  //   [sourceMutations.runSQLMutation.data]
-  // );
+  const sqlResult = useMemo(
+    () => runQueryMutation.data?.run_datasource_query_by_pk?.result || [],
+    [runQueryMutation.data]
+  );
 
   const routes = [
     {
@@ -171,7 +178,6 @@ const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
   //   schemaMutations.delMutation.fetching;
 
   const tableSchemas = {};
-  const sqlResult = [];
 
   const onClickCreate = values => {
     const data = {
@@ -196,11 +202,12 @@ const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
 
   const onCodeSave = (id, code) => {
     onClickUpdate(id, { code });
+    execValidateMutation({ id: dataSourceId });
   };
 
   const onRunSQL = (query, limit) => {
-    execRunSQLMutation({
-      datasource_id: dataSourceId,
+    execRunQueryMutation({
+      id: dataSourceId,
       query,
       limit,
     });
@@ -258,8 +265,8 @@ const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
                 width={editorWidth}
                 height={editorHeight}
                 onRun={onRunSQL}
-                error={runSQLMutation.error}
-                loading={runSQLMutation.fetching}
+                error={runQueryMutation?.error}
+                loading={runQueryMutation?.fetching}
               />
             </Tabs.TabPane>
           </Tabs>

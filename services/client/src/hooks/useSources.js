@@ -49,7 +49,7 @@ const checkdatasourceMutation = `
   mutation (
     $id: uuid!,
   ) {
-    check_source(id: $id) {
+    check_connection(datasource_id: $id) {
       message
       code
     }
@@ -82,6 +82,33 @@ const datasourcesSubscription = `
     datasources (offset: $offset, limit: $limit, where: $where, order_by: $order_by) {
       id
       name
+    }
+  }
+`;
+
+const validateSourceMutation = `
+  mutation ($id: uuid!) {
+    validate_datasource(id: $id) {
+      code
+      message
+    }
+  }
+`;
+
+
+const genSourceSchemasMutation = `
+  mutation ($datasource_id: uuid!, $tables: [SourceTable!], $overwrite: Boolean) {
+    gen_dataschemas(datasource_id: $datasource_id, tables: $tables, overwrite: $overwrite) {
+      code
+      message
+    }
+  }
+`;
+
+const runSourceSQLMutation = `
+  mutation ($datasource_id: uuid!, $query: String!, $limit: Int!) {
+    run_query(datasource_id: $datasource_id, query: $query, limit: $limit) {
+      result
     }
   }
 `;
@@ -128,6 +155,21 @@ export default ({ pauseQueryAll, pagination = {}, params = {}, disableSubscripti
   const execCheckMutation = useCallback((input) => {
     doCheckMutation(input, { role });
   }, [doCheckMutation]);
+
+  const [genSchemaMutation, doGenSchemaMutation] = useMutation(genSourceSchemasMutation);
+  const execGenSchemaMutation = useCallback((input) => {
+    doGenSchemaMutation(input, { role });
+  }, [doGenSchemaMutation]);
+
+  const [runQueryMutation, doRunQueryMutation] = useMutation(runSourceSQLMutation);
+  const execRunQueryMutation = useCallback((input) => {
+    doRunQueryMutation(input, { role });
+  }, [doRunQueryMutation]);
+
+  const [validateMutation, doValidateMutation] = useMutation(validateSourceMutation);
+  const execValidateMutation = useCallback((input) => {
+    doValidateMutation(input, { role });
+  }, [doValidateMutation]);
 
   const [allData, doQueryAll] = useQuery({
     query: datasourcesQuery,
@@ -196,6 +238,13 @@ export default ({ pauseQueryAll, pagination = {}, params = {}, disableSubscripti
       execUpdateMutation,
       checkMutation,
       execCheckMutation,
+
+      runQueryMutation,
+      execRunQueryMutation,
+      validateMutation,
+      execValidateMutation,
+      genSchemaMutation,
+      execGenSchemaMutation,
     },
     subscription,
   };

@@ -6,12 +6,6 @@ services:
     networks:
       - mlcraft_default
 
-  postgraphile:
-    build:
-      context: ./services/postgraphile/
-    networks:
-      - mlcraft_default
-
   actions:
     build:
       context: ./services/actions/
