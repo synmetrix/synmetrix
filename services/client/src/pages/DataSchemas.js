@@ -118,10 +118,13 @@ const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
 
   const userSchemasCount = currentUser.dataschemas?.length || 0; 
   const schemasCount = all?.length || 0; 
+  console.log('------------')
+  console.log('userData');
+  console.log(currentUser);
 
   useUpdateEffect(() => {
     if (schemasCount && userSchemasCount && userSchemasCount !== schemasCount) {
-      execQueryAll({ requestPolicy: 'cache-and-network' });
+      execQueryAll({ requestPolicy: 'network-only' });
     }
   }, [currentUser.dataschemas, execQueryAll, schemasCount, userSchemasCount]);
 
@@ -168,7 +171,7 @@ const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
   }
 
   const loading = false;
-  const fetching = allData.fetching || deleteMutation.fetching || createMutation.fetching;
+  const fetching = allData.fetching || deleteMutation.fetching || createMutation.fetching || validateMutation.fetching;
 
   if (!loading && !all.length && !dataSourceId) {
     return <ErrorFound status={404} />;
@@ -179,14 +182,15 @@ const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
 
   const tableSchemas = {};
 
-  const onClickCreate = values => {
+  const onClickCreate = async values => {
     const data = {
       ...values,
       code: '',
       datasource_id: dataSourceId,
     };
 
-    execCreateMutation({ object: data });
+    await execCreateMutation({ object: data });
+    // execQueryAll({ requestPolicy: 'cache-and-network' });
   };
 
   const onClickUpdate = (editId, values) => {
@@ -196,8 +200,9 @@ const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
     });
   };
 
-  const onClickDelete = id => {
-    execDeleteMutation({ id });
+  const onClickDelete = async id => {
+    await execDeleteMutation({ id });
+    // execQueryAll({ requestPolicy: 'cache-and-network' });
   };
 
   const onCodeSave = (id, code) => {

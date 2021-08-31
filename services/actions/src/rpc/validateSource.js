@@ -16,6 +16,7 @@ export default async (session, input) => {
     logger.error(err);
 
     return {
+      error: true,
       code: 'validate_schema_code_error',
       message: err.message || err,
     };

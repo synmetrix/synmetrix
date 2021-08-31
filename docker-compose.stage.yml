@@ -12,6 +12,7 @@ services:
       - pgstorage-data:/var/lib/postgresql/data
       - ./etc/postgres.conf:/var/lib/postgresql/data/postgresql.conf
     env_file:
+      - .env
       - .stage.env
     networks:
       - mlcraft_default
@@ -36,6 +37,7 @@ services:
   cubejs:
     image: ${REGISTRY_HOST}/mlcraft/cubejs-server:latest
     env_file:
+      - .env
       - .stage.env
 
   client:
@@ -55,6 +57,7 @@ services:
   hasura:
     image: ${REGISTRY_HOST}/mlcraft/hasura:latest
     env_file:
+      - .env
       - .stage.env
     environment:
       VIRTUAL_HOST1: ${PROTOCOL:-http}://api.${DOMAIN} -> :8080
@@ -63,6 +66,7 @@ services:
   hasura_plus:
     image: ${REGISTRY_HOST}/mlcraft/hasura-plus:latest
     env_file:
+      - .env
       - .stage.env
     environment:
       VIRTUAL_HOST: ${PROTOCOL:-http}://api-plus.${DOMAIN} -> :3000; client_max_body_size 5m;

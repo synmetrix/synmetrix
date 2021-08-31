@@ -127,7 +127,7 @@ const routes = ({ basePath, setupAuthInfo, cubejs }) => {
       }
     } catch (err) {
       res.status(500).json({
-        code: 'code_validation_error',
+        code: 'code_compilation_error',
         message: err.message
       });
     }
@@ -139,7 +139,7 @@ const routes = ({ basePath, setupAuthInfo, cubejs }) => {
       res.json({ code: 'ok', message: 'Validation is OK' });
     } catch (error) {
       const { messages } = error;
-      res.json({ code: 'code_validation_error', message: messages });
+      res.status(500).json({ code: 'code_validation_error', message: messages });
     }
   });
 

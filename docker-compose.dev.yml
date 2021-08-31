@@ -9,6 +9,7 @@ services:
       - pgstorage-data:/var/lib/postgresql/data
       - ./etc/postgres.conf:/var/lib/postgresql/data/postgresql.conf
     env_file:
+      - .env
       - .dev.env
     networks:
       - mlcraft_default
@@ -22,6 +23,7 @@ services:
     ports:
       - 3001:3000
     env_file:
+      - .env
       - .dev.env
 
   cubejs:
@@ -33,6 +35,7 @@ services:
       - 4000:4000
       - 9231:9229
     env_file:
+      - .env
       - .dev.env
 
   hasura_cli:
@@ -44,6 +47,7 @@ services:
       - 9693:9693
       - 9695:9695
     env_file:
+      - .env
       - .dev.env
     environment:
       ENABLE_TELEMETRY: "false"
@@ -62,6 +66,7 @@ services:
     ports:
        - 8080:8080
     env_file:
+      - .env
       - .dev.env
     environment:
       ENABLE_TELEMETRY: "false"
@@ -77,6 +82,7 @@ services:
     ports:
        - 8081:3000
     env_file:
+      - .env
       - .dev.env
     depends_on:
       - postgres

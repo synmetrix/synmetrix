@@ -9,12 +9,16 @@ import {
 
   saveRefreshToken,
   removeRefreshToken,
-  getRefreshToken 
+  getRefreshToken,
+
+  saveCurrentUser,
+  removeCurrentUser,
+  getCurrentUser 
 } from '../utils/storage';
 
 export const currentUserAtom = atom({
   key: 'currentUserAtom',
-  default: {},
+  default: getCurrentUser(),
 });
 
 export const currentTokenAtom = atom({
@@ -42,6 +46,21 @@ export const currentRefreshToken = selector({
   }
 });
 
+export const currentUserSelector = selector({
+  key: 'currentUserSelector',
+  get: ({ get }) => get(currentUserAtom),
+  set: ({ set }, newData) => {
+    removeCurrentUser();
+
+    if (newData) {
+      saveCurrentUser(newData);
+      set(currentUserAtom, newData);
+    } else {
+      set(currentUserAtom, {});
+    }
+  }
+});
+
 export const currentToken = selector({
   key: 'currentToken',
   get: ({ get }) => get(currentTokenAtom),
@@ -52,7 +71,7 @@ export const currentToken = selector({
     if (newToken) {
       saveAuthToken(newToken);
     } else {
-      set(currentUserAtom, {});
+      set(currentUserSelector, {});
     }
   }
 });

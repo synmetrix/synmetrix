@@ -1,12 +1,10 @@
 import jwt from 'jsonwebtoken';
-// import { get, getOr } from 'unchanged';
 import cubejsClientCore from '@cubejs-client/core';
 import timeoutSignal from 'timeout-signal';
 import fetch from 'node-fetch';
 
 import pickKeys from './pickKeys.js';
 import dateParser from './dateParser.js';
-// import { getJson, postJson } from './request.js';
 
 const { CubejsApi: CubejsApiClient } = cubejsClientCore;
 const CUBEJS_SECRET = process.env.CUBEJS_SECRET || 'testToken';
@@ -88,12 +86,25 @@ const cubejsApi = ({ dataSourceId }) => {
     } else {
       res = await fetch(url, {
         headers: reqHeaders,
+        method: 'POST',
         body: JSON.stringify(params),
         signal: timeoutSignal(10000),
       });
     }
 
-    return res.json();
+    let data = await res.text();
+
+    try {
+      data = JSON.parse(data);
+    } catch (err) {
+      // do nothing
+    }
+
+    if (res.status < 200 || res.status >= 400) {
+      return Promise.reject(data);
+    }
+
+    return data;
   };
 
   return {

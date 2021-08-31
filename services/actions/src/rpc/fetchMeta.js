@@ -16,6 +16,7 @@ export default async (session, input) => {
     logger.error(err);
 
     return {
+      error: true,
       code: 'get_source_meta_error',
       message: err.message || err,
     };

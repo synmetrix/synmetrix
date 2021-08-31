@@ -1,7 +1,6 @@
-import { useEffect, useMemo } from 'react';
+import { useMemo } from 'react';
 
 import {
-  useSetRecoilState,
   useRecoilValue,
 } from 'recoil';
 

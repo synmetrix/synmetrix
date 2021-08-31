@@ -11,12 +11,13 @@ import { useQuery } from 'urql';
 
 import {
   jwtPayload,
-  currentUserAtom,
+  currentUserSelector,
 } from '../recoil/currentUser';
 
 import useAuthToken from './useAuthToken';
 import useSources from './useSources';
 import useDashboards from './useDashboards';
+import useSchemas from './useSchemas';
 
 const currentUserQuery = `
   query ($id: uuid!) {
@@ -44,8 +45,8 @@ const currentUserQuery = `
 
 const role = 'user';
 export default (props = {}) => {
-  const { pauseQuery = true } = props;
-  const [currentUser, setCurrentUser] = useRecoilState(currentUserAtom);
+  const { pauseQuery = false } = props;
+  const [currentUser, setCurrentUser] = useRecoilState(currentUserSelector);
   const { authToken } = useAuthToken();
 
   const JWTpayload = useRecoilValue(jwtPayload);
@@ -91,15 +92,30 @@ export default (props = {}) => {
     disableSubscription: false,
   });
 
+  const { subscription: schemasSubscription } = useSchemas({
+    pauseQueryAll: true,
+    disableSubscription: false,
+  });
+
   useUpdateEffect(() => {
-    const anyData = sourcesSubscription.data || dashboardsSubscription.data;
+    const anyData = sourcesSubscription.data || dashboardsSubscription.data || schemasSubscription.data;
+    console.log(anyData);
 
     if (anyData) {
+      if (currentUser && Object.keys(currentUser).length) {
+        console.log(currentUser);
+        setCurrentUser({
+          ...currentUser,
+          ...anyData,
+        });
+      }
+
       sourcesSubscription.data = null;
       dashboardsSubscription.data = null;
-      execQueryCurrentUser();
+      schemasSubscription.data = null;
+      // execQueryCurrentUser();
     }
-  }, [sourcesSubscription.data, dashboardsSubscription.data]);
+  }, [sourcesSubscription.data, dashboardsSubscription.data, schemasSubscription.data, currentUser]);
 
   return {
     currentUser,

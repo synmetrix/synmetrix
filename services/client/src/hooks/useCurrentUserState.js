@@ -2,10 +2,10 @@ import {
   useRecoilState,
 } from 'recoil';
 
-import { currentUserAtom } from '../recoil/currentUser';
+import { currentUserSelector } from '../recoil/currentUser';
 
 export default () => {
-  const [currentUserState, setCurrentUserState] = useRecoilState(currentUserAtom);
+  const [currentUserState, setCurrentUserState] = useRecoilState(currentUserSelector);
 
   return {
     currentUserState,
