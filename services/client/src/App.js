@@ -1,84 +1,35 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { hot } from 'react-hot-loader/root';
 
-import {
-  BrowserRouter as Router,
-  Switch,
-  Route,
-  Redirect,
-} from 'react-router-dom';
+import { useRecoilSnapshot, RecoilRoot } from 'recoil';
+import Routes from './Routes';
 
-import {
-  Provider as URQLProvider,
-} from 'urql';
+const DebugObserver = () => {
+  const snapshot = useRecoilSnapshot();
 
-import useGraphQLClient from './hooks/useGraphQLClient';
-import useAppSettings from './hooks/useAppSettings';
+  useEffect(() => {
+    console.debug('The following atoms were modified:');
 
-import Layout from './components/Layout';
+    for (const node of snapshot.getNodes_UNSTABLE({ isModified: true })) {
+      console.debug(node.key, snapshot.getLoadable(node));
+    }
+  }, [snapshot]);
 
-import Login from './pages/Login';
-import SignUp from './pages/SignUp';
-
-import DataSources from './pages/DataSources';
-import DataSchemas from './pages/DataSchemas';
-import Explore from './pages/Explore';
-import Dashboards from './pages/Dashboards';
-import Team from './pages/Team';
-import Profile from './pages/Profile';
-import Charts from './pages/Charts';
-import ErrorFound from './components/ErrorFound';
-
-const App = () => {
-  const client = useGraphQLClient();
-  const { withAuthPrefix } = useAppSettings();
-
-  return (
-    <URQLProvider value={client}>
-      <Router>
-        <Switch>
-          <Route path="/login" component={Login} />
-          <Route path="/signup" component={SignUp} />
-          <Route path="/404" component={ErrorFound} />
-
-          <Route
-            path={withAuthPrefix('/:rest*')}
-            children={() => {
-              return (
-                <>
-                  <Router>
-                    <Layout>
-                      <Switch>
-                        <Route path={withAuthPrefix('/explore/:rest*')} component={Explore} />
-
-                        <Route path={withAuthPrefix('/sources/new/:dbType?')} component={DataSources} />
-                        <Route path={withAuthPrefix('/sources/upload/:format?')} component={DataSources} />
-                        <Route path={withAuthPrefix('/sources/:editId?/upload/:format?')} component={DataSources} />
-                        <Route path={withAuthPrefix('/sources/:rowId?')} component={DataSources} />
-
-                        <Route path={withAuthPrefix('/team/invite')} component={Team} />
-                        <Route path={withAuthPrefix('/team/settings')} component={Team} />
-                        <Route path={withAuthPrefix('/team')} component={Team} />
-
-                        <Route path={withAuthPrefix('/profile')} component={Profile} />
-                        <Route path={withAuthPrefix('/schemas/:rest*')} component={DataSchemas} />
-                        <Route path={withAuthPrefix('/dashboards/:rowId?')} component={Dashboards} />
-                        <Route path={withAuthPrefix('/charts/:rowId?')} component={Charts} />
-
-                        <Route path="/403" component={() => <ErrorFound status={403} />} />
-                      </Switch>
-                    </Layout>
-                  </Router>
-                </>
-              );
-            }}
-          />
-          <Redirect to="/login" />
-        </Switch>
-      </Router>
-    </URQLProvider>
-  );
+  return null;
 };
+
+const { __DEV__ } = process.env;
+
+const App = () => (
+  <RecoilRoot>
+    <>
+      {__DEV__ && (
+        <DebugObserver />
+      )}
+      <Routes />
+    </>
+  </RecoilRoot>
+);
 
 App.propTypes = {};
 

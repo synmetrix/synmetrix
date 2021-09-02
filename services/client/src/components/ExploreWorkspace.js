@@ -15,8 +15,9 @@ import useTabs from 'hooks/useTabs';
 import useDimensions from 'hooks/useDimensions';
 import useExploreWorkspace from 'hooks/useExploreWorkspace';
 import usePlayground from 'hooks/usePlayground';
-import useSchemas from 'hooks/useSchemas';
+import useSources from 'hooks/useSources';
 import usePermissions from 'hooks/usePermissions';
+import useCurrentUserState from 'hooks/useCurrentUserState';
 
 import s from './ExploreWorkspace.module.css';
 
@@ -25,6 +26,7 @@ const DEFAULT_ACTIVE_TAB = 0;
 const ExploreWorkspace = (props) => {
   const [, size] = useDimensions(document.querySelector('#data-view'));
   const { width } = size;
+  const { currentUserState: currentUser } = useCurrentUserState();
 
   const {
     header,
@@ -72,18 +74,15 @@ const ExploreWorkspace = (props) => {
       validateMutation,
       execValidateMutation,
     }
-  } = useSchemas({ 
-    params: {
-      dataSourceId: dataSource.id,
-    },
+  } = useSources({ 
     pauseQueryAll: true,
   });
 
   useEffect(() => {
     if (dataSource.id) {
-      execValidateMutation();
+      execValidateMutation({ id: dataSource.id });
     }
-  }, [dataSource.id, execValidateMutation]);
+  }, [currentUser.dataschemas, dataSource.id, execValidateMutation]);
 
   const onRunQuery = (e) => {
     runQuery();

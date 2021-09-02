@@ -52,6 +52,7 @@ const allSchemasSubscription = `
     dataschemas (offset: $offset, limit: $limit, where: $where, order_by: $order_by) {
       id
       name
+      checksum
     }
   }
 `;

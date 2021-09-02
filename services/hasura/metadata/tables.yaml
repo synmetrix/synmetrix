@@ -160,14 +160,16 @@
   - role: user
     permission:
       columns:
-      - id
+      - branch
+      - checksum
+      - code
       - created_at
+      - datasource_id
+      - id
+      - name
+      - team_id
       - updated_at
       - user_id
-      - datasource_id
-      - name
-      - code
-      - team_id
       filter:
         _or:
         - user_id:

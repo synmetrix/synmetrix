@@ -4,16 +4,16 @@ export const saveAuthToken = (token) => {
   }
 
   try {
-    localStorage.setItem('token', token);
+    localStorage.setItem('access-token', token);
   } catch (err) {
     console.error(err);
   }
 };
 
-export const getAuthToken = () => localStorage.getItem('token');
+export const getAuthToken = () => localStorage.getItem('access-token');
 
 export const removeAuthToken = () => {
-  localStorage.removeItem('token');
+  localStorage.removeItem('access-token');
 };
 
 export const saveRefreshToken = (token) => {
