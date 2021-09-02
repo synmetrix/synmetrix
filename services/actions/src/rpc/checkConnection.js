@@ -15,13 +15,19 @@ export default async (session, input) => {
   } catch (err) {
     logger.error(err);
 
-    if (error.name === 'AbortError') {
+    if (err.name === 'AbortError') {
       return {
-        error: error.name,
-        code: 'check_source_timeout',
+        error: err.name,
+        code: 'check_connection_timeout',
         message: 'Source connection timeout. Check the credentials',
       };
     }
+
+    return {
+      error: true,
+      code: err.code,
+      message: err.message,
+    };
   }
 
   return false;
