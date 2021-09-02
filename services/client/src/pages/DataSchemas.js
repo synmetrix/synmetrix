@@ -83,7 +83,7 @@ const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
 
   const {
     queries: {
-      currentData,
+      tablesData,
     },
     mutations: {
       runQueryMutation,
@@ -101,7 +101,7 @@ const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
     disableSubscription: true,
   });
 
-  useCheckResponse(currentData, (res, err) => {
+  useCheckResponse(tablesData, (res, err) => {
     if (res) {
       setError(null);
     } else if (err) {
@@ -166,7 +166,7 @@ const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
   );
 
   const [tablesSchema, setTablesSchema] = useState({});
-  const sourceTablesSchema = currentData.data?.fetch_tables?.schema;
+  const sourceTablesSchema = tablesData.data?.fetch_tables?.schema;
 
   useEffect(() => {
     if (Object.keys(sourceTablesSchema || {}).length) {
@@ -201,7 +201,7 @@ const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
   }
 
   const fetching = allData.fetching || deleteMutation.fetching || createMutation.fetching 
-    || validateMutation.fetching || genSchemaMutation.fetching || currentData.fetching;
+    || validateMutation.fetching || genSchemaMutation.fetching || tablesData.fetching;
 
   if (error) {
     return <ErrorFound status={404} />;

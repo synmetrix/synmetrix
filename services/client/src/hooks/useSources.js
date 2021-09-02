@@ -1,7 +1,9 @@
 import { useCallback, useEffect, useMemo } from 'react';
 
 import { get, getOr } from 'unchanged';
-import { useQuery, useMutation, useSubscription } from 'urql';
+import { useMutation, useSubscription } from 'urql';
+
+import useQuery from './useQuery';
 
 const newdatasourceMutation = `
   mutation ($object: datasources_insert_input!) {
@@ -66,6 +68,11 @@ const editdatasourceQuery = `
       created_at
       updated_at
     }
+  }
+`;
+
+const fetchSourceTablesQuery = `
+  query ($id: uuid!) {
     fetch_tables(datasource_id: $id) {
       schema
     }
@@ -174,10 +181,13 @@ export default ({ pauseQueryAll, pagination = {}, params = {}, disableSubscripti
     doValidateMutation(input, { role });
   }, [doValidateMutation]);
 
-  const [allData, doQueryAll] = useQuery({
+  const [allData, execQueryAll] = useQuery({
     query: datasourcesQuery,
     pause: true,
     variables: getListVariables(pagination),
+  }, {
+    requestPolicy: 'cache-and-network',
+    role,
   });
 
   const [subscription] = useSubscription({
@@ -185,10 +195,6 @@ export default ({ pauseQueryAll, pagination = {}, params = {}, disableSubscripti
     variables: getListVariables(pagination),
     pause: disableSubscription,
   }, handleSubscription);
-
-  const execQueryAll = useCallback((context) => {
-    doQueryAll({ requestPolicy: 'cache-and-network', role, ...context });
-  }, [doQueryAll]);
 
   useEffect(() => {
     if (!pauseQueryAll) {
@@ -199,17 +205,16 @@ export default ({ pauseQueryAll, pagination = {}, params = {}, disableSubscripti
   const all = useMemo(() => getOr([], 'data.datasources', allData), [allData]);
   const totalCount = useMemo(() => getOr([], 'data.datasources_aggregate.aggregate.count', allData), [allData]);
 
-  const [currentData, doQueryCurrent] = useQuery({
+  const [currentData, execQueryCurrent] = useQuery({
     query: editdatasourceQuery,
     variables: {
       id: editId,
     },
     pause: true,
+  }, {
+    requestPolicy: 'cache-and-network',
+    role,
   });
-
-  const execQueryCurrent = useCallback((context) => {
-    doQueryCurrent({ requestPolicy: 'cache-and-network', role, ...context });
-  }, [doQueryCurrent]);
 
   const current = useMemo(() => {
     const datasource = get('data.datasources_by_pk', currentData) || {};
@@ -222,6 +227,23 @@ export default ({ pauseQueryAll, pagination = {}, params = {}, disableSubscripti
     }
   }, [editId, execQueryCurrent]);
 
+  const [tablesData, execQueryTables] = useQuery({
+    query: fetchSourceTablesQuery,
+    variables: {
+      id: editId,
+    },
+    pause: true,
+  }, {
+    requestPolicy: 'cache-and-network',
+    role,
+  });
+
+  useEffect(() => {
+    if (editId) {
+      execQueryTables();
+    }
+  }, [editId, execQueryTables]);
+
   return {
     all,
     current,
@@ -231,6 +253,8 @@ export default ({ pauseQueryAll, pagination = {}, params = {}, disableSubscripti
       execQueryAll,
       currentData,
       execQueryCurrent,
+      tablesData,
+      execQueryTables,
     },
     mutations: {
       createMutation,
