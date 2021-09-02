@@ -21,7 +21,8 @@ const routes = ({ basePath, setupAuthInfo, cubejs }) => {
       res.json(rows);
     } catch (err) {
       res.status(500).json({
-        error: err.message
+        code: 'run_sql_failed',
+        message: err.message || err,
       });
     }
   });
@@ -42,7 +43,7 @@ const routes = ({ basePath, setupAuthInfo, cubejs }) => {
 
       res.status(500).json({
         code: 'connection_test_failed',
-        message: err.message
+        message: err.message || err,
       });
     }
   });
@@ -60,7 +61,8 @@ const routes = ({ basePath, setupAuthInfo, cubejs }) => {
       }
 
       res.status(500).json({
-        error: err.message
+        code: 'get_schema_failed',
+        message: err.message
       });
     }
   });
@@ -115,7 +117,7 @@ const routes = ({ basePath, setupAuthInfo, cubejs }) => {
 
       res.status(500).json({
         code: 'generate_schema_error',
-        message: err.message
+        message: err.message || err,
       });
     }
   });
@@ -139,7 +141,7 @@ const routes = ({ basePath, setupAuthInfo, cubejs }) => {
       res.json({ code: 'ok', message: 'Validation is OK' });
     } catch (error) {
       const { messages } = error;
-      res.status(500).json({ code: 'code_validation_error', message: messages });
+      res.status(500).json({ code: 'code_validation_error', message: messages.toString() });
     }
   });
 

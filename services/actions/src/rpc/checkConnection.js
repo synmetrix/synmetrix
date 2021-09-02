@@ -1,5 +1,6 @@
 import cubejsApi from '../utils/cubejsApi';
 import logger from '../utils/logger';
+import apiError from '../utils/apiError';
 
 export default async (session, input) => {
   const { datasource_id: dataSourceId } = input || {};
@@ -13,21 +14,14 @@ export default async (session, input) => {
 
     return result;
   } catch (err) {
-    logger.error(err);
-
     if (err.name === 'AbortError') {
-      return {
-        error: err.name,
+      return apiError({
         code: 'check_connection_timeout',
         message: 'Source connection timeout. Check the credentials',
-      };
+      })
     }
 
-    return {
-      error: true,
-      code: err.code,
-      message: err.message,
-    };
+    return apiError(err);
   }
 
   return false;

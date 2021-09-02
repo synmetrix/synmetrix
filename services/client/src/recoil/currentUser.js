@@ -86,7 +86,9 @@ export const jwtPayload = selector({
     }
 
     const auth = { Authorization: `Bearer ${token}` };
-    let payload = {};
+    let payload = {
+
+    };
 
     try {
       payload = jwtDecode(token);
@@ -107,3 +109,15 @@ export const jwtPayload = selector({
     };
   }
 });
+
+if (module.hot) {
+  module.hot.dispose(function() {
+    console.log('dispose')
+    // module is about to be replaced
+  })
+
+  module.hot.accept(function() {
+    console.log('accept')
+    // module or one of its dependencies was just updated
+  })
+}

@@ -1,5 +1,6 @@
 import cubejsApi from '../utils/cubejsApi';
 import logger from '../utils/logger';
+import apiError from '../utils/apiError';
 
 export default async (session, input) => {
   const { datasource_id: dataSourceId } = input || {};
@@ -11,15 +12,11 @@ export default async (session, input) => {
       userId,
     }).getSchemaTables();
 
-    return result;
-  } catch (err) {
-    logger.error(err);
-
     return {
-      error: true,
-      code: 'get_source_tables_error',
-      message: err.message || err,
+      schema: result,
     };
+  } catch (err) {
+    return apiError(err);
   }
 
   return false;

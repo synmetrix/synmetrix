@@ -40,6 +40,7 @@ const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
 
   const basePath = withAuthPrefix('/schemas');
   const [isConsoleOpen, toggleConsole] = useState(false);
+  const [error, setError] = useState(null);
 
   const { params = {} } = match;
 
@@ -81,15 +82,33 @@ const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
   });
 
   const {
+    queries: {
+      currentData,
+    },
     mutations: {
       runQueryMutation,
       execRunQueryMutation,
       validateMutation,
       execValidateMutation,
+      genSchemaMutation,
+      execGenSchemaMutation,
     },
   } = useSources({
+    params: {
+      editId: dataSourceId,
+    },
     pauseQueryAll: true,
     disableSubscription: true,
+  });
+
+  useCheckResponse(currentData, (res, err) => {
+    if (res) {
+      setError(null);
+    } else if (err) {
+      setError(err);
+    }
+  }, {
+    successMessage: null
   });
 
   const schemaIdToCode = useMemo(() => all.reduce((acc, curr) => {
@@ -118,9 +137,6 @@ const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
 
   const userSchemasCount = currentUser.dataschemas?.length || 0; 
   const schemasCount = all?.length || 0; 
-  console.log('------------')
-  console.log('userData');
-  console.log(currentUser);
 
   useUpdateEffect(() => {
     if (schemasCount && userSchemasCount && userSchemasCount !== schemasCount) {
@@ -149,6 +165,15 @@ const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
     [runQueryMutation.data]
   );
 
+  const [tablesSchema, setTablesSchema] = useState({});
+  const sourceTablesSchema = currentData.data?.fetch_tables?.schema;
+
+  useEffect(() => {
+    if (Object.keys(sourceTablesSchema || {}).length) {
+      setTablesSchema(sourceTablesSchema);
+    }
+  }, [sourceTablesSchema]);
+
   const routes = [
     {
       path: `${basePath}/${dataSourceId}/genschema`,
@@ -156,12 +181,17 @@ const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
     },
   ];
 
-  const onGenSubmit = (values) => {
+  const onGenSubmit = async (values) => {
     const tables = Object.keys(values).filter(v => values[v]).map(v => ({
       name: v,
     }));
 
-    // schemaMutations.mExecGenMutation(tables);
+    await execGenSchemaMutation({
+      datasource_id: dataSourceId,
+      tables,
+      overwrite: true,
+    });
+
     onModalClose();
   };
 
@@ -170,17 +200,16 @@ const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
     return fallback;
   }
 
-  const loading = false;
-  const fetching = allData.fetching || deleteMutation.fetching || createMutation.fetching || validateMutation.fetching;
+  const fetching = allData.fetching || deleteMutation.fetching || createMutation.fetching 
+    || validateMutation.fetching || genSchemaMutation.fetching || currentData.fetching;
 
-  if (!loading && !all.length && !dataSourceId) {
+  if (error) {
     return <ErrorFound status={404} />;
   }
 
-  // const fetching = loading || schemaMutations.genMutation.fetching || sourceQueries.tablesData.fetching ||
-  //   schemaMutations.delMutation.fetching;
-
-  const tableSchemas = {};
+  if (!all.length && !dataSourceId) {
+    return <ErrorFound status={404} />;
+  }
 
   const onClickCreate = async values => {
     const data = {
@@ -227,7 +256,7 @@ const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
       loading={fetching}
       content={(
         <GenDataSchemasForm
-          schemas={tableSchemas}
+          schemas={tablesSchema}
           onSubmit={onGenSubmit}
         />
       )}

@@ -79,8 +79,13 @@ const driverFactory = ({ securityContext }) => {
   const { dataSource, error: securityError } = securityContext || {};
 
   if (securityError) {
+    const throwSecurityError = () => {
+      throw new Error(securityError);
+    };
+
     return {
-      testConnection: () => { throw new Error(securityError); },
+      tablesSchema: throwSecurityError,
+      testConnection: throwSecurityError,
     }
   }
 
@@ -151,8 +156,13 @@ const driverFactory = ({ securityContext }) => {
   }
 
   if (error) {
+    const throwError = () => {
+      throw new Error(error);
+    };
+
     return {
-      testConnection: () => { throw new Error(error); },
+      tablesSchema: throwError,
+      testConnection: throwError,
     };
   }
 

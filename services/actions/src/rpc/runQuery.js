@@ -1,6 +1,7 @@
 import fetch from 'node-fetch';
 import cubejsApi from '../utils/cubejsApi';
 import logger from '../utils/logger';
+import apiError from '../utils/apiError';
 
 export default async (session, input) => {
   const { datasource_id: dataSourceId, query, limit } = input || {};
@@ -14,13 +15,7 @@ export default async (session, input) => {
 
     return result;
   } catch (err) {
-    logger.error(err);
-
-    return {
-      error: true,
-      code: 'run_source_query_error',
-      message: err.message || err,
-    };
+    return apiError(err);
   }
 
   return false;

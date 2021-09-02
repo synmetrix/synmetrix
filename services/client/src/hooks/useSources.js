@@ -66,6 +66,9 @@ const editdatasourceQuery = `
       created_at
       updated_at
     }
+    fetch_tables(datasource_id: $id) {
+      schema
+    }
   }
 `;
 
