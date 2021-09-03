@@ -77,15 +77,11 @@ const routes = ({ basePath, setupAuthInfo, cubejs }) => {
       const schema = await driver.tablesSchema();
       const { tables = [], overWrite = false } = (req.body || {});
 
-      const ScaffoldingTemplate = await require('@cubejs-backend/schema-compiler/scaffolding/ScaffoldingTemplate.js');
-      const scaffoldingTemplate = new ScaffoldingTemplate(
-        schema,
-        driver,
-      );
+      const ScaffoldingTemplate = require('@cubejs-backend/schema-compiler/scaffolding/ScaffoldingTemplate');
+      const scaffoldingTemplate = new ScaffoldingTemplate(schema, driver);
+      const files = scaffoldingTemplate.generateFilesByTableNames(tables);
 
-      const files = scaffoldingTemplate.generateFilesByTableDefinitions(
-        tables,
-      );
+      console.log(files);
 
       const dataSchemas = await findDataSchemas({
         dataSourceId: dataSource.id,
@@ -102,11 +98,17 @@ const routes = ({ basePath, setupAuthInfo, cubejs }) => {
 
       if (schemaUpdateQueries.length) {
         await Promise.all(schemaUpdateQueries);
-        await updateJoins({ dataSource, files, relations: tables, scaffoldingTemplate }, context);
       }
 
       if (cubejs.compilerCache) {
         cubejs.compilerCache.prune();
+      }
+
+      if (!files.length) {
+        return res.status(400).json({
+          code: 'generate_schema_no_new_files',
+          message: 'No new files created',
+        });
       }
 
       res.json({ code: 'ok', message: 'Generation finished' });

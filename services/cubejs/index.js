@@ -99,7 +99,7 @@ const driverFactory = ({ securityContext }) => {
 
   try {
     if (dbConfig.port) {
-        connParamValid(dbConfig.port);
+      connParamValid(dbConfig.port);
     }
 
     const dbType = dataSource.db_type?.toUpperCase();
@@ -166,12 +166,14 @@ const driverFactory = ({ securityContext }) => {
     };
   }
 
+  console.log(result);
+
   return result;
 };
 
 const dbType = ({ securityContext }) => {
-  const { dataSource } = securityContext;
-  return dataSource.db_type;
+  const { dataSource = {} } = securityContext || {};
+  return dataSource.db_type || 'none';
 };
 
 const basePath = `/cubejs/datasources`;
