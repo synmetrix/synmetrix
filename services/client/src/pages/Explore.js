@@ -1,12 +1,13 @@
 import React, { useCallback, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { useUpdateEffect, useMount } from 'ahooks';
+import { useTrackedEffect } from 'ahooks';
 
 import { useTranslation } from 'react-i18next';
 
 import { Link } from 'react-router-dom';
 import { Empty, Button } from 'antd';
 
+import equals from 'utils/equals';
 import Loader from 'components/Loader';
 import ContentHeader from 'components/ContentHeader';
 import ExploreWorkspace from 'components/ExploreWorkspace';
@@ -61,8 +62,18 @@ const Explore = (props) => {
 
   const fetching = currentData.fetching || metaData.fetching;
 
-  useUpdateEffect(() => {
-    if (currentUser?.dataschemas) {
+  useTrackedEffect((changes, previousDeps, currentDeps) => {
+    const prevData = previousDeps?.[0];
+    const currData = currentDeps?.[0];
+
+    let dataDiff = false;
+    if (!prevData || !currData) {
+      dataDiff = false;
+    } else {
+      dataDiff = !equals(prevData, currData);
+    }
+
+    if (dataDiff) {
       execQueryMeta({ requestPolicy: 'network-only' });
     }
   }, [currentUser.dataschemas, execQueryMeta]);

@@ -155,7 +155,11 @@ const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
     successMessage: t('Schema created')
   });
 
-  useCheckResponse(genSchemaMutation, () => {}, {
+  useCheckResponse(genSchemaMutation, (res) => {
+    if (res) {
+      execQueryAll();
+    }
+  }, {
     successMessage: t('Schema generated')
   });
 
@@ -172,7 +176,7 @@ const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
   );
 
   const sqlResult = useMemo(
-    () => runQueryMutation.data?.run_datasource_query_by_pk?.result || [],
+    () => runQueryMutation.data?.run_query?.result || [],
     [runQueryMutation.data]
   );
 
@@ -230,7 +234,7 @@ const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
     };
 
     await execCreateMutation({ object: data });
-    // execQueryAll({ requestPolicy: 'cache-and-network' });
+    execQueryAll({ requestPolicy: 'cache-and-network' });
   };
 
   const onClickUpdate = (editId, values) => {
@@ -242,7 +246,7 @@ const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
 
   const onClickDelete = async id => {
     await execDeleteMutation({ id });
-    // execQueryAll({ requestPolicy: 'cache-and-network' });
+    execQueryAll({ requestPolicy: 'cache-and-network' });
   };
 
   const onCodeSave = (id, code) => {
@@ -252,7 +256,7 @@ const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
 
   const onRunSQL = (query, limit) => {
     execRunQueryMutation({
-      id: dataSourceId,
+      datasource_id: dataSourceId,
       query,
       limit,
     });

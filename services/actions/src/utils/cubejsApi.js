@@ -120,13 +120,11 @@ const cubejsApi = ({ dataSourceId, userId }) => {
       const normalizedQuery = normalizeQuery(playgroundState);
 
       const { query } = normalizedQuery;
-      const { renewQuery, cacheExpireSecs } = args;
+      const { renewQuery } = args;
       query.renewQuery = renewQuery;
 
-      if (cacheExpireSecs) {
-        query.cacheExpireSecs = cacheExpireSecs;
-      }
-
+      console.log('query')
+      console.log(query)
       const options = {
         progressCallback: (obProgress) => {
           throw obProgress
@@ -135,7 +133,7 @@ const cubejsApi = ({ dataSourceId, userId }) => {
 
       let data;
 
-      if (fileType === 'sql') {unchangedunchanged
+      if (fileType === 'sql') {
         const resultSet = await init.sql(query, options);
         const { sql: [rawSql, params], ...restProps } = resultSet?.sqlQuery?.sql;
 
@@ -147,17 +145,13 @@ const cubejsApi = ({ dataSourceId, userId }) => {
       } else {
         const resultSet = await init.loadMethod(
           () => init.request('load', { query, headers: reqHeaders }),
-          (body, response) => {
-            const { headers = { get: () => { } } } = response;
-            const contentLength = headers.get('content-length') || 0;
-
-            return { loadResponse: body, contentLength }
+          (body) => {
+            return { loadResponse: body }
           },
           options
         );
 
         data = resultSet?.loadResponse;
-        const { contentLength } = resultSet;
 
         if (data.data && Array.isArray(data.data)) {
           const dataSize = data.data.length;

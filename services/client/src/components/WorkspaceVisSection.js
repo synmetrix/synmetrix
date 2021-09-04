@@ -95,7 +95,7 @@ WorkspaceVisSection.propTypes = {
     segments: PropTypes.array,
     filters: PropTypes.array,
   }).isRequired,
-  explorationRowId: PropTypes.number,
+  explorationRowId: PropTypes.string,
   isQueryChanged: PropTypes.bool,
   state: PropTypes.shape({
     filtersCount: PropTypes.number,

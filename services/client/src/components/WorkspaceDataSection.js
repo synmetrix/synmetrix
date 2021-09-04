@@ -352,7 +352,7 @@ WorkspaceDataSection.propTypes = {
   }),
   width: PropTypes.number,
   height: PropTypes.number,
-  explorationRowId: PropTypes.number,
+  explorationRowId: PropTypes.string,
   isActive: PropTypes.bool
 };
 

@@ -1,9 +1,11 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import React, { useCallback, useMemo, useEffect } from 'react';
 import PropTypes from 'prop-types';
+import { useTrackedEffect } from 'ahooks';
 
 import { Row, Col, Icon, Collapse } from 'antd';
 
+import equals from 'utils/equals';
 import ErrorFound from 'components/ErrorFound';
 import ExploreCubes from 'components/ExploreCubes';
 
@@ -66,8 +68,6 @@ const ExploreWorkspace = (props) => {
     if (explorationId) {
       loadExploration();
     }
-    console.log('explorationId');
-    console.log(explorationId);
   }, [explorationId, loadExploration]);
 
   const explorationRowId = useMemo(() => exploration?.id, [exploration]);
@@ -88,11 +88,27 @@ const ExploreWorkspace = (props) => {
     pauseQueryAll: true,
   });
 
+  useTrackedEffect((changes, previousDeps, currentDeps) => {
+    const prevData = previousDeps?.[0];
+    const currData = currentDeps?.[0];
+
+    let dataDiff = false;
+    if (!prevData || !currData) {
+      dataDiff = false;
+    } else {
+      dataDiff = !equals(prevData, currData);
+    }
+
+    if (dataDiff) {
+      execValidateMutation({ id: dataSource.id });
+    }
+  }, [currentUser.dataschemas, execValidateMutation]);
+
   useEffect(() => {
     if (dataSource.id) {
       execValidateMutation({ id: dataSource.id });
     }
-  }, [currentUser.dataschemas, dataSource.id, execValidateMutation]);
+  }, [dataSource.id, execValidateMutation]);
 
   const onRunQuery = (e) => {
     runQuery();

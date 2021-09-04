@@ -74,7 +74,7 @@ const dashboardsSubscription = `
 const getListVariables = (pagination) => {
   let res = {
     order_by: {
-      created_at: 'asc',
+      created_at: 'desc',
     },
   };
 
@@ -118,7 +118,7 @@ export default (props = {}) => {
     variables: getListVariables(pagination),
   });
 
-  const [subscription] = useSubscription({
+  const [subscription, execSubscription] = useSubscription({
     query: dashboardsSubscription,
     variables: getListVariables(pagination),
     pause: disableSubscription,
@@ -219,5 +219,6 @@ export default (props = {}) => {
       execUpdateMutation,
     },
     subscription,
+    execSubscription,
   };
 };

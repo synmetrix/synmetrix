@@ -29,7 +29,11 @@ const editExplorationQuery = `
       updated_at
     }
     fetch_dataset(exploration_id: $id, offset: $offset, limit: $limit) {
-      result
+      annotation
+      data
+      query
+      progress
+      hitLimit
     }
   }
 `;

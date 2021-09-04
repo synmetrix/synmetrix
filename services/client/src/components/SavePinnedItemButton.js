@@ -180,7 +180,7 @@ SavePinnedItemButton.propTypes = {
   spec: PropTypes.object.isRequired,
   specConfig: PropTypes.object,
   type: PropTypes.string.isRequired,
-  explorationRowId: PropTypes.number,
+  explorationRowId: PropTypes.string,
   disabled: PropTypes.bool
 };
 

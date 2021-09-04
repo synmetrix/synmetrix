@@ -5,7 +5,7 @@ import {
   useRecoilState,
 } from 'recoil';
 
-import { useDebounceFn, useUpdateEffect } from 'ahooks';
+import { useDebounceFn, useUpdateEffect, useMount } from 'ahooks';
 
 import { useQuery } from 'urql';
 
@@ -34,6 +34,7 @@ const currentUserQuery = `
     dataschemas (order_by: { created_at: desc }) {
       id
       name
+      checksum
     }
 
     dashboards (order_by: { created_at: desc }) {
@@ -71,7 +72,7 @@ export default (props = {}) => {
   }, [currentUserData.data, setCurrentUser]);
 
   const { run: execQueryCurrentUser } = useDebounceFn((context) => {
-    doQueryCurrentUser({ requestPolicy: 'cache-and-network', role, ...context });
+    return doQueryCurrentUser({ requestPolicy: 'cache-and-network', role, ...context });
   }, {
     wait: 500,
   });
@@ -82,19 +83,28 @@ export default (props = {}) => {
     }
   }, [authToken, execQueryCurrentUser]);
 
-  const { subscription: sourcesSubscription } = useSources({
+  const { 
+    subscription: sourcesSubscription,
+    execSubscription: execSourcesSubscription,
+  } = useSources({
     pauseQueryAll: true,
-    disableSubscription: false,
+    disableSubscription: true,
   });
 
-  const { subscription: dashboardsSubscription } = useDashboards({
+  const { 
+    subscription: dashboardsSubscription,
+    execSubscription: execDashboardsSubscription,
+  } = useDashboards({
     pauseQueryAll: true,
-    disableSubscription: false,
+    disableSubscription: true,
   });
 
-  const { subscription: schemasSubscription } = useSchemas({
+  const { 
+    subscription: schemasSubscription,
+    execSubscription: execSchemasSubscription,
+  } = useSchemas({
     pauseQueryAll: true,
-    disableSubscription: false,
+    disableSubscription: true,
   });
 
   useUpdateEffect(() => {
@@ -114,9 +124,14 @@ export default (props = {}) => {
       sourcesSubscription.data = null;
       dashboardsSubscription.data = null;
       schemasSubscription.data = null;
-      // execQueryCurrentUser();
     }
   }, [sourcesSubscription.data, dashboardsSubscription.data, schemasSubscription.data, currentUser]);
+
+  useMount(() => {
+    execSchemasSubscription();
+    execSourcesSubscription();
+    execDashboardsSubscription();
+  });
 
   return {
     currentUser,

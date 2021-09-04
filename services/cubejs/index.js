@@ -160,7 +160,7 @@ const driverFactory = async ({ securityContext }) => {
 
 const dbType = ({ securityContext }) => {
   const { dataSource = {} } = securityContext || {};
-  return dataSource.db_type || 'none';
+  return dataSource.db_type?.toLowerCase() || 'none';
 };
 
 const basePath = `/cubejs/datasources`;
@@ -182,7 +182,7 @@ const options = {
   checkAuth: setupAuthInfo,
   apiSecret: CUBEJS_SECRET,
   basePath,
-  logger,
+  // logger,
   schemaVersion: ({ securityContext }) => securityContext?.schemaVersion,
   driverFactory,
   repositoryFactory: ({ securityContext }) => {

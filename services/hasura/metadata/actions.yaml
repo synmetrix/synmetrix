@@ -9,6 +9,7 @@ actions:
   definition:
     kind: ""
     handler: http://actions:3000/rpc/fetch_dataset
+    forward_client_headers: true
   permissions:
   - role: user
 - name: fetch_meta

@@ -53,12 +53,10 @@ export default ({ dataSourceId, meta = [], editId, rowsLimit, offset }) => {
   const [settings, dispatchSettings] = useReducer(reducer, initialSettings);
 
   const {
-    current: exploration,
-    currentProgress: explorationProgress,
+    current,
+    currentProgress,
     queries: {
-      currentData: {
-        fetching: explorationLoading,
-      },
+      currentData,
       execQueryCurrent,
     },
     mutations: {
@@ -74,7 +72,7 @@ export default ({ dataSourceId, meta = [], editId, rowsLimit, offset }) => {
     pauseQueryAll: true,
   });
 
-  const playgroundSettings = useMemo(() => exploration.playground_state || {}, [exploration]);
+  const playgroundSettings = useMemo(() => current.playground_state || {}, [current]);
 
   useDeepCompareEffect(() => {
     dispatchSettings({ type: 'update', value: playgroundSettings });
@@ -99,15 +97,8 @@ export default ({ dataSourceId, meta = [], editId, rowsLimit, offset }) => {
   const {
     rows,
     hitLimit,
-    skippedMembers: explorationSkippedMembers,
-  } = useExplorationData({ exploration });
-
-  const skippedMembers = useMemo(() => {
-    if ((explorationSkippedMembers || []).length) {
-      return explorationSkippedMembers;
-    }
-    return [];
-  }, [explorationSkippedMembers]);
+    skippedMembers,
+  } = useExplorationData({ explorationResult: currentData.data?.fetch_dataset });
 
   const columns = useMemo(() => {
     if (!selectedQueryMembers) { return [] };
@@ -118,8 +109,8 @@ export default ({ dataSourceId, meta = [], editId, rowsLimit, offset }) => {
   );
 
   const explorationState = useMemo(() => ({
-    loading: explorationLoading,
-    progress: explorationProgress,
+    loading: currentData.fetching,
+    progress: currentProgress,
     hitLimit,
     columns,
     rows,
@@ -127,14 +118,23 @@ export default ({ dataSourceId, meta = [], editId, rowsLimit, offset }) => {
     skippedMembers,
     settings
   }),
-  [explorationLoading, explorationProgress, hitLimit, columns, rows, currPlaygroundState, skippedMembers, settings]
+  [
+    currentData.fetching,
+    currentProgress,
+    hitLimit,
+    columns,
+    rows,
+    currPlaygroundState,
+    skippedMembers,
+    settings
+  ]
   );
 
   const [isQueryChanged, setChangedStatus] = useState(false);
 
   useEffect(
     () => {
-      const { playground_state: playgroundState = queryState } = exploration;
+      const { playground_state: playgroundState = queryState } = current;
 
       const isChanged = !equals(
         pickKeys(queryStateKeys, playgroundState),
@@ -145,16 +145,16 @@ export default ({ dataSourceId, meta = [], editId, rowsLimit, offset }) => {
         setChangedStatus(isChanged);
       }
     },
-    [isQueryChanged, currPlaygroundState, exploration]
+    [isQueryChanged, currPlaygroundState, current]
   );
 
   useEffect(() => {
-    const newState = exploration.playground_state;
+    const newState = current.playground_state;
 
     if (newState) {
       doReset(newState);
     }
-  }, [exploration.playground_state, doReset]);
+  }, [current.playground_state, doReset]);
 
   useEffect(() => {
     if (!editId) {
@@ -189,8 +189,8 @@ export default ({ dataSourceId, meta = [], editId, rowsLimit, offset }) => {
 
   return {
     state: explorationState,
-    exploration,
-    explorationLoading,
+    exploration: current,
+    explorationLoading: currentData.fetching,
     loadExploration: execQueryCurrent,
     selectedQueryMembers,
     availableQueryMembers,

@@ -1,9 +1,8 @@
-import { useCallback, useEffect, useMemo } from 'react';
-
-import { get, getOr } from 'unchanged';
-import { useMutation, useSubscription } from 'urql';
+import { useEffect, useMemo } from 'react';
+import { useSubscription } from 'urql';
 
 import useQuery from './useQuery';
+import useMutation from './useMutation';
 
 const newdatasourceMutation = `
   mutation ($object: datasources_insert_input!) {
@@ -134,7 +133,7 @@ const runSourceSQLMutation = `
 const getListVariables = (pagination) => {
   let res = {
     order_by: {
-      created_at: 'asc',
+      created_at: 'desc',
     },
   };
 
@@ -182,7 +181,7 @@ export default ({ pauseQueryAll, pagination = {}, params = {}, disableSubscripti
     role,
   });
 
-  const [subscription] = useSubscription({
+  const [subscription, execSubscription] = useSubscription({
     query: datasourcesSubscription,
     variables: getListVariables(pagination),
     pause: disableSubscription,
@@ -261,5 +260,6 @@ export default ({ pauseQueryAll, pagination = {}, params = {}, disableSubscripti
       execGenSchemaMutation,
     },
     subscription,
+    execSubscription,
   };
 };

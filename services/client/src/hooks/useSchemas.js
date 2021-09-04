@@ -1,6 +1,9 @@
-import { useCallback, useEffect, useMemo } from 'react';
-import { useQuery, useMutation, useSubscription } from 'urql';
+import { useEffect, useMemo } from 'react';
+import { useSubscription } from 'urql';
 import { set } from 'unchanged';
+
+import useQuery from './useQuery';
+import useMutation from './useMutation';
 
 const newSchemaMutation = `
   mutation ($object: dataschemas_insert_input!) {
@@ -60,7 +63,7 @@ const allSchemasSubscription = `
 const getListVariables = (pagination, params) => {
   let res = {
     order_by: {
-      created_at: 'asc',
+      created_at: 'desc',
     },
   };
 
@@ -84,36 +87,24 @@ const role = 'user';
 export default (props = {}) => {
   const { pauseQueryAll, pagination = {}, params = {}, disableSubscription = true } = props;
 
-  const [createMutation, doCreateMutation] = useMutation(newSchemaMutation);
-  const execCreateMutation = useCallback((input) => {
-    return doCreateMutation(input, { role });
-  }, [doCreateMutation]);
+  const [createMutation, execCreateMutation] = useMutation(newSchemaMutation, { role });
+  const [updateMutation, execUpdateMutation] = useMutation(editSchemaMutation, { role });
+  const [deleteMutation, execDeleteMutation] = useMutation(delSchemaMutation, { role });
 
-  const [updateMutation, doUpdateMutation] = useMutation(editSchemaMutation);
-  const execUpdateMutation = useCallback((input) => {
-    doUpdateMutation(input, { role });
-  }, [doUpdateMutation]);
-
-  const [deleteMutation, doDeleteMutation] = useMutation(delSchemaMutation);
-  const execDeleteMutation = useCallback((input) => {
-    doDeleteMutation(input, { role });
-  }, [doDeleteMutation]);
-
-  const [allData, doQueryAll] = useQuery({
+  const [allData, execQueryAll] = useQuery({
     query: allSchemasQuery,
     pause: true,
     variables: getListVariables(pagination, params),
+  }, {
+    requestPolicy: 'cache-and-network',
+    role,
   });
 
-  const [subscription] = useSubscription({
+  const [subscription, execSubscription] = useSubscription({
     query: allSchemasSubscription,
     variables: getListVariables(pagination, params),
     pause: disableSubscription,
   }, handleSubscription);
-
-  const execQueryAll = useCallback((context) => {
-    doQueryAll({ requestPolicy: 'cache-and-network', role, ...context });
-  }, [doQueryAll]);
 
   useEffect(() => {
     if (!pauseQueryAll) {
@@ -140,5 +131,6 @@ export default (props = {}) => {
       execUpdateMutation,
     },
     subscription,
+    execSubscription,
   };
 };

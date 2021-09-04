@@ -13,7 +13,9 @@ export default async (session, input) => {
       userId,
     }).runSQL(query, limit);
 
-    return result;
+    return {
+      result,
+    };
   } catch (err) {
     return apiError(err);
   }

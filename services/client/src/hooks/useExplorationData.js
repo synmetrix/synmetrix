@@ -2,11 +2,11 @@ import { useMemo } from 'react';
 
 import { getOr } from 'unchanged';
 
-export default ({ exploration }) => {
+export default ({ explorationResult }) => {
   return useMemo(() => {
-    const rows = getOr([], 'data', exploration.dataCube);
-    const hitLimit = getOr(false, 'hitLimit', exploration.dataCube);
-    const skippedMembers = getOr([], 'annotation.skippedMembers', exploration.dataCube);
+    const rows = getOr([], 'data', explorationResult);
+    const hitLimit = getOr(false, 'hitLimit', explorationResult);
+    const skippedMembers = getOr([], 'annotation.skippedMembers', explorationResult);
 
     return {
       rows,
@@ -14,6 +14,6 @@ export default ({ exploration }) => {
       skippedMembers,
     };
   },
-    [exploration.dataCube]
+  [explorationResult]
   );
 };
