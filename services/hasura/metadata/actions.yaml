@@ -33,6 +33,12 @@ actions:
     forward_client_headers: true
   permissions:
   - role: user
+- name: gen_sql
+  definition:
+    kind: synchronous
+    handler: http://actions:3000/rpc/gen_sql
+  permissions:
+  - role: user
 - name: run_query
   definition:
     kind: synchronous
@@ -62,4 +68,5 @@ custom_types:
   - name: ValidateSourceOutput
   - name: CheckConnectionOutput
   - name: FetchDatasetOutput
+  - name: GenSQLOutput
   scalars: []

@@ -64,11 +64,14 @@ const ExploreWorkspace = (props) => {
     dispatchSettings
   } = usePlayground({ dataSourceId: dataSource.id, editId: explorationId, meta });
 
-  useEffect(() => {
-    if (explorationId) {
-      loadExploration();
-    }
-  }, [explorationId, loadExploration]);
+  console.log('explorationId');
+  console.log(explorationId);
+
+  // useEffect(() => {
+  //   if (explorationId) {
+  //     loadExploration();
+  //   }
+  // }, [explorationId, loadExploration]);
 
   const explorationRowId = useMemo(() => exploration?.id, [exploration]);
 
@@ -261,7 +264,7 @@ ExploreWorkspace.propTypes = {
     chartId: PropTypes.string,
   }).isRequired,
   source: PropTypes.object,
-  meta: PropTypes.object,
+  meta: PropTypes.array,
   loading: PropTypes.bool,
   header: PropTypes.element,
 };

@@ -62,6 +62,8 @@ export default ({ dataSourceId, meta = [], editId, rowsLimit, offset }) => {
     mutations: {
       createMutation,
       execCreateMutation,
+      genSqlMutation,
+      execGenSqlMutation,
     }
   } = useExplorations({
     params: {
@@ -72,11 +74,18 @@ export default ({ dataSourceId, meta = [], editId, rowsLimit, offset }) => {
     pauseQueryAll: true,
   });
 
-  const playgroundSettings = useMemo(() => current.playground_state || {}, [current]);
+  const playgroundSettings = useMemo(() => current.playground_settings || {}, [current]);
 
   useDeepCompareEffect(() => {
     dispatchSettings({ type: 'update', value: playgroundSettings });
   }, [playgroundSettings]);
+
+  useEffect(() => {
+    if (editId) {
+      execQueryCurrent();
+      execGenSqlMutation({ exploration_id: editId });
+    }
+  }, [editId, execGenSqlMutation, execQueryCurrent]);
 
   const {
     state: currPlaygroundState,
@@ -115,11 +124,13 @@ export default ({ dataSourceId, meta = [], editId, rowsLimit, offset }) => {
     columns,
     rows,
     ...currPlaygroundState,
+    rawSql: genSqlMutation.data?.gen_sql?.result,
     skippedMembers,
     settings
   }),
   [
     currentData.fetching,
+    genSqlMutation.data,
     currentProgress,
     hitLimit,
     columns,

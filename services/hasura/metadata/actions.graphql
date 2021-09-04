@@ -33,6 +33,12 @@ type Mutation {
 }
 
 type Mutation {
+  gen_sql(
+    exploration_id: uuid!
+  ): GenSQLOutput
+}
+
+type Mutation {
   run_query(
     datasource_id: uuid!
     query: String!
@@ -103,5 +109,9 @@ type FetchDatasetOutput {
   dbType: String
   dataSource: String
   lastRefreshTime: String
+}
+
+type GenSQLOutput {
+  result: json
 }
 

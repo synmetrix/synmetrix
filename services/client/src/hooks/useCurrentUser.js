@@ -109,9 +109,6 @@ export default (props = {}) => {
 
   useUpdateEffect(() => {
     const anyData = sourcesSubscription.data || dashboardsSubscription.data || schemasSubscription.data;
-    console.log('anyData');
-    console.log(anyData);
-    console.log('--------------');
 
     if (anyData) {
       if (currentUser && Object.keys(currentUser).length) {

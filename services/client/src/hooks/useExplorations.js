@@ -12,8 +12,8 @@ const newExplorationMutation = `
 `;
 
 const genExplorationSqlMutation = `
-  mutation ($id: uuid!) {
-    gen_sql(exploration_id: $id) {
+  mutation ($exploration_id: uuid!) {
+    gen_sql(exploration_id: $exploration_id) {
       result
     }
   }
@@ -66,6 +66,7 @@ export default ({ params = {} }) => {
 
   useEffect(() => {
     if (editId) {
+      console.log('useeffect')
       execQueryCurrent();
     }
   }, [editId, execQueryCurrent]);

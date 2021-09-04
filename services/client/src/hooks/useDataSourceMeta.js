@@ -172,8 +172,6 @@ export default ({ meta = [], playgroundState }) => {
 
       const cubesMap = fromPairs(cubesPairs);
 
-      console.log('cubesPairs');
-      console.log(cubesPairs);
       const cubesMeta = new Meta(cubesMap);
       const updatedPlaygroundState = updatePlaygroundState(playgroundState, cubesMeta);
 

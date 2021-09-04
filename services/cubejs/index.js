@@ -17,11 +17,6 @@ const app = express();
 app.use(express.json({ limit: '50mb', extended: true }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
-const logger = (msg, params) => {
-  const { queryKey, query, securityContext, cacheKey, sqlQuery, ...restParams } = params;
-  console.log(`${msg}: ${JSON.stringify(restParams)}`);
-};
-
 const pushError = (req, error) => {
   req.securityContext = { error };
   return null;
@@ -182,7 +177,6 @@ const options = {
   checkAuth: setupAuthInfo,
   apiSecret: CUBEJS_SECRET,
   basePath,
-  // logger,
   schemaVersion: ({ securityContext }) => securityContext?.schemaVersion,
   driverFactory,
   repositoryFactory: ({ securityContext }) => {

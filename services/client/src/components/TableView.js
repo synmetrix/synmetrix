@@ -113,17 +113,24 @@ const TableView = (props) => {
       iconType = sortDirection === SortDirection.DESC ? 'sort-descending' : 'sort-ascending';
     }
 
+    const onClickSort = (e, sortDir) => {
+      onSortChange(sortDir, columnId);
+      e.preventDefault();
+      e.stopPropagation();
+      return false;
+    };
+
     const routes = [
       {
-        onClick: () => onSortChange(SortDirection.ASC, columnId),
+        onClick: (_, e) => onClickSort(e, SortDirection.ASC),
         title: 'Sort ASC',
       },
       {
-        onClick: () => onSortChange(SortDirection.DESC, columnId),
+        onClick: (_, e) => onClickSort(e, SortDirection.DESC),
         title: 'Sort DESC',
       },
       {
-        onClick: () => onSortChange(null, columnId),
+        onClick: (_, e) => onClickSort(e, null),
         title: 'Don\'t sort',
       }
     ];
