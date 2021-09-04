@@ -70,6 +70,11 @@ const Login = () => {
         {message && <div style={{ textAlign: 'center', color: 'red' }}>{message}</div>}
 
         <div className={s.formFooter}>
+          <Link to="/link_login">
+            <Button block type="default" size="large">
+              Login with magic link
+            </Button>
+          </Link>
           <Link to="/signup">
             <Button block type="default" size="large">
               Sign Up

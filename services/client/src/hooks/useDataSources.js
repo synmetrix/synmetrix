@@ -8,7 +8,7 @@ import { useQuery, useMutation } from 'urql';
 import trackEvent from 'utils/trackEvent';
 
 import { useRecoilValue } from 'recoil';
-import { currentUser as currentUserState } from 'recoil/currentUser';
+import { currentUserSelector } from 'recoil/currentUser';
 
 const newDataSourceMutation = `
   mutation NewDataSourceMutation($input: CreateDatasourceInput!) {
@@ -93,7 +93,7 @@ const runSQLDatasourceMutation = `
 `;
 
 export default ({ editId, pauseQueryAll, paginationVars }) => {
-  const currentUser = useRecoilValue(currentUserState);
+  const currentUser = useRecoilValue(currentUserSelector);
 
   const [createMutation, executeNewMutation] = useMutation(newDataSourceMutation);
   const mExecuteNewMutation = datasource => {

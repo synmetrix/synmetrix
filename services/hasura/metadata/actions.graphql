@@ -39,6 +39,13 @@ type Mutation {
 }
 
 type Mutation {
+  invite_team_member(
+    email: String!
+    teamId: uuid
+  ): InviteTeamMemberOutput
+}
+
+type Mutation {
   run_query(
     datasource_id: uuid!
     query: String!
@@ -113,5 +120,11 @@ type FetchDatasetOutput {
 
 type GenSQLOutput {
   result: json
+}
+
+type InviteTeamMemberOutput {
+  code: String
+  message: String
+  memberId: uuid
 }
 

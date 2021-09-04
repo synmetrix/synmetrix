@@ -79,6 +79,19 @@ export default () => {
     manual: true,
   });
 
+  const refresh = useRequest(async (values) => {
+    const response = await fetch(`${GRAPHQL_PLUS_SERVER_URL}/auth/token/refresh?refresh_token=${values?.refreshToken}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    return validateResponse(response);
+  }, {
+    manual: true,
+  });
+
   const revoke = useRequest(async (values) => {
     const response = await fetch(`${GRAPHQL_PLUS_SERVER_URL}/auth/token/revoke?refresh_token=${refreshToken}`, {
       method: 'POST',
@@ -116,5 +129,6 @@ export default () => {
     register,
     logout,
     revoke,
+    refresh,
   };
 };

@@ -1,3 +1,4 @@
+/* eslint-disable react/no-children-prop */
 import React from 'react';
 
 import {
@@ -17,7 +18,9 @@ import useAppSettings from './hooks/useAppSettings';
 import Layout from './components/Layout';
 
 import Login from './pages/Login';
+import MagicLinkLogin from './pages/MagicLinkLogin';
 import SignUp from './pages/SignUp';
+import Callback from './pages/Callback';
 
 import DataSources from './pages/DataSources';
 import DataSchemas from './pages/DataSchemas';
@@ -36,6 +39,8 @@ const Routes = () => {
     <URQLProvider value={client}>
       <Router>
         <Switch>
+          <Route path="/callback" component={Callback} />
+          <Route path="/link_login" component={MagicLinkLogin} />
           <Route path="/login" component={Login} />
           <Route path="/signup" component={SignUp} />
           <Route path="/404" component={ErrorFound} />

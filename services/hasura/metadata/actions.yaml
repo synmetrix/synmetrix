@@ -39,6 +39,10 @@ actions:
     handler: http://actions:3000/rpc/gen_sql
   permissions:
   - role: user
+- name: invite_team_member
+  definition:
+    kind: synchronous
+    handler: http://actions:3000/rpc/invite_team_member
 - name: run_query
   definition:
     kind: synchronous
@@ -68,5 +72,9 @@ custom_types:
   - name: ValidateSourceOutput
   - name: CheckConnectionOutput
   - name: FetchDatasetOutput
+<<<<<<< HEAD
   - name: GenSQLOutput
+=======
+  - name: InviteTeamMemberOutput
+>>>>>>> invites and magic link
   scalars: []

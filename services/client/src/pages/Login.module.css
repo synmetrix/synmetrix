@@ -19,9 +19,9 @@
 }
 
 .formFooter {
-  padding-top: 10px;
+  padding-top: 30px;
   flex-direction: column;
-  justify-content: space-around;
+  justify-content: space-evenly;
   align-items: center;
   display: flex;
   height: 160px;
