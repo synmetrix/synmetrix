@@ -1,9 +1,9 @@
-const fetch = require('node-fetch');
+import fetch from 'node-fetch';
 
 const HASURA_ENDPOINT = process.env.HASURA_ENDPOINT;
 const HASURA_GRAPHQL_ADMIN_SECRET = process.env.HASURA_GRAPHQL_ADMIN_SECRET;
 
-const fetchGraphQL = async (query, variables) => {
+export const fetchGraphQL = async (query, variables) => {
   const result = await fetch(
     HASURA_ENDPOINT,
     {
@@ -19,6 +19,4 @@ const fetchGraphQL = async (query, variables) => {
   );
 
   return await result.json();
-}
-
-module.exports = { fetchGraphQL };
+};

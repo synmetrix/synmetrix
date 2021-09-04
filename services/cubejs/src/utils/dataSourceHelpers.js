@@ -1,6 +1,6 @@
-const { set } = require('unchanged');
-const createMd5Hex = require('./md5Hex');
-const { fetchGraphQL } = require('./graphql');
+import { set } from 'unchanged';
+import createMd5Hex from './md5Hex.js';
+import { fetchGraphQL } from './graphql.js';
 
 const sourceQuery = `
   query ($id: uuid!) {
@@ -35,25 +35,21 @@ const upsertSchemaMutation = `
   }
 `;
 
-const findDataSource = async ({ dataSourceId }) => {
+export const findDataSource = async ({ dataSourceId }) => {
   let res = await fetchGraphQL(sourceQuery, { id: dataSourceId });
   res = res?.data?.datasources_by_pk;
 
   return res;
 };
 
-exports.findDataSource = findDataSource;
-
-const createDataSchema = async (object) => {
+export const createDataSchema = async (object) => {
   let res = await fetchGraphQL(upsertSchemaMutation, { object });
   res = res?.data?.insert_dataschemas_one;
 
   return res;
 };
 
-exports.createDataSchema = createDataSchema;
-
-const findDataSchemas = async (args) => {
+export const findDataSchemas = async (args) => {
   let vars = {
     order_by: {
       created_at: 'asc',
@@ -64,15 +60,17 @@ const findDataSchemas = async (args) => {
     vars = set('where.datasource_id._eq', args.dataSourceId, vars);
   }
 
+  if (args.branch) {
+    vars = set('where.branch._eq', args.branch, vars);
+  }
+
   let dataSchemas = await fetchGraphQL(allSchemasQuery, vars);
   dataSchemas = dataSchemas?.data?.dataschemas;
 
   return dataSchemas;
 };
 
-exports.findDataSchemas = findDataSchemas;
-
-const dataSchemaFiles = async (args) => {
+export const dataSchemaFiles = async (args) => {
   const schemas = await findDataSchemas(args);
 
   return schemas.map(r => ({
@@ -82,12 +80,8 @@ const dataSchemaFiles = async (args) => {
   }));
 };
 
-exports.dataSchemaFiles = dataSchemaFiles;
-
-const getSchemaVersion = async (args) => {
+export const getSchemaVersion = async (args) => {
   const files = await dataSchemaFiles(args);
 
   return createMd5Hex(files);
 };
-
-exports.getSchemaVersion = getSchemaVersion;

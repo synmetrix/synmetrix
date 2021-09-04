@@ -63,8 +63,8 @@ const normalizeQuery = playgroundState => {
   return { query };
 };
 
-const cubejsApi = ({ dataSourceId }) => {
-  const cubejsToken = jwt.sign({ dataSourceId }, CUBEJS_SECRET, { expiresIn: '1d' });
+const cubejsApi = ({ dataSourceId, userId }) => {
+  const cubejsToken = jwt.sign({ dataSourceId, userId }, CUBEJS_SECRET, { expiresIn: '1d' });
 
   const reqHeaders = {
     Authorization: cubejsToken,
@@ -85,7 +85,11 @@ const cubejsApi = ({ dataSourceId }) => {
       });
     } else {
       res = await fetch(url, {
-        headers: reqHeaders,
+        headers: {
+          ...reqHeaders,
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+        },
         method: 'POST',
         body: JSON.stringify(params),
         signal: timeoutSignal(10000),

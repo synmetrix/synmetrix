@@ -43,7 +43,6 @@ actions:
 custom_types:
   enums: []
   input_objects:
-  - name: cubeJoin
   - name: SourceTable
   objects:
   - name: CheckSourceOutput

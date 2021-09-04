@@ -148,6 +148,10 @@ const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
     successMessage: t('Schema created')
   });
 
+  useCheckResponse(genSchemaMutation, () => {}, {
+    successMessage: t('Schema generated')
+  });
+
   const validationError = useMemo(
     () => validateMutation?.error?.message,
     [validateMutation.error]

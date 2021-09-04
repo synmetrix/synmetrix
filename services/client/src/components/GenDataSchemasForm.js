@@ -54,7 +54,7 @@ const GenDataSchemasForm = React.forwardRef((props, ref) => {
             {Object.entries(schemaTables).map(([tableName, tableColumns]) => (
               <div style={{ background: '#f0f2f5' }} key={tableName}>
                 <Form.Item key={tableName} style={{ padding: 5, margin: 5 }}>
-                  {form.getFieldDecorator(`${schemaName}.${tableName}`, {
+                  {form.getFieldDecorator(`${schemaName}/${tableName}`, {
                     initialValue: false,
                     valuePropName: 'checked',
                   })(

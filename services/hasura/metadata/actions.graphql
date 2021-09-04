@@ -38,16 +38,8 @@ type Mutation {
   ): ValidateSourceOutput
 }
 
-input cubeJoin {
-  primaryKey: String!
-  primaryKeyType: String!
-  primaryRelation: String!
-  foreignKey: String!
-}
-
 input SourceTable {
   name: String!
-  addCubeJoins: [cubeJoin]
 }
 
 type CheckSourceOutput {

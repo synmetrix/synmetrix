@@ -1,11 +1,31 @@
-const inflection = require('inflection');
-const express = require('express');
+import inflection from 'inflection';
+import express from 'express';
+
+import { findDataSchemas, createDataSchema } from '../utils/dataSourceHelpers.js';
+
+const ADAPTERS = {
+  postgres: 'postgres',
+  redshift: 'redshift',
+  mysql: 'mysql',
+  mysqlauroraserverless: 'mysql',
+  mongobi: 'mongobi',
+  mssql: 'mssql',
+  bigquery: 'bigquery',
+  prestodb: 'prestodb',
+  qubole_prestodb: 'qubolePrestodb',
+  athena: 'prestodb',
+  vertica: 'vertica',
+  snowflake: 'snowflake',
+  clickhouse: 'clickhouse',
+  hive: 'hive',
+  oracle: 'oracle',
+  sqlite: 'sqlite',
+  awselasticsearch: 'awselasticsearch',
+  elasticsearch: 'elasticsearch',
+};
 
 const router = express.Router();
-const { updateJoins } = require('../utils/compiler');
-const { findDataSchemas, createDataSchema } = require('../utils/dataSourceHelpers');
-
-const routes = ({ basePath, setupAuthInfo, cubejs }) => {
+export default ({ basePath, setupAuthInfo, cubejs }) => {
   router.use(async (req, res, next) => {
     await setupAuthInfo(req);
     next();
@@ -14,12 +34,14 @@ const routes = ({ basePath, setupAuthInfo, cubejs }) => {
   // endpoint for sql runner
   router.post(`${basePath}/v1/runSql`, async (req, res) => {
     const { securityContext } = req;
-    const driver = cubejs.options.driverFactory({ securityContext });
+    const driver = await cubejs.options.driverFactory({ securityContext });
 
     try {
       const rows = await driver.query(req.body.query);
       res.json(rows);
     } catch (err) {
+      console.error(err);
+
       res.status(500).json({
         code: 'run_sql_failed',
         message: err.message || err,
@@ -29,7 +51,7 @@ const routes = ({ basePath, setupAuthInfo, cubejs }) => {
 
   router.get(`${basePath}/v1/test`, async (req, res) => {
     const { securityContext } = req;
-    const driver = cubejs.options.driverFactory({ securityContext });
+    const driver = await cubejs.options.driverFactory({ securityContext });
 
     try {
       await driver.testConnection();
@@ -39,7 +61,7 @@ const routes = ({ basePath, setupAuthInfo, cubejs }) => {
         message: 'Connection is OK',
       });
     } catch (err) {
-      console.log(err);
+      console.error(err);
 
       res.status(500).json({
         code: 'connection_test_failed',
@@ -50,12 +72,14 @@ const routes = ({ basePath, setupAuthInfo, cubejs }) => {
 
   router.get(`${basePath}/v1/get-schema`, async (req, res) => {
     const { securityContext } = req;
-    const driver = cubejs.options.driverFactory({ securityContext });
+    const driver = await cubejs.options.driverFactory({ securityContext });
 
     try {
       const schema = await driver.tablesSchema();
       res.json(schema);
     } catch (err) {
+      console.error(err);
+
       if (driver.release) {
         await driver.release();
       }
@@ -69,31 +93,52 @@ const routes = ({ basePath, setupAuthInfo, cubejs }) => {
 
   router.post(`${basePath}/v1/generate-dataschema`, async (req, res) => {
     const { securityContext } = req;
-    const { dataSource, user } = securityContext;
+    const { dataSourceId, userId, dbType } = securityContext;
 
-    const driver = cubejs.options.driverFactory({ securityContext });
+    const driver = await cubejs.options.driverFactory({ securityContext });
 
     try {
       const schema = await driver.tablesSchema();
-      const { tables = [], overWrite = false } = (req.body || {});
+      const { tables = [], overwrite = false, branch } = (req.body || {});
 
-      const ScaffoldingTemplate = require('@cubejs-backend/schema-compiler/scaffolding/ScaffoldingTemplate');
-      const scaffoldingTemplate = new ScaffoldingTemplate(schema, driver);
-      const files = scaffoldingTemplate.generateFilesByTableNames(tables);
+      console.log('loading module');
+      const scaffoldingTemplateModule = await import('../schema_compiler/scaffolding/ScaffoldingTemplate.js');
+      const dialectType = ADAPTERS[dbType];
 
+      const dialectModule = await import(`../schema_compiler/scaffolding/dialect/${dialectType}.js`);
+
+      console.log('loading function');
+      const scaffoldingTemplate = new scaffoldingTemplateModule.default(schema, driver);
+      const normalizedTables = tables.map(table => table?.name?.replace('/', '.'));
+
+      let files = scaffoldingTemplate.generateFilesByTableNames(normalizedTables, { dbType, dialect: dialectModule });
+
+      console.log('tables');
       console.log(files);
 
       const dataSchemas = await findDataSchemas({
-        dataSourceId: dataSource.id,
+        dataSourceId,
+        branch,
       });
 
       const existedFiles = dataSchemas.map(row => row.name);
 
-      const schemaUpdateQueries = files.map(file => createDataSchema({
-        datasource_id: dataSource.id,
+      const filteredFiles = files.reduce((acc, file) => {
+        // if we don't want to overwrite existed schemas
+        if (!overwrite && existedFiles.includes(file.fileName)) {
+          return acc;
+        }
+
+        return [...acc, file];
+      }, []);
+
+      console.log(filteredFiles);
+
+      const schemaUpdateQueries = filteredFiles.map(file => createDataSchema({
+        datasource_id: dataSourceId,
         name: file.fileName,
         code: file.content,
-        user_id: user.id,
+        user_id: userId,
       }));
 
       if (schemaUpdateQueries.length) {
@@ -113,6 +158,8 @@ const routes = ({ basePath, setupAuthInfo, cubejs }) => {
 
       res.json({ code: 'ok', message: 'Generation finished' });
     } catch (err) {
+      console.error(err);
+
       if (driver.release) {
         await driver.release();
       }
@@ -130,6 +177,8 @@ const routes = ({ basePath, setupAuthInfo, cubejs }) => {
         cubejs.compilerCache.prune();
       }
     } catch (err) {
+      console.error(err);
+
       res.status(500).json({
         code: 'code_compilation_error',
         message: err.message
@@ -141,13 +190,13 @@ const routes = ({ basePath, setupAuthInfo, cubejs }) => {
     try {
       await compilerApi.metaConfig();
       res.json({ code: 'ok', message: 'Validation is OK' });
-    } catch (error) {
-      const { messages } = error;
+    } catch (err) {
+      console.error(err);
+
+      const { messages } = err;
       res.status(500).json({ code: 'code_validation_error', message: messages.toString() });
     }
   });
 
   return router;
 };
-
-module.exports = routes;

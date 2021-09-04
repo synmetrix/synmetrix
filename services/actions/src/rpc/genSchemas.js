@@ -10,7 +10,7 @@ export default async (session, input) => {
     const result = await cubejsApi({
       dataSourceId,
       userId,
-    }).generateSchemaFiles({ tables, overWrite: overwrite });
+    }).generateSchemaFiles({ tables, overwrite });
 
     return result;
   } catch (err) {

@@ -1,24 +1,16 @@
-const ServerCore = require('@cubejs-backend/server-core');
-const pgConnectionString = require('pg-connection-string');
-const express = require('express');
+import ServerCore from '@cubejs-backend/server-core';
+import express from 'express';
 
-const jwt = require('jsonwebtoken');
+import jwt from 'jsonwebtoken';
+import JSum from 'jsum';
 
-const PostgresDriver = require('@cubejs-backend/postgres-driver');
-const AthenaDriver = require('@cubejs-backend/athena-driver');
-const BigQueryDriver = require('@cubejs-backend/bigquery-driver');
-const ClickHouseDriver = require('@cubejs-backend/clickhouse-driver');
-const MongobiDriver = require('@cubejs-backend/mongobi-driver');
-const MSSqlDriver = require('@cubejs-backend/mssql-driver');
-const MySqlDriver = require('@cubejs-backend/mysql-driver');
-const JSum = require('jsum');
+import DriverDependencies from '@cubejs-backend/server-core/dist/src/core/DriverDependencies.js';
 
-const routes = require('./src/routes');
-const { fetchGraphQL } = require('./src/utils/graphql');
-const { dataSchemaFiles, findDataSource, getSchemaVersion } = require('./src/utils/dataSourceHelpers');
+import routes from './src/routes/index.js';
+import { fetchGraphQL } from './src/utils/graphql.js';
+import { dataSchemaFiles, findDataSource, getSchemaVersion } from './src/utils/dataSourceHelpers.js';
 
 const { CUBEJS_SECRET } = process.env;
-const MSSQL_DEFAULT_PORT = 1433;
 
 const app = express();
 
@@ -46,7 +38,7 @@ const setupAuthInfo = async (req, auth) => {
     return pushError(req, err.message);
   }
 
-  const { dataSourceId } = jwtDecoded || {};
+  const { dataSourceId, userId } = jwtDecoded || {};
 
   if (!dataSourceId) {
     error = 'Provide dataSourceId';
@@ -64,8 +56,16 @@ const setupAuthInfo = async (req, auth) => {
 
   const schemaVersion = await getSchemaVersion({ dataSourceId });
   const dataSourceVersion = JSum.digest(dataSource, 'SHA256', 'hex');
+  const dbType = dataSource.db_type?.toLowerCase();
 
-  req.securityContext = { dataSourceId, dataSource, schemaVersion, dataSourceVersion };
+  req.securityContext = {
+    dataSourceId,
+    userId,
+    dataSource,
+    dbType,
+    schemaVersion,
+    dataSourceVersion,
+  };
 };
 
 const connParamValid = (port) => {
@@ -75,100 +75,87 @@ const connParamValid = (port) => {
   }
 };
 
-const driverFactory = ({ securityContext }) => {
-  const { dataSource, error: securityError } = securityContext || {};
+const driverError = (err) => {
+  console.error('Driver error:');
 
-  if (securityError) {
-    const throwSecurityError = () => {
-      throw new Error(securityError);
-    };
+  const throwError = () => {
+    throw new Error(err.message || err);
+  };
 
-    return {
-      tablesSchema: throwSecurityError,
-      testConnection: throwSecurityError,
-    }
+  return {
+    tablesSchema: throwError,
+    testConnection: throwError,
+  };
+};
+
+const driverFactory = async ({ securityContext }) => {
+  const { dataSource, dbType, error: securityError } = securityContext || {};
+
+  let dbParams = {};
+
+  try {
+    dbParams = JSON.parse(dataSource.db_params);
+  } catch (err) {
+    return driverError(err);
   }
 
-  let result;
-  let error;
-
   // clean empty/false keys because of sideeffects
-  let dbConfig = Object.keys(dataSource.db_params || {})
-    .filter(key => !!dataSource.db_params[key])
-    .reduce((res, key) => (res[key] = dataSource.db_params[key], res), {});
+  let dbConfig = Object.keys(dbParams || {})
+    .filter(key => !!dbParams[key])
+    .reduce((res, key) => (res[key] = dbParams[key], res), {});
 
   try {
     if (dbConfig.port) {
       connParamValid(dbConfig.port);
     }
 
-    const dbType = dataSource.db_type?.toUpperCase();
-
-    if (['REDSHIFT', 'POSTGRES'].includes(dbType)) {
-      if (dbConfig.connection_string) {
-        dbConfig = pgConnectionString(dbConfig.connection_string);
-      }
-
-      result = new PostgresDriver(dbConfig);
+    if (securityError) {
+      throw securityError;
     }
-
-    switch (dbType) {
-      case 'MYSQL':
-        result = new MySqlDriver(dbConfig);
-        break;
-      case 'ATHENA':
-        result = new AthenaDriver(dbConfig);
-        break;
-      case 'MONGOBI':
-        result = new MongobiDriver(dbConfig);
-        break;
-      case 'BIGQUERY':
-        result = new BigQueryDriver({
-          ...dbConfig,
-          credentials: { ...dbConfig.keyFile }
-        });
-        break;
-      case 'MSSQL':
-        result = new MSSqlDriver({
-          ...dbConfig,
-          server: dbConfig.host,
-          port: parseInt(dbConfig.port) || MSSQL_DEFAULT_PORT
-        });
-        break;
-      case 'CLICKHOUSE':
-        result = new ClickHouseDriver({
-          host: dbConfig.host,
-          port: dbConfig.port,
-          auth: `${dbConfig.user}:${dbConfig.password}`,
-          protocol: dbConfig.ssl ? 'https:' : 'http:',
-          queryOptions: {
-            database: dbConfig.database || 'default'
-          },
-        });
-        break;
-      default:
-        break;
-    }
-
   } catch (err) {
-    console.error(err);
-    error = err.message;
+    return driverError(err);
   }
 
-  if (error) {
-    const throwError = () => {
-      throw new Error(error);
-    };
-
-    return {
-      tablesSchema: throwError,
-      testConnection: throwError,
-    };
+  switch (dbType) {
+    case 'bigquery':
+      dbConfig = {
+        ...dbConfig,
+        credentials: { ...dbConfig.keyFile }
+      };
+      break;
+    case 'mssql':
+      dbConfig = {
+        ...dbConfig,
+        server: dbConfig.host,
+        port: parseInt(dbConfig.port) || MSSQL_DEFAULT_PORT
+      };
+      break;
+    case 'clickhouse':
+      dbConfig = {
+        host: dbConfig.host,
+        port: dbConfig.port,
+        auth: `${dbConfig.user}:${dbConfig.password}`,
+        protocol: dbConfig.ssl ? 'https:' : 'http:',
+        queryOptions: {
+          database: dbConfig.database || 'default'
+        },
+      };
+      break;
+    default:
+      break;
   }
 
-  console.log(result);
+  let driverModule;
 
-  return result;
+  try {
+    const dbDriver = DriverDependencies[dbType];
+    driverModule = await import(dbDriver);
+  } catch (err) {
+    return driverError(err);
+  }
+
+  const driverClass = new driverModule.default(dbConfig);
+  return driverClass;
 };
 
 const dbType = ({ securityContext }) => {
@@ -208,7 +195,6 @@ const options = {
   telemetry: false,
   orchestratorOptions: {
     queryCacheOptions: {
-      renewalThreshold: 60,
       refreshKeyRenewalThreshold: 45,
       backgroundRenew: false,
     },
