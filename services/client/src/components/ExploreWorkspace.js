@@ -49,7 +49,6 @@ const ExploreWorkspace = (props) => {
   const {
     selectedQueryMembers = {},
     availableQueryMembers = {},
-    loadExploration,
     exploration,
     state: explorationState,
     analyticsQuery: {
@@ -63,15 +62,6 @@ const ExploreWorkspace = (props) => {
     },
     dispatchSettings
   } = usePlayground({ dataSourceId: dataSource.id, editId: explorationId, meta });
-
-  console.log('explorationId');
-  console.log(explorationId);
-
-  // useEffect(() => {
-  //   if (explorationId) {
-  //     loadExploration();
-  //   }
-  // }, [explorationId, loadExploration]);
 
   const explorationRowId = useMemo(() => exploration?.id, [exploration]);
 

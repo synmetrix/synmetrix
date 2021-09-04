@@ -1,5 +1,6 @@
 import { useEffect, useMemo } from 'react';
 
+import { useSetState } from 'ahooks';
 import useQuery from './useQuery';
 import useMutation from './useMutation';
 
@@ -40,10 +41,18 @@ const editExplorationQuery = `
 
 const role = 'user';
 export default ({ params = {} }) => {
-  const { editId, offset, limit } = params;
+  const [{ editId, offset, limit }, updateParams] = useSetState(params);
 
   const [createMutation, execCreateMutation] = useMutation(newExplorationMutation, { role });
   const [genSqlMutation, execGenSqlMutation] = useMutation(genExplorationSqlMutation, { role });
+
+  useEffect(() => {
+    updateParams({
+      editId: params.editId,
+      offset: params.offset,
+      limit: params.limit,
+    });
+  }, [params.editId, params.limit, params.offset, updateParams]);
 
   const [currentData, execQueryCurrent] = useQuery({
     query: editExplorationQuery,
@@ -65,11 +74,16 @@ export default ({ params = {} }) => {
   );
 
   useEffect(() => {
-    if (editId) {
-      console.log('useeffect')
+    if (params.editId) {
       execQueryCurrent();
     }
-  }, [editId, execQueryCurrent]);
+  }, [params.editId, execQueryCurrent]);
+
+  useEffect(() => {
+    if (editId) {
+      execGenSqlMutation({ exploration_id: editId });
+    }
+  }, [editId, execGenSqlMutation]);
 
   return {
     current,

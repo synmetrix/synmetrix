@@ -18,7 +18,6 @@ const dashboardsQuery = `
     dashboards (offset: $offset, limit: $limit, where: $where, order_by: $order_by) {
       id
       name
-      db_type
       created_at
       updated_at
     }
@@ -46,10 +45,12 @@ const editDashboardQuery = `
     dashboards_by_pk(id: $id) {
       id
       name
-      db_type
-      db_params
+      layout
       created_at
       updated_at
+      pinned_items {
+        id
+      }
     }
   }
 `;

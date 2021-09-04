@@ -63,7 +63,6 @@ export default ({ dataSourceId, meta = [], editId, rowsLimit, offset }) => {
       createMutation,
       execCreateMutation,
       genSqlMutation,
-      execGenSqlMutation,
     }
   } = useExplorations({
     params: {
@@ -79,13 +78,6 @@ export default ({ dataSourceId, meta = [], editId, rowsLimit, offset }) => {
   useDeepCompareEffect(() => {
     dispatchSettings({ type: 'update', value: playgroundSettings });
   }, [playgroundSettings]);
-
-  useEffect(() => {
-    if (editId) {
-      execQueryCurrent();
-      execGenSqlMutation({ exploration_id: editId });
-    }
-  }, [editId, execGenSqlMutation, execQueryCurrent]);
 
   const {
     state: currPlaygroundState,

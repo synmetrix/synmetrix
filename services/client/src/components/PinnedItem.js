@@ -75,7 +75,7 @@ const PinnedItem = ({ rowId, updateDashboard }) => {
   return (
     <div className={s.pinnedItem} id={`pinned-item-${rowId}`}>
       <div className={s.header}>
-        {current.id && (
+        {current?.id && (
           <Loader spinning={renaming}>
             <EditableField
               currentValue={current.name}

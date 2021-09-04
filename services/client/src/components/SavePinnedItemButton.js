@@ -59,7 +59,11 @@ const SavePinnedItemButton = ({ spec, specConfig, type, explorationRowId, disabl
 
   const onAddDashboard = () => {
     if (!createDashboardMutation.fetching && state.newDashboardName) {
-      execCreateDashboardMutation({ name: state.newDashboardName });
+      execCreateDashboardMutation({
+        object: {
+          name: state.newDashboardName,
+        }
+      });
     }
   };
 
@@ -80,7 +84,7 @@ const SavePinnedItemButton = ({ spec, specConfig, type, explorationRowId, disabl
             type,
             data: { name: 'values' },
           },
-          specConfig: newSpecConfig,
+          spec_config: newSpecConfig,
         }
       });
     }
@@ -94,7 +98,7 @@ const SavePinnedItemButton = ({ spec, specConfig, type, explorationRowId, disabl
     const newDashboardId = res?.insert_dashboards_one?.id;
     onSelect(newDashboardId);
   }, {
-    successMessage: t('Chart saved'),
+    successMessage: t('Dashboard saved'),
   });
 
   const saveDisabled = !state.selectedDashboard || !state.chartName || createPinnedItemMutation.fetching || !Object.keys(spec).length;
