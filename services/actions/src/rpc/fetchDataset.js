@@ -3,17 +3,18 @@ import logger from '../utils/logger';
 import apiError from '../utils/apiError';
 
 export default async (session, input) => {
-  const { datasource_id: dataSourceId } = input || {};
+  const { exploration_id: explorationId } = input || {};
   const userId = session?.['x-hasura-user-id'];
+  const dataSourceId = null;
 
   try {
     const result = await cubejsApi({
       dataSourceId,
       userId,
-    }).meta();
+    }).getSchemaTables();
 
     return {
-      cubes: result,
+      result,
     };
   } catch (err) {
     return apiError(err);

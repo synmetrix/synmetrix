@@ -71,6 +71,14 @@ const editdatasourceQuery = `
   }
 `;
 
+const datasourceMetaQuery = `
+  query ($datasource_id: uuid!) {
+    fetch_meta(datasource_id: $datasource_id) {
+      cubes
+    }
+  }
+`;
+
 const fetchSourceTablesQuery = `
   query ($id: uuid!) {
     fetch_tables(datasource_id: $id) {
@@ -146,45 +154,29 @@ const role = 'user';
 export default ({ pauseQueryAll, pagination = {}, params = {}, disableSubscription = true }) => {
   const { editId } = params;
 
-  const [createMutation, doCreateMutation] = useMutation(newdatasourceMutation);
-  const execCreateMutation = useCallback((input) => {
-    return doCreateMutation(input, { role });
-  }, [doCreateMutation]);
-
-  const [updateMutation, doUpdateMutation] = useMutation(editdatasourceMutation);
-  const execUpdateMutation = useCallback((input) => {
-    doUpdateMutation(input, { role });
-  }, [doUpdateMutation]);
-
-  const [deleteMutation, doDeleteMutation] = useMutation(deldatasourceMutation);
-  const execDeleteMutation = useCallback((input) => {
-    doDeleteMutation(input, { role });
-  }, [doDeleteMutation]);
-
-  const [checkMutation, doCheckMutation] = useMutation(checkdatasourceMutation);
-  const execCheckMutation = useCallback((input) => {
-    doCheckMutation(input, { role });
-  }, [doCheckMutation]);
-
-  const [genSchemaMutation, doGenSchemaMutation] = useMutation(genSourceSchemasMutation);
-  const execGenSchemaMutation = useCallback((input) => {
-    doGenSchemaMutation(input, { role });
-  }, [doGenSchemaMutation]);
-
-  const [runQueryMutation, doRunQueryMutation] = useMutation(runSourceSQLMutation);
-  const execRunQueryMutation = useCallback((input) => {
-    doRunQueryMutation(input, { role });
-  }, [doRunQueryMutation]);
-
-  const [validateMutation, doValidateMutation] = useMutation(validateSourceMutation);
-  const execValidateMutation = useCallback((input) => {
-    doValidateMutation(input, { role });
-  }, [doValidateMutation]);
+  const [createMutation, execCreateMutation] = useMutation(newdatasourceMutation, { role });
+  const [updateMutation, execUpdateMutation] = useMutation(editdatasourceMutation, { role });
+  const [deleteMutation, execDeleteMutation] = useMutation(deldatasourceMutation, { role });
+  const [checkMutation, execCheckMutation] = useMutation(checkdatasourceMutation, { role });
+  const [genSchemaMutation, execGenSchemaMutation] = useMutation(genSourceSchemasMutation, { role });
+  const [runQueryMutation, execRunQueryMutation] = useMutation(runSourceSQLMutation, { role });
+  const [validateMutation, execValidateMutation] = useMutation(validateSourceMutation, { role });
 
   const [allData, execQueryAll] = useQuery({
     query: datasourcesQuery,
     pause: true,
     variables: getListVariables(pagination),
+  }, {
+    requestPolicy: 'cache-and-network',
+    role,
+  });
+
+  const [metaData, execQueryMeta] = useQuery({
+    query: datasourceMetaQuery,
+    pause: true,
+    variables: {
+      datasource_id: editId,
+    },
   }, {
     requestPolicy: 'cache-and-network',
     role,
@@ -202,8 +194,8 @@ export default ({ pauseQueryAll, pagination = {}, params = {}, disableSubscripti
     }
   }, [pauseQueryAll, execQueryAll]);
 
-  const all = useMemo(() => getOr([], 'data.datasources', allData), [allData]);
-  const totalCount = useMemo(() => getOr([], 'data.datasources_aggregate.aggregate.count', allData), [allData]);
+  const all = useMemo(() => allData.data?.datasources || [], [allData.data]);
+  const totalCount = useMemo(() => allData.data?.datasources_aggregate.aggregate.count, [allData.data]);
 
   const [currentData, execQueryCurrent] = useQuery({
     query: editdatasourceQuery,
@@ -216,10 +208,8 @@ export default ({ pauseQueryAll, pagination = {}, params = {}, disableSubscripti
     role,
   });
 
-  const current = useMemo(() => {
-    const datasource = get('data.datasources_by_pk', currentData) || {};
-    return datasource;
-  }, [currentData]);
+  const current = useMemo(() => currentData.data?.datasources_by_pk || {}, [currentData.data]);
+  const currentMeta = useMemo(() => metaData.data?.fetch_meta?.cubes || [], [metaData.data]);
 
   useEffect(() => {
     if (editId) {
@@ -238,16 +228,11 @@ export default ({ pauseQueryAll, pagination = {}, params = {}, disableSubscripti
     role,
   });
 
-  useEffect(() => {
-    if (editId) {
-      execQueryTables();
-    }
-  }, [editId, execQueryTables]);
-
   return {
     all,
-    current,
     totalCount,
+    current,
+    currentMeta,
     queries: {
       allData,
       execQueryAll,
@@ -255,6 +240,8 @@ export default ({ pauseQueryAll, pagination = {}, params = {}, disableSubscripti
       execQueryCurrent,
       tablesData,
       execQueryTables,
+      metaData,
+      execQueryMeta,
     },
     mutations: {
       createMutation,

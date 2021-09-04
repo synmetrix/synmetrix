@@ -5,6 +5,12 @@ actions:
     handler: http://actions:3000/rpc/check_connection
   permissions:
   - role: user
+- name: fetch_dataset
+  definition:
+    kind: ""
+    handler: http://actions:3000/rpc/fetch_dataset
+  permissions:
+  - role: user
 - name: fetch_meta
   definition:
     kind: ""
@@ -54,4 +60,5 @@ custom_types:
   - name: ValidateSourceSchemasOutput
   - name: ValidateSourceOutput
   - name: CheckConnectionOutput
+  - name: FetchDatasetOutput
   scalars: []

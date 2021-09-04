@@ -121,8 +121,8 @@ export default (props = {}) => {
     }
   }, [pauseQueryAll, execQueryAll]);
 
-  const all = useMemo(() => allData.data?.dataschemas || [], [allData]);
-  const totalCount = useMemo(() => allData.data?.dataschemas_aggregate.aggregate.count, [allData]);
+  const all = useMemo(() => allData.data?.dataschemas || [], [allData.data]);
+  const totalCount = useMemo(() => allData.data?.dataschemas_aggregate.aggregate.count, [allData.data]);
 
   return {
     all,

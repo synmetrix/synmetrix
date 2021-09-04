@@ -84,6 +84,7 @@ const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
   const {
     queries: {
       tablesData,
+      execQueryTables,
     },
     mutations: {
       runQueryMutation,
@@ -100,6 +101,12 @@ const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
     pauseQueryAll: true,
     disableSubscription: true,
   });
+
+  useEffect(() => {
+    if (dataSourceId) {
+      execQueryTables();
+    }
+  }, [dataSourceId, execQueryTables]);
 
   useCheckResponse(tablesData, (res, err) => {
     if (res) {

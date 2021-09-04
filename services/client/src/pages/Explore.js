@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect } from 'react';
 import PropTypes from 'prop-types';
+import { useUpdateEffect, useMount } from 'ahooks';
 
 import { useTranslation } from 'react-i18next';
 
@@ -27,7 +28,7 @@ const Explore = (props) => {
   const tabId = urlParams.get('tabId');
   const chartId = urlParams.get('chart');
 
-  const [dataSourceId, explorationId, taskId] = (params?.rest || '').split('/');
+  const [dataSourceId, explorationId] = (params?.rest || '').split('/');
   const basePath = [withAuthPrefix('/explore'), dataSourceId, explorationId].filter(v => !!v).join('/');
 
   const { currentUserState: currentUser } = useCurrentUserState();
@@ -44,12 +45,12 @@ const Explore = (props) => {
   // }, [dataSourceId, lastUsedDataSourceId, setLastUsedDataSourceId]);
 
   const {
-    current: dataSource,
+    current,
+    currentMeta,
     queries: {
-      currentData: {
-        fetching: loadingDataSource
-      },
-      execQueryCurrent: loadDataSource,
+      metaData,
+      currentData,
+      execQueryMeta,
     },
   } = useSources({
     params: {
@@ -58,15 +59,23 @@ const Explore = (props) => {
     pauseQueryAll: true,
   });
 
-  useEffect(() => {
-    if (currentUser?.dataschemas) {
-      loadDataSource({ requestPolicy: 'network-only' });
-    }
-  }, [currentUser.dataschemas, loadDataSource]);
+  const fetching = currentData.fetching || metaData.fetching;
 
-  const onChange = useCallback((key = dataSource.id) => {
-    setLocation(`/d/explore/${key}`);
-  }, [dataSource.id, setLocation]);
+  useUpdateEffect(() => {
+    if (currentUser?.dataschemas) {
+      execQueryMeta({ requestPolicy: 'network-only' });
+    }
+  }, [currentUser.dataschemas, execQueryMeta]);
+
+  useEffect(() => {
+    if (current.id) {
+      execQueryMeta({ requestPolicy: 'network-only' });
+    }
+  }, [current.id, execQueryMeta]);
+
+  const onChange = useCallback((key = current.id) => {
+    setLocation(withAuthPrefix(`/explore/${key}`));
+  }, [current.id, setLocation, withAuthPrefix]);
 
   const { fallback } = usePermissions({ scope: 'explore' });
   if (fallback) {
@@ -96,23 +105,22 @@ const Explore = (props) => {
   }
 
   return (
-    <Loader spinning={loadingDataSource}>
+    <Loader spinning={fetching}>
       <ExploreWorkspace
         basePath={basePath}
         header={(
           <ContentHeader
-            selectedId={dataSource.id}
-            title={dataSource.name || 'Select DataSource'}
+            selectedId={current.id}
+            title={current.name || 'Select DataSource'}
             entities={currentUser?.datasources}
             onChange={onChange}
           />
         )}
-        dataSource={dataSource}
-        loading={loadingDataSource}
+        source={current}
+        meta={currentMeta}
         params={({
           dataSourceId,
           explorationId,
-          taskId,
           tabId,
           chartId,
         })}

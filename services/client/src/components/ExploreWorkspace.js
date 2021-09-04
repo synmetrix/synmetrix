@@ -30,7 +30,8 @@ const ExploreWorkspace = (props) => {
 
   const {
     header,
-    dataSource,
+    source: dataSource,
+    meta,
     loading,
     params: {
       explorationId,
@@ -46,6 +47,7 @@ const ExploreWorkspace = (props) => {
   const {
     selectedQueryMembers = {},
     availableQueryMembers = {},
+    loadExploration,
     exploration,
     state: explorationState,
     analyticsQuery: {
@@ -58,9 +60,17 @@ const ExploreWorkspace = (props) => {
       setOrderBy,
     },
     dispatchSettings
-  } = usePlayground({ dataSource, editId: explorationId });
+  } = usePlayground({ dataSourceId: dataSource.id, editId: explorationId, meta });
 
-  const explorationRowId = useMemo(() => exploration && exploration.rowId, [exploration]);
+  useEffect(() => {
+    if (explorationId) {
+      loadExploration();
+    }
+    console.log('explorationId');
+    console.log(explorationId);
+  }, [explorationId, loadExploration]);
+
+  const explorationRowId = useMemo(() => exploration?.id, [exploration]);
 
   const {
     collapseState,
@@ -234,13 +244,15 @@ ExploreWorkspace.propTypes = {
     tabId: PropTypes.string,
     chartId: PropTypes.string,
   }).isRequired,
-  dataSource: PropTypes.object,
+  source: PropTypes.object,
+  meta: PropTypes.object,
   loading: PropTypes.bool,
   header: PropTypes.element,
 };
 
 ExploreWorkspace.defaultProps = {
-  dataSource: {},
+  source: {},
+  meta: {},
   loading: false,
   header: null,
 };

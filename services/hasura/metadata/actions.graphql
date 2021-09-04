@@ -5,6 +5,14 @@ type Mutation {
 }
 
 type Query {
+  fetch_dataset(
+    exploration_id: uuid!
+    offset: Int
+    limit: Int
+  ): FetchDatasetOutput
+}
+
+type Query {
   fetch_meta(
     datasource_id: uuid!
   ): SourceMetaOutput
@@ -82,5 +90,9 @@ type ValidateSourceOutput {
 type CheckConnectionOutput {
   message: String
   code: String!
+}
+
+type FetchDatasetOutput {
+  result: json
 }
 

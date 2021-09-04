@@ -69,8 +69,8 @@ class Meta {
     const memberTypes = Array.isArray(memberType) ? memberType : [memberType];
 
     const member = memberTypes
-      .map(type => this.getCubeMembers(cube, type) && this.getCubeMembers(cube, type)[memberName])
-      .find(m => m);
+        .map(type => this.getCubeMembers(cube, type) && this.getCubeMembers(cube, type)[memberName])
+        .find(m => m);
 
     if (!member) {
       return { title: memberName, error: `Path not found '${memberName}'` };
@@ -158,22 +158,23 @@ const updatePlaygroundState = (playgroundState, cubesMeta) => {
   return updatedPlaygroundState;
 };
 
-export default ({ dataSource = {}, playgroundState }) => {
-  const meta = useMemo(
+export default ({ meta = [], playgroundState }) => {
+  const result = useMemo(
     () => {
-      if (!dataSource.cubes) {
+      if (!meta) {
         return {};
       }
 
-      const cubesPairs = (dataSource.cubes || []).map(c => [
+      const cubesPairs = (meta || []).map(c => [
         c.name,
         { measures: memberMap(c.measures), dimensions: memberMap(c.dimensions), segments: memberMap(c.segments) }
       ]);
 
       const cubesMap = fromPairs(cubesPairs);
 
+      console.log('cubesPairs');
+      console.log(cubesPairs);
       const cubesMeta = new Meta(cubesMap);
-
       const updatedPlaygroundState = updatePlaygroundState(playgroundState, cubesMeta);
 
       return {
@@ -181,8 +182,8 @@ export default ({ dataSource = {}, playgroundState }) => {
         availableQueryMembers: cubesMap,
       };
     },
-    [dataSource.cubes, playgroundState]
+    [meta, playgroundState]
   );
 
-  return meta;
+  return result;
 };

@@ -1,109 +1,64 @@
-import { useCallback, useEffect, useMemo } from 'react';
-import { useQuery, useMutation } from 'urql';
-import { set } from 'unchanged';
-import useLocation from './useLocation';
+import { useEffect, useMemo } from 'react';
+
+import useQuery from './useQuery';
+import useMutation from './useMutation';
 
 const newExplorationMutation = `
   mutation ($object: explorations_insert_input!) {
     insert_explorations_one(object: $object) {
       id
-      name
     }
   }
 `;
 
-const allExplorationsQuery = `
-  query ($offset: Int, $limit: Int, $where: explorations_bool_exp, $order_by: [explorations_order_by!]) {
-    explorations (offset: $offset, limit: $limit, where: $where, order_by: $order_by) {
-      id
-      name
-      code
-      created_at
-      updated_at
-    }
-    explorations_aggregate (where: $where) {
-      aggregate {
-        count
-      }
+const genExplorationSqlMutation = `
+  mutation ($id: uuid!) {
+    gen_sql(exploration_id: $id) {
+      result
     }
   }
 `;
 
 const editExplorationQuery = `
-  query ($id: uuid!) {
+  query ($id: uuid!, $offset: Int, $limit: Int) {
     explorations_by_pk(id: $id) {
       id
-      name
-      code
+      playground_state
+      playground_settings
       created_at
       updated_at
+    }
+    fetch_dataset(exploration_id: $id, offset: $offset, limit: $limit) {
+      result
     }
   }
 `;
 
-const getListVariables = (pagination, params) => {
-  let res = {
-    order_by: {
-      created_at: 'asc',
-    },
-  };
-
-  if (pagination) {
-    res = {
-      ...res,
-      ...pagination,
-    };
-  }
-
-  if (params.dataSourceId) {
-    res = set('where.datasource_id._eq', params.dataSourceId, res);
-  }
-  
-  return res;
-};
-
 const role = 'user';
-export default ({ pauseQueryAll, pagination = {}, params = {} }) => {
-  const [, setLocation] = useLocation();
-  const { editId, dataSourceId } = params;
+export default ({ params = {} }) => {
+  const { editId, offset, limit } = params;
 
-  const [createMutation, doCreateMutation] = useMutation(newExplorationMutation);
-  const execCreateMutation = useCallback((input) => {
-    return doCreateMutation(input, { role });
-  }, [doCreateMutation]);
+  const [createMutation, execCreateMutation] = useMutation(newExplorationMutation, { role });
+  const [genSqlMutation, execGenSqlMutation] = useMutation(genExplorationSqlMutation, { role });
 
-  const [allData, doQueryAll] = useQuery({
-    query: allExplorationsQuery,
-    pause: true,
-    variables: getListVariables(pagination, params),
-  });
-
-  const execQueryAll = useCallback((context) => {
-    doQueryAll({ requestPolicy: 'cache-and-network', role, ...context });
-  }, [doQueryAll]);
-
-  useEffect(() => {
-    if (!pauseQueryAll) {
-      execQueryAll();
-    }
-  }, [pauseQueryAll, execQueryAll]);
-
-  const all = useMemo(() => allData.data?.explorations || [], [allData]);
-  const totalCount = useMemo(() => allData.data?.explorations_aggregate.aggregate.count, [allData]);
-
-  const [currentData, doQueryCurrent] = useQuery({
+  const [currentData, execQueryCurrent] = useQuery({
     query: editExplorationQuery,
     variables: {
       id: editId,
+      limit,
+      offset,
     },
     pause: true,
+  }, {
+    requestPolicy: 'cache-and-network',
+    role,
   });
 
-  const execQueryCurrent = useCallback((context) => {
-    doQueryCurrent({ requestPolicy: 'cache-and-network', role, ...context });
-  }, [doQueryCurrent]);
-
-  const current = useMemo(() => currentData.data?.explorations_by_pk || {}, [currentData]);
+  const current = useMemo(() => currentData.data?.explorations_by_pk || {}, [currentData.data]);
+  const currentProgress = useMemo(
+    () => currentData.data?.fetch_dataset.progress || {},
+    [currentData.data]
+  );
 
   useEffect(() => {
     if (editId) {
@@ -111,25 +66,18 @@ export default ({ pauseQueryAll, pagination = {}, params = {} }) => {
     }
   }, [editId, execQueryCurrent]);
 
-  const reset = useCallback(
-    (explorationId) => setLocation(`/d/explore/${dataSourceId}/${explorationId}`),
-    [dataSourceId, setLocation],
-  );
-
   return {
-    all,
-    totalCount,
     current,
+    currentProgress,
     queries: {
-      allData,
-      execQueryAll,
       currentData,
       execQueryCurrent,
     },
     mutations: {
+      genSqlMutation,
+      execGenSqlMutation,
       createMutation,
       execCreateMutation,
     },
-    reset,
   };
 };
