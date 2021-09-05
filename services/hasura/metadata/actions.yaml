@@ -5,11 +5,16 @@ actions:
     handler: http://actions:3000/rpc/check_connection
   permissions:
   - role: user
+- name: create_team
+  definition:
+    kind: synchronous
+    handler: http://actions:3000/rpc/create_team
+  permissions:
+  - role: user
 - name: fetch_dataset
   definition:
     kind: ""
     handler: http://actions:3000/rpc/fetch_dataset
-    forward_client_headers: true
   permissions:
   - role: user
 - name: fetch_meta
@@ -33,16 +38,12 @@ actions:
     forward_client_headers: true
   permissions:
   - role: user
-- name: gen_sql
-  definition:
-    kind: synchronous
-    handler: http://actions:3000/rpc/gen_sql
-  permissions:
-  - role: user
 - name: invite_team_member
   definition:
     kind: synchronous
     handler: http://actions:3000/rpc/invite_team_member
+  permissions:
+  - role: user
 - name: run_query
   definition:
     kind: synchronous
@@ -74,4 +75,5 @@ custom_types:
   - name: FetchDatasetOutput
   - name: GenSQLOutput
   - name: InviteTeamMemberOutput
+  - name: CreateTeamOutput
   scalars: []

@@ -1,11 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import { Row, Col, Select, Checkbox, Button, Modal } from 'antd';
+import { Row, Col, Select, Button, Modal } from 'antd';
 
 import useCurrentUserState from 'hooks/useCurrentUserState';
 
-import formatDistanceToNow from 'utils/formatDistanceToNow';
 import TableList from 'components/TableList';
 
 const { confirm } = Modal;
@@ -16,7 +15,7 @@ const TeamTable = ({ data, disableManagement, onChange, onRemove, loading }) => 
 
   const showConfirm = record => {
     confirm({
-      title: `Do you want to remove ${record.email}?`,
+      title: `Do you want to remove ${record?.user?.display_name}?`,
       onOk() {
         onRemove(record.id);
       },
@@ -29,47 +28,13 @@ const TeamTable = ({ data, disableManagement, onChange, onRemove, loading }) => 
 
   const managementColumns = [
     {
-      title: 'Updated At',
-      dataIndex: 'updated_at',
-      key: 'updated_at',
-      render: (_, record) => {
-        return formatDistanceToNow(record.updated_at);
-      },
-    },
-    {
-      title: 'Role',
-      dataIndex: 'teamRole',
+      title: 'Roles',
       key: 'teamRole',
       render: (_, record) => {
-        return [
-          <Select
-            size="small"
-            labelInValue
-            value={{ key: record.teamRole }}
-            style={{ marginLeft: 5, width: 100 }}
-            disabled={isRowDisabled(record)}
-            onChange={value => onChange('teamRole', record.id, value.key)}
-          >
-            <Select.Option value="client">Client</Select.Option>
-            <Select.Option value="viewer">Viewer</Select.Option>
-            <Select.Option value="writer">Writer</Select.Option>
-            <Select.Option value="owner">Owner</Select.Option>
-          </Select>
-        ];
+        const { member_roles: roles } = record || {};
+
+        return roles.map(r => r.team_role).join(',');
       }
-    },
-    {
-      title: 'Active',
-      dataIndex: 'active',
-      key: 'active',
-      render: (_, record) => (
-        <Checkbox
-          disabled={isRowDisabled(record)}
-          defaultChecked={record.active}
-          onChange={e => { e.stopPropagation(); onChange('active', record.id, !record.active) }}
-          onClick={e => e.stopPropagation()}
-        />
-      ),
     },
     {
       title: 'Remove',
@@ -89,23 +54,10 @@ const TeamTable = ({ data, disableManagement, onChange, onRemove, loading }) => 
 
   let columns = [
     {
-      title: 'Email',
-      dataIndex: 'email',
-      key: 'email',
-    },
-    {
       title: 'Name',
-      dataIndex: 'name',
-      key: 'name',
+      dataIndex: 'user.display_name',
+      key: 'display_name',
     },
-    {
-      title: 'Invited At',
-      dataIndex: 'created_at',
-      key: 'created_at',
-      render: (_, record) => {
-        return formatDistanceToNow(record.created_at);
-      },
-    }
   ];
 
   if (!disableManagement) {

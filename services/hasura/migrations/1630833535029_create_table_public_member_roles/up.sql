@@ -1,0 +1,2 @@
+CREATE TABLE "public"."member_roles" ("id" uuid NOT NULL DEFAULT gen_random_uuid(), "member_id" uuid NOT NULL, "team_role" text NOT NULL, PRIMARY KEY ("id") , FOREIGN KEY ("member_id") REFERENCES "public"."members"("id") ON UPDATE cascade ON DELETE cascade, FOREIGN KEY ("team_role") REFERENCES "public"."team_roles"("name") ON UPDATE cascade ON DELETE cascade, UNIQUE ("member_id", "team_role"));
+CREATE EXTENSION IF NOT EXISTS pgcrypto;

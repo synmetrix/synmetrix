@@ -6,7 +6,7 @@ import apiError from '../utils/apiError';
 const { HASURA_PLUS_ENDPOINT } = process.env;
 
 const checkAccountQuery = `
-  query CheckAccount($email: String) {
+  query CheckAccount($email: citext) {
     auth_accounts(where: { email: { _eq: $email } }) {
       user_id
     }
@@ -14,54 +14,100 @@ const checkAccountQuery = `
 `;
 
 const inviteMemberMutation = `
-  mutation InviteMember($user_id: uuid, $team_id: uuid) {
-    insert_members_one(object: { user_id: $user_id, team_id: $team_id }) {
+  mutation InviteMember($userId: uuid, $teamId: uuid) {
+    insert_members_one(object: { user_id: $userId, team_id: $teamId }) {
       id
     }
   }
 `;
 
-const createUser = async ({ email }) => {
+const insertMemberRoleMutation = `
+  mutation insertMemberRole($memberId: uuid, $role: team_roles_enum!) {
+    insert_member_roles_one(object: {member_id: $memberId, team_role: $role}) {
+      id
+    }
+  }
+`;
+
+const register = async ({ email }) => {
   try {
     const result = await fetch(
       `${HASURA_PLUS_ENDPOINT}/auth/register`,
       {
         method: 'POST',
-        body: JSON.stringify({ email })
+        body: JSON.stringify({ email }),
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+        },
       }
     );
 
     const response = await result.json();
     return response?.user?.id;
   } catch (error) {
-    return null;
+    throw new Error('Error while creating new user: ' + error);
+  }
+};
+
+const sendMagicLink = async ({ email }) => {
+  try {
+    const result = await fetch(
+      `${HASURA_PLUS_ENDPOINT}/auth/login`,
+      {
+        method: 'POST',
+        body: JSON.stringify({ email }),
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+
+    const response = await result.json();
+    return response?.magicLink;
+  } catch (error) {
+    throw new Error('Error while sending magic link: ' + error);
   }
 };
 
 const getUserFromAccount = async ({ email }) => {
   const res = await fetchGraphQL(checkAccountQuery, { email });
 
-  let userId = res?.data?.auth_accounts?.[0].user_id;
+  let userId = res?.data?.auth_accounts?.[0]?.user_id;
 
   if (!userId) {
-    userId = await createUser(email);
+    userId = await register({ email });
+    await sendMagicLink({ email });
   }
 
   return userId;
 };
 
-const inviteTeamMember = async ({ userId, teamId }) => {
+const inviteTeamMember = async ({ userId, teamId, role }) => {
   const res = await fetchGraphQL(inviteMemberMutation, { userId, teamId });
+  const memberId = res?.data?.insert_members_one?.id;
 
-  return res?.data?.insert_members_one?.id;
+  await fetchGraphQL(insertMemberRoleMutation, { memberId, role });
+
+  return memberId;
 };
 
 export default async (session, input) => {
-  const { email, teamId } = input || {};
+  const {
+    email,
+    teamId,
+    role = 'member'
+  } = input || {};
+
+  let { userId } = input;
 
   try {
-    const userId = await getUserFromAccount({ email, teamId });
-    const memberId = await inviteTeamMember({ userId, teamId });
+    if (!userId) {
+      userId = await getUserFromAccount({ email });
+    }
+
+    const memberId = await inviteTeamMember({ userId, teamId, role });
 
     return { memberId };
   } catch (err) {

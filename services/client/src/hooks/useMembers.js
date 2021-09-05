@@ -1,28 +1,17 @@
 import { useCallback, useEffect, useMemo } from 'react';
-import { useQuery, useMutation, useSubscription } from 'urql';
+import { useQuery, useMutation } from 'urql';
 import { set } from 'unchanged';
-
-const newSchemaMutation = `
-  mutation ($object: members_insert_input!) {
-    insert_members_one(object: $object) {
-      id
-      name
-    }
-  }
-`;
+import useCurrentTeamState from './useCurrentTeamState';
 
 const allMembersQuery = `
   query ($offset: Int, $limit: Int, $where: members_bool_exp, $order_by: [members_order_by!]) {
     members (offset: $offset, limit: $limit, where: $where, order_by: $order_by) {
       id
-      name
-      code
-      created_at
-      updated_at
-    }
-    members_aggregate (where: $where) {
-      aggregate {
-        count
+      user {
+        display_name
+      }
+      member_roles {
+        team_role
       }
     }
   }
@@ -48,18 +37,9 @@ const delSchemaMutation = `
 `;
 
 const inviteMemberMutation = `
-  mutation ($recipients: [String!]) {
-    invite_members(recipients: $recipients) {
-      message
-    }
-  }
-`;
-
-const allMembersSubscription = `
-  subscription ($offset: Int, $limit: Int, $where: members_bool_exp, $order_by: [members_order_by!]) {
-    members (offset: $offset, limit: $limit, where: $where, order_by: $order_by) {
-      id
-      name
+  mutation ($email: String!, $teamId: uuid!) {
+    invite_team_member(email: $email, teamId: $teamId) {
+      memberId
     }
   }
 `;
@@ -78,23 +58,18 @@ const getListVariables = (pagination, params) => {
     };
   }
 
-  if (params.dataSourceId) {
-    res = set('where.datasource_id._eq', params.dataSourceId, res);
+  if (params.teamId) {
+    res = set('where.team_id._eq', params.teamId, res);
   }
-  
+
   return res;
 };
 
-const handleSubscription = (_, response) => response;
-
 const role = 'user';
 export default (props = {}) => {
-  const { pauseQueryAll, pagination = {}, params = {}, disableSubscription = true } = props;
+  const { pauseQueryAll, pagination = {}, params = {} } = props;
 
-  const [createMutation, doCreateMutation] = useMutation(newSchemaMutation);
-  const execCreateMutation = useCallback((input) => {
-    return doCreateMutation(input, { role });
-  }, [doCreateMutation]);
+  const { currentTeamState } = useCurrentTeamState();
 
   const [updateMutation, doUpdateMutation] = useMutation(editSchemaMutation);
   const execUpdateMutation = useCallback((input) => {
@@ -108,20 +83,17 @@ export default (props = {}) => {
 
   const [inviteMutation, doInviteMutation] = useMutation(inviteMemberMutation);
   const execInviteMutation = useCallback((input) => {
-    doInviteMutation(input, { role });
-  }, [doInviteMutation]);
+    const { email } = input;
+    const teamId = currentTeamState?.id;
+
+    doInviteMutation({ teamId, email }, { role });
+  }, [doInviteMutation, currentTeamState]);
 
   const [allData, doQueryAll] = useQuery({
     query: allMembersQuery,
     pause: true,
     variables: getListVariables(pagination, params),
   });
-
-  const [subscription] = useSubscription({
-    query: allMembersSubscription,
-    variables: getListVariables(pagination, params),
-    pause: disableSubscription,
-  }, handleSubscription);
 
   const execQueryAll = useCallback((context) => {
     doQueryAll({ requestPolicy: 'cache-and-network', role, ...context });
@@ -133,19 +105,21 @@ export default (props = {}) => {
     }
   }, [pauseQueryAll, execQueryAll]);
 
+  useEffect(() => {
+    if (inviteMutation.data || deleteMutation.data) {
+      execQueryAll();
+    }
+  }, [execQueryAll, inviteMutation, deleteMutation]);
+
   const all = useMemo(() => allData.data?.members || [], [allData]);
-  const totalCount = useMemo(() => allData.data?.members_aggregate.aggregate.count, [allData]);
 
   return {
     all,
-    totalCount,
     queries: {
       allData,
       execQueryAll,
     },
     mutations: {
-      createMutation,
-      execCreateMutation,
       deleteMutation,
       execDeleteMutation,
       updateMutation,
@@ -153,6 +127,5 @@ export default (props = {}) => {
       inviteMutation,
       execInviteMutation,
     },
-    subscription,
   };
 };

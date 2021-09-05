@@ -16,16 +16,20 @@ import useTeams from 'hooks/useTeams';
 import useMembers from 'hooks/useMembers';
 import usePermissions from 'hooks/usePermissions';
 import useAppSettings from 'hooks/useAppSettings';
+import useCurrentTeamState from 'hooks/useCurrentTeamState';
 
 const Team = () => {
   const { t } = useTranslation();
   const [location, setLocation] = useLocation();
   const { withAuthPrefix } = useAppSettings();
   const basePath = withAuthPrefix('/team');
+  const { currentTeamState: currentTeam } = useCurrentTeamState();
+
+  const isNewTeam = location.pathname.includes('/new');
 
   const [state, updateState] = useSetState({
     visibleInviteModal: location.pathname.includes('/invite'),
-    visibleSettingsModal: location.pathname.includes('/settings'),
+    visibleSettingsModal: location.pathname.includes('/settings') || isNewTeam,
   });
 
   useEffect(
@@ -43,6 +47,12 @@ const Team = () => {
     updateState({ visibleSettingsModal: true });
   };
 
+  useEffect(() => {
+    if (isNewTeam) {
+      updateState({ visibleSettingsModal: true });
+    }
+  }, [isNewTeam, updateState]);
+
   const onModalClose = useCallback(() => {
     setLocation(basePath);
     updateState({
@@ -52,8 +62,9 @@ const Team = () => {
   }, [basePath, setLocation, updateState]);
 
   const {
-    current: currentTeam,
     mutations: {
+      createMutation: createTeamMutation,
+      execCreateMutation: execCreateTeamMutation,
       updateMutation: updateTeamMutation,
       execUpdateMutation: execUpdateTeamMutation,
     }
@@ -88,8 +99,12 @@ const Team = () => {
     }
   };
 
+  useCheckResponse(createTeamMutation, closeModal, {
+    successMessage: t('New team has been created'),
+  });
+
   useCheckResponse(inviteMutation, closeModal, {
-    successMessage: t('New team member has been invited. Please provide the credentials to login'),
+    successMessage: t('New team member has been invited'),
   });
 
   useCheckResponse(deleteMutation, noop, {
@@ -101,19 +116,21 @@ const Team = () => {
   });
 
   const onChange = (field, memberId, value) => {
-    if (field === 'teamRole') {
-      execUpdateMutation({
-        pk_columns: memberId,
-        _set: {
-          roles: [value]
-        },
-      });
-    } else if (field === 'active') {
-      execUpdateMutation({
-        pk_columns: memberId,
-        _set: {
-          active: value
-        },
+    execUpdateMutation({
+      pk_columns: memberId,
+      _set: {
+        roles: [value]
+      },
+    });
+  };
+
+  const onSave = (values) => {
+    if (isNewTeam) {
+      execCreateTeamMutation(values);
+    } else {
+      execUpdateTeamMutation({ 
+        pk_columns: { id: currentTeam?.id },
+        _set: values,
       });
     }
   };
@@ -144,7 +161,7 @@ const Team = () => {
                   <li>Manage your Team</li>
                   <li>Grant roles and manage personal access</li>
                 </ul>
-                <Button style={{ marginRight: 10 }} type="primary" size="small" shape="round" onClick={() => onInviteOpen()}>
+                <Button style={{ marginRight: 10 }} disabled={!isTeamExists} type="primary" size="small" shape="round" onClick={() => onInviteOpen()}>
                   <Icon type="plus" />
                   {t('Invite a Team Member')}
                 </Button>
@@ -167,11 +184,11 @@ const Team = () => {
         isTeamExists={isTeamExists}
       />
       <TeamSettingsModal
-        title={t('Team Settings')}
+        title={isNewTeam ? t('New Team') : t('Team Settings')}
         key="settings"
         visible={state.visibleSettingsModal}
         loading={loading}
-        onSave={execUpdateTeamMutation}
+        onSave={onSave}
         onCancel={onModalClose}
         currentTeam={currentTeam}
       />

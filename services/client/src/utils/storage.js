@@ -51,3 +51,21 @@ export const getCurrentUser = () => JSON.parse(localStorage.getItem('current-use
 export const removeCurrentUser = () => {
   localStorage.removeItem('current-user');
 };
+
+export const saveTeam = (data) => {
+  if (!data) {
+    return;
+  }
+
+  try {
+    localStorage.setItem('current-team', JSON.stringify(data));
+  } catch (err) {
+    console.error(err);
+  }
+};
+
+export const getTeam = () => JSON.parse(localStorage.getItem('current-team'));
+
+export const removeTeam = () => {
+  localStorage.removeItem('current-team');
+};

@@ -4,6 +4,12 @@ type Mutation {
   ): CheckConnectionOutput
 }
 
+type Mutation {
+  create_team(
+    name: String!
+  ): CreateTeamOutput
+}
+
 type Query {
   fetch_dataset(
     exploration_id: uuid!
@@ -30,12 +36,6 @@ type Mutation {
     tables: [SourceTable!]!
     overwrite: Boolean
   ): GenSourceSchemaOutput
-}
-
-type Mutation {
-  gen_sql(
-    exploration_id: uuid!
-  ): GenSQLOutput
 }
 
 type Mutation {
@@ -106,19 +106,6 @@ type CheckConnectionOutput {
 }
 
 type FetchDatasetOutput {
-  annotation: json
-  data: json
-  query: json
-  progress: json
-  hitLimit: Boolean
-  slowQuery: Boolean
-  external: Boolean
-  dbType: String
-  dataSource: String
-  lastRefreshTime: String
-}
-
-type GenSQLOutput {
   result: json
 }
 
@@ -126,5 +113,11 @@ type InviteTeamMemberOutput {
   code: String
   message: String
   memberId: uuid
+}
+
+type CreateTeamOutput {
+  code: String
+  message: String
+  teamId: uuid
 }
 

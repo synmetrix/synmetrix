@@ -14,6 +14,7 @@ import useAuthToken from 'hooks/useAuthToken';
 import useLocation from 'hooks/useLocation';
 import useAppSettings from 'hooks/useAppSettings';
 import useCurrentUserState from 'hooks/useCurrentUserState';
+import useCurrentTeamState from 'hooks/useCurrentTeamState';
 
 import useSider from 'hooks/useSider';
 import usePermissions from 'hooks/usePermissions';
@@ -25,7 +26,7 @@ import s from './Layout.module.css';
 
 const { Header, Content, Footer, Sider } = Layout;
 
-const UserMenu = ({ mode, restrictScopes = [] }) => {
+const UserMenu = ({ mode, anyTeam, restrictScopes = [] }) => {
   const { doLogout } = useAuthToken();
   const { t } = useTranslation();
   const { withAuthPrefix } = useAppSettings();
@@ -39,7 +40,7 @@ const UserMenu = ({ mode, restrictScopes = [] }) => {
 
   if (!restrictScopes.includes('team')) {
     accountSubMenu.push({
-      path: withAuthPrefix('/team'),
+      path: anyTeam ? withAuthPrefix('/team') : withAuthPrefix('/team/new'),
       title: t('Team'),
     });
   }
@@ -53,6 +54,51 @@ const UserMenu = ({ mode, restrictScopes = [] }) => {
     {
       title: t('Account'),
       children: accountSubMenu,
+    }
+  ];
+
+  return (
+    <MenuView
+      mode={mode}
+      className={s.header}
+      style={{ lineHeight: '64px' }}
+      nodes={routes}
+    />
+  );
+};
+
+const TeamMenu = ({ mode, anyTeam, members }) => {
+  const { t } = useTranslation();
+  const { withAuthPrefix } = useAppSettings();
+  const { currentTeamState, setCurrentTeamState } = useCurrentTeamState();
+  const [location] = useLocation();
+
+  if (!anyTeam) {
+    return null;
+  }
+
+  const teamSubMenu = [
+    {
+      path: withAuthPrefix('/team/new'),
+      title: t('Create new team'),
+    }
+  ];
+
+  members?.forEach((member) => {
+    const { team } = member || {};
+    const { name } = team;
+
+    teamSubMenu.unshift({
+      onClick: () => setCurrentTeamState(team),
+      path: location,
+      title: name,
+    });
+  });
+
+  const routes = [
+    {
+      title: currentTeamState?.name,
+      children: teamSubMenu,
     }
   ];
 
@@ -171,6 +217,11 @@ const MainLayout = (props) => {
 
   const { restrictScopes } = usePermissions({});
 
+  const { currentUserState: currentUser } = useCurrentUserState();
+  const members = currentUser?.users_by_pk?.members || [];
+
+  const anyTeam = !!members.length;
+
   return (
     <Layout>
       <Sider
@@ -185,9 +236,15 @@ const MainLayout = (props) => {
           mode="vertical"
           restrictScopes={restrictScopes}
         />
+        <TeamMenu
+          mode="vertical"
+          anyTeam={anyTeam}
+          members={members}
+        />
         <UserMenu
           mode="vertical"
           restrictScopes={restrictScopes}
+          anyTeam={anyTeam}
         />
       </Sider>
       <Layout style={{ minHeight: 'auto' }}>
@@ -201,7 +258,10 @@ const MainLayout = (props) => {
             <MainMenu restrictScopes={restrictScopes} />
           </div>
           <div style={{ float: 'right' }}>
-            <UserMenu restrictScopes={restrictScopes} />
+            <UserMenu anyTeam={anyTeam} restrictScopes={restrictScopes} />
+          </div>
+          <div style={{ float: 'right' }}>
+            <TeamMenu anyTeam={anyTeam} members={members} />
           </div>
         </Header>
         <Content style={{ minHeight: 'auto', zIndex: 1 }}>

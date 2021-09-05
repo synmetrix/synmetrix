@@ -13,58 +13,17 @@ const formConfig = {
       type: 'email',
       message: 'Email is not valid',
     }],
-  },
-  password: {
-    label: 'Password',
-    required: true,
-    display: 'text',
-    type: 'password'
-  },
-  memberName: {
-    label: 'Name',
-    required: true,
-  },
-  teamRole: {
-    label: 'Member Role',
-    required: true,
-    display: 'select',
-    default: 'viewer',
-    values: [
-      {
-        Client: 'client'
-      },
-      {
-        Viewer: 'viewer'
-      },
-      {
-        Writer: 'writer'
-      },
-      {
-        Owner: 'owner'
-      },
-    ],
   }
 };
 
 const TeamMemberForm = React.forwardRef((props, ref) => {
-  let teamFormConfig = formConfig;
+  const teamFormConfig = formConfig;
+
   const {
     form,
     onSubmit,
-    isTeamExists,
     ...restProps
   } = props;
-
-  if (!isTeamExists) {
-    teamFormConfig = {
-      ...formConfig,
-      teamName: {
-        label: 'Team Name',
-        required: true,
-        display: 'text',
-      }
-    };
-  }
 
   const [formItems] = useFormItems({ ref, form, config: teamFormConfig });
 
@@ -81,11 +40,6 @@ TeamMemberForm.propTypes = {
   form: PropTypes.object.isRequired,
   initialValues: PropTypes.object.isRequired,
   onSubmit: PropTypes.func.isRequired,
-  isTeamExists: PropTypes.bool,
-};
-
-TeamMemberForm.defaultProps = {
-  isTeamExists: false
 };
 
 export default Form.create()(TeamMemberForm);

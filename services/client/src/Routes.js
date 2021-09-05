@@ -60,6 +60,7 @@ const Routes = () => {
                         <Route path={withAuthPrefix('/sources/:editId?/upload/:format?')} component={DataSources} />
                         <Route path={withAuthPrefix('/sources/:rowId?')} component={DataSources} />
 
+                        <Route path={withAuthPrefix('/team/new')} component={Team} />
                         <Route path={withAuthPrefix('/team/invite')} component={Team} />
                         <Route path={withAuthPrefix('/team/settings')} component={Team} />
                         <Route path={withAuthPrefix('/team')} component={Team} />

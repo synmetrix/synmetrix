@@ -1,11 +1,13 @@
 import { useCallback, useEffect, useMemo } from 'react';
 import { useQuery, useMutation } from 'urql';
+import useCurrentTeamState from './useCurrentTeamState';
+
+import useCurrentUser from './useCurrentUser';
 
 const newTeamMutation = `
-  mutation ($object: teams_insert_input!) {
-    insert_teams_one(object: $object) {
-      id
-      name
+  mutation CreateTeam($name: String!) {
+    create_team(name: $name) {
+      teamId
     }
   }
 `;
@@ -17,6 +19,7 @@ const editTeamMutation = `
   ) {
     update_teams_by_pk(pk_columns: $pk_columns, _set: $_set) {
       id
+      name
     }
   }
 `;
@@ -27,6 +30,11 @@ const editTeamQuery = `
       id
       created_at
       updated_at
+      members {
+        user {
+          display_name
+        }
+      }
     }
   }
 `;
@@ -35,6 +43,9 @@ const role = 'user';
 export default (props = {}) => {
   const { params = {} } = props;
   const { editId } = params;
+
+  const { queries: { execQueryCurrentUser } } = useCurrentUser();
+  const { setCurrentTeamState } = useCurrentTeamState();
 
   const [createMutation, doCreateMutation] = useMutation(newTeamMutation);
   const execCreateMutation = useCallback((input) => {
@@ -65,6 +76,23 @@ export default (props = {}) => {
       execQueryCurrent();
     }
   }, [editId, execQueryCurrent]);
+
+  useEffect(() => {
+    if (createMutation?.data) {
+      execQueryCurrentUser();
+    }
+
+    if (updateMutation?.data) {
+      const team = updateMutation?.data?.update_teams_by_pk;
+      setCurrentTeamState(team);
+      execQueryCurrentUser();
+    }
+  }, [
+    createMutation.data,
+    execQueryCurrentUser,
+    updateMutation.data,
+    setCurrentTeamState
+  ]);
 
   return {
     current,

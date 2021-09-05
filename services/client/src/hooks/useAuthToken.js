@@ -8,11 +8,13 @@ import { currentToken, currentRefreshToken } from '../recoil/currentUser';
 import useLocation from './useLocation';
 import useAuth from './useAuth';
 import useAppSettings from './useAppSettings';
+import useCurrentTeamState from './useCurrentTeamState';
 
 export default () => {
   const [authToken, setAuthToken] = useRecoilState(currentToken);
   const [refreshToken, setRefreshToken] = useRecoilState(currentRefreshToken);
   const { withAuthPrefix } = useAppSettings();
+  const { setCurrentTeamState } = useCurrentTeamState();
 
   const { logout } = useAuth();
   const [, setLocation] = useLocation();
@@ -31,7 +33,8 @@ export default () => {
   const doLogout = useCallback(() => {
     logout.run();
     cleanTokens();
-  }, [cleanTokens, logout]);
+    setCurrentTeamState(null);
+  }, [cleanTokens, logout, setCurrentTeamState]);
 
   return {
     authToken,
