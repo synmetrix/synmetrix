@@ -24,7 +24,7 @@ const TeamTable = ({ data, disableManagement, onChange, onRemove, loading }) => 
     });
   };
 
-  const isRowDisabled = record => disableManagement || record.user_id === currentUser.id;
+  const isRowDisabled = record => disableManagement || record.user_id === currentUser?.id;
 
   const managementColumns = [
     {

@@ -73,7 +73,6 @@ custom_types:
   - name: ValidateSourceOutput
   - name: CheckConnectionOutput
   - name: FetchDatasetOutput
-  - name: GenSQLOutput
   - name: InviteTeamMemberOutput
   - name: CreateTeamOutput
   scalars: []

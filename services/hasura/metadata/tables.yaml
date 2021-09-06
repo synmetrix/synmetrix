@@ -103,9 +103,9 @@
     schema: public
     name: dashboards
   object_relationships:
-  - name: datasource
+  - name: team
     using:
-      foreign_key_constraint_on: datasource_id
+      foreign_key_constraint_on: team_id
   array_relationships:
   - name: pinned_items
     using:
@@ -114,6 +114,23 @@
         table:
           schema: public
           name: pinned_items
+  insert_permissions:
+  - role: user
+    permission:
+      check:
+        _or:
+        - user_id:
+            _eq: X-Hasura-User-Id
+        - team:
+            members:
+              user_id:
+                _eq: X-Hasura-User-Id
+      set:
+        user_id: x-hasura-user-id
+      columns:
+      - name
+      - team_id
+      backend_only: false
   select_permissions:
   - role: user
     permission:
@@ -122,10 +139,51 @@
       - id
       - layout
       - name
+      - team_id
       - updated_at
       - user_id
-      filter: {}
+      filter:
+        _or:
+        - user_id:
+            _eq: X-Hasura-User-Id
+        - team:
+            members:
+              user_id:
+                _eq: X-Hasura-User-Id
       allow_aggregations: true
+  update_permissions:
+  - role: user
+    permission:
+      columns:
+      - layout
+      - name
+      filter:
+        _or:
+        - user_id:
+            _eq: X-Hasura-User-Id
+        - team:
+            members:
+              user_id:
+                _eq: X-Hasura-User-Id
+      check:
+        _or:
+        - user_id:
+            _eq: X-Hasura-User-Id
+        - team:
+            members:
+              user_id:
+                _eq: X-Hasura-User-Id
+  delete_permissions:
+  - role: user
+    permission:
+      filter:
+        _or:
+        - user_id:
+            _eq: X-Hasura-User-Id
+        - team:
+            members:
+              user_id:
+                _eq: X-Hasura-User-Id
 - table:
     schema: public
     name: dataschemas
@@ -235,13 +293,6 @@
     using:
       foreign_key_constraint_on: user_id
   array_relationships:
-  - name: dashboards
-    using:
-      foreign_key_constraint_on:
-        column: datasource_id
-        table:
-          schema: public
-          name: dashboards
   - name: dataschemas
     using:
       foreign_key_constraint_on:
@@ -337,14 +388,6 @@
   - name: datasource
     using:
       foreign_key_constraint_on: datasource_id
-  array_relationships:
-  - name: pinned_items
-    using:
-      foreign_key_constraint_on:
-        column: exploration_id
-        table:
-          schema: public
-          name: pinned_items
   insert_permissions:
   - role: user
     permission:
@@ -496,12 +539,6 @@
   - name: exploration
     using:
       foreign_key_constraint_on: exploration_id
-  - name: team
-    using:
-      foreign_key_constraint_on: team_id
-  - name: user
-    using:
-      foreign_key_constraint_on: user_id
   select_permissions:
   - role: user
     permission:
@@ -514,15 +551,17 @@
       - exploration_id
       - name
       - spec
-      - team_id
+      - spec_config
       filter:
         _or:
-        - user_id:
-            _eq: X-Hasura-User-Id
-        - team:
-            members:
-              user_id:
-                _eq: X-Hasura-User-Id
+        - dashboard:
+            user_id:
+              _eq: X-Hasura-User-Id
+        - dashboard:
+            team:
+              members:
+                user_id:
+                  _eq: X-Hasura-User-Id
       allow_aggregations: true
 - table:
     schema: public
@@ -554,13 +593,6 @@
         table:
           schema: public
           name: members
-  - name: pinned_items
-    using:
-      foreign_key_constraint_on:
-        column: team_id
-        table:
-          schema: public
-          name: pinned_items
   select_permissions:
   - role: user
     permission:
@@ -640,13 +672,6 @@
         table:
           schema: public
           name: members
-  - name: pinned_items
-    using:
-      foreign_key_constraint_on:
-        column: user_id
-        table:
-          schema: public
-          name: pinned_items
   select_permissions:
   - role: user
     permission:
