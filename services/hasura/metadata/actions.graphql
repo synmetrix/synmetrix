@@ -106,7 +106,16 @@ type CheckConnectionOutput {
 }
 
 type FetchDatasetOutput {
-  result: json
+  annotation: json
+  data: json
+  query: json
+  progress: json
+  hitLimit: Boolean
+  slowQuery: Boolean
+  external: Boolean
+  dbType: String
+  dataSource: String
+  lastRefreshTime: String
 }
 
 type InviteTeamMemberOutput {

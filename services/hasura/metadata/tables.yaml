@@ -539,6 +539,28 @@
   - name: exploration
     using:
       foreign_key_constraint_on: exploration_id
+  insert_permissions:
+  - role: user
+    permission:
+      check:
+        _or:
+        - dashboard:
+            user_id:
+              _eq: X-Hasura-User-Id
+        - dashboard:
+            team:
+              members:
+                user_id:
+                  _eq: X-Hasura-User-Id
+      set:
+        user_id: x-hasura-user-id
+      columns:
+      - dashboard_id
+      - exploration_id
+      - name
+      - spec
+      - spec_config
+      backend_only: false
   select_permissions:
   - role: user
     permission:
@@ -563,6 +585,46 @@
                 user_id:
                   _eq: X-Hasura-User-Id
       allow_aggregations: true
+  update_permissions:
+  - role: user
+    permission:
+      columns:
+      - name
+      - spec
+      - spec_config
+      filter:
+        _or:
+        - dashboard:
+            user_id:
+              _eq: X-Hasura-User-Id
+        - dashboard:
+            team:
+              members:
+                user_id:
+                  _eq: X-Hasura-User-Id
+      check:
+        _or:
+        - dashboard:
+            user_id:
+              _eq: X-Hasura-User-Id
+        - dashboard:
+            team:
+              members:
+                user_id:
+                  _eq: X-Hasura-User-Id
+  delete_permissions:
+  - role: user
+    permission:
+      filter:
+        _or:
+        - dashboard:
+            user_id:
+              _eq: X-Hasura-User-Id
+        - dashboard:
+            team:
+              members:
+                user_id:
+                  _eq: X-Hasura-User-Id
 - table:
     schema: public
     name: team_roles
