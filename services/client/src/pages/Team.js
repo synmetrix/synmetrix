@@ -72,6 +72,9 @@ const Team = () => {
 
   const {
     all: members,
+    queries: {
+      execQueryAll,
+    },
     mutations: {
       updateMutation,
       execUpdateMutation,
@@ -88,8 +91,13 @@ const Team = () => {
   
   const isTeamExists = !!currentTeam?.id;
 
-  const noop = () => {};
-  useCheckResponse(updateMutation, noop, {
+  const onUpdate = (res) => {
+    if (res) {
+      execQueryAll();
+    }
+  };
+
+  useCheckResponse(updateMutation, onUpdate, {
     successMessage: t('Member updated'),
   });
 
@@ -97,6 +105,8 @@ const Team = () => {
     if (res) {
       onModalClose();
     }
+
+    onUpdate(res);
   };
 
   useCheckResponse(createTeamMutation, closeModal, {
@@ -107,7 +117,7 @@ const Team = () => {
     successMessage: t('New team member has been invited'),
   });
 
-  useCheckResponse(deleteMutation, noop, {
+  useCheckResponse(deleteMutation, onUpdate, {
     successMessage: t('Team member has been deleted'),
   });
 
@@ -144,6 +154,13 @@ const Team = () => {
   const disableManagement = useMemo(() => restrictScopes.includes('userManagement'), [restrictScopes]);
   const loading = inviteMutation.fetching ||  updateMutation.fetching || updateTeamMutation.fetching;
 
+  const onInvite = data => {
+    const { email } = data;
+    const teamId = currentTeam?.id;
+
+    return execInviteMutation({ teamId, email });
+  };
+
   if (fallback) {
     return fallback;
   }
@@ -179,7 +196,7 @@ const Team = () => {
         key="invite"
         visible={state.visibleInviteModal}
         loading={loading}
-        onSave={execInviteMutation}
+        onSave={onInvite}
         onCancel={onModalClose}
         isTeamExists={isTeamExists}
       />

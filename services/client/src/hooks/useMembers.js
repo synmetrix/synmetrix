@@ -69,35 +69,18 @@ const role = 'user';
 export default (props = {}) => {
   const { pauseQueryAll, pagination = {}, params = {} } = props;
 
-  const { currentTeamState } = useCurrentTeamState();
+  const [updateMutation, execUpdateMutation] = useMutation(editSchemaMutation, { role });
+  const [deleteMutation, execDeleteMutation] = useMutation(delSchemaMutation, { role });
+  const [inviteMutation, execInviteMutation] = useMutation(inviteMemberMutation, { role });
 
-  const [updateMutation, doUpdateMutation] = useMutation(editSchemaMutation);
-  const execUpdateMutation = useCallback((input) => {
-    doUpdateMutation(input, { role });
-  }, [doUpdateMutation]);
-
-  const [deleteMutation, doDeleteMutation] = useMutation(delSchemaMutation);
-  const execDeleteMutation = useCallback((input) => {
-    doDeleteMutation(input, { role });
-  }, [doDeleteMutation]);
-
-  const [inviteMutation, doInviteMutation] = useMutation(inviteMemberMutation);
-  const execInviteMutation = useCallback((input) => {
-    const { email } = input;
-    const teamId = currentTeamState?.id;
-
-    doInviteMutation({ teamId, email }, { role });
-  }, [doInviteMutation, currentTeamState]);
-
-  const [allData, doQueryAll] = useQuery({
+  const [allData, execQueryAll] = useQuery({
     query: allMembersQuery,
     pause: true,
     variables: getListVariables(pagination, params),
+  }, {
+    requestPolicy: 'cache-and-network',
+    role,
   });
-
-  const execQueryAll = useCallback((context) => {
-    doQueryAll({ requestPolicy: 'cache-and-network', role, ...context });
-  }, [doQueryAll]);
 
   useEffect(() => {
     if (!pauseQueryAll) {

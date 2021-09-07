@@ -1,8 +1,10 @@
-import { useCallback, useEffect, useMemo } from 'react';
-import { useQuery, useMutation } from 'urql';
-import useCurrentTeamState from './useCurrentTeamState';
+import { useEffect, useMemo } from 'react';
 
+import useCurrentTeamState from './useCurrentTeamState';
 import useCurrentUser from './useCurrentUser';
+
+import useMutation from './useMutation';
+import useQuery from './useQuery';
 
 const newTeamMutation = `
   mutation CreateTeam($name: String!) {
@@ -47,27 +49,19 @@ export default (props = {}) => {
   const { queries: { execQueryCurrentUser } } = useCurrentUser();
   const { setCurrentTeamState } = useCurrentTeamState();
 
-  const [createMutation, doCreateMutation] = useMutation(newTeamMutation);
-  const execCreateMutation = useCallback((input) => {
-    return doCreateMutation(input, { role });
-  }, [doCreateMutation]);
+  const [createMutation, execCreateMutation] = useMutation(newTeamMutation, { role });
+  const [updateMutation, execUpdateMutation] = useMutation(editTeamMutation, { role });
 
-  const [updateMutation, doUpdateMutation] = useMutation(editTeamMutation);
-  const execUpdateMutation = useCallback((input) => {
-    doUpdateMutation(input, { role });
-  }, [doUpdateMutation]);
-
-  const [currentData, doQueryCurrent] = useQuery({
+  const [currentData, execQueryCurrent] = useQuery({
     query: editTeamQuery,
     variables: {
       id: editId,
     },
     pause: true,
+  }, {
+    requestPolicy: 'cache-and-network',
+    role,
   });
-
-  const execQueryCurrent = useCallback((context) => {
-    doQueryCurrent({ requestPolicy: 'cache-and-network', role, ...context });
-  }, [doQueryCurrent]);
 
   const current = useMemo(() => currentData.data?.teams_by_pk, [currentData.data]);
 
