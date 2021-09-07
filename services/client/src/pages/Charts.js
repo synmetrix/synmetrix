@@ -1,17 +1,21 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 
-import { get, getOr } from 'unchanged';
+import { getOr } from 'unchanged';
 
 import ErrorFound from 'components/ErrorFound';
 import Breadcrumbs from 'components/Breadcrumbs';
 import Chart from 'components/Chart';
 import { rowHeight } from 'pages/Dashboards';
 
+import useAppSettings from 'hooks/useAppSettings';
 import usePinnedItems from 'hooks/usePinnedItems';
 import useDimensions from 'hooks/useDimensions';
+import useExplorations from 'hooks/useExplorations';
 
-const Charts = ({ params }) => {
+const Charts = ({ match }) => {
+  const { withAuthPrefix } = useAppSettings();
+  const { params } = match || {};
   const { rowId } = params;
   const [ref, size] = useDimensions();
 
@@ -22,10 +26,25 @@ const Charts = ({ params }) => {
         fetching: loadingPinnedItem
       }
     }
-  } = usePinnedItems({ rowId });
+  } = usePinnedItems({
+    params: {
+      editId: rowId,
+    },
+  });
+
+  const {
+    queries: {
+      currentData: explorationData,
+    },
+  } = useExplorations({
+    params: {
+      editId: current?.exploration?.id,
+    },
+  });
 
   const [height, setHeight] = useState(400);
-  const dashboard = get('dashboardByDashboardId', current);
+  const { dashboard } = current || {};
+
   useEffect(() => {
     if (dashboard) {
       const layoutItem = (dashboard.layout || []).find(l => l.i === rowId);
@@ -35,10 +54,10 @@ const Charts = ({ params }) => {
   }, [current, dashboard, rowId]);
 
   let breadcrumbs = [];
-  if (current.name && dashboard) {
+  if (current?.name && dashboard) {
     breadcrumbs = [
-      { path: `/d/dashboards/${dashboard.rowId}`, title: dashboard.name },
-      { path: `/d/charts/${rowId}`, title: current.name },
+      { path: withAuthPrefix(`/dashboards/${dashboard.id}`), title: dashboard.name },
+      { path: withAuthPrefix(`/charts/${rowId}`), title: current.name },
     ].filter(v => !!v);
   };
 
@@ -52,19 +71,21 @@ const Charts = ({ params }) => {
         <Breadcrumbs breadcrumbs={breadcrumbs} />
       </div>
       <div style={{ minHeight: height }} ref={ref}>
-        <Chart id="chart" current={current} loading={loadingPinnedItem} size={size} />
+        <Chart
+          spec={current?.spec}
+          values={explorationData?.data?.fetch_dataset?.data}
+          loading={loadingPinnedItem || explorationData.fetching}
+          size={size}
+        />
       </div>
     </>
   );
 };
 
 Charts.propTypes = {
-  params: PropTypes.shape({
-    rowId: PropTypes.string,
-  }).isRequired,
+  match: PropTypes.object.isRequired,
 };
 
-Charts.defaultProps = {
-};
+Charts.defaultProps = {};
 
 export default Charts;

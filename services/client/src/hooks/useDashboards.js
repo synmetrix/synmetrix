@@ -1,8 +1,12 @@
 import { useCallback, useEffect, useMemo } from 'react';
 
 import { getOr } from 'unchanged';
-import { useQuery, useMutation, useSubscription } from 'urql';
-import useLocation from './useLocation';
+import { useSubscription } from 'urql';
+
+import useQuery from 'hooks/useQuery';
+import useMutation from 'hooks/useMutation';
+import useLocation from 'hooks/useLocation';
+import useAppSettings from 'hooks/useAppSettings';
 
 const newDashboardMutation = `
   mutation ($object: dashboards_insert_input!) {
@@ -94,29 +98,22 @@ const handleSubscription = (_, response) => response;
 const role = 'user';
 export default (props = {}) => {
   const { pauseQueryAll, pagination = {}, params = {}, disableSubscription = true } = props;
+  const { withAuthPrefix } = useAppSettings();
 
   const { editId } = params;
   const [, setLocation] = useLocation();
 
-  const [createMutation, doCreateMutation] = useMutation(newDashboardMutation);
-  const execCreateMutation = useCallback((input) => {
-    return doCreateMutation(input, { role });
-  }, [doCreateMutation]);
+  const [createMutation, execCreateMutation] = useMutation(newDashboardMutation, { role });
+  const [updateMutation, execUpdateMutation] = useMutation(editDashboardMutation, { role });
+  const [deleteMutation, execDeleteMutation] = useMutation(delDashboardMutation, { role });
 
-  const [updateMutation, doUpdateMutation] = useMutation(editDashboardMutation);
-  const execUpdateMutation = useCallback((input) => {
-    doUpdateMutation(input, { role });
-  }, [doUpdateMutation]);
-
-  const [deleteMutation, doDeleteMutation] = useMutation(delDashboardMutation);
-  const execDeleteMutation = useCallback((input) => {
-    doDeleteMutation(input, { role });
-  }, [doDeleteMutation]);
-
-  const [allData, doQueryAll] = useQuery({
+  const [allData, execQueryAll] = useQuery({
     query: dashboardsQuery,
     pause: true,
     variables: getListVariables(pagination),
+  }, {
+    requestPolicy: 'cache-and-network',
+    role,
   });
 
   const [subscription, execSubscription] = useSubscription({
@@ -124,10 +121,6 @@ export default (props = {}) => {
     variables: getListVariables(pagination),
     pause: disableSubscription,
   }, handleSubscription);
-
-  const execQueryAll = useCallback((context) => {
-    doQueryAll({ requestPolicy: 'cache-and-network', role, ...context });
-  }, [doQueryAll]);
 
   useEffect(() => {
     if (!pauseQueryAll) {
@@ -138,17 +131,16 @@ export default (props = {}) => {
   const all = useMemo(() => allData.data?.dashboards || [], [allData]);
   const totalCount = useMemo(() => allData.data?.dashboards_aggregate.aggregate.count, [allData]);
 
-  const [currentData, doQueryCurrent] = useQuery({
+  const [currentData, execQueryCurrent] = useQuery({
     query: editDashboardQuery,
     variables: {
       id: editId,
     },
     pause: true,
+  }, {
+    requestPolicy: 'cache-and-network',
+    role,
   });
-
-  const execQueryCurrent = useCallback((context) => {
-    doQueryCurrent({ requestPolicy: 'cache-and-network', role, ...context });
-  }, [doQueryCurrent]);
 
   const current = useMemo(() => currentData.data?.dashboards_by_pk || {}, [currentData]);
 
@@ -196,8 +188,8 @@ export default (props = {}) => {
   }, [current]);
 
   const onChange = useCallback((key) => {
-    setLocation(`/d/dashboards/${key}`);
-  }, [setLocation]);
+    setLocation(withAuthPrefix(`/dashboards/${key}`));
+  }, [setLocation, withAuthPrefix]);
 
   return {
     all,

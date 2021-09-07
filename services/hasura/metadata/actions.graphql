@@ -39,6 +39,12 @@ type Mutation {
 }
 
 type Mutation {
+  gen_sql(
+    exploration_id: uuid!
+  ): GenSQLOutput
+}
+
+type Mutation {
   invite_team_member(
     email: String!
     teamId: uuid
@@ -128,5 +134,9 @@ type CreateTeamOutput {
   code: String
   message: String
   teamId: uuid
+}
+
+type GenSQLOutput {
+  result: json
 }
 

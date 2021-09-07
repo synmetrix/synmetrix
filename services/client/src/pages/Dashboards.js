@@ -1,13 +1,12 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 
 import { useTranslation } from 'react-i18next';
-import { Icon, Popconfirm } from 'antd';
-
-import { getOr } from 'unchanged';
+import { Icon, Popconfirm, message } from 'antd';
 
 import GridLayout from 'react-grid-layout';
-import useLocation from 'wouter/use-location';
+
+import equals from 'utils/equals';
 
 import Loader from 'components/Loader';
 import ContentHeader from 'components/ContentHeader';
@@ -15,6 +14,7 @@ import PinnedItem from 'components/PinnedItem';
 import EditableField from 'components/EditableField';
 import ErrorFound from 'components/ErrorFound';
 
+import useLocation from 'hooks/useLocation';
 import useCheckResponse from 'hooks/useCheckResponse';
 import useDashboards from 'hooks/useDashboards';
 import usePermissions from 'hooks/usePermissions';
@@ -32,10 +32,6 @@ const Dashboards = ({ match }) => {
   const { withAuthPrefix } = useAppSettings();
   const { params } = match;
   const { rowId } = params;
-
-  // const {
-  //   setLastUsedDashboardId,
-  // } = useAuth();
 
   const {
     all: dashboards,
@@ -61,17 +57,12 @@ const Dashboards = ({ match }) => {
     pauseQueryAll: false,
   });
 
-  // useEffect(() => {
-  //   setLastUsedDashboardId(dashboard.rowId);
-  // }, [dashboard?.rowId]);
-
   const onDelete = async (res) => {
     if (res) {
       execQueryAll();
 
       if (dashboards.length - 1 <= 0) {
         const firstDataSource = allData?.data?.allDatasources?.nodes?.[0]?.rowId;
-        // setLastUsedDashboardId(null);
         setLocation(withAuthPrefix(`/explore/${firstDataSource}`));
       } else {
         const firstDashboard = allData?.data?.allDashboards?.nodes?.filter(
@@ -83,7 +74,14 @@ const Dashboards = ({ match }) => {
     }
   };
 
-  useCheckResponse(updateMutation, () => {}, {
+  const onUpdate = res => {
+    if (res) {
+      execQueryCurrent();
+      execQueryAll();
+    }
+  };
+
+  useCheckResponse(updateMutation, onUpdate, {
     successMessage: null,
   });
 
@@ -92,13 +90,46 @@ const Dashboards = ({ match }) => {
   });
 
   const onLayoutChange = (newLayout) => {
-    execUpdateMutation({ pk_columns: { id: dashboard.id } }, { name: dashboard.name, layout: newLayout });
+    let parsedLayout;
+
+    try {
+      parsedLayout = JSON.parse(JSON.stringify(newLayout));
+    } catch (err) {
+      message.error(err.toString());
+      return null;
+    }
+
+    if (!newLayout || equals(dashboard.layout, parsedLayout)) {
+      return null;
+    }
+
+    return execUpdateMutation({ 
+      pk_columns: {
+        id: dashboard.id,
+      },
+      _set: {
+        name: dashboard.name,
+        layout: newLayout,
+      },
+    });
   };
 
+
   const onRename = (id, value) => {
-    if (value.name !== dashboard.name) {
-      execUpdateMutation({ pk_columns: { id } }, value);
+    const { name } = value || {};
+
+    if (dashboard?.name && name === dashboard?.name) {
+      return null;
     }
+
+    return execUpdateMutation({ 
+      pk_columns: {
+        id,
+      },
+      _set: {
+        name,
+      },
+    });
   };
 
   const { fallback } = usePermissions({ scope: 'dashboards' });
@@ -121,8 +152,8 @@ const Dashboards = ({ match }) => {
             <Loader spinning={nameLoading}>
               <div style={{ lineHeight: '32px', whiteSpace: 'nowrap' }}>
                 <EditableField
-                  id={dashboard.id}
-                  currentValue={dashboard.name}
+                  id={dashboard?.id}
+                  currentValue={dashboard?.name || ''}
                   renameFunc={onRename}
                   style={{ minWidth: '50px', fontWeight: '500' }}
                 />

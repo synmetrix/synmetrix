@@ -39,6 +39,12 @@ actions:
     forward_client_headers: true
   permissions:
   - role: user
+- name: gen_sql
+  definition:
+    kind: synchronous
+    handler: http://actions:3000/rpc/gen_sql
+  permissions:
+  - role: user
 - name: invite_team_member
   definition:
     kind: synchronous
@@ -76,4 +82,5 @@ custom_types:
   - name: FetchDatasetOutput
   - name: InviteTeamMemberOutput
   - name: CreateTeamOutput
+  - name: GenSQLOutput
   scalars: []

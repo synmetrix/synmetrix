@@ -11,6 +11,7 @@ import equals from 'utils/equals';
 import Loader from 'components/Loader';
 import ContentHeader from 'components/ContentHeader';
 import ExploreWorkspace from 'components/ExploreWorkspace';
+import ErrorFound from 'components/ErrorFound';
 
 import useLocation from 'hooks/useLocation';
 import useAppSettings from 'hooks/useAppSettings';
@@ -33,17 +34,6 @@ const Explore = (props) => {
   const basePath = [withAuthPrefix('/explore'), dataSourceId, explorationId].filter(v => !!v).join('/');
 
   const { currentUserState: currentUser } = useCurrentUserState();
-
-  // const {
-  //   lastUsedDataSourceId,
-  //   setLastUsedDataSourceId
-  // } = useAuth();
-
-  // useEffect(() => {
-  //   if (dataSourceId && lastUsedDataSourceId !== dataSourceId) {
-  //     setLastUsedDataSourceId(dataSourceId);
-  //   }
-  // }, [dataSourceId, lastUsedDataSourceId, setLastUsedDataSourceId]);
 
   const {
     current,
@@ -79,10 +69,10 @@ const Explore = (props) => {
   }, [currentUser.dataschemas, execQueryMeta]);
 
   useEffect(() => {
-    if (current.id) {
+    if (dataSourceId) {
       execQueryMeta({ requestPolicy: 'network-only' });
     }
-  }, [current.id, execQueryMeta]);
+  }, [dataSourceId, execQueryMeta]);
 
   const onChange = useCallback((key = current.id) => {
     setLocation(withAuthPrefix(`/explore/${key}`));
@@ -91,6 +81,10 @@ const Explore = (props) => {
   const { fallback } = usePermissions({ scope: 'explore' });
   if (fallback) {
     return fallback;
+  }
+
+  if (currentData?.data?.datasources_by_pk === null) {
+    return <ErrorFound status={404} />;
   }
 
   if (!dataSourceId) {

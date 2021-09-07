@@ -63,6 +63,7 @@ export default ({ dataSourceId, meta = [], editId, rowsLimit, offset }) => {
       createMutation,
       execCreateMutation,
       genSqlMutation,
+      execGenSqlMutation,
     }
   } = useExplorations({
     params: {
@@ -72,6 +73,12 @@ export default ({ dataSourceId, meta = [], editId, rowsLimit, offset }) => {
     },
     pauseQueryAll: true,
   });
+
+  useEffect(() => {
+    if (editId) {
+      execGenSqlMutation({ exploration_id: editId });
+    }
+  }, [editId, execGenSqlMutation]);
 
   const playgroundSettings = useMemo(() => current.playground_settings || {}, [current]);
 

@@ -1,5 +1,7 @@
-import { useCallback, useEffect, useMemo } from 'react';
-import { useQuery, useMutation } from 'urql';
+import { useEffect, useMemo } from 'react';
+
+import useQuery from './useQuery';
+import useMutation from './useMutation';
 
 const newPinnedItemMutation = `
   mutation ($object: pinned_items_insert_input!) {
@@ -35,6 +37,18 @@ const editPinnedItemQuery = `
       id
       created_at
       updated_at
+      name
+      spec
+      spec_config
+      dashboard {
+        id
+        layout
+        name
+      }
+      exploration {
+        id
+        datasource_id
+      }
     }
   }
 `;
@@ -44,32 +58,20 @@ export default (props = {}) => {
   const { params = {} } = props;
   const { editId } = params;
 
-  const [createMutation, doCreateMutation] = useMutation(newPinnedItemMutation);
-  const execCreateMutation = useCallback((input) => {
-    return doCreateMutation(input, { role });
-  }, [doCreateMutation]);
+  const [createMutation, execCreateMutation] = useMutation(newPinnedItemMutation, { role });
+  const [updateMutation, execUpdateMutation] = useMutation(editPinnedItemMutation, { role });
+  const [deleteMutation, execDeleteMutation] = useMutation(delPinnedItemMutation, { role });
 
-  const [updateMutation, doUpdateMutation] = useMutation(editPinnedItemMutation);
-  const execUpdateMutation = useCallback((input) => {
-    doUpdateMutation(input, { role });
-  }, [doUpdateMutation]);
-
-  const [deleteMutation, doDeleteMutation] = useMutation(delPinnedItemMutation);
-  const execDeleteMutation = useCallback((input) => {
-    doDeleteMutation(input, { role });
-  }, [doDeleteMutation]);
-
-  const [currentData, doQueryCurrent] = useQuery({
+  const [currentData, execQueryCurrent] = useQuery({
     query: editPinnedItemQuery,
     variables: {
       id: editId,
     },
     pause: true,
+  }, {
+    requestPolicy: 'cache-and-network',
+    role,
   });
-
-  const execQueryCurrent = useCallback((context) => {
-    doQueryCurrent({ requestPolicy: 'cache-and-network', role, ...context });
-  }, [doQueryCurrent]);
 
   const current = useMemo(() => currentData.data?.pinned_items_by_pk, [currentData.data]);
 

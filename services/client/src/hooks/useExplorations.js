@@ -79,12 +79,6 @@ export default ({ params = {} }) => {
     }
   }, [params.editId, execQueryCurrent]);
 
-  useEffect(() => {
-    if (editId) {
-      execGenSqlMutation({ exploration_id: editId });
-    }
-  }, [editId, execGenSqlMutation]);
-
   return {
     current,
     currentProgress,

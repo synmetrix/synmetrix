@@ -53,7 +53,11 @@ const ExploreVisualizations = (props) => {
     queries: {
       currentData,
     },
-  } = usePinnedItems({ rowId: chartId });
+  } = usePinnedItems({
+    params: {
+      editId: chartId,
+    }
+  });
 
   const defaults = useMemo(() => ({
     defaultX: getOptionValue(baseMembers.dimensions[0] || {}),
@@ -259,9 +263,9 @@ const ExploreVisualizations = (props) => {
   });
 
   const loadChart = useCallback(() => {
-    const specConfig = get('specConfig', current);
+    const specConfig = get('spec_config', current);
 
-    if (!Object.values(specConfig).length) {
+    if (!current || !Object.values(specConfig).length) {
       return;
     }
 
@@ -300,7 +304,7 @@ const ExploreVisualizations = (props) => {
   );
 
   useEffect(() => {
-    if (chartId && Object.keys(current).length) {
+    if (chartId && Object.keys(current || {}).length) {
       loadChart();
     }
   },

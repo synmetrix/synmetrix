@@ -34,7 +34,6 @@ const ExploreWorkspace = (props) => {
     header,
     source: dataSource,
     meta,
-    loading,
     params: {
       explorationId,
       tabId,
@@ -141,10 +140,6 @@ const ExploreWorkspace = (props) => {
 
   const { fallback: cubesFallback } = usePermissions({ scope: 'explore/workspace/cubes' });
   const { fallback: filtersFallback } = usePermissions({ scope: 'explore/workspace/filters' });
-
-  if (!loading && (!dataSource || !dataSource.id)) {
-    return <ErrorFound status={404} />;
-  }
 
   if (Object.keys(dataSource).length && !availableQueryMembers) {
     return <ErrorFound status={500} />;
