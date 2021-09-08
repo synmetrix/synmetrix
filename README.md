@@ -85,7 +85,7 @@ python3 cli.py --help
 For general help using MLCraft, please refer to the official MLCraft documentation. For additional help, you can use one of these channels to ask a question:
 
 * [Slack](https://join.slack.com/t/mlcraft/shared_invite/zt-vg2tk8dh-sKA_W67BBcLLGXEKX78~dQ) \(For live discussion with the Community and Airbyte team\)
-* [GitHub](https://github.com/mlcraft/mlcraft) \(Bug reports, Contributions\)
+* [GitHub](https://github.com/mlcraft-io/mlcraft) \(Bug reports, Contributions\)
 * [Twitter](https://twitter.com/mlcraft_io) \(Get the news fast\)
 
 ## Roadmap
