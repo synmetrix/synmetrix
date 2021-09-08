@@ -73,7 +73,7 @@ export const findDataSchemas = async (args) => {
 export const dataSchemaFiles = async (args) => {
   const schemas = await findDataSchemas(args);
 
-  return schemas.map(r => ({
+  return (schemas || []).map(r => ({
     fileName: r.name,
     readOnly: true,
     content: r.code

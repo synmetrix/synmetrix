@@ -35,9 +35,12 @@ services:
       CLIENT_MAX_BODY_SIZE: 5m
 
   cubejs:
+    command: yarn start
     env_file:
       - .env
       - .stage.env
+    environment:
+      HASURA_GRAPHQL_ADMIN_SECRET: ${HASURA_GRAPHQL_ADMIN_SECRET}
 
   client:
     image: ${REGISTRY_HOST}/mlcraft/app-client:latest

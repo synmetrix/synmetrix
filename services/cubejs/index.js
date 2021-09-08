@@ -74,7 +74,7 @@ const driverError = (err) => {
   console.error('Driver error:');
 
   const throwError = () => {
-    throw new Error(err.message || err);
+    throw new Error(err?.message || err);
   };
 
   return {
@@ -88,8 +88,14 @@ const driverFactory = async ({ securityContext }) => {
 
   let dbParams = {};
 
+  if (!dataSource || !Object.keys(dataSource).length) {
+    return driverError({
+      message: 'Datasource not found',
+    });
+  }
+
   try {
-    dbParams = JSON.parse(dataSource.db_params);
+    dbParams = JSON.parse(dataSource?.db_params);
   } catch (err) {
     return driverError(err);
   }

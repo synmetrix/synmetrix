@@ -187,7 +187,7 @@ export default ({ basePath, setupAuthInfo, cubejs }) => {
       console.error(err);
 
       const { messages } = err;
-      res.status(500).json({ code: 'code_validation_error', message: messages.toString() });
+      res.status(500).json({ code: 'code_validation_error', message: messages?.toString() });
     }
   });
 

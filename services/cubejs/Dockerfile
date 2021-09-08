@@ -1,10 +1,11 @@
 FROM node:16.8.0-stretch
 
-WORKDIR /tmp
-COPY ./package.json ./yarn.lock /tmp/
+WORKDIR /app
+ENV PATH /app/node_modules/.bin:$PATH
 
-ENV NODE_PATH=/tmp/node_modules
-ENV PATH /tmp/node_modules/.bin:$PATH
+COPY yarn.lock /app/yarn.lock
+COPY package.json /app/package.json
+
 RUN yarn --network-timeout 100000
 
 WORKDIR /app
