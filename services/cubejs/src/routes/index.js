@@ -101,20 +101,15 @@ export default ({ basePath, setupAuthInfo, cubejs }) => {
       const schema = await driver.tablesSchema();
       const { tables = [], overwrite = false, branch } = (req.body || {});
 
-      console.log('loading module');
       const scaffoldingTemplateModule = await import('../schema_compiler/scaffolding/ScaffoldingTemplate.js');
       const dialectType = ADAPTERS[dbType];
 
       const dialectModule = await import(`../schema_compiler/scaffolding/dialect/${dialectType}.js`);
 
-      console.log('loading function');
       const scaffoldingTemplate = new scaffoldingTemplateModule.default(schema, driver);
       const normalizedTables = tables.map(table => table?.name?.replace('/', '.'));
 
       let files = scaffoldingTemplate.generateFilesByTableNames(normalizedTables, { dbType, dialect: dialectModule });
-
-      console.log('tables');
-      console.log(files);
 
       const dataSchemas = await findDataSchemas({
         dataSourceId,
@@ -131,8 +126,6 @@ export default ({ basePath, setupAuthInfo, cubejs }) => {
 
         return [...acc, file];
       }, []);
-
-      console.log(filteredFiles);
 
       const schemaUpdateQueries = filteredFiles.map(file => createDataSchema({
         datasource_id: dataSourceId,

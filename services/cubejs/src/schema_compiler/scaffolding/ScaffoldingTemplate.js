@@ -52,7 +52,7 @@ class ScaffoldingTemplate extends DefaultScaffoldingTemplate {
 
           const timeFieldObject = {
             title: `${dimensionName} [${gran}]`,
-            sql: dialect.timeGroupedColumn(gran, dimensionName),
+            sql: dialect.timeGroupedColumn(gran, sql),
             type,
           };
 
