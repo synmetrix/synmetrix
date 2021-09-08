@@ -1,10 +1,10 @@
 import { useEffect, useCallback } from 'react';
 import { add, remove } from 'unchanged';
 
-import useXState from 'hooks/useXState';
+import { useSetState } from 'ahooks';
 
 export default (activePanelKey = []) => {
-  const [state, updateState, setState] = useXState({
+  const [state, updateState] = useSetState({
     activePanelKey,
   });
 
@@ -44,7 +44,6 @@ export default (activePanelKey = []) => {
 
   return {
     state,
-    setState,
     updateState,
     getSectionIndex,
     onToggleSection,

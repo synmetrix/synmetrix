@@ -1,13 +1,13 @@
 import React, { useMemo, useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { get, getOr, set, add } from 'unchanged';
+import { useSetState } from 'ahooks';
 
 import { Row, Col, Empty, Button, Icon } from 'antd';
 import { VegaLite } from 'react-vega';
 import { useTranslation } from 'react-i18next';
 
 import useDimensions from 'hooks/useDimensions';
-import useXState from 'hooks/useXState';
 import { getOptionValue } from 'hooks/useFormItems';
 import useAnalyticsQueryMembers from 'hooks/useAnalyticsQueryMembers';
 import usePinnedItems from 'hooks/usePinnedItems';
@@ -64,7 +64,7 @@ const ExploreVisualizations = (props) => {
     defaultY: getOptionValue(baseMembers.measures[0] || {}),
   }), [baseMembers.dimensions, baseMembers.measures]);
 
-  const [state, updateState] = useXState({
+  const [state, updateState] = useSetState({
     description: NONE_AXIS_DESC,
     isReadyToRender: false,
   });

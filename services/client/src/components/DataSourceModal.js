@@ -11,13 +11,11 @@ import pickKeys from 'utils/pickKeys';
 
 import useCheckResponse from 'hooks/useCheckResponse';
 import useSources from 'hooks/useSources';
-import useGlobalStore from 'hooks/useGlobalStore';
 
 import ModalView from 'components/ModalView';
 import DataSourceForm from 'components/DataSourceForm';
 
 const DataSourceModal = (props) => {
-  const { setLastUsedDataSourceId } = useGlobalStore();
   const formRef = useRef(null);
 
   const {
@@ -63,7 +61,6 @@ const DataSourceModal = (props) => {
 
   const onDelete = (res) => {
     if (res) {
-      setLastUsedDataSourceId('');
       onDeleteAction(res);
     }
   };

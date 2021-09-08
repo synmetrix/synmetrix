@@ -2,11 +2,11 @@ import React, { useRef, useEffect } from 'react';
 import PropTypes from 'prop-types';
 
 import moment from 'moment';
+import { useSetState } from 'ahooks';
 
 import { DatePicker, Button, Input, message } from 'antd';
 import PopoverButton from 'components/PopoverButton';
 import useDebounce from 'hooks/useDebounce';
-import useXState from 'hooks/useXState';
 
 import s from './InputDate.module.css';
 
@@ -43,7 +43,7 @@ const InputDate = ({ values, onChange }) => {
     message.error('Can\'t parse the date value');
   }
 
-  const [state, updateState] = useXState({
+  const [state, updateState] = useSetState({
     inputValue,
     datePickerVisible: false,
     popoverVisible: false,

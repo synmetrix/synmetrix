@@ -1,7 +1,5 @@
-
 import { useEffect } from 'react';
 import useLocation from 'hooks/useLocation';
-import { useTranslation } from 'react-i18next';
 
 import { message } from 'antd';
 
