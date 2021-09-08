@@ -3,7 +3,7 @@ import { set, get } from 'unchanged';
 
 import { Col, Form, Input, Checkbox, Upload, message, Select, Button, Divider, Tooltip, Icon } from 'antd';
 
-import useXState from 'hooks/useXState';
+import { useSetState } from 'ahooks';
 import Slider from 'components/Slider';
 import InputNumber from 'components/InputNumber';
 import ErrorMessage from 'components/ErrorMessage';
@@ -17,7 +17,7 @@ const DEFAULT_MODE = 'create';
 export const getOptionValue = obj => Object.values(obj).join('_');
 
 export default ({ ref, form, initialValues, config, size = DEFAULT_INPUT_SIZE, itemClassName, mode = DEFAULT_MODE }) => {
-  const [state, updateState] = useXState({});
+  const [state, updateState] = useSetState({});
 
   const sectionsIndex = useMemo(
     () => {

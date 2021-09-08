@@ -1,7 +1,6 @@
 import React, { useMemo } from 'react';
 import PropTypes from 'prop-types';
 
-import { get, getOr } from 'unchanged';
 import cx from 'classnames';
 
 import { VegaLite } from 'react-vega';
@@ -17,27 +16,25 @@ const getSize = (size, diff) => {
   return result;
 };
 
-const Chart = ({ id, current, loading, size }) => {
+const Chart = ({ id, spec, loading, size, values }) => {
   const data = {
-    values: getOr([], 'explorationByExplorationId.dataCube.data', current)
+    values,
   };
-
-  const type = get('spec.type', current);
 
   const item = useMemo(() => {
     let width = 0;
     let height = 0;
 
-    if (type === 'chart') {
+    if (spec?.type === 'chart') {
       width = getSize(size.width, 100);
 
-      const vconcat = current.spec.vconcat.map(vc => {
+      const vconcat = spec?.vconcat.map(vc => {
         vc.width = width;
         return vc;
       });
 
-      const spec = {
-        ...current.spec,
+      const chartSpec = {
+        ...(spec || {}),
         vconcat,
         data,
       };
@@ -45,14 +42,15 @@ const Chart = ({ id, current, loading, size }) => {
       return (
         <div id={id}>
           <VegaLite
-            spec={spec}
+            spec={chartSpec}
             actions={false}
             width={width}
           />
         </div>
       );
     }
-    if (type === 'raw-table') {
+
+    if (spec?.type === 'raw-table' && spec?.columns?.length) {
       width = getSize(size.width, 10);
       height = getSize(size.height, 45);
 
@@ -62,13 +60,13 @@ const Chart = ({ id, current, loading, size }) => {
           width={width}
           height={height}
           data={data.values}
-          columns={current.spec.columns}
-          colWidth={(size.width - 10) / current.spec.columns.length}
+          columns={spec?.columns}
+          colWidth={(size.width - 10) / spec?.columns?.length}
         />
       );
     }
     return null;
-  }, [current.spec, data, id, size.height, size.width, type]);
+  }, [data, id, size.height, size.width, spec]);
 
   return (
     <>
@@ -88,15 +86,17 @@ const Chart = ({ id, current, loading, size }) => {
 
 Chart.propTypes = {
   id: PropTypes.string,
-  current: PropTypes.object,
   size: PropTypes.object,
+  spec: PropTypes.object,
+  values: PropTypes.array,
   loading: PropTypes.bool,
 };
 
 Chart.defaultProps = {
   id: null,
-  current: {},
   size: {},
+  spec: {},
+  values: [],
   loading: false,
 };
 

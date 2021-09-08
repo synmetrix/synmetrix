@@ -308,7 +308,7 @@ export default (allMembers, allMembersIndex, defaults, formValues = {}) => {
     display: 'select',
     showSearch: false,
     allowClear: false,
-    default: 'detailed',
+    default: 'no',
     placeholder: 'no',
     values: [
       { No: 'no' },

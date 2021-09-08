@@ -1,0 +1,6 @@
+functions:
+  isAuthenticated: 'return !!request.auth'
+paths:
+  /public*:
+    read: 'true'
+    write: 'isAuthenticated()'

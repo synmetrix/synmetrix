@@ -100,3 +100,4 @@ dist
 # TernJS port file
 .tern-port
 __pycache__
+/set-secrets.sh

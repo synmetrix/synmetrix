@@ -1,0 +1,86 @@
+actions:
+- name: check_connection
+  definition:
+    kind: synchronous
+    handler: http://actions:3000/rpc/check_connection
+  permissions:
+  - role: user
+- name: create_team
+  definition:
+    kind: synchronous
+    handler: http://actions:3000/rpc/create_team
+  permissions:
+  - role: user
+- name: fetch_dataset
+  definition:
+    kind: ""
+    handler: http://actions:3000/rpc/fetch_dataset
+    forward_client_headers: true
+  permissions:
+  - role: user
+- name: fetch_meta
+  definition:
+    kind: ""
+    handler: http://actions:3000/rpc/fetch_meta
+    forward_client_headers: true
+  permissions:
+  - role: user
+- name: fetch_tables
+  definition:
+    kind: ""
+    handler: http://actions:3000/rpc/fetch_tables
+    forward_client_headers: true
+  permissions:
+  - role: user
+- name: gen_dataschemas
+  definition:
+    kind: synchronous
+    handler: http://actions:3000/rpc/gen_schemas
+    forward_client_headers: true
+  permissions:
+  - role: user
+- name: gen_sql
+  definition:
+    kind: synchronous
+    handler: http://actions:3000/rpc/gen_sql
+  permissions:
+  - role: user
+- name: invite_team_member
+  definition:
+    kind: synchronous
+    handler: http://actions:3000/rpc/invite_team_member
+  permissions:
+  - role: user
+- name: run_query
+  definition:
+    kind: synchronous
+    handler: http://actions:3000/rpc/run_query
+    forward_client_headers: true
+  permissions:
+  - role: user
+- name: validate_datasource
+  definition:
+    kind: synchronous
+    handler: http://actions:3000/rpc/validate_source
+    forward_client_headers: true
+  permissions:
+  - role: user
+custom_types:
+  enums: []
+  input_objects:
+  - name: SourceTable
+  objects:
+  - name: CheckSourceOutput
+  - name: GenSourceSchemaOutput
+  - name: SourceTablesOutput
+  - name: SourceMetaOutput
+  - name: RunSourceQueryOutput
+  - name: ValidateSourceSchemaOutput
+  - name: ValidateSourceSchemasOutput
+  - name: ValidateSourceOutput
+  - name: CheckConnectionOutput
+  - name: FetchDatasetOutput
+  - name: InviteTeamMemberOutput
+  - name: CreateTeamOutput
+  - name: GenSQLOutput
+  scalars: []

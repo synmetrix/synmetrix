@@ -1,26 +1,31 @@
-import React, { useCallback, useEffect, useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import PropTypes from 'prop-types';
 
-import { get } from 'unchanged';
 import { useTranslation } from 'react-i18next';
-import { Button, Icon, Select, Input, Divider, message } from 'antd';
+import { Button, Icon, Select, Input, Divider } from 'antd';
 
+import { useSetState } from 'ahooks';
 import PopoverButton from 'components/PopoverButton';
+
+import useCurrentUserState from 'hooks/useCurrentUserState';
 import useDashboards from 'hooks/useDashboards';
 import usePinnedItems from 'hooks/usePinnedItems';
-import useAuth from 'hooks/useAuth';
-import useXState from 'hooks/useXState';
+import useCheckResponse from 'hooks/useCheckResponse';
+
+// import useAuth from 'hooks/useAuth';
 
 const { Option } = Select;
 
 const SavePinnedItemButton = ({ spec, specConfig, type, explorationRowId, disabled }) => {
   const { t } = useTranslation();
-  const {
-    lastUsedDashboardId,
-    setLastUsedDashboardId,
-  } = useAuth();
+  const { currentUserState: currentUser } = useCurrentUserState();
+  // const {
+  //   lastUsedDashboardId,
+  //   setLastUsedDashboardId,
+  // } = useAuth();
 
-  const [state, updateState] = useXState({
+  const lastUsedDashboardId = null;
+  const [state, updateState] = useSetState({
     chartName: '',
     selectOpen: false,
     selectedDashboard: lastUsedDashboardId,
@@ -28,34 +33,37 @@ const SavePinnedItemButton = ({ spec, specConfig, type, explorationRowId, disabl
   });
 
   const {
-    all: dashboards,
-    queries: {
-      executeQueryAll,
-    },
     mutations: {
-      createMutation, mExecuteNewMutation,
+      createMutation: createDashboardMutation,
+      execCreateMutation: execCreateDashboardMutation
     }
-  } = useDashboards({});
+  } = useDashboards({
+    pauseQueryAll: true,
+  });
 
   const {
     mutations: {
-      createMutation: newPinnedItem,
-      mExecuteNewMutation: newPinnedItemMutation
+      createMutation: createPinnedItemMutation,
+      execCreateMutation: execCreatePinnedItemMutation
     }
-  } = usePinnedItems({});
+  } = usePinnedItems();
 
   const onSelect = useCallback((value) => {
-    setLastUsedDashboardId(value);
+    // setLastUsedDashboardId(value);
     updateState({ selectedDashboard: value, selectOpen: false });
-  }, [setLastUsedDashboardId, updateState]);
+  }, [updateState]);
 
   const onChangeInput = (e) => {
     updateState({ newDashboardName: e.target.value });
   };
 
   const onAddDashboard = () => {
-    if (!createMutation.fetching && state.newDashboardName) {
-      mExecuteNewMutation({ name: state.newDashboardName });
+    if (!createDashboardMutation.fetching && state.newDashboardName) {
+      execCreateDashboardMutation({
+        object: {
+          name: state.newDashboardName,
+        }
+      });
     }
   };
 
@@ -66,50 +74,42 @@ const SavePinnedItemButton = ({ spec, specConfig, type, explorationRowId, disabl
     }
 
     if (spec && explorationRowId) {
-      newPinnedItemMutation({
-        dashboardId: parseInt(state.selectedDashboard, 10),
-        name: state.chartName,
-        explorationId: parseInt(explorationRowId, 10),
-        spec: {
-          ...spec,
-          type,
-          data: { name: 'values' },
-        },
-        specConfig: newSpecConfig,
+      execCreatePinnedItemMutation({
+        object: {
+          dashboard_id: state.selectedDashboard,
+          name: state.chartName,
+          exploration_id: explorationRowId,
+          spec: {
+            ...spec,
+            type,
+            data: { name: 'values' },
+          },
+          spec_config: newSpecConfig,
+        }
       });
     }
   };
 
-  useEffect(() => {
-    if (newPinnedItem.error) {
-      message.error(newPinnedItem.error.message);
-    } else if (newPinnedItem.data) {
-      message.success(t('Chart saved!'));
-      newPinnedItem.data = null;
-    }
-  }, [newPinnedItem.data, executeQueryAll, t, newPinnedItem.error]);
+  useCheckResponse(createPinnedItemMutation, () => {}, {
+    successMessage: t('Chart saved'),
+  });
 
-  useEffect(() => {
-    if (createMutation.error) {
-      message.error(createMutation.error.message);
-    } else if (createMutation.data) {
-      const newDashboardId = get('data.createDashboard.dashboard.rowId', createMutation);
+  useCheckResponse(createDashboardMutation, (res) => {
+    const newDashboardId = res?.insert_dashboards_one?.id;
+    onSelect(newDashboardId);
+  }, {
+    successMessage: t('Dashboard saved'),
+  });
 
-      onSelect(newDashboardId);
-      executeQueryAll();
-
-      createMutation.data = null;
-    }
-  }, [createMutation, dashboards.length, executeQueryAll, onSelect]);
-
-  const saveDisabled = !state.selectedDashboard || !state.chartName || newPinnedItem.fetching || !Object.keys(spec).length;
+  const saveDisabled = !state.selectedDashboard || !state.chartName || createPinnedItemMutation.fetching || !Object.keys(spec).length;
   const selectValue = useMemo(() => {
-    const actualDashboard = dashboards.find(d => parseInt(d.rowId, 10) === parseInt(state.selectedDashboard, 10));
+    const actualDashboard = currentUser.dashboards?.find(d => d.id === state.selectedDashboard);
+
     if (actualDashboard) {
-      return [`${actualDashboard.rowId}`];
+      return [`${actualDashboard.id}`];
     }
     return null;
-  }, [dashboards, state.selectedDashboard]);
+  }, [currentUser.dashboards, state.selectedDashboard]);
 
   return (
     <PopoverButton
@@ -126,7 +126,7 @@ const SavePinnedItemButton = ({ spec, specConfig, type, explorationRowId, disabl
               style={{ width: 240, cursor: 'pointer' }}
               placeholder={t('Select dashboard')}
               open={state.selectOpen}
-              loading={createMutation.fetching}
+              loading={createDashboardMutation.fetching}
               onSelect={onSelect}
               value={selectValue}
               dropdownRender={menu => (
@@ -143,12 +143,12 @@ const SavePinnedItemButton = ({ spec, specConfig, type, explorationRowId, disabl
                       value={state.newDashboardName}
                       onChange={onChangeInput}
                       onClick={e => e.stopPropagation()}
-                      disabled={createMutation.fetching}
+                      disabled={createPinnedItemMutation.fetching}
                       maxLength={20}
                       addonAfter={(
                         <Icon
                           onClick={onAddDashboard}
-                          type={createMutation.fetching ? 'loading' : 'plus'}
+                          type={createPinnedItemMutation.fetching ? 'loading' : 'plus'}
                         />
                       )}
                     />
@@ -156,7 +156,7 @@ const SavePinnedItemButton = ({ spec, specConfig, type, explorationRowId, disabl
                 </div>
               )}
             >
-              {dashboards.map((item) => <Option key={item.rowId}>{item.name}</Option>)}
+              {currentUser.dashboards?.map((item) => <Option key={item.id}>{item.name}</Option>)}
             </Select>
           </div>
           <div style={{ marginTop: 10 }}>
@@ -166,7 +166,7 @@ const SavePinnedItemButton = ({ spec, specConfig, type, explorationRowId, disabl
           <div style={{ marginTop: 10 }}>
             <Button
               type="primary"
-              loading={newPinnedItem.fetching}
+              loading={createPinnedItemMutation.fetching}
               disabled={saveDisabled}
               onClick={onClickSave}
             >
@@ -184,7 +184,7 @@ SavePinnedItemButton.propTypes = {
   spec: PropTypes.object.isRequired,
   specConfig: PropTypes.object,
   type: PropTypes.string.isRequired,
-  explorationRowId: PropTypes.number,
+  explorationRowId: PropTypes.string,
   disabled: PropTypes.bool
 };
 

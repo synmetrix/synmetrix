@@ -1,42 +1,87 @@
-const createMd5Hex = require('./md5Hex');
+import { set } from 'unchanged';
+import createMd5Hex from './md5Hex.js';
+import { fetchGraphQL } from './graphql.js';
 
-const findDataSource = async ({ dataSourceId }, { pgClient }) => {
-  const { rows: [dataSource] } = await pgClient.query(
-    'SELECT * FROM public.datasources WHERE id=$1 LIMIT 1', [dataSourceId]
-  );
+const sourceQuery = `
+  query ($id: uuid!) {
+    datasources_by_pk(id: $id) {
+      id
+      name
+      db_type
+      db_params
+    }
+  }
+`;
 
-  return dataSource;
+const allSchemasQuery = `
+  query ($offset: Int, $limit: Int, $where: dataschemas_bool_exp, $order_by: [dataschemas_order_by!]) {
+    dataschemas (offset: $offset, limit: $limit, where: $where, order_by: $order_by) {
+      id
+      name
+      code
+    }
+  }
+`;
+
+
+const upsertSchemaMutation = `
+  mutation ($object: dataschemas_insert_input!) {
+    insert_dataschemas_one(
+      object: $object,
+      on_conflict: {constraint: dataschemas_datasource_id_branch_name_key, update_columns: code}
+    ) {
+      id
+    }
+  }
+`;
+
+export const findDataSource = async ({ dataSourceId }) => {
+  let res = await fetchGraphQL(sourceQuery, { id: dataSourceId });
+  res = res?.data?.datasources_by_pk;
+
+  return res;
 };
 
-exports.findDataSource = findDataSource;
+export const createDataSchema = async (object) => {
+  let res = await fetchGraphQL(upsertSchemaMutation, { object });
+  res = res?.data?.insert_dataschemas_one;
 
-const findDataSchemas = async ({ dataSourceId }, { pgClient }) => {
-  const { rows } = await pgClient.query(
-    'select * from public.dataschemas WHERE datasource_id = $1',
-    [dataSourceId]
-  );
-
-  return rows;
+  return res;
 };
 
-exports.findDataSchemas = findDataSchemas;
+export const findDataSchemas = async (args) => {
+  let vars = {
+    order_by: {
+      created_at: 'asc',
+    },
+  };
 
-const dataSchemaFiles = async (args, context) => {
-  const schemas = await findDataSchemas(args, context);
+  if (args.dataSourceId) {
+    vars = set('where.datasource_id._eq', args.dataSourceId, vars);
+  }
 
-  return schemas.map(r => ({
+  if (args.branch) {
+    vars = set('where.branch._eq', args.branch, vars);
+  }
+
+  let dataSchemas = await fetchGraphQL(allSchemasQuery, vars);
+  dataSchemas = dataSchemas?.data?.dataschemas;
+
+  return dataSchemas;
+};
+
+export const dataSchemaFiles = async (args) => {
+  const schemas = await findDataSchemas(args);
+
+  return (schemas || []).map(r => ({
     fileName: r.name,
     readOnly: true,
     content: r.code
   }));
 };
 
-exports.dataSchemaFiles = dataSchemaFiles;
-
-const getSchemaVersion = async (args, context) => {
-  const files = await dataSchemaFiles(args, context);
+export const getSchemaVersion = async (args) => {
+  const files = await dataSchemaFiles(args);
 
   return createMd5Hex(files);
 };
-
-exports.getSchemaVersion = getSchemaVersion;

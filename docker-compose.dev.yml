@@ -7,26 +7,27 @@ services:
        - 5435:5432
     volumes:
       - pgstorage-data:/var/lib/postgresql/data
-      - ./etc/schema.sql:/docker-entrypoint-initdb.d/00-schema.sql
       - ./etc/postgres.conf:/var/lib/postgresql/data/postgresql.conf
     env_file:
+      - .env
       - .dev.env
     networks:
       - mlcraft_default
 
-  postgraphile:
+  actions:
+    restart: always
     command: yarn start.dev
     volumes:
-      - ./services/postgraphile/src:/app/src
-      - ./services/postgraphile/vendor:/app/vendor
-      - ./services/postgraphile/index.js:/app/index.js
+      - ./services/actions/src:/app/src
+      - ./services/actions/index.js:/app/index.js
     ports:
-      - 5000:5000
-      - 9230:9229
+      - 3001:3000
     env_file:
+      - .env
       - .dev.env
 
   cubejs:
+    restart: always
     command: yarn start.dev
     volumes:
       - ./services/cubejs:/app
@@ -34,7 +35,57 @@ services:
       - 4000:4000
       - 9231:9229
     env_file:
+      - .env
       - .dev.env
+
+  hasura_cli:
+    restart: always
+    command: ./start.sh
+    build:
+      context: ./scripts/containers/hasura_cli
+    ports:
+      - 9693:9693
+      - 9695:9695
+    env_file:
+      - .env
+      - .dev.env
+    environment:
+      ENABLE_TELEMETRY: "false"
+      CONSOLE_MODE: cli
+    volumes:
+      - ./services/hasura/migrations:/hasura/migrations
+      - ./services/hasura/metadata:/hasura/metadata
+      - ./services/hasura/config.yaml:/hasura/config.yaml
+    depends_on:
+      - hasura
+    networks:
+      - mlcraft_default
+
+  hasura:
+    restart: always
+    ports:
+       - 8080:8080
+    env_file:
+      - .env
+      - .dev.env
+    environment:
+      ENABLE_TELEMETRY: "false"
+      CONSOLE_MODE: server
+    depends_on:
+      - postgres
+      - redis
+
+  hasura_plus:
+    restart: always
+    build:
+      context: ./scripts/containers/hasura_backend_plus
+    ports:
+       - 8081:3000
+    env_file:
+      - .env
+      - .dev.env
+    depends_on:
+      - postgres
 
 volumes:
   pgstorage-data:

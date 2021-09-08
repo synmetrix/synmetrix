@@ -1,7 +1,5 @@
-import React, { useRef, useEffect, useCallback } from 'react';
+import React, { useRef, useEffect } from 'react';
 import PropTypes from 'prop-types';
-
-import { get } from 'unchanged';
 
 import { useTranslation } from 'react-i18next';
 
@@ -11,117 +9,98 @@ import {
 
 import pickKeys from 'utils/pickKeys';
 
-import useDataSources from 'hooks/useDataSources';
-import useGlobalStore from 'hooks/useGlobalStore';
+import useCheckResponse from 'hooks/useCheckResponse';
+import useSources from 'hooks/useSources';
 
 import ModalView from 'components/ModalView';
 import DataSourceForm from 'components/DataSourceForm';
 
 const DataSourceModal = (props) => {
-  const { setLastUsedDataSourceId } = useGlobalStore();
   const formRef = useRef(null);
 
   const {
     mutations: {
-      createMutation, mExecuteNewMutation,
-      testMutation, mExecuteTestMutation,
-      deleteMutation, mExecuteDeleteMutation,
+      createMutation, execCreateMutation,
+      checkMutation, execCheckMutation,
+      deleteMutation, execDeleteMutation,
     },
-  } = useDataSources({ pauseQueryAll: true });
+  } = useSources({ pauseQueryAll: true });
 
   const {
     loading,
-    dataSource, initialValues,
-    onSave, onChange, onDelete
+    dataSource,
+    initialValues,
+    onSave,
+    onChange, 
+    onDelete: onDeleteAction,
   } = props;
 
   const { t } = useTranslation();
 
-  const onCreateEffect = useCallback(
-    () => {
-      if (createMutation.data) {
-        onSave(get('createDatasource.datasourceEdge.node', createMutation.data));
-      }
-    },
-    [createMutation.data, onSave]
-  );
+  const onCreate = (res) => {
+    if (res) {
+      props.onCancel();
+    }
+  };
+  
+  useCheckResponse(createMutation, onCreate, {
+    successMessage: t('Source created')
+  });
 
-  const onTestEffect = useCallback(
-    () => {
-      if (testMutation.data) {
-        const testMessage = get('testConnection.message', testMutation.data);
+  const onCheck = (res) => {
+    if (res?.check_connection?.code === 'ok') {
+      message.success(res?.check_connection?.message);
+    } else if (res?.check_connection?.message) {
+      message.error(res?.check_connection?.message);
+    }
+  };
 
-        if (testMessage === 'OK') {
-          message.success('Connection is OK');
-        } else {
-          message.error(testMessage);
-        }
-      }
+  useCheckResponse(checkMutation, onCheck, {
+    successMessage: null,
+  });
 
-      if (testMutation.error) {
-        message.error(testMutation.error.toString());
-      }
-    },
-    [testMutation.data, testMutation.error]
-  );
+  const onDelete = (res) => {
+    if (res) {
+      onDeleteAction(res);
+    }
+  };
 
-  const onDeleteEffect = useCallback(
-    () => {
-      if (deleteMutation.error) {
-        message.error(deleteMutation.error.message);
-      } else if (deleteMutation.data) {
-        message.success('Deleted');
-        setLastUsedDataSourceId('');
-        onDelete(deleteMutation.data);
-      }
-    },
-    [deleteMutation.data, deleteMutation.error, onDelete, setLastUsedDataSourceId]
-  );
+  useCheckResponse(deleteMutation, onDelete, {
+    successMessage: t('Deleted'),
+  });
 
-  useEffect(
-    onCreateEffect,
-    [createMutation.data]
-  );
-
-  useEffect(
-    onTestEffect,
-    [testMutation.data]
-  );
-
-  useEffect(
-    onDeleteEffect,
-    [deleteMutation.data]
-  );
-
-  // always call executeTestMutation if dataSource present
+  // always call check if dataSource present
   useEffect(
     () => {
-      if (dataSource.rowId) {
-        mExecuteTestMutation(dataSource.rowId);
+      if (dataSource.id) {
+        execCheckMutation({ id: dataSource.id });
       }
     },
-    [dataSource.rowId, mExecuteTestMutation]
+    [dataSource.id, execCheckMutation]
   );
 
   const handleSave = () => {
     const { form } = formRef.current;
 
-    form.validateFields((err, values) => {
-      if (err) {
-        console.log('Error: ', values);
-        return;
-      }
-
+    return form.validateFields().then(values => {
       console.log('Received values of form: ', values);
 
       if (dataSource.id) {
         // call onSave if dataSource already present
-        onSave(dataSource, values);
-      } else {
-        // or create new
-        mExecuteNewMutation(values);
-      }
+        return onSave(dataSource, values);
+      } 
+
+      // or create new
+      return execCreateMutation({ object: values });
+    }).catch(err => {
+      console.error('Error: ', err);
     });
+  };
+
+  const onCheckConnection = async () => {
+    await handleSave();
+    message.info(t('Checking the connection...'));
+    execCheckMutation({ id: dataSource.id });
   };
 
   const modalFooter = (
@@ -129,11 +108,11 @@ const DataSourceModal = (props) => {
       <Col span={12} style={{ textAlign: 'left' }}>
         {dataSource.id && (
           <>
-            <Button onClick={() => mExecuteTestMutation(dataSource.rowId)} loading={testMutation.fetching}>
+            <Button onClick={onCheckConnection} loading={checkMutation.fetching}>
               <Icon type="api" />
               {t('Test Connection')}
             </Button>
-            <Button type="danger" onClick={() => mExecuteDeleteMutation(dataSource.id)} loading={deleteMutation.fetching}>
+            <Button type="danger" onClick={() => execDeleteMutation({ id: dataSource.id })} loading={deleteMutation.fetching}>
               <Icon type="disconnect" />
               {t('Remove')}
             </Button>
@@ -141,7 +120,7 @@ const DataSourceModal = (props) => {
         )}
       </Col>
       <Col span={12} style={{ textAlign: 'right' }}>
-        {(initialValues.dbType || dataSource.id) && (
+        {(initialValues.db_type || dataSource.id) && (
           <Button type="primary" onClick={handleSave} disabled={loading}>
             {dataSource.id && t('Save') || t('Connect Now')}
           </Button>
@@ -154,10 +133,11 @@ const DataSourceModal = (props) => {
     <ModalView
       {...pickKeys(['title', 'onCancel', 'visible', 'loading', 'breadcrumbs'], props)}
       footer={modalFooter}
+      loading={checkMutation.fetching}
       content={(
         <DataSourceForm
           style={{ paddingTop: 10 }}
-          edit={!!initialValues.rowId}
+          edit={!!initialValues.id}
           initialValues={{
             ...initialValues,
             ...dataSource,

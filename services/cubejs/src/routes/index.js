@@ -1,12 +1,31 @@
-const inflection = require('inflection');
-const express = require('express');
+import inflection from 'inflection';
+import express from 'express';
+
+import { findDataSchemas, createDataSchema } from '../utils/dataSourceHelpers.js';
+
+const ADAPTERS = {
+  postgres: 'postgres',
+  redshift: 'redshift',
+  mysql: 'mysql',
+  mysqlauroraserverless: 'mysql',
+  mongobi: 'mongobi',
+  mssql: 'mssql',
+  bigquery: 'bigquery',
+  prestodb: 'prestodb',
+  qubole_prestodb: 'qubolePrestodb',
+  athena: 'prestodb',
+  vertica: 'vertica',
+  snowflake: 'snowflake',
+  clickhouse: 'clickhouse',
+  hive: 'hive',
+  oracle: 'oracle',
+  sqlite: 'sqlite',
+  awselasticsearch: 'awselasticsearch',
+  elasticsearch: 'elasticsearch',
+};
 
 const router = express.Router();
-const { updateJoins } = require('../utils/compiler');
-
-const routes = ({ basePath, setupAuthInfo, cubejs, context }) => {
-  const { pgClient } = context;
-
+export default ({ basePath, setupAuthInfo, cubejs }) => {
   router.use(async (req, res, next) => {
     await setupAuthInfo(req);
     next();
@@ -15,111 +34,132 @@ const routes = ({ basePath, setupAuthInfo, cubejs, context }) => {
   // endpoint for sql runner
   router.post(`${basePath}/v1/runSql`, async (req, res) => {
     const { securityContext } = req;
-    const driver = cubejs.options.driverFactory({ securityContext });
+    const driver = await cubejs.options.driverFactory({ securityContext });
 
     try {
       const rows = await driver.query(req.body.query);
       res.json(rows);
     } catch (err) {
+      console.error(err);
+
       res.status(500).json({
-        error: err.message
+        code: 'run_sql_failed',
+        message: err.message || err,
       });
     }
   });
 
   router.get(`${basePath}/v1/test`, async (req, res) => {
     const { securityContext } = req;
-    const driver = cubejs.options.driverFactory({ securityContext });
+    const driver = await cubejs.options.driverFactory({ securityContext });
 
     try {
       await driver.testConnection();
 
       res.json({
-        message: 'OK',
+        code: 'ok',
+        message: 'Connection is OK',
       });
     } catch (err) {
+      console.error(err);
+
       res.status(500).json({
-        error: err.message
+        code: 'connection_test_failed',
+        message: err.message || err,
       });
     }
   });
 
   router.get(`${basePath}/v1/get-schema`, async (req, res) => {
     const { securityContext } = req;
-    const driver = cubejs.options.driverFactory({ securityContext });
+    const driver = await cubejs.options.driverFactory({ securityContext });
 
     try {
       const schema = await driver.tablesSchema();
       res.json(schema);
     } catch (err) {
+      console.error(err);
+
       if (driver.release) {
         await driver.release();
       }
 
       res.status(500).json({
-        error: err.message
+        code: 'get_schema_failed',
+        message: err.message
       });
     }
   });
 
   router.post(`${basePath}/v1/generate-dataschema`, async (req, res) => {
     const { securityContext } = req;
-    const { dataSource } = securityContext;
+    const { dataSourceId, userId, dbType } = securityContext;
 
-    const driver = cubejs.options.driverFactory({ securityContext });
+    const driver = await cubejs.options.driverFactory({ securityContext });
 
     try {
       const schema = await driver.tablesSchema();
-      const { tables = [], overWrite = false } = (req.body || {});
+      const { tables = [], overwrite = false, branch } = (req.body || {});
 
-      const ScaffoldingTemplate = await require('../schema-compiler/scaffolding/ScaffoldingTemplate');
-      const scaffoldingTemplate = new ScaffoldingTemplate(
-        schema,
-        driver,
-      );
+      const scaffoldingTemplateModule = await import('../schema_compiler/scaffolding/ScaffoldingTemplate.js');
+      const dialectType = ADAPTERS[dbType];
 
-      const files = scaffoldingTemplate.generateFilesByTableDefinitions(
-        tables,
-      );
+      const dialectModule = await import(`../schema_compiler/scaffolding/dialect/${dialectType}.js`);
 
-      const { rows: dataschemas } = await pgClient.query(
-        'SELECT name FROM public.dataschemas WHERE datasource_id=$1',
-        [dataSource.id]
-      );
+      const scaffoldingTemplate = new scaffoldingTemplateModule.default(schema, driver);
+      const normalizedTables = tables.map(table => table?.name?.replace('/', '.'));
 
-      const existedFiles = dataschemas.map(row => row.name);
+      let files = scaffoldingTemplate.generateFilesByTableNames(normalizedTables, { dbType, dialect: dialectModule });
 
-      const schemaUpdateQueries = files.map(file => {
-        if (!existedFiles.includes(file.fileName)) {
-          return pgClient.query(
-            'INSERT INTO public.dataschemas(datasource_id, name, code, user_id) VALUES ($1, $2, $3, $4)',
-            [dataSource.id, file.fileName, file.content, dataSource.user_id]
-          );
-        } else if (overWrite) {
-          return pgClient.query(
-            'UPDATE public.dataschemas SET code = $1 WHERE datasource_id = $2 AND name = $3',
-            [file.content, dataSource.id, file.fileName]
-          );
-        }
+      const dataSchemas = await findDataSchemas({
+        dataSourceId,
+        branch,
       });
+
+      const existedFiles = dataSchemas.map(row => row.name);
+
+      const filteredFiles = files.reduce((acc, file) => {
+        // if we don't want to overwrite existed schemas
+        if (!overwrite && existedFiles.includes(file.fileName)) {
+          return acc;
+        }
+
+        return [...acc, file];
+      }, []);
+
+      const schemaUpdateQueries = filteredFiles.map(file => createDataSchema({
+        datasource_id: dataSourceId,
+        name: file.fileName,
+        code: file.content,
+        user_id: userId,
+      }));
 
       if (schemaUpdateQueries.length) {
         await Promise.all(schemaUpdateQueries);
-        await updateJoins({ dataSource, files, relations: tables, scaffoldingTemplate }, context);
       }
 
       if (cubejs.compilerCache) {
         cubejs.compilerCache.prune();
       }
 
-      res.json({ status: 'ok' });
+      if (!files.length) {
+        return res.status(400).json({
+          code: 'generate_schema_no_new_files',
+          message: 'No new files created',
+        });
+      }
+
+      res.json({ code: 'ok', message: 'Generation finished' });
     } catch (err) {
+      console.error(err);
+
       if (driver.release) {
         await driver.release();
       }
 
       res.status(500).json({
-        error: err.message
+        code: 'generate_schema_error',
+        message: err.message || err,
       });
     }
   });
@@ -130,8 +170,11 @@ const routes = ({ basePath, setupAuthInfo, cubejs, context }) => {
         cubejs.compilerCache.prune();
       }
     } catch (err) {
-      return res.status(500).json({
-        error: err.message
+      console.error(err);
+
+      res.status(500).json({
+        code: 'code_compilation_error',
+        message: err.message
       });
     }
 
@@ -139,14 +182,14 @@ const routes = ({ basePath, setupAuthInfo, cubejs, context }) => {
 
     try {
       await compilerApi.metaConfig();
-      res.json({ status: 'ok' });
-    } catch (error) {
-      const { messages } = error;
-      res.json({ status: 'err', messages });
+      res.json({ code: 'ok', message: 'Validation is OK' });
+    } catch (err) {
+      console.error(err);
+
+      const { messages } = err;
+      res.status(500).json({ code: 'code_validation_error', message: messages?.toString() });
     }
   });
 
   return router;
 };
-
-module.exports = routes;

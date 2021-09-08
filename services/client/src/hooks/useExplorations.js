@@ -1,188 +1,102 @@
-import { useCallback, useMemo, useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 
-import { get, getOr } from 'unchanged';
-
-import nanoid from 'nanoid';
-
-import useLocation from 'wouter/use-location';
-import { useQuery, useMutation } from 'urql';
-import { message } from 'antd';
-
-import trackEvent from 'utils/trackEvent';
-
-import useAuthContext from './useAuthContext';
+import { useSetState } from 'ahooks';
+import useQuery from './useQuery';
+import useMutation from './useMutation';
 
 const newExplorationMutation = `
-  mutation NewExplorationMutation($input: CreateExplorationInput!) {
-    createExploration(input: $input) {
-      explorationEdge {
-        node {
-          id
-          slug
-        }
-      }
+  mutation ($object: explorations_insert_input!) {
+    insert_explorations_one(object: $object) {
+      id
+    }
+  }
+`;
+
+const genExplorationSqlMutation = `
+  mutation ($exploration_id: uuid!) {
+    gen_sql(exploration_id: $exploration_id) {
+      result
     }
   }
 `;
 
 const editExplorationQuery = `
-  query EditExplorationQuery($slug: String!, $rowsLimit: Int, $offset: Int) {
-    explorationBySlug(slug: $slug) {
+  query ($id: uuid!, $offset: Int, $limit: Int) {
+    explorations_by_pk(id: $id) {
       id
-      rowId
-      datasourceId
-      playgroundState
-      playgroundSettings
-      slug
-      dataCube(limit: $rowsLimit, offset: $offset) {
-        data
-        hitLimit
-        annotation {
-          skippedMembers
-          measures
-          dimensions
-          timeDimensions
-          segments
-        }
-        progress {
-          loading
-          stage
-          timeElapsed
-          error
-        }
-        resourcesAdvice {
-          CPURate
-          RAMRate
-        }
-      }
-      rawSql {
-        sql
-      }
-      createdAt
+      playground_state
+      playground_settings
+      created_at
+      updated_at
+    }
+    fetch_dataset(exploration_id: $id, offset: $offset, limit: $limit) {
+      annotation
+      data
+      query
+      progress
+      hitLimit
     }
   }
 `;
 
-// TODO: add isPublic and expirationTime for explorations: allow user to share their queries
-const explorationsQuery = `
-  query explorationsQuery($first: Int, $offset: Int) {
-    allExplorations(
-      orderBy: CREATED_AT_DESC,
-      first: $first,
-      offset: $offset
-    ) {
-      nodes {
-        id
-        rowId
-        datasourceId,
-        slug
-        createdAt
-      }
-    }
-  }
-`;
+const role = 'user';
+export default ({ params = {} }) => {
+  const [{ editId, offset, limit }, updateParams] = useSetState(params);
 
-export default ({ dataSourceId, editId, pauseQueryAll, pauseQueryCurrent, rowsLimit, offset }) => {
-  const [, setLocation] = useLocation();
-  const currentUser = useAuthContext();
-
-  const [createMutation, executeNewMutation] = useMutation(newExplorationMutation);
-  const mExecuteNewMutation = useCallback(exploration => {
-    const clientMutationId = nanoid();
-
-    trackEvent('Create exploration');
-
-    executeNewMutation({
-      input: {
-        clientMutationId,
-        exploration: {
-          ...exploration,
-          // inner postgraphile column
-          userId: currentUser.userId,
-          datasourceId: dataSourceId,
-        },
-      }
-    });
-  }, [dataSourceId, currentUser.userId, executeNewMutation]);
-
-  const [allData, executeQueryAll] = useQuery({
-    query: explorationsQuery,
-    pause: !!pauseQueryAll,
-    variables: {
-      fisrt: 50,
-    }
-  });
+  const [createMutation, execCreateMutation] = useMutation(newExplorationMutation, { role });
+  const [genSqlMutation, execGenSqlMutation] = useMutation(genExplorationSqlMutation, { role });
 
   useEffect(() => {
-    if (!pauseQueryAll) {
-      executeQueryAll();
-    }
-  }, [pauseQueryAll, executeQueryAll]);
+    updateParams({
+      editId: params.editId,
+      offset: params.offset,
+      limit: params.limit,
+    });
+  }, [params.editId, params.limit, params.offset, updateParams]);
 
-  const [currentData, executeQueryCurrent] = useQuery({
+  const [currentData, execQueryCurrent] = useQuery({
     query: editExplorationQuery,
     variables: {
-      slug: editId,
-      rowsLimit: rowsLimit ? parseInt(rowsLimit, 10) : undefined,
-      offset: offset ? parseInt(offset, 10) : undefined,
+      id: editId,
+      limit,
+      offset,
     },
     pause: true,
+  }, {
+    requestPolicy: 'cache-and-network',
+    role,
   });
 
-  const current = useMemo(
-    () => get('data.explorationBySlug', currentData) || {},
-    [currentData]
-  );
-
+  const current = useMemo(() => currentData.data?.explorations_by_pk || {}, [currentData.data]);
   const currentProgress = useMemo(
-    () => get('data.explorationBySlug.dataCube.progress', currentData) || {},
-    [currentData]
+    () => currentData.data?.fetch_dataset.progress || {},
+    [currentData.data]
   );
-
-  useEffect(() => {
-    if (editId && !pauseQueryCurrent) {
-      trackEvent('Query current exploration');
-      executeQueryCurrent();
-    }
-  }, [editId, executeQueryCurrent, pauseQueryCurrent]);
-
-  useEffect(() => {
-    if (currentData.error) {
-      message.error(currentData.error.message);
-      currentData.error = null;
-    }
-  }, [currentData.error, executeQueryCurrent]);
 
   useEffect(() => {
     if (currentProgress && currentProgress.loading) {
-      executeQueryCurrent({ requestPolicy: 'network-only' });
+      execQueryCurrent({ requestPolicy: 'network-only' });
     }
-  }, [currentProgress, executeQueryCurrent]);
-
-  const reset = useCallback(
-    (explorationId) => setLocation(`/d/explore/${dataSourceId}/${explorationId}`),
-    [dataSourceId, setLocation],
-  );
+  }, [currentProgress, execQueryCurrent]);
 
   useEffect(() => {
-    if (createMutation.data) {
-      const { slug } = getOr({}, 'createExploration.explorationEdge.node', createMutation.data);
-
-      reset(slug);
-      createMutation.data = null;
+    if (params.editId) {
+      execQueryCurrent();
     }
-  }, [createMutation.data, reset]);
+  }, [params.editId, execQueryCurrent]);
 
   return {
     current,
     currentProgress,
     queries: {
-      allData, executeQueryAll,
-      currentData, executeQueryCurrent,
+      currentData,
+      execQueryCurrent,
     },
     mutations: {
-      createMutation, mExecuteNewMutation,
+      genSqlMutation,
+      execGenSqlMutation,
+      createMutation,
+      execCreateMutation,
     },
-    reset,
   };
 };

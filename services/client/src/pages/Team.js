@@ -1,8 +1,8 @@
 import React, { useEffect, useCallback, useMemo } from 'react';
-import { Button, Icon, message } from 'antd';
-import { get } from 'unchanged';
+import { Button, Icon } from 'antd';
 
 import { useTranslation } from 'react-i18next';
+import { useSetState } from 'ahooks';
 
 import TeamTable from 'components/TeamTable';
 import PageInfo from 'components/PageInfo';
@@ -10,20 +10,26 @@ import Container from 'components/Container';
 import InviteTeamMemberModal from 'components/InviteTeamMemberModal';
 import TeamSettingsModal from 'components/TeamSettingsModal';
 
-import useLocation from 'wouter/use-location';
-
-import useTeam from 'hooks/useTeam';
-import useXState from 'hooks/useXState';
+import useLocation from 'hooks/useLocation';
+import useCheckResponse from 'hooks/useCheckResponse';
+import useTeams from 'hooks/useTeams';
+import useMembers from 'hooks/useMembers';
 import usePermissions from 'hooks/usePermissions';
+import useAppSettings from 'hooks/useAppSettings';
+import useCurrentTeamState from 'hooks/useCurrentTeamState';
 
 const Team = () => {
   const { t } = useTranslation();
   const [location, setLocation] = useLocation();
-  const basePath = '/d/team';
+  const { withAuthPrefix } = useAppSettings();
+  const basePath = withAuthPrefix('/team');
+  const { currentTeamState: currentTeam } = useCurrentTeamState();
 
-  const [state, updateState] = useXState({
-    visibleInviteModal: location.includes('/invite'),
-    visibleSettingsModal: location.includes('/settings'),
+  const isNewTeam = location.pathname.includes('/new');
+
+  const [state, updateState] = useSetState({
+    visibleInviteModal: location.pathname.includes('/invite'),
+    visibleSettingsModal: location.pathname.includes('/settings') || isNewTeam,
   });
 
   useEffect(
@@ -41,105 +47,119 @@ const Team = () => {
     updateState({ visibleSettingsModal: true });
   };
 
+  useEffect(() => {
+    if (isNewTeam) {
+      updateState({ visibleSettingsModal: true });
+    }
+  }, [isNewTeam, updateState]);
+
   const onModalClose = useCallback(() => {
     setLocation(basePath);
     updateState({
       visibleInviteModal: false,
       visibleSettingsModal: false
     });
-  }, [setLocation, updateState]);
+  }, [basePath, setLocation, updateState]);
 
   const {
-    currentTeamData,
     mutations: {
-      updateMutation, mExecUpdateMutation,
-      inviteMutation, mExecInviteMutation,
-      changeMemberRoleMutation, mExecChangeMemberRoleMutation,
-      toggleMemberStatusMutation, mExecToggleMemberStatusMutation,
-      removeTeamMemberMutation, mExecRemoveTeamMemberMutation
+      createMutation: createTeamMutation,
+      execCreateMutation: execCreateTeamMutation,
+      updateMutation: updateTeamMutation,
+      execUpdateMutation: execUpdateTeamMutation,
+    }
+  } = useTeams();
+
+  const {
+    all: members,
+    queries: {
+      execQueryAll,
     },
-  } = useTeam({});
+    mutations: {
+      updateMutation,
+      execUpdateMutation,
+      inviteMutation,
+      execInviteMutation,
+      deleteMutation,
+      execDeleteMutation,
+    }
+  } = useMembers({
+    params: {
+      teamId: currentTeam?.id,
+    },
+  });
   
-  const currentTeam = get('data.teamByRowId', currentTeamData);
-  const { members = [], name = '' } = currentTeam || {};
-  const isTeamExists = !!currentTeam;
+  const isTeamExists = !!currentTeam?.id;
 
-  useEffect(
-    () => {
-      if (toggleMemberStatusMutation.data) {
-        message.success('Member status has been updated');
-      } else if (toggleMemberStatusMutation.error) {
-        message.error(toggleMemberStatusMutation.error.message);
-      }
-    },
-    [toggleMemberStatusMutation]
-  );
-
-  useEffect(
-    () => {
-      if (changeMemberRoleMutation.data) {
-        message.success('Member role has updated');
-      } else if (changeMemberRoleMutation.error) {
-        message.error(changeMemberRoleMutation.error.message);
-      }
-    },
-    [changeMemberRoleMutation]
-  );
-
-  useEffect(
-    () => {
-      if (inviteMutation.data) {
-        message.success('New team member has been invited. Please provide the credentials to login');
-        onModalClose();
-      } else if (inviteMutation.error) {
-        message.error(inviteMutation.error.message);
-      }
-    },
-    [onModalClose, inviteMutation]
-  );
-
-  useEffect(
-    () => {
-      if (updateMutation.data) {
-        message.success('Team has been updated');
-        onModalClose();
-      } else if (updateMutation.error) {
-        message.error(updateMutation.error.message);
-      }
-    },
-    [onModalClose, updateMutation]
-  );
-
-  const onChange = (field, memberId, value) => {
-    if (field === 'teamRole') {
-      mExecChangeMemberRoleMutation(memberId, value);
-    } else if (field === 'active') {
-      mExecToggleMemberStatusMutation(memberId, value);
+  const onUpdate = (res) => {
+    if (res) {
+      execQueryAll();
     }
   };
 
-  useEffect(
-    () => {
-      if (removeTeamMemberMutation.data) {
-        message.success('Team member has been deleted');
-      } else if (removeTeamMemberMutation.error) {
-        message.error(removeTeamMemberMutation.error.message);
-      }
-    },
-    [removeTeamMemberMutation]
-  );
+  useCheckResponse(updateMutation, onUpdate, {
+    successMessage: t('Member updated'),
+  });
+
+  const closeModal = (res) => {
+    if (res) {
+      onModalClose();
+    }
+
+    onUpdate(res);
+  };
+
+  useCheckResponse(createTeamMutation, closeModal, {
+    successMessage: t('New team has been created'),
+  });
+
+  useCheckResponse(inviteMutation, closeModal, {
+    successMessage: t('New team member has been invited'),
+  });
+
+  useCheckResponse(deleteMutation, onUpdate, {
+    successMessage: t('Team member has been deleted'),
+  });
+
+  useCheckResponse(updateTeamMutation, closeModal, {
+    successMessage: t('Team has been updated'),
+  });
+
+  const onChange = (field, memberId, value) => {
+    execUpdateMutation({
+      pk_columns: memberId,
+      _set: {
+        roles: [value]
+      },
+    });
+  };
+
+  const onSave = (values) => {
+    if (isNewTeam) {
+      execCreateTeamMutation(values);
+    } else {
+      execUpdateTeamMutation({ 
+        pk_columns: { id: currentTeam?.id },
+        _set: values,
+      });
+    }
+  };
 
   const onRemove = memberId => {
-    mExecRemoveTeamMemberMutation(memberId);
+    execDeleteMutation({ id: memberId });
   };
 
   const { restrictScopes, fallback } = usePermissions({ scope: 'team' });
 
   const disableManagement = useMemo(() => restrictScopes.includes('userManagement'), [restrictScopes]);
-  const loading = inviteMutation.fetching ||  
-    changeMemberRoleMutation.fetching ||
-    toggleMemberStatusMutation.fetching ||
-    updateMutation.fetching;
+  const loading = inviteMutation.fetching ||  updateMutation.fetching || updateTeamMutation.fetching;
+
+  const onInvite = data => {
+    const { email } = data;
+    const teamId = currentTeam?.id;
+
+    return execInviteMutation({ teamId, email });
+  };
 
   if (fallback) {
     return fallback;
@@ -148,25 +168,25 @@ const Team = () => {
   return (
     <Container>
       <PageInfo
-        justify={disableManagement ? 'center' : 'left'}
-        title={`${name} ${t('Team')}`}
+        justify={disableManagement ? 'center' : 'start'}
+        title={`${currentTeam?.name || ''} ${t('Team')}`.trim()}
         description={(
           <>
             {!disableManagement && (
-              [
+              <>
                 <ul>
                   <li>Manage your Team</li>
                   <li>Grant roles and manage personal access</li>
-                </ul>,
-                <Button style={{ marginRight: 10 }} type="primary" size="small" shape="round" onClick={() => onInviteOpen()}>
+                </ul>
+                <Button style={{ marginRight: 10 }} disabled={!isTeamExists} type="primary" size="small" shape="round" onClick={() => onInviteOpen()}>
                   <Icon type="plus" />
                   {t('Invite a Team Member')}
-                </Button>,
+                </Button>
                 <Button type="primary" disabled={!isTeamExists} size="small" shape="round" onClick={() => onSettingsOpen()}>
                   <Icon type="setting" />
                   {t('Team Settings')}
                 </Button>
-              ]
+              </>
             )}
           </>
         )}
@@ -176,16 +196,16 @@ const Team = () => {
         key="invite"
         visible={state.visibleInviteModal}
         loading={loading}
-        onSave={mExecInviteMutation}
+        onSave={onInvite}
         onCancel={onModalClose}
         isTeamExists={isTeamExists}
       />
       <TeamSettingsModal
-        title={t('Team Settings')}
+        title={isNewTeam ? t('New Team') : t('Team Settings')}
         key="settings"
         visible={state.visibleSettingsModal}
         loading={loading}
-        onSave={mExecUpdateMutation}
+        onSave={onSave}
         onCancel={onModalClose}
         currentTeam={currentTeam}
       />

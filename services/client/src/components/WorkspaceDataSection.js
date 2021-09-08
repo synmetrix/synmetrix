@@ -1,13 +1,13 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import React, { useEffect, useMemo } from 'react';
 import PropTypes from 'prop-types';
+import { useSetState } from 'ahooks';
 
 import { Row, Col, Button, Icon, Collapse, Radio } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { CSVLink } from 'react-csv';
 import cx from 'classnames';
 
-import useXState from 'hooks/useXState';
 import usePermissions from 'hooks/usePermissions';
 
 import ComponentSwitcher from 'components/ComponentSwitcher';
@@ -48,7 +48,7 @@ const WorkspaceDataSection = (props) => {
     ...restProps
   } = props;
 
-  const [currState, updateState] = useXState({
+  const [currState, updateState] = useSetState({
     section: workspaceState.dataSection,
   });
 
@@ -95,7 +95,7 @@ const WorkspaceDataSection = (props) => {
         });
       }
 
-      if (progress.error) {
+      if (progress?.error) {
         messages.push({
           type: 'error',
           text: progress.error
@@ -352,7 +352,7 @@ WorkspaceDataSection.propTypes = {
   }),
   width: PropTypes.number,
   height: PropTypes.number,
-  explorationRowId: PropTypes.number,
+  explorationRowId: PropTypes.string,
   isActive: PropTypes.bool
 };
 

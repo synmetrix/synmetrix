@@ -1,72 +1,66 @@
-// const ServerCore = require('./src/serverCore');
-const ServerCore = require('@cubejs-backend/server-core');
-const pgConnectionString = require('pg-connection-string');
-const express = require('express');
+import ServerCore from '@cubejs-backend/server-core';
+import express from 'express';
 
-const jwt = require('jsonwebtoken');
+import jwt from 'jsonwebtoken';
+import JSum from 'jsum';
 
-const PostgresDriver = require('@cubejs-backend/postgres-driver');
-const AthenaDriver = require('@cubejs-backend/athena-driver');
-const BigQueryDriver = require('@cubejs-backend/bigquery-driver');
-const ClickHouseDriver = require('@cubejs-backend/clickhouse-driver');
-const MongobiDriver = require('@cubejs-backend/mongobi-driver');
-const MSSqlDriver = require('@cubejs-backend/mssql-driver');
-const MySqlDriver = require('@cubejs-backend/mysql-driver');
-const JSum = require('jsum');
+import DriverDependencies from '@cubejs-backend/server-core/dist/src/core/DriverDependencies.js';
 
-const routes = require('./src/routes');
-const pool = require('./src/utils/pgPool');
-const { dataSchemaFiles, findDataSource, getSchemaVersion } = require('./src/utils/dataSourceHelpers');
+import routes from './src/routes/index.js';
+import { fetchGraphQL } from './src/utils/graphql.js';
+import { dataSchemaFiles, findDataSource, getSchemaVersion } from './src/utils/dataSourceHelpers.js';
 
 const { CUBEJS_SECRET } = process.env;
-const MSSQL_DEFAULT_PORT = 1433;
 
 const app = express();
 
 app.use(express.json({ limit: '50mb', extended: true }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
-const logger = (msg, params) => {
-  const { queryKey, query, securityContext, cacheKey, sqlQuery, ...restParams } = params;
-  console.log(`${msg}: ${JSON.stringify(restParams)}`);
-};
-
-const context = {
-  pgClient: pool,
+const pushError = (req, error) => {
+  req.securityContext = { error };
+  return null;
 };
 
 const setupAuthInfo = async (req, auth) => {
   const { authorization } = req.headers;
   let jwtDecoded;
+  let error;
 
   try {
     jwtDecoded = jwt.verify(authorization, CUBEJS_SECRET);
   } catch (err) {
-    return {
-      error: '403: Permissions denied',
-    };
+    return pushError(req, err.message);
   }
 
-  const dataSourceId = parseInt(jwtDecoded.dataSourceId);
+  const { dataSourceId, userId } = jwtDecoded || {};
 
   if (!dataSourceId) {
-    return {
-      error: 'Provide dataSourceId',
-    };
+    error = 'Provide dataSourceId';
+
+    return pushError(req, error);
   }
 
-  const dataSource = await findDataSource({ dataSourceId }, context);
+  const dataSource = await findDataSource({ dataSourceId });
 
   if (!dataSource) {
-    return {
-      error: 'Not found',
-    };
+    error = `Source "${dataSourceId}" not found`;
+
+    return pushError(req, error);
   }
 
-  const schemaVersion = await getSchemaVersion({ dataSourceId }, context);
+  const schemaVersion = await getSchemaVersion({ dataSourceId });
   const dataSourceVersion = JSum.digest(dataSource, 'SHA256', 'hex');
+  const dbType = dataSource.db_type?.toLowerCase();
 
-  req.securityContext = { dataSourceId, dataSource, schemaVersion, dataSourceVersion };
+  req.securityContext = {
+    dataSourceId,
+    userId,
+    dataSource,
+    dbType,
+    schemaVersion,
+    dataSourceVersion,
+  };
 };
 
 const connParamValid = (port) => {
@@ -76,52 +70,69 @@ const connParamValid = (port) => {
   }
 };
 
-const driverFactory = ({ securityContext }) => {
-  const { dataSource } = securityContext;
-  let result;
+const driverError = (err) => {
+  console.error('Driver error:');
+
+  const throwError = () => {
+    throw new Error(err?.message || err);
+  };
+
+  return {
+    tablesSchema: throwError,
+    testConnection: throwError,
+  };
+};
+
+const driverFactory = async ({ securityContext }) => {
+  const { dataSource, dbType, error: securityError } = securityContext || {};
+
+  let dbParams = {};
+
+  if (!dataSource || !Object.keys(dataSource).length) {
+    return driverError({
+      message: 'Datasource not found',
+    });
+  }
+
+  try {
+    dbParams = JSON.parse(dataSource?.db_params);
+  } catch (err) {
+    return driverError(err);
+  }
 
   // clean empty/false keys because of sideeffects
-  let dbConfig = Object.keys(dataSource.db_params || {})
-    .filter(key => !!dataSource.db_params[key])
-    .reduce((res, key) => (res[key] = dataSource.db_params[key], res), {});
+  let dbConfig = Object.keys(dbParams || {})
+    .filter(key => !!dbParams[key])
+    .reduce((res, key) => (res[key] = dbParams[key], res), {});
 
-  if (dbConfig.port) {
-    connParamValid(dbConfig.port);
-  }
-
-  if (['redshift', 'postgres'].includes(dataSource.db_type)) {
-    if (dataSource.connection_string) {
-      dbConfig = pgConnectionString(dataSource.connection_string);
+  try {
+    if (dbConfig.port) {
+      connParamValid(dbConfig.port);
     }
 
-    result = new PostgresDriver(dbConfig);
+    if (securityError) {
+      throw securityError;
+    }
+  } catch (err) {
+    return driverError(err);
   }
 
-  switch (dataSource.db_type) {
-    case 'mysql':
-      result = new MySqlDriver(dbConfig);
-      break;
-    case 'athena':
-      result = new AthenaDriver(dbConfig);
-      break;
-    case 'mongobi':
-      result = new MongobiDriver(dbConfig);
-      break;
+  switch (dbType) {
     case 'bigquery':
-      result = new BigQueryDriver({
+      dbConfig = {
         ...dbConfig,
         credentials: { ...dbConfig.keyFile }
-      });
+      };
       break;
     case 'mssql':
-      result = new MSSqlDriver({
+      dbConfig = {
         ...dbConfig,
         server: dbConfig.host,
         port: parseInt(dbConfig.port) || MSSQL_DEFAULT_PORT
-      });
+      };
       break;
     case 'clickhouse':
-      result = new ClickHouseDriver({
+      dbConfig = {
         host: dbConfig.host,
         port: dbConfig.port,
         auth: `${dbConfig.user}:${dbConfig.password}`,
@@ -129,18 +140,28 @@ const driverFactory = ({ securityContext }) => {
         queryOptions: {
           database: dbConfig.database || 'default'
         },
-      });
+      };
       break;
     default:
       break;
   }
 
-  return result;
+  let driverModule;
+
+  try {
+    const dbDriver = DriverDependencies[dbType];
+    driverModule = await import(dbDriver);
+  } catch (err) {
+    return driverError(err);
+  }
+
+  const driverClass = new driverModule.default(dbConfig);
+  return driverClass;
 };
 
 const dbType = ({ securityContext }) => {
-  const { dataSource } = securityContext;
-  return dataSource.db_type;
+  const { dataSource = {} } = securityContext || {};
+  return dataSource.db_type?.toLowerCase() || 'none';
 };
 
 const basePath = `/cubejs/datasources`;
@@ -162,20 +183,18 @@ const options = {
   checkAuth: setupAuthInfo,
   apiSecret: CUBEJS_SECRET,
   basePath,
-  logger,
-  schemaVersion: ({ securityContext }) => securityContext.schemaVersion,
+  schemaVersion: ({ securityContext }) => securityContext?.schemaVersion,
   driverFactory,
   repositoryFactory: ({ securityContext }) => {
-    const { dataSourceId } = securityContext;
+    const { dataSourceId } = securityContext || {};
 
     return {
-      dataSchemaFiles: () => dataSchemaFiles({ dataSourceId }, context),
+      dataSchemaFiles: () => dataSchemaFiles({ dataSourceId }),
     };
   },
   telemetry: false,
   orchestratorOptions: {
     queryCacheOptions: {
-      renewalThreshold: 60,
       refreshKeyRenewalThreshold: 45,
       backgroundRenew: false,
     },
@@ -184,7 +203,7 @@ const options = {
 
 const cubejs = new ServerCore(options);
 
-app.use(routes({ basePath, setupAuthInfo, cubejs, context }));
+app.use(routes({ basePath, setupAuthInfo, cubejs }));
 
 cubejs.initApp(app);
 app.listen(4000);

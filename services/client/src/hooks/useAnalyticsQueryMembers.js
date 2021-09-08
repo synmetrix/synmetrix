@@ -1,8 +1,6 @@
 import { useMemo } from 'react';
 import { getTitle } from './usePlayground';
 
-import { columnToFeature } from 'hooks/useModelDescription';
-
 const useAnalyticsQueryMembers = ({ selectedQueryMembers, settings = {} }) => {
   const baseMembers = useMemo(
     () => {
@@ -22,10 +20,7 @@ const useAnalyticsQueryMembers = ({ selectedQueryMembers, settings = {} }) => {
 
       const index = members.reduce((acc, curr) => ({
         ...acc,
-        [curr.name]: {
-          ...curr,
-          featureType: columnToFeature[curr.type], 
-        },
+        [curr.name]: curr,
       }), {});
 
       return {

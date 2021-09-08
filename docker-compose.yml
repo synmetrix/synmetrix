@@ -3,21 +3,42 @@ version: '3.8'
 services:
   redis:
     image: redis:5.0.8
-    restart: always
     networks:
       - mlcraft_default
 
-  postgraphile:
-    restart: always
+  actions:
+    image: ${REGISTRY_HOST}/mlcraft/hasura-actions:latest
     build:
-      context: ./services/postgraphile
+      context: ./services/actions/
     networks:
       - mlcraft_default
 
   cubejs:
-    restart: always
+    image: ${REGISTRY_HOST}/mlcraft/cubejs:latest
     build:
       context: ./services/cubejs
+    networks:
+      - mlcraft_default
+
+  hasura:
+    image: ${REGISTRY_HOST}/mlcraft/hasura:latest
+    build:
+      context: ./services/hasura
+    volumes:
+       - ./services/hasura/migrations:/hasura-migrations
+       - ./services/hasura/metadata:/hasura-metadata
+       - ./services/hasura/seeds:/seeds
+    environment:
+      ENABLE_TELEMETRY: "false"
+    networks:
+      - mlcraft_default
+
+  hasura_plus:
+    image: ${REGISTRY_HOST}/mlcraft/hasura-plus:latest
+    build:
+      context: ./scripts/containers/hasura_backend_plus
+    volumes:
+       - ./scripts/containers/hasura_backend_plus/storage-rules/rules.yaml:/app/custom/storage-rules/rules.yaml
     networks:
       - mlcraft_default
 

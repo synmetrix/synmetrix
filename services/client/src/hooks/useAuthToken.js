@@ -1,52 +1,48 @@
-import { useEffect } from 'react';
+import { useCallback } from 'react';
 
 import {
-  atom,
   useRecoilState,
-  selector,
 } from 'recoil';
 
-import { saveAuthToken, removeAuthToken, getAuthToken } from '../utils/cookies';
-
-export const tokenStateAtom = atom({
-  key: 'tokenState',
-  default: getAuthToken(),
-});
-
-export const currentUserTokenSelector = selector({
-  key: 'currentUserTokenSelector',
-  get: ({ get }) => get(tokenStateAtom),
-  set: ({ set }, newToken) => {
-    removeAuthToken();
-    set(tokenStateAtom, newToken);
-
-    if (newToken) {
-      saveAuthToken(newToken);
-    } else {
-      saveAuthToken(null);
-    }
-  }
-});
-
-export const userStateAtom = atom({
-  key: 'userState',
-  default: null,
-});
+import { currentToken, currentRefreshToken } from '../recoil/currentUser';
+import useLocation from './useLocation';
+import useAuth from './useAuth';
+import useAppSettings from './useAppSettings';
+import useCurrentTeamState from './useCurrentTeamState';
 
 export default () => {
-  const [authToken, setAuthToken] = useRecoilState(currentUserTokenSelector);
-  const [userState, setUserState] = useRecoilState(userStateAtom);
+  const [authToken, setAuthToken] = useRecoilState(currentToken);
+  const [refreshToken, setRefreshToken] = useRecoilState(currentRefreshToken);
+  const { withAuthPrefix } = useAppSettings();
+  const { setCurrentTeamState } = useCurrentTeamState();
 
-  useEffect(() => {
-    if (!authToken) {
-      setUserState(null);
-    }
-  }, [authToken, setUserState]);
+  const { logout } = useAuth();
+  const [, setLocation] = useLocation();
+
+  const doAuth = (jwtTokenValue, refreshTokenValue) => {
+    setAuthToken(jwtTokenValue);
+    setRefreshToken(refreshTokenValue);
+    setLocation(withAuthPrefix('/sources'));
+  };
+
+  const cleanTokens = useCallback(() => {
+    setAuthToken(null);
+    setRefreshToken(null);
+  }, [setAuthToken, setRefreshToken]);
+
+  const doLogout = useCallback(() => {
+    logout.run();
+    cleanTokens();
+    setCurrentTeamState(null);
+  }, [cleanTokens, logout, setCurrentTeamState]);
 
   return {
     authToken,
     setAuthToken,
-    userState,
-    setUserState,
+    refreshToken,
+    setRefreshToken,
+    doAuth,
+    doLogout,
+    cleanTokens,
   };
 };

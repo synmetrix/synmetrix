@@ -1,4 +1,4 @@
-const crypto = require('crypto');
+import crypto from 'crypto';
 
 const createMd5Hex = (obj) => {
   const source = JSON.stringify(obj);
@@ -7,4 +7,4 @@ const createMd5Hex = (obj) => {
   return hex;
 };
 
-module.exports = createMd5Hex;
+export default createMd5Hex;

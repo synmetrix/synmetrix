@@ -1,98 +1,89 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { Form, Icon, Input, Button } from 'antd';
+import React, { useState } from 'react';
 
-import useAuth from 'hooks/useAuth';
-import useAuthToken from 'hooks/useAuthToken';
+import { Button } from 'antd';
+import { useTranslation } from 'react-i18next';
+import { Link } from 'react-router-dom';
 
-import styles from './Login.module.css';
+import useAuthToken from '../hooks/useAuthToken';
+import useAuth from '../hooks/useAuth';
+import SimpleForm from '../components/SimpleForm';
 
-const SignUp = props => {
-  const { 
-    mutations: {
-      signUpMutation,
-      execSignUpMutation,
-    }
-  } = useAuth();
+import s from './Login.module.css';
 
-  const { setAuthToken } = useAuthToken();
+const SignUp = () => {
+  const { doAuth } = useAuthToken();
+  const { register } = useAuth();
 
-  const submit = e => {
-    e.preventDefault();
+  const { t } = useTranslation();
+  const [message, setMessage] = useState();
 
-    props.form.validateFields((err, input) => {
-      if (!err) {
-        setAuthToken(null);
-        execSignUpMutation({ input });
-      }
-    });
+  const formConfig = {
+    email: {
+      label: t('Email'),
+      required: true,
+      type: 'string',
+      span: 24,
+      placeholder: t('Your Email'),
+    },
+    password: {
+      label: t('Password'),
+      required: true,
+      display: 'text',
+      type: 'password',
+      span: 24,
+      placeholder: t('Your Password'),
+    },
   };
 
-  const { form } = props;
-  const { getFieldDecorator } = form;
-  const errors = signUpMutation?.error?.graphQLErrors || [];
+  const handleSubmit = async (values) => {
+    const res = await register.run(values);
+
+    if (res.statusCode && res.statusCode !== 200) {
+      setMessage(res.message);
+    } else {
+      setMessage(null);
+      doAuth(res.jwt_token, res.refresh_token);
+    }
+  };
+
+  const layout = {
+    labelCol: { span: 0 },
+    wrapperCol: { span: 24 },
+  };
 
   return (
-    <div className={styles.loginContainer}>
-      <header className={styles.formHeader}>MLCraft</header>
-      <Form onSubmit={submit} className="login-form">
-        <Form.Item>
-          {getFieldDecorator('email', {
-            rules: [
-              { required: true, message: 'Email is required' },
-              {
-                type: 'email',
-                message: 'Email is not valid',
-              },
-            ],
-          })(<Input prefix={<Icon type="mail" style={{ color: 'rgba(0,0,0,.25)' }} />} placeholder="Email" />)}
-        </Form.Item>
-        <Form.Item>
-          {getFieldDecorator('name', {
-            rules: [{ required: false }],
-          })(<Input prefix={<Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />} placeholder="Name" />)}
-        </Form.Item>
-        <Form.Item>
-          {getFieldDecorator('password', {
-            rules: [{ required: true, message: 'Password is required!' }],
-          })(
-            <Input
-              prefix={<Icon type="lock" style={{ color: 'rgba(0,0,0,.25)' }} />}
-              type="password"
-              placeholder="Password"
-            />
-          )}
-        </Form.Item>
-        <Form.Item>
-          {getFieldDecorator('passwordConfirm', {
-            rules: [{ required: true, message: 'Password Confirmation is required' }],
-          })(
-            <Input
-              prefix={<Icon type="lock" style={{ color: 'rgba(0,0,0,.25)' }} />}
-              type="password"
-              placeholder="Password confirmation"
-            />
-          )}
-        </Form.Item>
-        <Form.Item>
-          <div className={styles.loginFormButtonWrapper}>
-            <Button type="primary" htmlType="submit" size="large">
-              Sign Up
+    <div className={s.container}>
+      <div className={s.formContainer}>
+        <header className={s.formHeader}>MLCraft / Sign Up</header>
+
+        <SimpleForm
+          config={formConfig}
+          onSubmit={handleSubmit}
+          submitText={t('Sign Up')}
+          style={{ width: '100%' }}
+          labelAlign="left"
+          size="large"
+          loading={register.loading}
+          {...layout}
+        />
+
+        {message && <div style={{ textAlign: 'center', color: 'red' }}>{message}</div>}
+
+        <div className={s.formFooter}>
+          <Link to="/login">
+            <Button block type="default" size="large" loading={register.loading}>
+              Login
             </Button>
-          </div>
-        </Form.Item>
-      </Form>
-      {!!errors.length && <div style={{ textAlign: 'center', color: 'red' }}>{errors.join(',')}</div>}
+          </Link>
+        </div>
+      </div>
     </div>
   );
 };
 
 SignUp.propTypes = {
-  form: PropTypes.object.isRequired,
 };
 
 SignUp.defaultProps = {};
 
-const WrappedLogin = Form.create({ name: 'normal_login' })(SignUp);
-
-export default WrappedLogin;
+export default SignUp;

@@ -10,9 +10,9 @@ services:
        - 5435:5432
     volumes:
       - pgstorage-data:/var/lib/postgresql/data
-      - ./etc/schema.sql:/docker-entrypoint-initdb.d/00-schema.sql
       - ./etc/postgres.conf:/var/lib/postgresql/data/postgresql.conf
     env_file:
+      - .env
       - .stage.env
     networks:
       - mlcraft_default
@@ -34,22 +34,10 @@ services:
     environment:
       CLIENT_MAX_BODY_SIZE: 5m
 
-  postgraphile:
-    image: ${REGISTRY_HOST}/mlcraft/graphql-server:latest
-    deploy:
-      placement:
-        constraints: [node.role == manager]
+  cubejs:
     command: yarn start
     env_file:
-      - .stage.env
-    environment:
-      VIRTUAL_HOST1: ${PROTOCOL:-http}://api.${DOMAIN}/graphql -> :5000/graphql
-      VIRTUAL_HOST2: ${WS_PROTOCOL:-ws}://api.${DOMAIN}/graphql -> :5000/graphql
-      VIRTUAL_HOST3: ${PROTOCOL:-http}://api.${DOMAIN}/explorer -> :5000/graphiql
-
-  cubejs:
-    image: ${REGISTRY_HOST}/mlcraft/cubejs-server:latest
-    env_file:
+      - .env
       - .stage.env
 
   client:
@@ -59,12 +47,39 @@ services:
         constraints: [node.role == manager]
     build:
       context: ./services/client/
+      args:
+        NODE_ENV: test
     environment:
-      GRAPHQL_SERVER_URL: ${PROTOCOL:-http}://api.${DOMAIN}/graphql
-      GRAPHQL_WS_URL: ${WS_PROTOCOL:-ws}://api.${DOMAIN}/graphql
       VIRTUAL_HOST: ${PROTOCOL:-http}://app.${DOMAIN} -> :80
+      GRAPHQL_SERVER_URL: ${PROTOCOL:-http}://api.${DOMAIN}/v1/graphql
+      GRAPHQL_WS_URL: ${WS_PROTOCOL:-ws}://api.${DOMAIN}/v1/graphql
+      GRAPHQL_PLUS_SERVER_URL: ${WS_PROTOCOL:-http}://api-plus.${DOMAIN}
     networks:
       - mlcraft_default
+
+  hasura:
+    env_file:
+      - .env
+      - .stage.env
+    environment:
+      VIRTUAL_HOST1: ${PROTOCOL:-http}://api.${DOMAIN} -> :8080
+      VIRTUAL_HOST2: ${WS_PROTOCOL:-ws}://api.${DOMAIN} -> :8080
+      HASURA_GRAPHQL_ENABLE_CONSOLE: "true" 
+
+  hasura_plus:
+    env_file:
+      - .env
+      - .stage.env
+    environment:
+      VIRTUAL_HOST: ${PROTOCOL:-http}://api-plus.${DOMAIN} -> :3000; client_max_body_size 5m;
+      SERVER_URL: ${PROTOCOL:-http}://api-plus.${DOMAIN}
+      REDIRECT_URL_SUCCESS: ${PROTOCOL:-http}://app.${DOMAIN}/callback
+      REDIRECT_URL_ERROR: ${PROTOCOL:-http}://app.${DOMAIN}/callback
+
+  actions:
+    env_file:
+      - .env
+      - .stage.env
 
 volumes:
   pgstorage-data:

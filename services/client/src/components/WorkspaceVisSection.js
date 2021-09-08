@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 
 import { Button, Collapse } from 'antd';
@@ -8,15 +8,13 @@ import cx from 'classnames';
 import ExploreVisualizations from 'components/ExploreVisualizations';
 import SavePinnedItemButton from 'components/SavePinnedItemButton';
 
-import useXState from 'hooks/useXState';
-
 import s from './ExploreWorkspace.module.css';
 
 const { Panel } = Collapse;
 
 const WorkspaceVisSection = (props) => {
   const { t } = useTranslation();
-  const [sectionState, _, setSectionState] = useXState({
+  const [sectionState, setSectionState] = useState({
     spec: {},
     tabsConfig: {},
     formConfig: [],
@@ -95,7 +93,7 @@ WorkspaceVisSection.propTypes = {
     segments: PropTypes.array,
     filters: PropTypes.array,
   }).isRequired,
-  explorationRowId: PropTypes.number,
+  explorationRowId: PropTypes.string,
   isQueryChanged: PropTypes.bool,
   state: PropTypes.shape({
     filtersCount: PropTypes.number,

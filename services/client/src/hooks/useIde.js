@@ -2,7 +2,7 @@ import { useMemo, useCallback, useEffect } from 'react';
 import { message } from 'antd';
 
 import { get, getOr } from 'unchanged';
-import useLocation from 'wouter/use-location';
+import useLocation from 'hooks/useLocation';
 
 import useTabs from 'hooks/useTabs';
 import useDataSources from 'hooks/useDataSources';
@@ -67,7 +67,7 @@ export default ({ dataSourceId, dataSchemaName }) => {
   const changePath = useCallback((activeKey) => {
     const basePath = ['/d/schemas', dataSourceId, activeKey].filter(v => !!v).join('/');
 
-    if (location !== basePath) {
+    if (location.pathname !== basePath) {
       setLocation(basePath);
     }
   },

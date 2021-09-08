@@ -1,9 +1,11 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import React, { useCallback, useMemo, useEffect } from 'react';
 import PropTypes from 'prop-types';
+import { useTrackedEffect } from 'ahooks';
 
 import { Row, Col, Icon, Collapse } from 'antd';
 
+import equals from 'utils/equals';
 import ErrorFound from 'components/ErrorFound';
 import ExploreCubes from 'components/ExploreCubes';
 
@@ -15,8 +17,9 @@ import useTabs from 'hooks/useTabs';
 import useDimensions from 'hooks/useDimensions';
 import useExploreWorkspace from 'hooks/useExploreWorkspace';
 import usePlayground from 'hooks/usePlayground';
-import useDataSchemas from 'hooks/useDataSchemas';
+import useSources from 'hooks/useSources';
 import usePermissions from 'hooks/usePermissions';
+import useCurrentUserState from 'hooks/useCurrentUserState';
 
 import s from './ExploreWorkspace.module.css';
 
@@ -25,11 +28,12 @@ const DEFAULT_ACTIVE_TAB = 0;
 const ExploreWorkspace = (props) => {
   const [, size] = useDimensions(document.querySelector('#data-view'));
   const { width } = size;
+  const { currentUserState: currentUser } = useCurrentUserState();
 
   const {
     header,
-    dataSource,
-    loading,
+    source: dataSource,
+    meta,
     params: {
       explorationId,
       tabId,
@@ -56,9 +60,9 @@ const ExploreWorkspace = (props) => {
       setOrderBy,
     },
     dispatchSettings
-  } = usePlayground({ dataSource, editId: explorationId });
+  } = usePlayground({ dataSourceId: dataSource.id, editId: explorationId, meta });
 
-  const explorationRowId = useMemo(() => exploration && exploration.rowId, [exploration]);
+  const explorationRowId = useMemo(() => exploration?.id, [exploration]);
 
   const {
     collapseState,
@@ -69,15 +73,34 @@ const ExploreWorkspace = (props) => {
 
   const {
     mutations: {
-      validateMutation, mExecValidateMutation
+      validateMutation,
+      execValidateMutation,
     }
-  } = useDataSchemas({ dataSourceId: dataSource.rowId });
+  } = useSources({ 
+    pauseQueryAll: true,
+  });
+
+  useTrackedEffect((changes, previousDeps, currentDeps) => {
+    const prevData = previousDeps?.[0];
+    const currData = currentDeps?.[0];
+
+    let dataDiff = false;
+    if (!prevData || !currData) {
+      dataDiff = false;
+    } else {
+      dataDiff = !equals(prevData, currData);
+    }
+
+    if (dataDiff) {
+      execValidateMutation({ id: dataSource.id });
+    }
+  }, [currentUser.dataschemas, execValidateMutation]);
 
   useEffect(() => {
-    if (dataSource.rowId) {
-      mExecValidateMutation();
+    if (dataSource.id) {
+      execValidateMutation({ id: dataSource.id });
     }
-  }, [dataSource.rowId, mExecValidateMutation]);
+  }, [dataSource.id, execValidateMutation]);
 
   const onRunQuery = (e) => {
     runQuery();
@@ -117,10 +140,6 @@ const ExploreWorkspace = (props) => {
 
   const { fallback: cubesFallback } = usePermissions({ scope: 'explore/workspace/cubes' });
   const { fallback: filtersFallback } = usePermissions({ scope: 'explore/workspace/filters' });
-
-  if (!loading && (!dataSource || !dataSource.rowId)) {
-    return <ErrorFound status={404} />;
-  }
 
   if (Object.keys(dataSource).length && !availableQueryMembers) {
     return <ErrorFound status={500} />;
@@ -229,13 +248,15 @@ ExploreWorkspace.propTypes = {
     tabId: PropTypes.string,
     chartId: PropTypes.string,
   }).isRequired,
-  dataSource: PropTypes.object,
+  source: PropTypes.object,
+  meta: PropTypes.array,
   loading: PropTypes.bool,
   header: PropTypes.element,
 };
 
 ExploreWorkspace.defaultProps = {
-  dataSource: {},
+  source: {},
+  meta: {},
   loading: false,
   header: null,
 };

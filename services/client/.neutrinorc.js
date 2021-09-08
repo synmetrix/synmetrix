@@ -6,8 +6,10 @@ const webpack = require('webpack');
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
 const __DEV__ = process.env.NODE_ENV !== 'production';
-const GRAPHQL_SERVER_URL = __DEV__ ? '/graphql' : process.env.GRAPHQL_SERVER_URL;
-const GRAPHQL_WS_URL = __DEV__ ? 'ws://localhost:5000/graphql' : process.env.GRAPHQL_WS_URL;
+const GRAPHQL_SERVER_URL = process.env.GRAPHQL_SERVER_URL || 'http://localhost:8080/v1/graphql';
+const GRAPHQL_PLUS_SERVER_URL = process.env.GRAPHQL_PLUS_SERVER_URL || 'http://localhost:8081';
+const GRAPHQL_WS_URL = process.env.GRAPHQL_WS_URL || 'ws://localhost:8080/v1/graphql';
+const AUTH_PREFIX = process.env.AUTH_PREFIX || '/~';
 
 module.exports = {
   use: [
@@ -49,9 +51,6 @@ module.exports = {
       },
       devServer: {
         port: 3000,
-        proxy: {
-          '/graphql': 'http://localhost:5000/',
-        },
       },
     }),
     compileLoader({
@@ -96,7 +95,9 @@ module.exports = {
       neutrino.config.plugin('env').use(webpack.DefinePlugin, [{
         'process.env': {
           GRAPHQL_SERVER_URL: JSON.stringify(GRAPHQL_SERVER_URL),
+          GRAPHQL_PLUS_SERVER_URL: JSON.stringify(GRAPHQL_PLUS_SERVER_URL),
           GRAPHQL_WS_URL: JSON.stringify(GRAPHQL_WS_URL),
+          AUTH_PREFIX: JSON.stringify(AUTH_PREFIX),
           __DEV__: JSON.stringify(__DEV__),
         },
       }]);

@@ -16,32 +16,32 @@ import useFormItems from 'hooks/useFormItems';
 import FormTiles from './FormTiles';
 
 const defaultFormItems = {
-  'dbParams.database': {
+  'db_params.database': {
     label: 'Database Name',
     required: true,
     placeholder: 'ML_dbname',
   },
-  'dbParams.host': {
+  'db_params.host': {
     label: 'Host',
     required: true,
     placeholder: 'db1.ao.us-west-1.rds.amazonaws.com',
   },
-  'dbParams.port': {
+  'db_params.port': {
     label: 'Port',
     required: true,
     placeholder: '5432',
   },
-  'dbParams.user': {
+  'db_params.user': {
     label: 'User',
     required: true,
     placeholder: 'db_username',
   },
-  'dbParams.password': {
+  'db_params.password': {
     label: 'Password',
-    required: true,
+    required: false,
     placeholder: 'db_password',
   },
-  'dbParams.ssl': {
+  'db_params.ssl': {
     display: 'checkbox',
     label: 'Use SSL',
     value: 'yes',
@@ -52,59 +52,59 @@ const defaultFormItems = {
 const connectionFormItems = {
   default: defaultFormItems,
   athena: {
-    'dbParams.awsKey': {
+    'db_params.awsKey': {
       label: 'Access Key',
       required: true,
       placeholder: 'AKIAJAFN53AS4NJWX1XJ',
     },
-    'dbParams.awsSecret': {
+    'db_params.awsSecret': {
       label: 'Secret Access Key',
       required: true,
       placeholder: '0RPVIfawtz2oAdt9gsz/UjTGsgO1ckwjSRvGH0pg',
     },
-    'dbParams.awsRegion': {
+    'db_params.awsRegion': {
       label: 'Region',
       required: true,
       placeholder: 'us-west-1',
     },
-    'dbParams.awsS3OutputLocation': {
+    'db_params.awsS3OutputLocation': {
       label: 'S3 Output Location',
       required: true,
       placeholder: 's3://your-s3-bucket-for-query-results/',
     },
   },
   bigquery: {
-    'dbParams.keyFile': {
+    'db_params.keyFile': {
       display: 'file',
       label: 'Keyfile',
       required: true,
       placeholder: 'Attach the file credentials, please',
       onChange: (updateState, form, fileJson) => {
-        form.setFieldsValue({ 'dbParams.keyFile': fileJson, 'dbParams.projectId': fileJson.project_id });
+        form.setFieldsValue({ 'db_params.keyFile': fileJson, 'db_params.projectId': fileJson.project_id });
 
         updateState({
-          'hasFeedback.dbParams.keyFile': true,
-          'hasFeedback.dbParams.projectId': true,
+          'hasFeedback.db_params.keyFile': true,
+          'hasFeedback.db_params.projectId': true,
         });
       }
     },
-    'dbParams.projectId': {
+    'db_params.projectId': {
       label: 'Project Id',
       disabled: true
     }
   },
   mongobi: {
     ...defaultFormItems,
-    'dbParams.ca': {
+    'db_params.ca': {
       label: 'SSL CA',
     },
-    'dbParams.cert': {
+    'db_params.cert': {
       label: 'SSL CERT',
     },
-    'dbParams.ciphers': {
+    'db_params.ciphers': {
       label: 'SSL CIPHERS',
     },
-    'dbParams.passphrase': {
+    'db_params.passphrase': {
       label: 'SSL PASSPHRASE',
     },
   },
@@ -130,7 +130,7 @@ const DataSourceForm = React.forwardRef((props, ref) => {
     ...restProps
   } = props;
 
-  const { dbType } = initialValues;
+  const { db_type: dbType } = initialValues;
 
   const config = useMemo(
     () => connectionFormItems[dbType && dbType.toLowerCase()] || connectionFormItems.default,
@@ -160,8 +160,8 @@ const DataSourceForm = React.forwardRef((props, ref) => {
         </Col>
         <Col span={12}>
           <Form.Item label="Type" required>
-            {form.getFieldDecorator('dbType', {
-              initialValue: initialValues.dbType,
+            {form.getFieldDecorator('db_type', {
+              initialValue: initialValues.db_type,
               rules: [{ required: true }]
             })(<Input style={{ textTransform: 'lowercase' }} disabled />)}
           </Form.Item>

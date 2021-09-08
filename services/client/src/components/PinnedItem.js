@@ -1,22 +1,25 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 
-import { get } from 'unchanged';
 import { useTranslation } from 'react-i18next';
-import { Link } from 'wouter';
+import { Link } from 'react-router-dom';
 
-import { Icon, Popconfirm, message } from 'antd';
+import { Icon, Popconfirm } from 'antd';
 import Loader from 'components/Loader';
 import Chart from 'components/Chart';
 import EditableField from 'components/EditableField';
 
+import useAppSettings from 'hooks/useAppSettings';
+import useCheckResponse from 'hooks/useCheckResponse';
 import useDimensions from 'hooks/useDimensions';
 import usePinnedItems from 'hooks/usePinnedItems';
+import useExplorations from 'hooks/useExplorations';
 
 import s from './PinnedItem.module.css';
 
 const PinnedItem = ({ rowId, updateDashboard }) => {
   const [, size] = useDimensions(document.querySelector(`#pinned-item-${rowId}`));
+  const { withAuthPrefix } = useAppSettings();
 
   const { t } = useTranslation();
   const [renaming, setRenaming] = useState(false);
@@ -25,62 +28,91 @@ const PinnedItem = ({ rowId, updateDashboard }) => {
     current,
     queries: {
       currentData: {
-        fetching: loadingPinnedItem
-      }
+        fetching: loadingPinnedItem,
+      },
+      execQueryCurrent,
     },
     mutations: {
-      deleteMutation, mExecuteDeleteMutation,
-      updateMutation, mExecUpdateMutation
+      deleteMutation, execDeleteMutation,
+      updateMutation, execUpdateMutation
     }
-  } = usePinnedItems({ rowId });
+  } = usePinnedItems({
+    params: {
+      editId: rowId,
+    },
+  });
+
+  const {
+    queries: {
+      currentData: explorationData,
+    },
+  } = useExplorations({
+    params: {
+      editId: current?.exploration?.id,
+    },
+  });
+
+  const onUpdate = () => {
+    setRenaming(false);
+    execQueryCurrent();
+  };
+
+  const onDelete = (res) => {
+    if (res) {
+      updateDashboard();
+    }
+  };
+
+  useCheckResponse(updateMutation, onUpdate, {
+    successMessage: t('Successfully updated'),
+  });
+
+  useCheckResponse(deleteMutation, onDelete, {
+    successMessage: t('Successfully deleted'),
+  });
 
   const onConfirmDelete = () => {
-    mExecuteDeleteMutation(rowId);
+    execDeleteMutation({ id: rowId });
   };
 
   const onRename = (id, value) => {
-    if (value.name !== current.name) {
-      setRenaming(true);
-      mExecUpdateMutation(id, value);
+    const { name } = value || {};
+
+    if (current?.name && name === current?.name) {
+      return null;
     }
+
+    setRenaming(true);
+
+    return execUpdateMutation({ 
+      pk_columns: {
+        id,
+      },
+      _set: {
+        name,
+      },
+    });
   };
 
-  useEffect(() => {
-    if (deleteMutation.error) {
-      message.error(deleteMutation.error.message);
-    } else if (deleteMutation.data && updateDashboard) {
-      updateDashboard();
-      deleteMutation.data = null;
-    }
-  }, [deleteMutation.data, deleteMutation.error, updateDashboard]);
+  const slug = current?.exploration?.id;
+  const datasourceId = current?.exploration?.datasource_id;
+  const type = current?.spec?.type;
 
-  useEffect(() => {
-    if (updateMutation.error) {
-      message.error(updateMutation.error.message);
-    } else if (updateMutation.data) {
-      setRenaming(false);
-      updateMutation.data = null;
-    }
-  }, [updateMutation.data, updateMutation.error]);
+  let link = withAuthPrefix(`/explore/${datasourceId}/${slug}`);
 
-  const slug = get('explorationByExplorationId.slug', current);
-  const datasourceId = get('explorationByExplorationId.datasourceId', current);
-
-  const type = get('spec.type', current);
-  let link = `/d/explore/${datasourceId}/${slug}`;
   if (type === 'chart') {
-    link = `${link}?chart=${current.rowId}`;
+    link = `${link}?chart=${current.id}`;
   }
 
   return (
     <div className={s.pinnedItem} id={`pinned-item-${rowId}`}>
       <div className={s.header}>
-        {current.id && (
+        {current?.id && (
           <Loader spinning={renaming}>
             <EditableField
-              currentValue={current.name}
+              currentValue={current?.name || ''}
               renameFunc={onRename}
-              id={current.id}
+              id={current?.id}
               style={{ minWidth: 0 }}
             />
           </Loader>
@@ -88,15 +120,11 @@ const PinnedItem = ({ rowId, updateDashboard }) => {
         <div>
           {datasourceId && slug && (
             <>
-              <Link href={`/d/charts/${rowId}`}>
-                <a style={{ marginRight: 10 }}>
-                  <Icon type="export" />
-                </a>
+              <Link to={withAuthPrefix(`/charts/${rowId}`)} style={{ marginRight: 10 }}>
+                <Icon type="export" />
               </Link>
-              <Link href={link}>
-                <a style={{ marginRight: 10 }}>
-                  <Icon type="eye" />
-                </a>
+              <Link to={link} style={{ marginRight: 10 }}>
+                <Icon type="eye" />
               </Link>
             </>
           )}
@@ -111,13 +139,18 @@ const PinnedItem = ({ rowId, updateDashboard }) => {
           </Popconfirm>
         </div>
       </div>
-      <Chart current={current} loading={loadingPinnedItem} size={size} />
+      <Chart
+        spec={current?.spec}
+        values={explorationData?.data?.fetch_dataset?.data}
+        loading={loadingPinnedItem || explorationData.fetching}
+        size={size}
+      />
     </div>
   );
 };
 
 PinnedItem.propTypes = {
-  rowId: PropTypes.number.isRequired,
+  rowId: PropTypes.string.isRequired,
   updateDashboard: PropTypes.func,
 };
 

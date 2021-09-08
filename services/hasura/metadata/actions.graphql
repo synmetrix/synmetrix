@@ -1,0 +1,142 @@
+type Mutation {
+  check_connection(
+    datasource_id: uuid!
+  ): CheckConnectionOutput
+}
+
+type Mutation {
+  create_team(
+    name: String!
+  ): CreateTeamOutput
+}
+
+type Query {
+  fetch_dataset(
+    exploration_id: uuid!
+    offset: Int
+    limit: Int
+  ): FetchDatasetOutput
+}
+
+type Query {
+  fetch_meta(
+    datasource_id: uuid!
+  ): SourceMetaOutput
+}
+
+type Query {
+  fetch_tables(
+    datasource_id: uuid!
+  ): SourceTablesOutput
+}
+
+type Mutation {
+  gen_dataschemas(
+    datasource_id: uuid!
+    tables: [SourceTable!]!
+    overwrite: Boolean
+  ): GenSourceSchemaOutput
+}
+
+type Mutation {
+  gen_sql(
+    exploration_id: uuid!
+  ): GenSQLOutput
+}
+
+type Mutation {
+  invite_team_member(
+    email: String!
+    teamId: uuid
+  ): InviteTeamMemberOutput
+}
+
+type Mutation {
+  run_query(
+    datasource_id: uuid!
+    query: String!
+    limit: Int!
+  ): RunSourceQueryOutput
+}
+
+type Mutation {
+  validate_datasource(
+    id: uuid!
+  ): ValidateSourceOutput
+}
+
+input SourceTable {
+  name: String!
+}
+
+type CheckSourceOutput {
+  message: String
+  code: String!
+}
+
+type GenSourceSchemaOutput {
+  message: String
+  code: String!
+}
+
+type SourceTablesOutput {
+  schema: json
+}
+
+type SourceMetaOutput {
+  cubes: json
+}
+
+type RunSourceQueryOutput {
+  result: json
+}
+
+type ValidateSourceSchemaOutput {
+  code: String!
+  message: String
+}
+
+type ValidateSourceSchemasOutput {
+  code: String!
+  message: String
+}
+
+type ValidateSourceOutput {
+  code: String!
+  message: String
+}
+
+type CheckConnectionOutput {
+  message: String
+  code: String!
+}
+
+type FetchDatasetOutput {
+  annotation: json
+  data: json
+  query: json
+  progress: json
+  hitLimit: Boolean
+  slowQuery: Boolean
+  external: Boolean
+  dbType: String
+  dataSource: String
+  lastRefreshTime: String
+}
+
+type InviteTeamMemberOutput {
+  code: String
+  message: String
+  memberId: uuid
+}
+
+type CreateTeamOutput {
+  code: String
+  message: String
+  teamId: uuid
+}
+
+type GenSQLOutput {
+  result: json
+}
+

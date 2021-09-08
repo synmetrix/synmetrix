@@ -1,11 +1,12 @@
 import { useMemo, useCallback, useState, useEffect, useReducer } from 'react';
-import { get } from 'unchanged';
 
 import trackEvent from 'utils/trackEvent';
 import pickKeys from 'utils/pickKeys';
 
 import useExplorationData from 'hooks/useExplorationData';
 
+import useLocation from './useLocation';
+import useAppSettings from './useAppSettings';
 import useExplorations from './useExplorations';
 import useDataSourceMeta from './useDataSourceMeta';
 import useAnalyticsQuery, { queryState, initialState } from './useAnalyticsQuery';
@@ -46,31 +47,41 @@ export const getColumns = (selectedQueryMembers, settings = {}) => [
   ...Object.values(selectedQueryMembers.measures || {})
 ].map(c => ({ id: c.name, Header: getTitle(settings, c), accessor: (row) => row[c.name], colId: c.name, type: c.type }));
 
-export default ({ dataSource = {}, pauseQueryCurrent, editId, rowsLimit, offset }) => {
+export default ({ dataSourceId, meta = [], editId, rowsLimit, offset }) => {
+  const [, setLocation] = useLocation();
+  const { withAuthPrefix } = useAppSettings();
   const [settings, dispatchSettings] = useReducer(reducer, initialSettings);
 
   const {
-    current: exploration,
-    currentProgress: explorationProgress,
+    current,
+    currentProgress,
     queries: {
-      currentData: {
-        fetching: explorationLoading,
-      },
-      executeQueryCurrent: loadExploration,
+      currentData,
+      execQueryCurrent,
     },
     mutations: {
-      mExecuteNewMutation: newExploration,
+      createMutation,
+      execCreateMutation,
+      genSqlMutation,
+      execGenSqlMutation,
     }
   } = useExplorations({
-    dataSourceId: dataSource.rowId,
-    editId,
+    params: {
+      editId,
+      rowsLimit,
+      offset,
+    },
     pauseQueryAll: true,
-    pauseQueryCurrent,
-    rowsLimit,
-    offset,
   });
 
-  const playgroundSettings = useMemo(() => get('playgroundSettings', exploration) || {}, [exploration]);
+  useEffect(() => {
+    if (editId) {
+      execGenSqlMutation({ exploration_id: editId });
+    }
+  }, [editId, execGenSqlMutation]);
+
+  const playgroundSettings = useMemo(() => current.playground_settings || {}, [current]);
+
   useDeepCompareEffect(() => {
     dispatchSettings({ type: 'update', value: playgroundSettings });
   }, [playgroundSettings]);
@@ -89,48 +100,51 @@ export default ({ dataSource = {}, pauseQueryCurrent, editId, rowsLimit, offset 
   const {
     selectedQueryMembers,
     availableQueryMembers,
-  } = useDataSourceMeta({ dataSource, playgroundState: currPlaygroundState });
+  } = useDataSourceMeta({ meta, playgroundState: currPlaygroundState });
 
   const {
     rows,
     hitLimit,
-    skippedMembers: explorationSkippedMembers,
-  } = useExplorationData({ exploration });
-
-  const skippedMembers = useMemo(() => {
-    if ((explorationSkippedMembers || []).length) {
-      return explorationSkippedMembers;
-    }
-    return [];
-  }, [explorationSkippedMembers]);
+    skippedMembers,
+  } = useExplorationData({ explorationResult: currentData.data?.fetch_dataset });
 
   const columns = useMemo(() => {
     if (!selectedQueryMembers) { return [] };
 
     return getColumns(selectedQueryMembers, settings);
   },
-    [selectedQueryMembers, settings]
+  [selectedQueryMembers, settings]
   );
 
   const explorationState = useMemo(() => ({
-    loading: explorationLoading,
-    progress: explorationProgress,
-    rawSql: exploration.rawSql,
+    loading: currentData.fetching,
+    progress: currentProgress,
     hitLimit,
     columns,
     rows,
     ...currPlaygroundState,
+    rawSql: genSqlMutation.data?.gen_sql?.result,
     skippedMembers,
     settings
   }),
-    [explorationLoading, explorationProgress, exploration.rawSql, hitLimit, columns, rows, currPlaygroundState, skippedMembers, settings]
+  [
+    currentData.fetching,
+    genSqlMutation.data,
+    currentProgress,
+    hitLimit,
+    columns,
+    rows,
+    currPlaygroundState,
+    skippedMembers,
+    settings
+  ]
   );
 
   const [isQueryChanged, setChangedStatus] = useState(false);
 
   useEffect(
     () => {
-      const { playgroundState = queryState } = exploration;
+      const { playground_state: playgroundState = queryState } = current;
 
       const isChanged = !equals(
         pickKeys(queryStateKeys, playgroundState),
@@ -141,16 +155,16 @@ export default ({ dataSource = {}, pauseQueryCurrent, editId, rowsLimit, offset 
         setChangedStatus(isChanged);
       }
     },
-    [isQueryChanged, currPlaygroundState, exploration]
+    [isQueryChanged, currPlaygroundState, current]
   );
 
   useEffect(() => {
-    const newState = exploration.playgroundState;
+    const newState = current.playground_state;
 
     if (newState) {
       doReset(newState);
     }
-  }, [exploration.playgroundState, doReset]);
+  }, [current.playground_state, doReset]);
 
   useEffect(() => {
     if (!editId) {
@@ -163,18 +177,31 @@ export default ({ dataSource = {}, pauseQueryCurrent, editId, rowsLimit, offset 
 
     const explorationQueryState = pickKeys(queryStateKeys, currPlaygroundState);
     const newExplorationObj = {
-      playgroundState: explorationQueryState,
-      playgroundSettings: settings,
+      datasource_id: dataSourceId,
+      playground_state: explorationQueryState,
+      playground_settings: settings,
     };
 
-    newExploration(newExplorationObj);
-  }, [currPlaygroundState, newExploration, settings]);
+    return execCreateMutation({ object: newExplorationObj });
+  }, [currPlaygroundState, dataSourceId, execCreateMutation, settings]);
+
+  const reset = useCallback(
+    (explorationId) => setLocation(withAuthPrefix(`/explore/${dataSourceId}/${explorationId}`)),
+    [dataSourceId, setLocation, withAuthPrefix],
+  );
+
+  useEffect(() => {
+    if (createMutation.data) {
+      reset(createMutation.data?.insert_explorations_one?.id);
+      createMutation.data = null;
+    }
+  }, [createMutation.data, reset]);
 
   return {
     state: explorationState,
-    exploration,
-    explorationLoading,
-    loadExploration,
+    exploration: current,
+    explorationLoading: currentData.fetching,
+    loadExploration: execQueryCurrent,
     selectedQueryMembers,
     availableQueryMembers,
     analyticsQuery: {

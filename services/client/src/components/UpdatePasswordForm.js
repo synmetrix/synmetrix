@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef } from 'react';
 import PropTypes from 'prop-types';
 
 import { Form, Button, message } from 'antd';
@@ -9,14 +9,14 @@ import useFormItems from 'hooks/useFormItems';
 import useAuth from 'hooks/useAuth';
 
 const formConfig = {
-  currentPassword: {
-    label: 'Current Password',
+  old_password: {
+    label: 'Old Password',
     display: 'text',
     required: true,
     type: 'password',
     span: 24
   },
-  password: {
+  new_password: {
     label: 'New Password',
     display: 'text',
     required: true,
@@ -30,33 +30,25 @@ const UpdatePasswordForm = props => {
   const formRef = useRef(null);
 
   const {
-    mutations: {
-      updatePasswordMutation,
-      execUpdatePassMutation,
-    },
+    changePass,
   } = useAuth();
-
-  useEffect(
-    () => {
-      if (updatePasswordMutation.error) {
-        message.error(updatePasswordMutation.error.message);
-      } else if (updatePasswordMutation.data) {
-        message.success('Password updated!');
-      }
-    },
-    [updatePasswordMutation]
-  );
 
   const onSubmit = () => {
     const { form: formObject } = formRef.current;
 
-    formObject.validateFields((err, values) => {
+    formObject.validateFields(async (err, values) => {
       if (err) {
         return;
       }
 
       formObject.resetFields();
-      execUpdatePassMutation(values);
+      const pass = await changePass.run(values);
+
+      if (pass.statusCode >= 200 && pass.statusCode <= 300) {
+        message.success('Password updated!');
+      } else {
+        message.error(pass.message);
+      }
     });
   };
 
@@ -65,7 +57,7 @@ const UpdatePasswordForm = props => {
   return (
     <>
       <Form onSubmit={onSubmit}>
-        <Loader spinning={updatePasswordMutation.fetching}>
+        <Loader spinning={changePass.loading}>
           {updatePasswordForm}
         </Loader>
       </Form>

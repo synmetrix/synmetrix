@@ -1,13 +1,13 @@
 import React, { useMemo, useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { get, getOr, set, add } from 'unchanged';
+import { useSetState } from 'ahooks';
 
 import { Row, Col, Empty, Button, Icon } from 'antd';
 import { VegaLite } from 'react-vega';
 import { useTranslation } from 'react-i18next';
 
 import useDimensions from 'hooks/useDimensions';
-import useXState from 'hooks/useXState';
 import { getOptionValue } from 'hooks/useFormItems';
 import useAnalyticsQueryMembers from 'hooks/useAnalyticsQueryMembers';
 import usePinnedItems from 'hooks/usePinnedItems';
@@ -53,14 +53,18 @@ const ExploreVisualizations = (props) => {
     queries: {
       currentData,
     },
-  } = usePinnedItems({ rowId: chartId });
+  } = usePinnedItems({
+    params: {
+      editId: chartId,
+    }
+  });
 
   const defaults = useMemo(() => ({
     defaultX: getOptionValue(baseMembers.dimensions[0] || {}),
     defaultY: getOptionValue(baseMembers.measures[0] || {}),
   }), [baseMembers.dimensions, baseMembers.measures]);
 
-  const [state, updateState] = useXState({
+  const [state, updateState] = useSetState({
     description: NONE_AXIS_DESC,
     isReadyToRender: false,
   });
@@ -259,9 +263,9 @@ const ExploreVisualizations = (props) => {
   });
 
   const loadChart = useCallback(() => {
-    const specConfig = get('specConfig', current);
+    const specConfig = get('spec_config', current);
 
-    if (!Object.values(specConfig).length) {
+    if (!current || !Object.values(specConfig).length) {
       return;
     }
 
@@ -300,7 +304,7 @@ const ExploreVisualizations = (props) => {
   );
 
   useEffect(() => {
-    if (chartId && Object.keys(current).length) {
+    if (chartId && Object.keys(current || {}).length) {
       loadChart();
     }
   },

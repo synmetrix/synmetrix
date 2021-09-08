@@ -1,17 +1,23 @@
 import React, { useMemo, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 
+import { useUpdateEffect } from 'ahooks';
 import { useTranslation } from 'react-i18next';
-import useLocation from 'wouter/use-location';
 import { Tabs } from 'antd';
 
-import { get, getOr } from 'unchanged';
+import { getOr } from 'unchanged';
 
 import withSizes from 'react-sizes';
 import compose from 'utils/compose';
 
-import useIde from 'hooks/useIde';
+import useSources from 'hooks/useSources';
+import useSchemas from 'hooks/useSchemas';
+import useSchemasIde from 'hooks/useSchemasIde';
 import usePermissions from 'hooks/usePermissions';
+import useLocation from 'hooks/useLocation';
+import useCheckResponse from 'hooks/useCheckResponse';
+import useCurrentUserState from 'hooks/useCurrentUserState';
+import useAppSettings from 'hooks/useAppSettings';
 
 import Loader from 'components/Loader';
 import ModalView from 'components/ModalView';
@@ -26,44 +32,140 @@ import s from './DataSchemas.module.css';
 
 const reservedSlugs = ['sqlrunner', 'genschema'];
 
-const DataSchemas = ({ editorWidth, editorHeight, params, ...restProps }) => {
+const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
   const { t } = useTranslation();
+  const { currentUserState: currentUser } = useCurrentUserState();
   const [, setLocation] = useLocation();
-  const basePath = '/d/schemas';
+  const { withAuthPrefix } = useAppSettings();
+
+  const basePath = withAuthPrefix('/schemas');
   const [isConsoleOpen, toggleConsole] = useState(false);
+  const [error, setError] = useState(null);
+
+  const { params = {} } = match;
 
   const [dataSourceId, slug] = useMemo(() => getOr('', 'rest', params).split('/'),
     [params]
   );
 
   const onModalClose = () => setLocation(`${basePath}/${dataSourceId}`);
-
   const dataSchemaName = reservedSlugs.indexOf(slug) === -1 && slug || null;
 
   const {
-    loading,
     getTabId,
+    editTab,
     activeTab,
-    closeTab,
     changeActiveTab,
-
-    allSchemas,
-    schemaIdToCode,
-    openedSchemas,
+    openTab,
+    openedTabs,
     openSchema,
-    schemaMutations,
+  } = useSchemasIde({ dataSourceId });
 
-    dataSource,
-    sourceQueries,
-    sourceMutations,
-  } = useIde({ dataSourceId, dataSchemaName, slug });
+  const {
+    all,
+    queries: {
+      allData,
+      execQueryAll,
+    },
+    mutations: {
+      createMutation,
+      execCreateMutation,
+      execUpdateMutation,
+      deleteMutation,
+      execDeleteMutation,
+    },
+  } = useSchemas({
+    params: {
+      dataSourceId,
+    },
+    pauseQueryAll: false,
+  });
+
+  const {
+    queries: {
+      tablesData,
+      execQueryTables,
+    },
+    mutations: {
+      runQueryMutation,
+      execRunQueryMutation,
+      validateMutation,
+      execValidateMutation,
+      genSchemaMutation,
+      execGenSchemaMutation,
+    },
+  } = useSources({
+    params: {
+      editId: dataSourceId,
+    },
+    pauseQueryAll: true,
+    disableSubscription: true,
+  });
+
+  useEffect(() => {
+    if (dataSourceId) {
+      execQueryTables();
+    }
+  }, [dataSourceId, execQueryTables]);
+
+  useCheckResponse(tablesData, (res, err) => {
+    if (res) {
+      setError(null);
+    } else if (err) {
+      setError(err);
+    }
+  }, {
+    successMessage: null
+  });
+
+  const schemaIdToCode = useMemo(() => all.reduce((acc, curr) => {
+    acc[curr.id] = { name: curr.name, code: curr.code };
+    return acc;
+  }, {}),
+  [all]
+  );
+
+  const openedSchemas = useMemo(() => Object.keys(openedTabs)
+      .map(id => all.find(schema => schema.id === id))
+      .filter(Boolean),
+  [all, openedTabs]
+  );
+
+  useEffect(() => {
+    if (dataSchemaName) {
+      const schemaObj = all.find(schema => schema.name === dataSchemaName);
+
+      if (schemaObj && !Object.keys(openedTabs).includes(schemaObj.id)) {
+        openTab(schemaObj);
+      }
+    }
+  }, [all, dataSchemaName, openTab, openedTabs]);
+
+
+  const userSchemasCount = currentUser.dataschemas?.length || 0; 
+  const schemasCount = all?.length || 0; 
+
+  useUpdateEffect(() => {
+    if (schemasCount && userSchemasCount && userSchemasCount !== schemasCount) {
+      execQueryAll({ requestPolicy: 'network-only' });
+    }
+  }, [currentUser.dataschemas, execQueryAll, schemasCount, userSchemasCount]);
+
+  useCheckResponse(createMutation, () => {}, {
+    successMessage: t('Schema created')
+  });
+
+  useCheckResponse(genSchemaMutation, (res) => {
+    if (res) {
+      execQueryAll();
+    }
+  }, {
+    successMessage: t('Schema generated')
+  });
 
   const validationError = useMemo(
-    () => {
-      const { validateMutation } = schemaMutations;
-      return get('error.message', validateMutation);
-    },
-    [schemaMutations]
+    () => validateMutation?.error?.message,
+    [validateMutation.error]
   );
 
   useEffect(
@@ -73,35 +175,39 @@ const DataSchemas = ({ editorWidth, editorHeight, params, ...restProps }) => {
     [validationError]
   );
 
-  const editTab = (id, action) => {
-    if (action === 'remove') {
-      closeTab(id);
-    }
-  };
-
   const sqlResult = useMemo(
-    () => getOr([], 'runSQL.data', sourceMutations.runSQLMutation.data),
-    [sourceMutations.runSQLMutation.data]
+    () => runQueryMutation.data?.run_query?.result || [],
+    [runQueryMutation.data]
   );
+
+  const [tablesSchema, setTablesSchema] = useState({});
+  const sourceTablesSchema = tablesData.data?.fetch_tables?.schema;
+
+  useEffect(() => {
+    if (Object.keys(sourceTablesSchema || {}).length) {
+      setTablesSchema(sourceTablesSchema);
+    }
+  }, [sourceTablesSchema]);
 
   const routes = [
     {
-      path: `/d/schemas/${dataSourceId}/genschema`,
+      path: `${basePath}/${dataSourceId}/genschema`,
       title: t('Generate Schema'),
     },
   ];
 
-  const onGenSubmit = (values) => {
+  const onGenSubmit = async (values) => {
     const tables = Object.keys(values).filter(v => values[v]).map(v => ({
       name: v,
     }));
 
-    schemaMutations.mExecGenMutation(tables);
-    onModalClose();
-  };
+    await execGenSchemaMutation({
+      datasource_id: dataSourceId,
+      tables,
+      overwrite: true,
+    });
 
-  const onCodeSave = (id, code) => {
-    schemaMutations.mExecEditMutation(id, { code });
+    onModalClose();
   };
 
   const { fallback } = usePermissions({ scope: 'dataschemas' });
@@ -109,12 +215,52 @@ const DataSchemas = ({ editorWidth, editorHeight, params, ...restProps }) => {
     return fallback;
   }
 
-  if (!loading && !allSchemas.length && !dataSource.id) {
+  const fetching = allData.fetching || deleteMutation.fetching || createMutation.fetching 
+    || validateMutation.fetching || genSchemaMutation.fetching || tablesData.fetching;
+
+  if (error) {
     return <ErrorFound status={404} />;
   }
 
-  const fetching = loading || schemaMutations.genMutation.fetching || sourceQueries.tablesData.fetching ||
-    schemaMutations.delMutation.fetching;
+  if (!all.length && !dataSourceId) {
+    return <ErrorFound status={404} />;
+  }
+
+  const onClickCreate = async values => {
+    const data = {
+      ...values,
+      code: '',
+      datasource_id: dataSourceId,
+    };
+
+    await execCreateMutation({ object: data });
+    execQueryAll({ requestPolicy: 'cache-and-network' });
+  };
+
+  const onClickUpdate = (editId, values) => {
+    execUpdateMutation({
+      pk_columns: { id: editId },
+      _set: values,
+    });
+  };
+
+  const onClickDelete = async id => {
+    await execDeleteMutation({ id });
+    execQueryAll({ requestPolicy: 'cache-and-network' });
+  };
+
+  const onCodeSave = (id, code) => {
+    onClickUpdate(id, { code });
+    execValidateMutation({ id: dataSourceId });
+  };
+
+  const onRunSQL = (query, limit) => {
+    execRunQueryMutation({
+      datasource_id: dataSourceId,
+      query,
+      limit,
+    });
+  };
 
   return [
     <ModalView
@@ -125,7 +271,7 @@ const DataSchemas = ({ editorWidth, editorHeight, params, ...restProps }) => {
       loading={fetching}
       content={(
         <GenDataSchemasForm
-          schemas={(sourceQueries.tablesData.data || {}).allDatasourceTables}
+          schemas={tablesSchema}
           onSubmit={onGenSubmit}
         />
       )}
@@ -135,11 +281,11 @@ const DataSchemas = ({ editorWidth, editorHeight, params, ...restProps }) => {
       <div className={s.root}>
         <div className={s.sidebar}>
           <IdeSchemasList
-            schemas={allSchemas}
+            schemas={all}
             onItemClick={openSchema}
-            onCreate={schemaMutations.mExecNewMutation}
-            onEdit={schemaMutations.mExecEditMutation}
-            onDelete={schemaMutations.mExecDelMutation}
+            onCreate={onClickCreate}
+            onEdit={onClickUpdate}
+            onDelete={onClickDelete}
             moreMenu={routes}
           />
         </div>
@@ -167,9 +313,9 @@ const DataSchemas = ({ editorWidth, editorHeight, params, ...restProps }) => {
                 data={sqlResult}
                 width={editorWidth}
                 height={editorHeight}
-                onRun={(query, limit) => sourceMutations.mExecRunSQLMutation(dataSource.rowId, query, limit)}
-                error={sourceMutations.runSQLMutation.error}
-                loading={sourceMutations.runSQLMutation.fetching}
+                onRun={onRunSQL}
+                error={runQueryMutation?.error}
+                loading={runQueryMutation?.fetching}
               />
             </Tabs.TabPane>
           </Tabs>
@@ -188,11 +334,11 @@ const DataSchemas = ({ editorWidth, editorHeight, params, ...restProps }) => {
 DataSchemas.propTypes = {
   editorWidth: PropTypes.number.isRequired,
   editorHeight: PropTypes.number.isRequired,
-  params: PropTypes.object,
+  match: PropTypes.object,
 };
 
 DataSchemas.defaultProps = {
-  params: {},
+  match: {},
 };
 
 const mapSizesToProps = ({ width, height }) => ({

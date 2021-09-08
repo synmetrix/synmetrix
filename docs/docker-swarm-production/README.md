@@ -36,7 +36,7 @@ python3 cli.py --env stage services destroy mlcraft_bi
 ### Show logs
 
 ```
-python3 cli.py --env stage services logs mlcraft_bi_postgraphile
+python3 cli.py --env stage services logs mlcraft_bi_hasura
 ```
 
 ### Show stack tasks status

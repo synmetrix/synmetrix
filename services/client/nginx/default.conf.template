@@ -9,6 +9,7 @@ server {
               '</head><script language="javascript"\>
               window.GRAPHQL_WS_URL = "$GRAPHQL_WS_URL";
               window.GRAPHQL_SERVER_URL = "$GRAPHQL_SERVER_URL";
+              window.GRAPHQL_PLUS_SERVER_URL = "$GRAPHQL_PLUS_SERVER_URL";
               </script>';
       sub_filter_once on;
   }

@@ -1,78 +1,47 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import { Row, Col, Select, Checkbox, Button, Modal } from 'antd';
+import { Row, Col, Select, Button, Modal } from 'antd';
 
-import formatDistanceToNow from 'utils/formatDistanceToNow';
-import useAuthContext from 'hooks/useAuthContext';
+import useCurrentUserState from 'hooks/useCurrentUserState';
+
 import TableList from 'components/TableList';
 
 const { confirm } = Modal;
 
 const TeamTable = ({ data, disableManagement, onChange, onRemove, loading }) => {
-  const currentUser = useAuthContext();
+  const { currentUserState } = useCurrentUserState();
+  const currentUser = currentUserState?.users_by_pk;
 
   const showConfirm = record => {
     confirm({
-      title: `Do you want to remove ${record.email}?`,
+      title: `Do you want to remove ${record?.user?.display_name}?`,
       onOk() {
-        onRemove(record.rowId);
+        onRemove(record.id);
       },
       onCancel() {},
       maskClosable: true
     });
   };
 
+  const isRowDisabled = record => disableManagement || record.user_id === currentUser?.id;
+
   const managementColumns = [
     {
-      title: 'Updated At',
-      dataIndex: 'updatedAt',
-      key: 'updatedAt',
-      render: (_, record) => {
-        return formatDistanceToNow(record.updatedAt);
-      },
-    },
-    {
-      title: 'Role',
-      dataIndex: 'teamRole',
+      title: 'Roles',
       key: 'teamRole',
       render: (_, record) => {
-        return [
-          <Select
-            size="small"
-            labelInValue
-            value={{ key: record.teamRole }}
-            style={{ marginLeft: 5, width: 100 }}
-            disabled={disableManagement || record.rowId === currentUser.userId}
-            onChange={value => onChange('teamRole', record.rowId, value.key)}
-          >
-            <Select.Option value="client">Client</Select.Option>
-            <Select.Option value="viewer">Viewer</Select.Option>
-            <Select.Option value="writer">Writer</Select.Option>
-            <Select.Option value="owner">Owner</Select.Option>
-          </Select>
-        ];
+        const { member_roles: roles } = record || {};
+
+        return roles.map(r => r.team_role).join(',');
       }
-    },
-    {
-      title: 'Active',
-      dataIndex: 'active',
-      key: 'active',
-      render: (_, record) => (
-        <Checkbox
-          disabled={disableManagement || record.rowId === currentUser.userId}
-          defaultChecked={record.active}
-          onChange={e => { e.stopPropagation(); onChange('active', record.rowId, !record.active) }}
-          onClick={e => e.stopPropagation()}
-        />
-      ),
     },
     {
       title: 'Remove',
       key: 'remove',
       render: (_, record) => (
         <Button
-          disabled={disableManagement || record.rowId === currentUser.userId}
+          disabled={isRowDisabled(record)}
           onClick={() => showConfirm(record)}
           size="small"
           shape="circle"
@@ -85,23 +54,10 @@ const TeamTable = ({ data, disableManagement, onChange, onRemove, loading }) => 
 
   let columns = [
     {
-      title: 'Email',
-      dataIndex: 'email',
-      key: 'email',
-    },
-    {
       title: 'Name',
-      dataIndex: 'name',
-      key: 'name',
+      dataIndex: 'user.display_name',
+      key: 'display_name',
     },
-    {
-      title: 'Invited At',
-      dataIndex: 'createdAt',
-      key: 'createdAt',
-      render: (_, record) => {
-        return formatDistanceToNow(record.createdAt);
-      },
-    }
   ];
 
   if (!disableManagement) {
@@ -112,7 +68,7 @@ const TeamTable = ({ data, disableManagement, onChange, onRemove, loading }) => 
     <Row type="flex" justify="space-around" align="top" gutter={24} key="1">
       <Col span={24}>
         <TableList
-          rowKey={row => row.rowId}
+          rowKey={row => row.id}
           columns={columns}
           loading={loading}
           dataSource={data}
