@@ -6,9 +6,9 @@ const webpack = require('webpack');
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
 const __DEV__ = process.env.NODE_ENV !== 'production';
-const GRAPHQL_SERVER_URL = __DEV__ ? 'http://localhost:8080/v1/graphql' : process.env.GRAPHQL_SERVER_URL;
-const GRAPHQL_PLUS_SERVER_URL = __DEV__ ? 'http://localhost:8081' : process.env.GRAPHQL_PLUS_SERVER_URL;
-const GRAPHQL_WS_URL = __DEV__ ? 'ws://localhost:8080/v1/graphql' : process.env.GRAPHQL_WS_URL;
+const GRAPHQL_SERVER_URL = process.env.GRAPHQL_SERVER_URL || 'http://localhost:8080/v1/graphql';
+const GRAPHQL_PLUS_SERVER_URL = process.env.GRAPHQL_PLUS_SERVER_URL || 'http://localhost:8081';
+const GRAPHQL_WS_URL = process.env.GRAPHQL_WS_URL || 'ws://localhost:8080/v1/graphql';
 const AUTH_PREFIX = process.env.AUTH_PREFIX || '/~';
 
 module.exports = {

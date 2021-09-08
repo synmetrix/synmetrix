@@ -128,4 +128,4 @@ def ps(ctx, name):
     if env == 'dev':
         call_compose(ctx, 'ps')
     else:
-        call_system('docker stack ps %s' % name)
+        call_system('docker stack ps --no-trunc %s' % name)

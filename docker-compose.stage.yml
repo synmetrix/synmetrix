@@ -35,7 +35,6 @@ services:
       CLIENT_MAX_BODY_SIZE: 5m
 
   cubejs:
-    image: ${REGISTRY_HOST}/mlcraft/cubejs-server:latest
     env_file:
       - .env
       - .stage.env
@@ -47,29 +46,49 @@ services:
         constraints: [node.role == manager]
     build:
       context: ./services/client/
+      args:
+        NODE_ENV: test
     environment:
-      HASURA_URL: ${PROTOCOL:-http}://api.${DOMAIN}/graphql
-      GRAPHQL_WS_URL: ${WS_PROTOCOL:-ws}://api.${DOMAIN}/graphql
       VIRTUAL_HOST: ${PROTOCOL:-http}://app.${DOMAIN} -> :80
+      GRAPHQL_SERVER_URL: ${PROTOCOL:-http}://api.${DOMAIN}/v1/graphql
+      GRAPHQL_WS_URL: ${WS_PROTOCOL:-ws}://api.${DOMAIN}/v1/graphql
+      GRAPHQL_PLUS_SERVER_URL: ${WS_PROTOCOL:-http}://api-plus.${DOMAIN}
     networks:
       - mlcraft_default
 
   hasura:
-    image: ${REGISTRY_HOST}/mlcraft/hasura:latest
     env_file:
       - .env
       - .stage.env
     environment:
+      HASURA_GRAPHQL_ADMIN_SECRET: ${HASURA_GRAPHQL_ADMIN_SECRET}
       VIRTUAL_HOST1: ${PROTOCOL:-http}://api.${DOMAIN} -> :8080
       VIRTUAL_HOST2: ${WS_PROTOCOL:-ws}://api.${DOMAIN} -> :8080
+      HASURA_GRAPHQL_ENABLE_CONSOLE: "true" 
 
   hasura_plus:
-    image: ${REGISTRY_HOST}/mlcraft/hasura-plus:latest
     env_file:
       - .env
       - .stage.env
     environment:
+      HASURA_GRAPHQL_ADMIN_SECRET: ${HASURA_GRAPHQL_ADMIN_SECRET}
       VIRTUAL_HOST: ${PROTOCOL:-http}://api-plus.${DOMAIN} -> :3000; client_max_body_size 5m;
+      SERVER_URL: ${PROTOCOL:-http}://api-plus.${DOMAIN}
+      REDIRECT_URL_SUCCESS: ${PROTOCOL:-http}://app.${DOMAIN}/callback
+      REDIRECT_URL_ERROR: ${PROTOCOL:-http}://app.${DOMAIN}/callback
+      SMTP_HOST: ${SMTP_HOST}
+      SMTP_PORT: ${SMTP_PORT}
+      SMTP_SECURE: ${SMTP_SECURE}
+      SMTP_USER: ${SMTP_USER}
+      SMTP_PASS: ${SMTP_PASS}
+      SMTP_SENDER: ${SMTP_SENDER}
+
+  actions:
+    env_file:
+      - .env
+      - .stage.env
+    environment:
+      HASURA_GRAPHQL_ADMIN_SECRET: ${HASURA_GRAPHQL_ADMIN_SECRET}
 
 volumes:
   pgstorage-data:

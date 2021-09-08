@@ -4,8 +4,7 @@ import {
 } from 'recoil';
 
 import { currentRefreshToken, currentToken } from '../recoil/currentUser';
-
-const { GRAPHQL_PLUS_SERVER_URL } = process.env;
+import { GRAPHQL_PLUS_SERVER_URL } from './useAppSettings';
 
 export default () => {
   const refreshToken = useRecoilValue(currentRefreshToken);

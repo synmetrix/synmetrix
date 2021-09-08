@@ -1,11 +1,14 @@
 # build environment
 FROM node:lts-slim as build
 
+# define args if you want to build client with built in it process.env vars
 ARG GRAPHQL_SERVER_URL
 ARG GRAPHQL_WS_URL
+ARG GRAPHQL_PLUS_SERVER_URL
 
 ENV GRAPHQL_SERVER_URL $GRAPHQL_SERVER_URL
 ENV GRAPHQL_WS_URL $GRAPHQL_WS_URL
+ENV GRAPHQL_PLUS_SERVER_URL $GRAPHQL_PLUS_SERVER_URL
 
 WORKDIR /app
 ENV PATH /app/node_modules/.bin:$PATH

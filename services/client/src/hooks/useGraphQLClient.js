@@ -21,6 +21,8 @@ import {
   jwtPayload
 } from '../recoil/currentUser';
 
+import { GRAPHQL_WS_URL, GRAPHQL_SERVER_URL } from './useAppSettings';
+
 const { __DEV__ } = process.env;
 
 export default () => {
@@ -29,7 +31,7 @@ export default () => {
 
   const client = useMemo(() => {
     const subscriptionClient = new SubscriptionClient(
-      process.env.GRAPHQL_WS_URL,
+      GRAPHQL_WS_URL,
       {
         reconnect: true,
         timeout: 30000,
@@ -112,7 +114,7 @@ export default () => {
     }
 
     return createClient({
-      url: process.env.GRAPHQL_SERVER_URL,
+      url: GRAPHQL_SERVER_URL,
       exchanges,
     });
   }, [authToken, JWTpayload]);
