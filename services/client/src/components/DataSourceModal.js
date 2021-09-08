@@ -82,22 +82,25 @@ const DataSourceModal = (props) => {
   const handleSave = () => {
     const { form } = formRef.current;
 
-    form.validateFields((err, values) => {
-      if (err) {
-        console.log('Error: ', values);
-        return;
-      }
-
+    return form.validateFields().then(values => {
       console.log('Received values of form: ', values);
 
       if (dataSource.id) {
         // call onSave if dataSource already present
-        onSave(dataSource, values);
-      } else {
-        // or create new
-        execCreateMutation({ object: values });
-      }
+        return onSave(dataSource, values);
+      } 
+
+      // or create new
+      return execCreateMutation({ object: values });
+    }).catch(err => {
+      console.error('Error: ', err);
     });
+  };
+
+  const onCheckConnection = async () => {
+    await handleSave();
+    message.info(t('Checking the connection...'));
+    execCheckMutation({ id: dataSource.id });
   };
 
   const modalFooter = (
@@ -105,7 +108,7 @@ const DataSourceModal = (props) => {
       <Col span={12} style={{ textAlign: 'left' }}>
         {dataSource.id && (
           <>
-            <Button onClick={() => execCheckMutation({ id: dataSource.id })} loading={checkMutation.fetching}>
+            <Button onClick={onCheckConnection} loading={checkMutation.fetching}>
               <Icon type="api" />
               {t('Test Connection')}
             </Button>
@@ -130,6 +133,7 @@ const DataSourceModal = (props) => {
     <ModalView
       {...pickKeys(['title', 'onCancel', 'visible', 'loading', 'breadcrumbs'], props)}
       footer={modalFooter}
+      loading={checkMutation.fetching}
       content={(
         <DataSourceForm
           style={{ paddingTop: 10 }}
