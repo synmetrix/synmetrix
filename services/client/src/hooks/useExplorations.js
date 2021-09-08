@@ -74,6 +74,12 @@ export default ({ params = {} }) => {
   );
 
   useEffect(() => {
+    if (currentProgress && currentProgress.loading) {
+      execQueryCurrent({ requestPolicy: 'network-only' });
+    }
+  }, [currentProgress, execQueryCurrent]);
+
+  useEffect(() => {
     if (params.editId) {
       execQueryCurrent();
     }
