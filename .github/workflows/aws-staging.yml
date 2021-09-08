@@ -103,6 +103,20 @@ jobs:
           export DOMAIN=$PRIMARY_DOMAIN 
           export REGISTRY_HOST=127.0.0.1:50001
 
+          export SECRETS_HASURA_GRAPHQL_ADMIN_SECRET=${{ secrets.HASURA_GRAPHQL_ADMIN_SECRET }}
+
+          export SECRETS_PG_HOST=${{ secrets.PG_HOST }}
+          export SECRETS_PG_USER=${{ secrets.PG_USER }}
+          export SECRETS_PG_PASS=${{ secrets.PG_PASS }}
+          export SECRETS_PG_DB=${{ secrets.PG_DB }}
+
+          export SECRETS_SMTP_HOST=${{ secrets.SMTP_HOST }}
+          export SECRETS_SMTP_PORT=${{ secrets.SMTP_PORT }}
+          export SECRETS_SMTP_SECURE=${{ secrets.SMTP_SECURE }}
+          export SECRETS_SMTP_USER=${{ secrets.SMTP_USER }}
+          export SECRETS_SMTP_PASS=${{ secrets.SMTP_PASS }}
+          export SECRETS_SMTP_SENDER=${{ secrets.SMTP_SENDER }}
+
           export PROTOCOL=https
           export WS_PROTOCOL=wss
 
@@ -122,6 +136,8 @@ jobs:
           cat >./deploy_migrate <<'EOL'
             echo "Migration..."
             cd $PROJECT_ROOT_PATH/$PROJECT_DIR
+
+            export HASURA_GRAPHQL_ADMIN_SECRET=${{ secrets.HASURA_GRAPHQL_ADMIN_SECRET }}
 
             bash -i migrate.sh
           EOL

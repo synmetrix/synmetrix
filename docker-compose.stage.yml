@@ -39,8 +39,6 @@ services:
     env_file:
       - .env
       - .stage.env
-    environment:
-      HASURA_GRAPHQL_ADMIN_SECRET: ${HASURA_GRAPHQL_ADMIN_SECRET}
 
   client:
     image: ${REGISTRY_HOST}/mlcraft/app-client:latest
@@ -64,7 +62,6 @@ services:
       - .env
       - .stage.env
     environment:
-      HASURA_GRAPHQL_ADMIN_SECRET: ${HASURA_GRAPHQL_ADMIN_SECRET}
       VIRTUAL_HOST1: ${PROTOCOL:-http}://api.${DOMAIN} -> :8080
       VIRTUAL_HOST2: ${WS_PROTOCOL:-ws}://api.${DOMAIN} -> :8080
       HASURA_GRAPHQL_ENABLE_CONSOLE: "true" 
@@ -74,24 +71,15 @@ services:
       - .env
       - .stage.env
     environment:
-      HASURA_GRAPHQL_ADMIN_SECRET: ${HASURA_GRAPHQL_ADMIN_SECRET}
       VIRTUAL_HOST: ${PROTOCOL:-http}://api-plus.${DOMAIN} -> :3000; client_max_body_size 5m;
       SERVER_URL: ${PROTOCOL:-http}://api-plus.${DOMAIN}
       REDIRECT_URL_SUCCESS: ${PROTOCOL:-http}://app.${DOMAIN}/callback
       REDIRECT_URL_ERROR: ${PROTOCOL:-http}://app.${DOMAIN}/callback
-      SMTP_HOST: ${SMTP_HOST}
-      SMTP_PORT: ${SMTP_PORT}
-      SMTP_SECURE: ${SMTP_SECURE}
-      SMTP_USER: ${SMTP_USER}
-      SMTP_PASS: ${SMTP_PASS}
-      SMTP_SENDER: ${SMTP_SENDER}
 
   actions:
     env_file:
       - .env
       - .stage.env
-    environment:
-      HASURA_GRAPHQL_ADMIN_SECRET: ${HASURA_GRAPHQL_ADMIN_SECRET}
 
 volumes:
   pgstorage-data:
