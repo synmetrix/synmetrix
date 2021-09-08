@@ -123,8 +123,6 @@ const cubejsApi = ({ dataSourceId, userId }) => {
       const { renewQuery } = args;
       query.renewQuery = renewQuery;
 
-      console.log('query')
-      console.log(query)
       const options = {
         progressCallback: (obProgress) => {
           throw obProgress

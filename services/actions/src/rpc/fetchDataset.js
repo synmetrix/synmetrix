@@ -59,11 +59,6 @@ export const fetchData = async (exploration, args = {}) => {
     renewQuery,
   });
 
-    console.log('cubeData')
-    console.log(cubeData)
-    console.log(updatedPlaygroundState)
-    console.log(format)
-
   return {
     ...cubeData,
     annotation: {
