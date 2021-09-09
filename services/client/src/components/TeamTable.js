@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import { Row, Col, Select, Button, Modal } from 'antd';
+import { Row, Col, Button, Modal } from 'antd';
 
 import useCurrentUserState from 'hooks/useCurrentUserState';
 
@@ -9,7 +9,7 @@ import TableList from 'components/TableList';
 
 const { confirm } = Modal;
 
-const TeamTable = ({ data, disableManagement, onChange, onRemove, loading }) => {
+const TeamTable = ({ data, disableManagement, onRemove, loading }) => {
   const { currentUserState } = useCurrentUserState();
   const currentUser = currentUserState?.users_by_pk;
 
@@ -24,7 +24,7 @@ const TeamTable = ({ data, disableManagement, onChange, onRemove, loading }) => 
     });
   };
 
-  const isRowDisabled = record => disableManagement || record.user_id === currentUser?.id;
+  const isRowDisabled = record => disableManagement || record?.user?.id === currentUser?.id;
 
   const managementColumns = [
     {

@@ -1,13 +1,13 @@
-import { useCallback, useEffect, useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useQuery, useMutation } from 'urql';
 import { set } from 'unchanged';
-import useCurrentTeamState from './useCurrentTeamState';
 
 const allMembersQuery = `
   query ($offset: Int, $limit: Int, $where: members_bool_exp, $order_by: [members_order_by!]) {
     members (offset: $offset, limit: $limit, where: $where, order_by: $order_by) {
       id
       user {
+        id
         display_name
       }
       member_roles {

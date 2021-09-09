@@ -77,22 +77,22 @@ const TeamMenu = ({ mode, anyTeam, members }) => {
     return null;
   }
 
-  const teamSubMenu = [
-    {
-      path: withAuthPrefix('/team/new'),
-      title: t('Create new team'),
-    }
-  ];
+  const teamSubMenu = [];
 
   members?.forEach((member) => {
     const { team } = member || {};
     const { name } = team;
 
-    teamSubMenu.unshift({
+    teamSubMenu.push({
       onClick: () => setCurrentTeamState(team),
       path: location,
       title: name,
     });
+  });
+
+  teamSubMenu.push({
+    path: withAuthPrefix('/team/new'),
+    title: t('Create new team'),
   });
 
   const routes = [

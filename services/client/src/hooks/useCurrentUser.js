@@ -26,7 +26,7 @@ const currentUserQuery = `
       id
       display_name
 
-      members(order_by: { team: {updated_at: desc} }) {
+      members(order_by: { team: { created_at: desc } }) {
         team {
           id
           name
