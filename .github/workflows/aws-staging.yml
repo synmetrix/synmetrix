@@ -47,7 +47,7 @@ jobs:
     strategy:
       matrix:
         nodes:
-          - node: ubuntu@i-0325650d56e709c85
+          - node: ubuntu@i-012f145979d4ef7b8
             name: master0
             region: us-east-1
     steps:
