@@ -35,6 +35,7 @@ services:
       CLIENT_MAX_BODY_SIZE: 5m
 
   cubejs:
+    image: ${REGISTRY_HOST}/mlcraft/cubejs:latest
     command: yarn start
     env_file:
       - .env
@@ -58,6 +59,7 @@ services:
       - mlcraft_default
 
   hasura:
+    image: ${REGISTRY_HOST}/mlcraft/hasura:latest
     env_file:
       - .env
       - .stage.env
@@ -67,6 +69,7 @@ services:
       HASURA_GRAPHQL_ENABLE_CONSOLE: "true" 
 
   hasura_plus:
+    image: ${REGISTRY_HOST}/mlcraft/hasura-plus:latest
     env_file:
       - .env
       - .stage.env
@@ -77,6 +80,7 @@ services:
       REDIRECT_URL_ERROR: ${PROTOCOL:-http}://app.${DOMAIN}/callback
 
   actions:
+    image: ${REGISTRY_HOST}/mlcraft/hasura-actions:latest
     env_file:
       - .env
       - .stage.env

@@ -7,21 +7,18 @@ services:
       - mlcraft_default
 
   actions:
-    image: ${REGISTRY_HOST}/mlcraft/hasura-actions:latest
     build:
       context: ./services/actions/
     networks:
       - mlcraft_default
 
   cubejs:
-    image: ${REGISTRY_HOST}/mlcraft/cubejs:latest
     build:
       context: ./services/cubejs
     networks:
       - mlcraft_default
 
   hasura:
-    image: ${REGISTRY_HOST}/mlcraft/hasura:latest
     build:
       context: ./services/hasura
     volumes:
@@ -34,7 +31,6 @@ services:
       - mlcraft_default
 
   hasura_plus:
-    image: ${REGISTRY_HOST}/mlcraft/hasura-plus:latest
     build:
       context: ./scripts/containers/hasura_backend_plus
     volumes:
