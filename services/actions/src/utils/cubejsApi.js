@@ -175,7 +175,7 @@ const cubejsApi = ({ dataSourceId, userId }) => {
       return fetchCubeJS({ route: '/generate-dataschema', method: 'post', params });
     },
     runSQL: (rawSQL, limit) => {
-      return fetchCubeJS({ route: '/runSql', method: 'post', params: { query: `SELECT * FROM (${rawSQL}) as q LIMIT ${limit};` } });
+      return fetchCubeJS({ route: '/runSql', method: 'post', params: { query: `SELECT * FROM (${rawSQL}) as q LIMIT ${limit}` } });
     },
     validateCode: params => fetchCubeJS({ route: '/validate-code', method: 'post', params }),
   };

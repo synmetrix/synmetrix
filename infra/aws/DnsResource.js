@@ -56,6 +56,11 @@ class DnsResource extends pulumi.ComponentResource {
         type: 'CAA',
         value: '0 issue "letsencrypt.org"'
       },
+      apiPlusCname: { 
+        name: pulumi.concat('api-plus.', domainName),
+        type: 'CNAME',
+        value: domainName, 
+      },
     };
 
     const lastDomainChar = domainName.charAt(domainName.length - 1);

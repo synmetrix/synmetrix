@@ -53,7 +53,7 @@ services:
       VIRTUAL_HOST: ${PROTOCOL:-http}://app.${DOMAIN} -> :80
       GRAPHQL_SERVER_URL: ${PROTOCOL:-http}://api.${DOMAIN}/v1/graphql
       GRAPHQL_WS_URL: ${WS_PROTOCOL:-ws}://api.${DOMAIN}/v1/graphql
-      GRAPHQL_PLUS_SERVER_URL: ${WS_PROTOCOL:-http}://api-plus.${DOMAIN}
+      GRAPHQL_PLUS_SERVER_URL: ${PROTOCOL:-http}://api-plus.${DOMAIN}
     networks:
       - mlcraft_default
 
