@@ -1,7 +1,6 @@
 import unchanged from 'unchanged';
 
 import cubejsApi from '../utils/cubejsApi';
-import logger from '../utils/logger';
 import apiError from '../utils/apiError';
 import { updatePlaygroundState, replaceQueryParams } from '../utils/playgroundState';
 import { fetchGraphQL } from '../utils/graphql';

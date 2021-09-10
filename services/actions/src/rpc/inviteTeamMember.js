@@ -1,20 +1,31 @@
 import fetch from 'node-fetch';
 
-import { fetchGraphQL } from '../utils/graphql';
+import { fetchGraphQL, parseResponse } from '../utils/graphql';
+import logger from '../utils/logger';
 import apiError from '../utils/apiError';
 
 const { HASURA_PLUS_ENDPOINT } = process.env;
 
+class MagicLinkError extends Error {
+  constructor(message) {
+    super(message);
+
+    this.name = 'MagicLinkError';
+  }
+};
+
+
 const checkAccountQuery = `
-  query CheckAccount($email: citext) {
+  query ($email: citext) {
     auth_accounts(where: { email: { _eq: $email } }) {
+      id
       user_id
     }
   }
 `;
 
 const inviteMemberMutation = `
-  mutation InviteMember($userId: uuid, $teamId: uuid) {
+  mutation ($userId: uuid!, $teamId: uuid!) {
     insert_members_one(object: { user_id: $userId, team_id: $teamId }) {
       id
     }
@@ -22,75 +33,82 @@ const inviteMemberMutation = `
 `;
 
 const insertMemberRoleMutation = `
-  mutation insertMemberRole($memberId: uuid, $role: team_roles_enum!) {
+  mutation ($memberId: uuid!, $role: team_roles_enum!) {
     insert_member_roles_one(object: {member_id: $memberId, team_role: $role}) {
       id
     }
   }
 `;
 
-const register = async ({ email }) => {
-  try {
-    const result = await fetch(
-      `${HASURA_PLUS_ENDPOINT}/auth/register`,
-      {
-        method: 'POST',
-        body: JSON.stringify({ email }),
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-        },
-      }
-    );
-
-    const response = await result.json();
-    return response?.user?.id;
-  } catch (error) {
-    throw new Error('Error while creating new user: ' + error);
+const deleteUserMutation = `
+  mutation ($id: uuid!) {
+    delete_users_by_pk(id: $id) {
+      id
+    }
   }
+`;
+
+const deleteMemberMutation = `
+  mutation ($id: uuid!) {
+    delete_members_by_pk(id: $id) {
+      id
+    }
+  }
+`;
+
+const register = async ({ email }) => {
+  const result = await fetch(
+    `${HASURA_PLUS_ENDPOINT}/auth/register`,
+    {
+      method: 'POST',
+      body: JSON.stringify({ email }),
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+    }
+  );
+
+  return parseResponse(result);
 };
 
 const sendMagicLink = async ({ email }) => {
-  try {
-    const result = await fetch(
-      `${HASURA_PLUS_ENDPOINT}/auth/login`,
-      {
-        method: 'POST',
-        body: JSON.stringify({ email }),
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-        },
-      }
-    );
+  const result = await fetch(
+    `${HASURA_PLUS_ENDPOINT}/auth/login`,
+    {
+      method: 'POST',
+      body: JSON.stringify({ email }),
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+    }
+  );
 
-    const response = await result.json();
-    return response?.magicLink;
-  } catch (error) {
-    throw new Error('Error while sending magic link: ' + error);
-  }
+  return parseResponse(result);
 };
 
-const getUserFromAccount = async ({ email }) => {
-  const res = await fetchGraphQL(checkAccountQuery, { email });
-
-  let userId = res?.data?.auth_accounts?.[0]?.user_id;
-
-  if (!userId) {
-    userId = await register({ email });
-    await sendMagicLink({ email });
+const createUserAccount = async ({ email }) => {
+  try {
+    await register({ email });
+  } catch (err) {
+    logger.error(err);
   }
 
-  return userId;
+  const res = await fetchGraphQL(checkAccountQuery, { email });
+  return res?.data?.auth_accounts?.[0];
 };
 
 const inviteTeamMember = async ({ userId, teamId, role }) => {
   const res = await fetchGraphQL(inviteMemberMutation, { userId, teamId });
-  const memberId = res?.data?.insert_members_one?.id;
+  const data = res?.data?.insert_members_one;
 
-  await fetchGraphQL(insertMemberRoleMutation, { memberId, role });
+  const result = await fetchGraphQL(insertMemberRoleMutation, {
+    memberId: data?.id,
+    role
+  });
 
-  return memberId;
+  return data;
 };
 
 export default async (session, input) => {
@@ -100,17 +118,40 @@ export default async (session, input) => {
     role = 'member'
   } = input || {};
 
-  let { userId } = input;
+  let userAccount = {};
+  let teamMember = {};
 
   try {
-    if (!userId) {
-      userId = await getUserFromAccount({ email });
+    userAccount = await createUserAccount({ email });
+
+    teamMember = await inviteTeamMember({
+      userId: userAccount.user_id,
+      teamId,
+      role 
+    });
+
+    if (!teamMember?.id) {
+      throw new Error('Team member not created');
     }
 
-    const memberId = await inviteTeamMember({ userId, teamId, role });
+    try {
+      await sendMagicLink({ email });
+    } catch (err) {
+      throw new MagicLinkError('Sending magic link failed. Check your SMTP settings');
+    }
 
-    return { memberId };
+    return {
+      memberId: teamMember.id,
+    };
   } catch (err) {
+    if (userAccount?.user_id) {
+      await fetchGraphQL(deleteUserMutation, { id: userAccount?.user_id });
+    }
+
+    if (teamMember?.id) {
+      await fetchGraphQL(deleteMemberMutation, { id: teamMember.id });
+    }
+
     return apiError(err);
   }
 };

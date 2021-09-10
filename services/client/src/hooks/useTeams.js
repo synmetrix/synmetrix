@@ -1,7 +1,5 @@
 import { useEffect, useMemo } from 'react';
 
-import useCurrentTeamState from './useCurrentTeamState';
-
 import useMutation from './useMutation';
 import useQuery from './useQuery';
 
