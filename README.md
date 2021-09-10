@@ -42,7 +42,7 @@ Password: `demodemo`
 
 ## Quick Start 
 
-NOTE: Please, install `python3`, `pip3`, `yarn` and `node` on your host machine before.
+NOTE: Please, install  `docker`, `python3`, `pip3`, `yarn` and `node` on your host machine before.
 
 ```
 git clone https://github.com/mlcraft-io/mlcraft.git
