@@ -10,6 +10,7 @@ import Container from 'components/Container';
 import InviteTeamMemberModal from 'components/InviteTeamMemberModal';
 import TeamSettingsModal from 'components/TeamSettingsModal';
 
+import useCurrentUser from 'hooks/useCurrentUser';
 import useLocation from 'hooks/useLocation';
 import useCheckResponse from 'hooks/useCheckResponse';
 import useTeams from 'hooks/useTeams';
@@ -23,7 +24,8 @@ const Team = () => {
   const [location, setLocation] = useLocation();
   const { withAuthPrefix } = useAppSettings();
   const basePath = withAuthPrefix('/team');
-  const { currentTeamState: currentTeam } = useCurrentTeamState();
+  const { queries: { execQueryCurrentUser } } = useCurrentUser();
+  const { currentTeamState: currentTeam, setCurrentTeamState } = useCurrentTeamState();
 
   const isNewTeam = location.pathname.includes('/new');
 
@@ -93,6 +95,10 @@ const Team = () => {
 
   const onUpdate = (res) => {
     if (res) {
+      const team = res?.update_teams_by_pk || res.create_team;
+
+      setCurrentTeamState(team);
+      execQueryCurrentUser();
       execQueryAll();
     }
   };

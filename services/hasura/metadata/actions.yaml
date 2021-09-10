@@ -9,6 +9,7 @@ actions:
   definition:
     kind: synchronous
     handler: http://actions:3000/rpc/create_team
+    forward_client_headers: true
   permissions:
   - role: user
 - name: fetch_dataset

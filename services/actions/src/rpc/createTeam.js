@@ -3,11 +3,11 @@ import inviteTeamMember from './inviteTeamMember';
 import { fetchGraphQL } from '../utils/graphql';
 import apiError from '../utils/apiError';
 
-
 const createTeamMutation = `
   mutation CreateTeam($name: String) {
     insert_teams_one(object: { name: $name }) {
       id
+      name
     }
   }
 `;
@@ -15,7 +15,7 @@ const createTeamMutation = `
 const createTeam = async ({ name }) => {
   const res = await fetchGraphQL(createTeamMutation, { name });
 
-  return res?.data?.insert_teams_one?.id;
+  return res?.data?.insert_teams_one;
 };
 
 export default async (session, input) => {
@@ -24,10 +24,12 @@ export default async (session, input) => {
   const role = 'owner';
 
   try {
-    const teamId = await createTeam({ name });
+    const newTeam = await createTeam({ name });
+    const { id: teamId } = newTeam;
+
     await inviteTeamMember(session, { userId, teamId, role });
 
-    return { teamId };
+    return newTeam;
   } catch (err) {
     return apiError(err);
   }

@@ -12,6 +12,8 @@ const currentTeamSelector = selector({
     const userAtomValue = get(currentUserAtom);
     const teamAtomValue = get(currentTeamAtom);
 
+    console.log('teamAtomValue');
+    console.log(teamAtomValue);
     const defaultTeam = userAtomValue?.users_by_pk?.members?.[0]?.team;
 
     return teamAtomValue || defaultTeam || {};

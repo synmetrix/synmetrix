@@ -30,8 +30,8 @@ export default () => {
     setRefreshToken(null);
   }, [setAuthToken, setRefreshToken]);
 
-  const doLogout = useCallback(() => {
-    logout.run();
+  const doLogout = useCallback(async () => {
+    await logout.run();
     cleanTokens();
     setCurrentTeamState(null);
   }, [cleanTokens, logout, setCurrentTeamState]);
