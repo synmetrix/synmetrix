@@ -131,8 +131,9 @@ type InviteTeamMemberOutput {
 }
 
 type CreateTeamOutput {
-  id: uuid!
-  name: String!
+  code: String
+  message: String
+  teamId: uuid
 }
 
 type GenSQLOutput {

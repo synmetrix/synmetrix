@@ -324,6 +324,7 @@
       - db_params
       - db_type
       - name
+      - team_id
       - user_id
       backend_only: false
   select_permissions:
