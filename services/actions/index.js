@@ -44,7 +44,7 @@ app.post('/rpc/:method', async (req, res) => {
     });
   }
 
-  const data = await module.default(session, input);
+  const data = await module.default(session, input, req.headers);
 
   if (data) {
     if (data.error) {

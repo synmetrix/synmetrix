@@ -10,15 +10,11 @@ import {
   saveRefreshToken,
   removeRefreshToken,
   getRefreshToken,
-
-  saveCurrentUser,
-  removeCurrentUser,
-  getCurrentUser 
 } from '../utils/storage';
 
 export const currentUserAtom = atom({
   key: 'currentUserAtom',
-  default: getCurrentUser(),
+  default: {},
 });
 
 export const currentTokenAtom = atom({
@@ -50,10 +46,7 @@ export const currentUserSelector = selector({
   key: 'currentUserSelector',
   get: ({ get }) => get(currentUserAtom),
   set: ({ set }, newData) => {
-    removeCurrentUser();
-
     if (newData) {
-      saveCurrentUser(newData);
       set(currentUserAtom, newData);
     } else {
       set(currentUserAtom, {});
@@ -109,15 +102,3 @@ export const jwtPayload = selector({
     };
   }
 });
-
-if (module.hot) {
-  module.hot.dispose(function() {
-    console.log('dispose')
-    // module is about to be replaced
-  })
-
-  module.hot.accept(function() {
-    console.log('accept')
-    // module or one of its dependencies was just updated
-  })
-}

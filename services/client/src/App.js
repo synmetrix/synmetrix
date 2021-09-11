@@ -1,5 +1,4 @@
 import React, { useEffect } from 'react';
-import { hot } from 'react-hot-loader/root';
 
 import { useRecoilSnapshot, RecoilRoot } from 'recoil';
 import Routes from './Routes';
@@ -33,4 +32,4 @@ const App = () => (
 
 App.propTypes = {};
 
-export default hot(App);
+export default App;

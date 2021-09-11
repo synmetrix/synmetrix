@@ -1,5 +1,5 @@
 import React, { useEffect, useCallback, useMemo } from 'react';
-import { Button, Icon } from 'antd';
+import { Button, Icon, message } from 'antd';
 
 import { useTranslation } from 'react-i18next';
 import { useSetState } from 'ahooks';
@@ -10,6 +10,7 @@ import Container from 'components/Container';
 import InviteTeamMemberModal from 'components/InviteTeamMemberModal';
 import TeamSettingsModal from 'components/TeamSettingsModal';
 
+import useCurrentUser from 'hooks/useCurrentUser';
 import useLocation from 'hooks/useLocation';
 import useCheckResponse from 'hooks/useCheckResponse';
 import useTeams from 'hooks/useTeams';
@@ -23,7 +24,8 @@ const Team = () => {
   const [location, setLocation] = useLocation();
   const { withAuthPrefix } = useAppSettings();
   const basePath = withAuthPrefix('/team');
-  const { currentTeamState: currentTeam } = useCurrentTeamState();
+  const { queries: { execQueryCurrentUser } } = useCurrentUser();
+  const { currentTeamState: currentTeam, setCurrentTeamState } = useCurrentTeamState();
 
   const isNewTeam = location.pathname.includes('/new');
 
@@ -93,6 +95,13 @@ const Team = () => {
 
   const onUpdate = (res) => {
     if (res) {
+      const team = res?.update_teams_by_pk || res.create_team;
+
+      if (team) {
+        setCurrentTeamState(team);
+      }
+
+      execQueryCurrentUser();
       execQueryAll();
     }
   };
@@ -109,6 +118,15 @@ const Team = () => {
     onUpdate(res);
   };
 
+  const onDelete = (res) => {
+    if (res.delete_members_by_pk) {
+      message.success(t('Team member has been deleted'));
+      onUpdate(res);
+    } else if (res.delete_members_by_pk === null) {
+      message.error(t('You have no permissions'));
+    }
+  };
+
   useCheckResponse(createTeamMutation, closeModal, {
     successMessage: t('New team has been created'),
   });
@@ -117,8 +135,8 @@ const Team = () => {
     successMessage: t('New team member has been invited'),
   });
 
-  useCheckResponse(deleteMutation, onUpdate, {
-    successMessage: t('Team member has been deleted'),
+  useCheckResponse(deleteMutation, onDelete, {
+    successMessage: null,
   });
 
   useCheckResponse(updateTeamMutation, closeModal, {

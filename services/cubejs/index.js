@@ -23,12 +23,16 @@ const pushError = (req, error) => {
 };
 
 const setupAuthInfo = async (req, auth) => {
-  const { authorization } = req.headers;
+  const { 
+    authorization: cubejsAuthToken,
+    'x-hasura-authorization': authToken,
+  } = req.headers;
+
   let jwtDecoded;
   let error;
 
   try {
-    jwtDecoded = jwt.verify(authorization, CUBEJS_SECRET);
+    jwtDecoded = jwt.verify(cubejsAuthToken, CUBEJS_SECRET);
   } catch (err) {
     return pushError(req, err.message);
   }
@@ -41,7 +45,7 @@ const setupAuthInfo = async (req, auth) => {
     return pushError(req, error);
   }
 
-  const dataSource = await findDataSource({ dataSourceId });
+  const dataSource = await findDataSource({ dataSourceId, authToken });
 
   if (!dataSource) {
     error = `Source "${dataSourceId}" not found`;
@@ -49,7 +53,7 @@ const setupAuthInfo = async (req, auth) => {
     return pushError(req, error);
   }
 
-  const schemaVersion = await getSchemaVersion({ dataSourceId });
+  const schemaVersion = await getSchemaVersion({ dataSourceId, authToken });
   const dataSourceVersion = JSum.digest(dataSource, 'SHA256', 'hex');
   const dbType = dataSource.db_type?.toLowerCase();
 
@@ -60,6 +64,7 @@ const setupAuthInfo = async (req, auth) => {
     dbType,
     schemaVersion,
     dataSourceVersion,
+    authToken,
   };
 };
 
@@ -186,10 +191,10 @@ const options = {
   schemaVersion: ({ securityContext }) => securityContext?.schemaVersion,
   driverFactory,
   repositoryFactory: ({ securityContext }) => {
-    const { dataSourceId } = securityContext || {};
+    const { dataSourceId, authToken } = securityContext || {};
 
     return {
-      dataSchemaFiles: () => dataSchemaFiles({ dataSourceId }),
+      dataSchemaFiles: () => dataSchemaFiles({ dataSourceId, authToken }),
     };
   },
   telemetry: false,

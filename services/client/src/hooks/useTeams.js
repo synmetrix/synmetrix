@@ -1,15 +1,13 @@
 import { useEffect, useMemo } from 'react';
 
-import useCurrentTeamState from './useCurrentTeamState';
-import useCurrentUser from './useCurrentUser';
-
 import useMutation from './useMutation';
 import useQuery from './useQuery';
 
 const newTeamMutation = `
   mutation CreateTeam($name: String!) {
     create_team(name: $name) {
-      teamId
+      id
+      name
     }
   }
 `;
@@ -46,9 +44,6 @@ export default (props = {}) => {
   const { params = {} } = props;
   const { editId } = params;
 
-  const { queries: { execQueryCurrentUser } } = useCurrentUser();
-  const { setCurrentTeamState } = useCurrentTeamState();
-
   const [createMutation, execCreateMutation] = useMutation(newTeamMutation, { role });
   const [updateMutation, execUpdateMutation] = useMutation(editTeamMutation, { role });
 
@@ -70,23 +65,6 @@ export default (props = {}) => {
       execQueryCurrent();
     }
   }, [editId, execQueryCurrent]);
-
-  useEffect(() => {
-    if (createMutation?.data) {
-      execQueryCurrentUser();
-    }
-
-    if (updateMutation?.data) {
-      const team = updateMutation?.data?.update_teams_by_pk;
-      setCurrentTeamState(team);
-      execQueryCurrentUser();
-    }
-  }, [
-    createMutation.data,
-    execQueryCurrentUser,
-    updateMutation.data,
-    setCurrentTeamState
-  ]);
 
   return {
     current,

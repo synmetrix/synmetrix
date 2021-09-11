@@ -35,15 +35,17 @@ const upsertSchemaMutation = `
   }
 `;
 
-export const findDataSource = async ({ dataSourceId }) => {
-  let res = await fetchGraphQL(sourceQuery, { id: dataSourceId });
+export const findDataSource = async ({ dataSourceId, authToken }) => {
+  let res = await fetchGraphQL(sourceQuery, { id: dataSourceId }, authToken);
   res = res?.data?.datasources_by_pk;
 
   return res;
 };
 
 export const createDataSchema = async (object) => {
-  let res = await fetchGraphQL(upsertSchemaMutation, { object });
+  const { authToken, ...newObject } = object;
+
+  let res = await fetchGraphQL(upsertSchemaMutation, { object: newObject }, authToken);
   res = res?.data?.insert_dataschemas_one;
 
   return res;
@@ -64,13 +66,17 @@ export const findDataSchemas = async (args) => {
     vars = set('where.branch._eq', args.branch, vars);
   }
 
-  let dataSchemas = await fetchGraphQL(allSchemasQuery, vars);
+  let dataSchemas = await fetchGraphQL(allSchemasQuery, vars, args.authToken);
   dataSchemas = dataSchemas?.data?.dataschemas;
 
   return dataSchemas;
 };
 
 export const dataSchemaFiles = async (args) => {
+  if (!args.dataSourceId) {
+    return [];
+  }
+
   const schemas = await findDataSchemas(args);
 
   return (schemas || []).map(r => ({

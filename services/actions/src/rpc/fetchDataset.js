@@ -18,7 +18,7 @@ const explorationQuery = `
   }
 `;
 
-export const fetchData = async (exploration, args = {}) => {
+export const fetchData = async (exploration, args, authToken) => {
   let { playground_state: playgroundState } = exploration;
 
   const { 
@@ -28,7 +28,7 @@ export const fetchData = async (exploration, args = {}) => {
     format = 'json',
     limit,
     offset,
-  } = args;
+  } = args || {};
 
   if (limit) {
     playgroundState.limit = limit;
@@ -41,6 +41,7 @@ export const fetchData = async (exploration, args = {}) => {
   const cubejs = cubejsApi({
     dataSourceId: exploration.datasource_id,
     userId: userId,
+    authToken,
   });
 
   let updatedPlaygroundState = playgroundState;
@@ -68,18 +69,20 @@ export const fetchData = async (exploration, args = {}) => {
   };
 };
 
-export default async (session, input) => {
+export default async (session, input, headers) => {
   const { exploration_id: explorationId } = input || {};
   const userId = session?.['x-hasura-user-id'];
+  const authToken = headers?.authorization;
 
   try {
-    const exploration = await fetchGraphQL(explorationQuery, { id: explorationId });
+    const exploration = await fetchGraphQL(explorationQuery, { id: explorationId }, authToken);
 
     const result = await fetchData(
       exploration?.data?.explorations_by_pk,
       {
         userId,
-      }
+      },
+      authToken,
     );
 
     return result;

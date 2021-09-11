@@ -93,7 +93,7 @@ export default ({ basePath, setupAuthInfo, cubejs }) => {
 
   router.post(`${basePath}/v1/generate-dataschema`, async (req, res) => {
     const { securityContext } = req;
-    const { dataSourceId, userId, dbType } = securityContext;
+    const { dataSourceId, userId, dbType, authToken } = securityContext;
 
     const driver = await cubejs.options.driverFactory({ securityContext });
 
@@ -114,6 +114,7 @@ export default ({ basePath, setupAuthInfo, cubejs }) => {
       const dataSchemas = await findDataSchemas({
         dataSourceId,
         branch,
+        authToken,
       });
 
       const existedFiles = dataSchemas.map(row => row.name);
@@ -132,7 +133,7 @@ export default ({ basePath, setupAuthInfo, cubejs }) => {
         name: file.fileName,
         code: file.content,
         user_id: userId,
-      }));
+      }, authToken));
 
       if (schemaUpdateQueries.length) {
         await Promise.all(schemaUpdateQueries);

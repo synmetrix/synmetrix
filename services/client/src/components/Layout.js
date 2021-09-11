@@ -77,22 +77,22 @@ const TeamMenu = ({ mode, anyTeam, members }) => {
     return null;
   }
 
-  const teamSubMenu = [
-    {
-      path: withAuthPrefix('/team/new'),
-      title: t('Create new team'),
-    }
-  ];
+  const teamSubMenu = [];
 
   members?.forEach((member) => {
     const { team } = member || {};
     const { name } = team;
 
-    teamSubMenu.unshift({
+    teamSubMenu.push({
       onClick: () => setCurrentTeamState(team),
       path: location,
       title: name,
     });
+  });
+
+  teamSubMenu.push({
+    path: withAuthPrefix('/team/new'),
+    title: t('Create new team'),
   });
 
   const routes = [
@@ -124,7 +124,6 @@ const MainMenu = (props) => {
 
   const dataSources = currentUser?.datasources || [];
   const dashboards = currentUser?.dashboards || [];
-  const dashboardsCount = dashboards?.length || 0;
 
   const dataSourceItems = dataSources.map(source => ({
     key: source.id,
@@ -138,10 +137,11 @@ const MainMenu = (props) => {
     title: dashboard.name,
   }));
 
+  const dashboardsCount = dashboardItems?.length || 0;
   const lastUsedDataSourceId = null;
 
-  const lastDataSource = dataSources.find(source => source.id == lastUsedDataSourceId);
-  const dataSourceId = lastDataSource?.id || dataSources?.[0]?.id || '';
+  const lastDataSource = dataSources.find(source => source.id === lastUsedDataSourceId);
+  const dataSourceId = lastDataSource?.id || dataSourceItems?.[0]?.key || '';
 
   let routes = [
     {

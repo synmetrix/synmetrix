@@ -1,19 +1,22 @@
 import { atom, selector } from 'recoil';
-
-import { removeTeam, saveTeam, getTeam } from '../utils/storage';
+import { currentUserAtom } from './currentUser';
 
 const currentTeamAtom = atom({
   key: 'currentTeamAtom',
-  default: getTeam(),
+  default: null,
 });
 
 const currentTeamSelector = selector({
   key: 'currentTeam',
-  get: ({ get }) => get(currentTeamAtom),
-  set: ({ set }, team) => {
-    removeTeam();
-    saveTeam(team);
+  get: ({ get }) => {
+    const userAtomValue = get(currentUserAtom);
+    const teamAtomValue = get(currentTeamAtom);
 
+    const defaultTeam = userAtomValue?.users_by_pk?.members?.[0]?.team;
+
+    return teamAtomValue || defaultTeam || {};
+  },
+  set: ({ set }, team) => {
     set(currentTeamAtom, team);
   }
 });

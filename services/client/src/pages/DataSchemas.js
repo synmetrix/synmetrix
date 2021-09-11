@@ -1,7 +1,8 @@
 import React, { useMemo, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 
-import { useUpdateEffect } from 'ahooks';
+import equals from 'utils/equals';
+import { useTrackedEffect } from 'ahooks';
 import { useTranslation } from 'react-i18next';
 import { Tabs } from 'antd';
 
@@ -141,15 +142,21 @@ const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
     }
   }, [all, dataSchemaName, openTab, openedTabs]);
 
+  useTrackedEffect((changes, previousDeps, currentDeps) => {
+    const prevData = previousDeps?.[0];
+    const currData = currentDeps?.[0];
 
-  const userSchemasCount = currentUser.dataschemas?.length || 0; 
-  const schemasCount = all?.length || 0; 
+    let dataDiff = false;
+    if (!prevData || !currData) {
+      dataDiff = false;
+    } else {
+      dataDiff = !equals(prevData, currData);
+    }
 
-  useUpdateEffect(() => {
-    if (schemasCount && userSchemasCount && userSchemasCount !== schemasCount) {
+    if (dataDiff) {
       execQueryAll({ requestPolicy: 'network-only' });
     }
-  }, [currentUser.dataschemas, execQueryAll, schemasCount, userSchemasCount]);
+  }, [currentUser.dataschemas, execQueryAll]);
 
   useCheckResponse(createMutation, () => {}, {
     successMessage: t('Schema created')

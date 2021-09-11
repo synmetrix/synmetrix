@@ -3,6 +3,7 @@ actions:
   definition:
     kind: synchronous
     handler: http://actions:3000/rpc/check_connection
+    forward_client_headers: true
   permissions:
   - role: user
 - name: create_team

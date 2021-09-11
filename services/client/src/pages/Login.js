@@ -27,7 +27,7 @@ const Login = () => {
     },
     password: {
       label: t('Password'),
-      required: true,
+      required: false,
       display: 'text',
       type: 'password',
       span: 24,
@@ -39,7 +39,11 @@ const Login = () => {
     const res = await login.run(values);
 
     if (res.statusCode && res.statusCode !== 200) {
-      setMessage(res.message);
+      setMessage(res.message || res.error);
+
+      if (res.error === 'Bad Request') {
+        setMessage(t('Use magic link to login'));
+      }
     } else {
       setMessage(null);
       doAuth(res.jwt_token, res.refresh_token);

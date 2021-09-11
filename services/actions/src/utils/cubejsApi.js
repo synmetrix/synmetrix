@@ -63,12 +63,13 @@ const normalizeQuery = playgroundState => {
   return { query };
 };
 
-const cubejsApi = ({ dataSourceId, userId }) => {
+const cubejsApi = ({ dataSourceId, userId, authToken }) => {
   const cubejsToken = jwt.sign({ dataSourceId, userId }, CUBEJS_SECRET, { expiresIn: '1d' });
 
   const reqHeaders = {
     Authorization: cubejsToken,
-  }
+    'X-Hasura-Authorization': authToken,
+  };
 
   const apiUrl = `${CUBEJS_URI}/cubejs/datasources/v1`;
   const init = new CubejsApiClient(cubejsToken, { apiUrl, headers: reqHeaders });
