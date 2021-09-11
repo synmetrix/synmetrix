@@ -56,7 +56,7 @@ export const rawSql = async (exploration, args, authToken) => {
 export default async (session, input, headers) => {
   const { exploration_id: explorationId } = input || {};
   const userId = session?.['x-hasura-user-id'];
-  const { authorization: authToken } = headers;
+  const { authorization: authToken } = headers || {};
 
   try {
     const exploration = await fetchGraphQL(explorationQuery, { id: explorationId }, authToken);

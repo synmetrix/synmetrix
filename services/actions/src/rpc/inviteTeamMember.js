@@ -14,12 +14,16 @@ class MagicLinkError extends Error {
   }
 };
 
-const checkTeamAccess = `
-  query ($id: uuid!, $userId: uuid!) {
+const teamQuery = `
+  query ($id: uuid!) {
     teams_by_pk(id: $id) {
       id
-      members(where: { _and: { user_id: { _eq: $userId }, member_roles: { team_role: { _eq: owner } } } }) {
+      members {
         id
+        user_id
+        member_roles {
+          team_role
+        }
       }
     }
   }
@@ -112,7 +116,7 @@ const createUserAccount = async ({ email }, authToken) => {
   return [res?.data?.auth_accounts?.[0], newUser];
 };
 
-const inviteTeamMember = async ({ userId, teamId, role }) => {
+export const createTeamMember = async ({ userId, teamId, role }) => {
   const res = await fetchGraphQL(inviteMemberMutation, { userId, teamId });
   const data = res?.data?.insert_members_one;
 
@@ -124,14 +128,22 @@ const inviteTeamMember = async ({ userId, teamId, role }) => {
   return data;
 };
 
+export const OWNER_ROLE = 'owner';
+const hasAccess = (members, userId) => {
+  const teamMember = members.find(member => member.user_id === userId);
+
+  return teamMember?.member_roles?.find(role => role.team_role === OWNER_ROLE);
+};
+
 export default async (session, input, headers) => {
   const {
     email,
     teamId,
-    role = 'member'
+    role = 'member',
+    magicLink = true,
   } = input || {};
 
-  const { authorization: authToken } = headers;
+  const { authorization: authToken } = headers || {};
   const userId = session?.['x-hasura-user-id'];
 
   let userAccount = {};
@@ -139,16 +151,16 @@ export default async (session, input, headers) => {
   let newUser = false;
 
   try {
-    const team = await fetchGraphQL(checkTeamAccess, { id: teamId, userId }, authToken);
-    const hasAccess = !!team.data?.teams_by_pk?.members?.length;
+    const team = await fetchGraphQL(teamQuery, { id: teamId }, authToken);
+    const members = team.data?.teams_by_pk?.members;
 
-    if (!hasAccess) {
+    if (members?.length && !hasAccess(members, userId)) {
       throw new Error('You have no permissions to invite users');
     }
 
     [userAccount, newUser] = await createUserAccount({ email });
 
-    teamMember = await inviteTeamMember({
+    teamMember = await createTeamMember({
       userId: userAccount.user_id,
       teamId,
       role 
@@ -159,7 +171,9 @@ export default async (session, input, headers) => {
     }
 
     try {
-      await sendMagicLink({ email });
+      if (magicLink) {
+        await sendMagicLink({ email });
+      }
     } catch (err) {
       throw new MagicLinkError('Sending magic link failed. Check your SMTP settings');
     }

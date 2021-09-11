@@ -1,8 +1,11 @@
 import { useEffect, useMemo } from 'react';
 import { useSubscription } from 'urql';
+import { set } from 'unchanged';
+import { useTrackedEffect } from 'ahooks';
 
 import useQuery from './useQuery';
 import useMutation from './useMutation';
+import useCurrentTeamState from './useCurrentTeamState';
 
 const newdatasourceMutation = `
   mutation ($object: datasources_insert_input!) {
@@ -21,11 +24,6 @@ const datasourcesQuery = `
       db_type
       created_at
       updated_at
-
-      dataschemas {
-        id
-        name
-      }
     }
     datasources_aggregate (where: $where) {
       aggregate {
@@ -94,11 +92,14 @@ const deldatasourceMutation = `
   }
 `;
 
+// TODO: add fragmets
 const datasourcesSubscription = `
   subscription ($offset: Int, $limit: Int, $where: datasources_bool_exp, $order_by: [datasources_order_by!]) {
     datasources (offset: $offset, limit: $limit, where: $where, order_by: $order_by) {
       id
       name
+      user_id
+      team_id
     }
   }
 `;
@@ -130,7 +131,7 @@ const runSourceSQLMutation = `
   }
 `;
 
-const getListVariables = (pagination) => {
+const getListVariables = (pagination, params = {}) => {
   let res = {
     order_by: {
       created_at: 'desc',
@@ -144,6 +145,10 @@ const getListVariables = (pagination) => {
     };
   }
 
+  if (params?.teamId) {
+    res = set('where.team_id._eq', params.teamId, res);
+  }
+
   return res;
 };
 
@@ -152,6 +157,12 @@ const handleSubscription = (_, response) => response;
 const role = 'user';
 export default ({ pauseQueryAll, pagination = {}, params = {}, disableSubscription = true }) => {
   const { editId } = params;
+  const { currentTeamState } = useCurrentTeamState();
+
+  const reqParams = {
+    ...params,
+    teamId: currentTeamState?.id,
+  };
 
   const [createMutation, execCreateMutation] = useMutation(newdatasourceMutation, { role });
   const [updateMutation, execUpdateMutation] = useMutation(editdatasourceMutation, { role });
@@ -164,7 +175,7 @@ export default ({ pauseQueryAll, pagination = {}, params = {}, disableSubscripti
   const [allData, execQueryAll] = useQuery({
     query: datasourcesQuery,
     pause: true,
-    variables: getListVariables(pagination),
+    variables: getListVariables(pagination, reqParams),
   }, {
     requestPolicy: 'cache-and-network',
     role,
@@ -192,6 +203,16 @@ export default ({ pauseQueryAll, pagination = {}, params = {}, disableSubscripti
       execQueryAll();
     }
   }, [pauseQueryAll, execQueryAll]);
+
+  useTrackedEffect((changes, prevDeps, currDeps) => {
+    const prevTeam = prevDeps?.[0];
+    const currTeam = currDeps?.[0];
+    const currPause = currDeps?.[1];
+
+    if (!currPause && prevTeam && currTeam && prevTeam !== currTeam) {
+      execQueryAll();
+    }
+  }, [currentTeamState.id, pauseQueryAll, execQueryAll]);
 
   const all = useMemo(() => allData.data?.datasources || [], [allData.data]);
   const totalCount = useMemo(() => allData.data?.datasources_aggregate.aggregate.count, [allData.data]);

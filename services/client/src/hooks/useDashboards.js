@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo } from 'react';
+import { set } from 'unchanged';
 
 import { getOr } from 'unchanged';
 import { useSubscription } from 'urql';
@@ -7,6 +8,7 @@ import useQuery from 'hooks/useQuery';
 import useMutation from 'hooks/useMutation';
 import useLocation from 'hooks/useLocation';
 import useAppSettings from 'hooks/useAppSettings';
+import useCurrentTeamState from './useCurrentTeamState';
 
 const newDashboardMutation = `
   mutation ($object: dashboards_insert_input!) {
@@ -72,11 +74,13 @@ const dashboardsSubscription = `
     dashboards (offset: $offset, limit: $limit, where: $where, order_by: $order_by) {
       id
       name
+      user_id
+      team_id
     }
   }
 `;
 
-const getListVariables = (pagination) => {
+const getListVariables = (pagination, params = {}) => {
   let res = {
     order_by: {
       created_at: 'desc',
@@ -90,6 +94,10 @@ const getListVariables = (pagination) => {
     };
   }
 
+  if (params?.teamId) {
+    res = set('where.team_id._eq', params.teamId, res);
+  }
+
   return res;
 };
 
@@ -99,6 +107,12 @@ const role = 'user';
 export default (props = {}) => {
   const { pauseQueryAll, pagination = {}, params = {}, disableSubscription = true } = props;
   const { withAuthPrefix } = useAppSettings();
+  const { currentTeamState } = useCurrentTeamState();
+
+  const reqParams = {
+    ...params,
+    teamId: currentTeamState?.id,
+  };
 
   const { editId } = params;
   const [, setLocation] = useLocation();
@@ -110,7 +124,7 @@ export default (props = {}) => {
   const [allData, execQueryAll] = useQuery({
     query: dashboardsQuery,
     pause: true,
-    variables: getListVariables(pagination),
+    variables: getListVariables(pagination, reqParams),
   }, {
     requestPolicy: 'cache-and-network',
     role,

@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 
-import { useUpdateEffect } from 'ahooks';
+import { useTrackedEffect } from 'ahooks';
 import { useTranslation } from 'react-i18next';
 import { Row, Col } from 'antd';
 
+import equals from 'utils/equals';
 import useSources from 'hooks/useSources';
 import useTableState from 'hooks/useTableState';
 import useCheckResponse from 'hooks/useCheckResponse';
@@ -64,14 +65,21 @@ const DataSourcesTable = ({ editId, onModalClose, onModalOpen }) => {
     pauseQueryAll: false,
   });
 
-  const userSourcesCount = currentUser.datasources?.length || 0; 
-  const sourcesCount = dataSources?.length || 0; 
+  useTrackedEffect((changes, previousDeps, currentDeps) => {
+    const prevData = previousDeps?.[0];
+    const currData = currentDeps?.[0];
 
-  useUpdateEffect(() => {
-    if (sourcesCount && userSourcesCount && userSourcesCount !== sourcesCount) {
+    let dataDiff = false;
+    if (!prevData || !currData) {
+      dataDiff = false;
+    } else {
+      dataDiff = !equals(prevData, currData);
+    }
+
+    if (dataDiff) {
       execQueryAll({ requestPolicy: 'network-only' });
     }
-  }, [userSourcesCount, sourcesCount, execQueryAll]);
+  }, [currentUser.datasources, execQueryAll]);
 
   const onDataSourceOpen = (record) => {
     onModalOpen(record);

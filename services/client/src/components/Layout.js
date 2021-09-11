@@ -124,7 +124,6 @@ const MainMenu = (props) => {
 
   const dataSources = currentUser?.datasources || [];
   const dashboards = currentUser?.dashboards || [];
-  const dashboardsCount = dashboards?.length || 0;
 
   const dataSourceItems = dataSources.map(source => ({
     key: source.id,
@@ -138,10 +137,11 @@ const MainMenu = (props) => {
     title: dashboard.name,
   }));
 
+  const dashboardsCount = dashboardItems?.length || 0;
   const lastUsedDataSourceId = null;
 
-  const lastDataSource = dataSources.find(source => source.id == lastUsedDataSourceId);
-  const dataSourceId = lastDataSource?.id || dataSources?.[0]?.id || '';
+  const lastDataSource = dataSources.find(source => source.id === lastUsedDataSourceId);
+  const dataSourceId = lastDataSource?.id || dataSourceItems?.[0]?.key || '';
 
   let routes = [
     {

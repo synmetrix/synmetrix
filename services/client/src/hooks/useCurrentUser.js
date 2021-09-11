@@ -1,11 +1,11 @@
-import { useEffect } from 'react';
+import { useEffect, useCallback } from 'react';
 
 import {
   useRecoilValue,
   useRecoilState,
 } from 'recoil';
 
-import { useDebounceFn, useUpdateEffect, useMount } from 'ahooks';
+import { useDebounceFn, useUpdateEffect, useMount, useTrackedEffect } from 'ahooks';
 
 import { useQuery } from 'urql';
 
@@ -26,7 +26,9 @@ const currentUserQuery = `
       id
       display_name
 
-      members(order_by: { team: { created_at: desc } }) {
+      members(
+        order_by: { created_at: desc }
+      ) {
         team {
           id
           name
@@ -34,27 +36,43 @@ const currentUserQuery = `
       }
     }
 
-    datasources (order_by: { created_at: desc }) {
+    datasources (
+      order_by: { created_at: desc }
+    ) {
       id
       name
+      user_id
+      team_id
     }
 
-    dataschemas (order_by: { created_at: desc }) {
+    dataschemas (
+      order_by: { created_at: desc }
+    ) {
       id
+      user_id
       name
       checksum
+      datasource {
+        team_id
+      }
     }
 
-    dashboards (order_by: { created_at: desc }) {
+    dashboards (
+      order_by: { created_at: desc }
+    ) {
       id
       name
+      user_id
+      team_id
     }
   }
 `;
 
+
 const role = 'user';
 export default (props = {}) => {
   const { pauseQuery = false } = props;
+
   const [currentUser, setCurrentUser] = useRecoilState(currentUserSelector);
   const {
     currentTeamState,
@@ -73,19 +91,33 @@ export default (props = {}) => {
     },
   });
 
+  const filterByTeam = useCallback((item) => {
+    if (currentTeamState.id && item.team_id !== currentTeamState?.id) {
+      return false;
+    }
+
+    return true;
+  }, [currentTeamState.id]);
+
   useEffect(() => {
     const userData = currentUserData?.data;
 
     if (userData) {
-      setCurrentUser(userData);
+      const newUserData = {
+        ...userData,
+        dashboards: userData.dashboards.filter(filterByTeam),
+        datasources: userData.datasources.filter(filterByTeam),
+      };
+
+      setCurrentUser(newUserData);
       
-      if (!currentTeamState && userData?.users_by_pk?.members.length) {
-        setCurrentTeamState(userData?.users_by_pk?.members?.[0]?.team);
+      if (!currentTeamState && newUserData?.users_by_pk?.members.length) {
+        setCurrentTeamState(newUserData?.users_by_pk?.members?.[0]?.team);
       }
     } else {
       setCurrentUser({});
     }
-  }, [currentUserData.data, setCurrentUser, currentTeamState, setCurrentTeamState]);
+  }, [currentUserData.data, setCurrentUser, currentTeamState, setCurrentTeamState, filterByTeam]);
 
   const { run: execQueryCurrentUser } = useDebounceFn((context) => {
     return doQueryCurrentUser({ requestPolicy: 'cache-and-network', role, ...context });
@@ -98,6 +130,16 @@ export default (props = {}) => {
       execQueryCurrentUser();
     }
   }, [authToken, execQueryCurrentUser]);
+
+  useTrackedEffect((changes, prevDeps, currDeps) => {
+    const prevTeam = prevDeps?.[0];
+    const currTeam = currDeps?.[0];
+    const currPause = currDeps?.[1];
+
+    if (!currPause && prevTeam && currTeam && prevTeam !== currTeam) {
+      execQueryCurrentUser();
+    }
+  }, [currentTeamState.id, pauseQuery, execQueryCurrentUser]);
 
   const { 
     subscription: sourcesSubscription,
@@ -128,10 +170,7 @@ export default (props = {}) => {
 
     if (anyData) {
       if (currentUser && Object.keys(currentUser).length) {
-        setCurrentUser({
-          ...currentUser,
-          ...anyData,
-        });
+        execQueryCurrentUser();
       }
 
       sourcesSubscription.data = null;
