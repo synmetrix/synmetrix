@@ -1,7 +1,7 @@
 import { useEffect, useMemo } from 'react';
 import { useSubscription } from 'urql';
 import { set } from 'unchanged';
-import { useTrackedEffect, useDebounceFn } from 'ahooks';
+import { useTrackedEffect, useThrottleFn } from 'ahooks';
 
 import useQuery from './useQuery';
 import useMutation from './useMutation';
@@ -181,7 +181,7 @@ export default ({ pauseQueryAll, pagination = {}, params = {}, disableSubscripti
     role,
   });
 
-  const { run: execQueryAll } = useDebounceFn(() => {
+  const { run: execQueryAll } = useThrottleFn(() => {
     return doQueryAll();
   }, {
     wait: 500,
