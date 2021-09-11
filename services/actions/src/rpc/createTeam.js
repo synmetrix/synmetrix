@@ -20,14 +20,26 @@ const deleteTeamMutation = `
   }
 `;
 
-const createTeam = async ({ name }, authToken) => {
-  const res = await fetchGraphQL(createTeamMutation, { name }, authToken);
+const updateAssetsMutation = `
+  mutation ($userId: uuid!, $teamId: uuid!) {
+    update_datasources(where: {_and: {team_id: {_is_null: true}, user_id: {_eq: $userId}}}, _set: {team_id: $teamId}) {
+      affected_rows
+    }
+    update_dashboards(where: {_and: {team_id: {_is_null: true}}, user_id: {_eq: $userId}}, _set: {team_id: $teamId}) {
+      affected_rows
+    }
+  }
+`;
+
+const createTeam = async ({ name }) => {
+  const res = await fetchGraphQL(createTeamMutation, { name });
   return res?.data?.insert_teams_one;
 };
 
-export default async (session, input) => {
+export default async (session, input, headers) => {
   const { name } = input || {};
   const userId = session?.['x-hasura-user-id'];
+  const authToken = headers?.authorization;
 
   let newTeam;
 
@@ -44,6 +56,8 @@ export default async (session, input) => {
       teamId,
       role: OWNER_ROLE,
     });
+
+    await fetchGraphQL(updateAssetsMutation, { teamId, userId }, authToken);
 
     return newTeam;
   } catch (err) {
