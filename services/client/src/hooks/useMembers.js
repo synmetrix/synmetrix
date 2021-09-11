@@ -17,7 +17,7 @@ const allMembersQuery = `
   }
 `;
 
-const editSchemaMutation = `
+const editMemberMutation = `
   mutation (
     $pk_columns: members_pk_columns_input!,
     $_set: members_set_input!
@@ -28,7 +28,7 @@ const editSchemaMutation = `
   }
 `;
 
-const delSchemaMutation = `
+const delMemberMutation = `
   mutation ($id: uuid!) {
     delete_members_by_pk(id: $id) {
       id
@@ -69,8 +69,8 @@ const role = 'user';
 export default (props = {}) => {
   const { pauseQueryAll, pagination = {}, params = {} } = props;
 
-  const [updateMutation, execUpdateMutation] = useMutation(editSchemaMutation, { role });
-  const [deleteMutation, execDeleteMutation] = useMutation(delSchemaMutation, { role });
+  const [updateMutation, execUpdateMutation] = useMutation(editMemberMutation, { role });
+  const [deleteMutation, execDeleteMutation] = useMutation(delMemberMutation, { role });
   const [inviteMutation, execInviteMutation] = useMutation(inviteMemberMutation, { role });
 
   const [allData, execQueryAll] = useQuery({

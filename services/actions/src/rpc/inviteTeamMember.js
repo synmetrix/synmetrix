@@ -14,6 +14,16 @@ class MagicLinkError extends Error {
   }
 };
 
+const checkTeamAccess = `
+  query ($id: uuid!, $userId: uuid!) {
+    teams_by_pk(id: $id) {
+      id
+      members(where: { _and: { user_id: { _eq: $userId }, member_roles: { team_role: { _eq: owner } } } }) {
+        id
+      }
+    }
+  }
+`;
 
 const checkAccountQuery = `
   query ($email: citext) {
@@ -88,15 +98,18 @@ const sendMagicLink = async ({ email }) => {
   return parseResponse(result);
 };
 
-const createUserAccount = async ({ email }) => {
+const createUserAccount = async ({ email }, authToken) => {
+  let newUser = false;
+
   try {
     await register({ email });
+    newUser = true;
   } catch (err) {
     logger.error(err);
   }
 
-  const res = await fetchGraphQL(checkAccountQuery, { email });
-  return res?.data?.auth_accounts?.[0];
+  const res = await fetchGraphQL(checkAccountQuery, { email }, authToken);
+  return [res?.data?.auth_accounts?.[0], newUser];
 };
 
 const inviteTeamMember = async ({ userId, teamId, role }) => {
@@ -111,18 +124,29 @@ const inviteTeamMember = async ({ userId, teamId, role }) => {
   return data;
 };
 
-export default async (session, input) => {
+export default async (session, input, headers) => {
   const {
     email,
     teamId,
     role = 'member'
   } = input || {};
 
+  const { authorization: authToken } = headers;
+  const userId = session?.['x-hasura-user-id'];
+
   let userAccount = {};
   let teamMember = {};
+  let newUser = false;
 
   try {
-    userAccount = await createUserAccount({ email });
+    const team = await fetchGraphQL(checkTeamAccess, { id: teamId, userId }, authToken);
+    const hasAccess = !!team.data?.teams_by_pk?.members?.length;
+
+    if (!hasAccess) {
+      throw new Error('You have no permissions to invite users');
+    }
+
+    [userAccount, newUser] = await createUserAccount({ email });
 
     teamMember = await inviteTeamMember({
       userId: userAccount.user_id,
@@ -131,7 +155,7 @@ export default async (session, input) => {
     });
 
     if (!teamMember?.id) {
-      throw new Error('Team member not created');
+      throw new Error('Team member was not created');
     }
 
     try {
@@ -144,7 +168,7 @@ export default async (session, input) => {
       memberId: teamMember.id,
     };
   } catch (err) {
-    if (userAccount?.user_id) {
+    if (userAccount?.user_id && newUser) {
       await fetchGraphQL(deleteUserMutation, { id: userAccount?.user_id });
     }
 

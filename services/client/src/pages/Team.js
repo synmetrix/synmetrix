@@ -1,5 +1,5 @@
 import React, { useEffect, useCallback, useMemo } from 'react';
-import { Button, Icon } from 'antd';
+import { Button, Icon, message } from 'antd';
 
 import { useTranslation } from 'react-i18next';
 import { useSetState } from 'ahooks';
@@ -97,7 +97,10 @@ const Team = () => {
     if (res) {
       const team = res?.update_teams_by_pk || res.create_team;
 
-      setCurrentTeamState(team);
+      if (team) {
+        setCurrentTeamState(team);
+      }
+
       execQueryCurrentUser();
       execQueryAll();
     }
@@ -115,6 +118,15 @@ const Team = () => {
     onUpdate(res);
   };
 
+  const onDelete = (res) => {
+    if (res.delete_members_by_pk) {
+      message.success(t('Team member has been deleted'));
+      onUpdate(res);
+    } else if (res.delete_members_by_pk === null) {
+      message.error(t('You have no permissions'));
+    }
+  };
+
   useCheckResponse(createTeamMutation, closeModal, {
     successMessage: t('New team has been created'),
   });
@@ -123,8 +135,8 @@ const Team = () => {
     successMessage: t('New team member has been invited'),
   });
 
-  useCheckResponse(deleteMutation, onUpdate, {
-    successMessage: t('Team member has been deleted'),
+  useCheckResponse(deleteMutation, onDelete, {
+    successMessage: null,
   });
 
   useCheckResponse(updateTeamMutation, closeModal, {

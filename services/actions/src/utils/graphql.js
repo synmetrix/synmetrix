@@ -23,7 +23,15 @@ export const parseResponse = async (res) => {
   return data;
 };
 
-export const fetchGraphQL = async (query, variables) => {
+export const fetchGraphQL = async (query, variables, authToken) => {
+  const headers = {};
+
+  if (authToken) {
+    headers.authorization = authToken;
+  } else {
+    headers['x-hasura-admin-secret'] = HASURA_GRAPHQL_ADMIN_SECRET;
+  }
+
   const result = await fetch(
     HASURA_ENDPOINT,
     {
@@ -32,9 +40,7 @@ export const fetchGraphQL = async (query, variables) => {
         query,
         variables
       }),
-      headers: {
-        'x-hasura-admin-secret': HASURA_GRAPHQL_ADMIN_SECRET
-      }
+      headers,
     }
   );
 

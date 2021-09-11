@@ -8,21 +8,17 @@ import { useSetState } from 'ahooks';
 import PopoverButton from 'components/PopoverButton';
 
 import useCurrentUserState from 'hooks/useCurrentUserState';
+import useCurrentTeamState from 'hooks/useCurrentTeamState';
 import useDashboards from 'hooks/useDashboards';
 import usePinnedItems from 'hooks/usePinnedItems';
 import useCheckResponse from 'hooks/useCheckResponse';
-
-// import useAuth from 'hooks/useAuth';
 
 const { Option } = Select;
 
 const SavePinnedItemButton = ({ spec, specConfig, type, explorationRowId, disabled }) => {
   const { t } = useTranslation();
   const { currentUserState: currentUser } = useCurrentUserState();
-  // const {
-  //   lastUsedDashboardId,
-  //   setLastUsedDashboardId,
-  // } = useAuth();
+  const { currentTeamState } = useCurrentTeamState();
 
   const lastUsedDashboardId = null;
   const [state, updateState] = useSetState({
@@ -49,7 +45,6 @@ const SavePinnedItemButton = ({ spec, specConfig, type, explorationRowId, disabl
   } = usePinnedItems();
 
   const onSelect = useCallback((value) => {
-    // setLastUsedDashboardId(value);
     updateState({ selectedDashboard: value, selectOpen: false });
   }, [updateState]);
 
@@ -62,6 +57,7 @@ const SavePinnedItemButton = ({ spec, specConfig, type, explorationRowId, disabl
       execCreateDashboardMutation({
         object: {
           name: state.newDashboardName,
+          team_id: currentTeamState.id,
         }
       });
     }

@@ -11,12 +11,14 @@ import pickKeys from 'utils/pickKeys';
 
 import useCheckResponse from 'hooks/useCheckResponse';
 import useSources from 'hooks/useSources';
+import useCurrentTeamState from 'hooks/useCurrentTeamState';
 
 import ModalView from 'components/ModalView';
 import DataSourceForm from 'components/DataSourceForm';
 
 const DataSourceModal = (props) => {
   const formRef = useRef(null);
+  const { currentTeamState } = useCurrentTeamState();
 
   const {
     mutations: {
@@ -91,7 +93,15 @@ const DataSourceModal = (props) => {
       } 
 
       // or create new
-      return execCreateMutation({ object: values });
+      const newSource = {
+        ...values,
+      };
+
+      if (currentTeamState.id) {
+        newSource.team_id = currentTeamState.id;
+      }
+
+      return execCreateMutation({ object: newSource });
     }).catch(err => {
       console.error('Error: ', err);
     });

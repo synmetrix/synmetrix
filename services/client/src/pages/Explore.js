@@ -101,7 +101,7 @@ const Explore = (props) => {
         )}
       >
         <Button type="primary">
-          <Link href="/d/sources">
+          <Link to={withAuthPrefix('/sources')}>
             {t('Connect Now')}
           </Link>
         </Button>
