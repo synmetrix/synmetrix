@@ -20,8 +20,39 @@ import useDashboards from './useDashboards';
 import useSchemas from './useSchemas';
 import useCurrentTeamState from './useCurrentTeamState';
 
+const membersFragment = `
+  team {
+    id
+    name
+  }
+`;
+
+const sourcesFragment = `
+  id
+  name
+  user_id
+  team_id
+`;
+
+const schemasFragment = `
+  id
+  user_id
+  name
+  checksum
+  datasource {
+    team_id
+  }
+`;
+
+const dashboardsFragment = `
+  id
+  name
+  user_id
+  team_id
+`;
+
 const currentUserQuery = `
-  query ($id: uuid!) {
+  query ($id: uuid!, $teamId: uuid) {
     users_by_pk (id: $id) {
       id
       display_name
@@ -29,41 +60,64 @@ const currentUserQuery = `
       members(
         order_by: { created_at: desc }
       ) {
-        team {
-          id
-          name
-        }
+        ${membersFragment}
       }
     }
 
     datasources (
       order_by: { created_at: desc }
     ) {
-      id
-      name
-      user_id
-      team_id
+      ${sourcesFragment}
     }
 
     dataschemas (
       order_by: { created_at: desc }
     ) {
-      id
-      user_id
-      name
-      checksum
-      datasource {
-        team_id
-      }
+      ${schemasFragment}
     }
 
     dashboards (
       order_by: { created_at: desc }
     ) {
+      ${dashboardsFragment}
+    }
+  }
+`;
+
+const currentUserWithTeamQuery = `
+  query ($id: uuid!, $teamId: uuid!) {
+    users_by_pk (id: $id) {
       id
-      name
-      user_id
-      team_id
+      display_name
+
+      members(
+        order_by: { created_at: desc }
+      ) {
+        ${membersFragment}
+      }
+    }
+
+    datasources (
+      order_by: { created_at: desc },
+      where: { team_id: { _eq: $teamId } }
+    ) {
+      ${sourcesFragment}
+    }
+
+    dataschemas (
+      order_by: { created_at: desc },
+      where: { datasource: {
+        team_id: { _eq: $teamId }
+      } }
+    ) {
+      ${schemasFragment}
+    }
+
+    dashboards (
+      order_by: { created_at: desc },
+      where: { team_id: { _eq: $teamId } }
+    ) {
+      ${dashboardsFragment}
     }
   }
 `;
@@ -84,20 +138,13 @@ export default (props = {}) => {
   const userId = JWTpayload?.['x-hasura-user-id'];
 
   const [currentUserData, doQueryCurrentUser] = useQuery({
-    query: currentUserQuery,
+    query: currentTeamState?.id ? currentUserWithTeamQuery : currentUserQuery,
     pause: pauseQuery,
     variables: {
       id: userId,
+      teamId: currentTeamState?.id,
     },
   });
-
-  const filterByTeam = useCallback((item) => {
-    if (currentTeamState.id && item.team_id !== currentTeamState?.id) {
-      return false;
-    }
-
-    return true;
-  }, [currentTeamState.id]);
 
   useEffect(() => {
     const userData = currentUserData?.data;
@@ -105,19 +152,15 @@ export default (props = {}) => {
     if (userData) {
       const newUserData = {
         ...userData,
-        dashboards: userData.dashboards.filter(filterByTeam),
-        datasources: userData.datasources.filter(filterByTeam),
       };
 
       setCurrentUser(newUserData);
       
-      if (!currentTeamState && newUserData?.users_by_pk?.members.length) {
+      if (!currentTeamState?.id && newUserData?.users_by_pk?.members.length) {
         setCurrentTeamState(newUserData?.users_by_pk?.members?.[0]?.team);
       }
-    } else {
-      setCurrentUser({});
     }
-  }, [currentUserData.data, setCurrentUser, currentTeamState, setCurrentTeamState, filterByTeam]);
+  }, [currentUserData.data, setCurrentUser, currentTeamState.id, setCurrentTeamState]);
 
   const { run: execQueryCurrentUser } = useDebounceFn((context) => {
     return doQueryCurrentUser({ requestPolicy: 'cache-and-network', role, ...context });
@@ -130,16 +173,6 @@ export default (props = {}) => {
       execQueryCurrentUser();
     }
   }, [authToken, execQueryCurrentUser]);
-
-  useTrackedEffect((changes, prevDeps, currDeps) => {
-    const prevTeam = prevDeps?.[0];
-    const currTeam = currDeps?.[0];
-    const currPause = currDeps?.[1];
-
-    if (!currPause && prevTeam && currTeam && prevTeam !== currTeam) {
-      execQueryCurrentUser();
-    }
-  }, [currentTeamState.id, pauseQuery, execQueryCurrentUser]);
 
   const { 
     subscription: sourcesSubscription,
@@ -170,7 +203,10 @@ export default (props = {}) => {
 
     if (anyData) {
       if (currentUser && Object.keys(currentUser).length) {
-        execQueryCurrentUser();
+        setCurrentUser({
+          ...currentUser,
+          ...anyData,
+        });
       }
 
       sourcesSubscription.data = null;

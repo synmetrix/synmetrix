@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
+import { useSetState , useTrackedEffect } from 'ahooks';
 
-import { useTrackedEffect } from 'ahooks';
+
 import { useTranslation } from 'react-i18next';
 import { Row, Col } from 'antd';
 
@@ -23,12 +24,12 @@ const DataSourcesTable = ({ editId, onModalClose, onModalOpen }) => {
     visibleModal: !!id,
   });
 
-  const [state, setState] = useState(initModal(editId));
+  const [state, setState] = useSetState(initModal(editId));
   const { currentUserState: currentUser } = useCurrentUserState();
 
   useEffect(
     () => setState(initModal(editId)),
-    [editId]
+    [editId, setState]
   );
 
   const {
@@ -83,13 +84,13 @@ const DataSourcesTable = ({ editId, onModalClose, onModalOpen }) => {
 
   const onDataSourceOpen = (record) => {
     onModalOpen(record);
-    setState(prev => ({ ...prev, editId: record.id, visibleModal: true }));
+    setState({ editId: record.id, visibleModal: true });
     execQueryCurrent();
   };
 
   const onDataSourceClose = () => {
-    onModalClose(state.editId);
-    setState(prev => ({ ...prev, editId: null, visibleModal: false }));
+    onModalClose();
+    setState({ editId: null, visibleModal: false });
   };
 
   const onSave = (_record, values) => {

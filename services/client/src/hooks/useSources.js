@@ -1,7 +1,7 @@
 import { useEffect, useMemo } from 'react';
 import { useSubscription } from 'urql';
 import { set } from 'unchanged';
-import { useTrackedEffect } from 'ahooks';
+import { useTrackedEffect, useDebounceFn } from 'ahooks';
 
 import useQuery from './useQuery';
 import useMutation from './useMutation';
@@ -172,13 +172,19 @@ export default ({ pauseQueryAll, pagination = {}, params = {}, disableSubscripti
   const [runQueryMutation, execRunQueryMutation] = useMutation(runSourceSQLMutation, { role });
   const [validateMutation, execValidateMutation] = useMutation(validateSourceMutation, { role });
 
-  const [allData, execQueryAll] = useQuery({
+  const [allData, doQueryAll] = useQuery({
     query: datasourcesQuery,
     pause: true,
     variables: getListVariables(pagination, reqParams),
   }, {
     requestPolicy: 'cache-and-network',
     role,
+  });
+
+  const { run: execQueryAll } = useDebounceFn(() => {
+    return doQueryAll();
+  }, {
+    wait: 500,
   });
 
   const [metaData, execQueryMeta] = useQuery({

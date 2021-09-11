@@ -23,8 +23,6 @@ import {
 
 import { GRAPHQL_WS_URL, GRAPHQL_SERVER_URL } from './useAppSettings';
 
-const { __DEV__ } = process.env;
-
 export default () => {
   const authToken = useRecoilValue(currentToken);
   const JWTpayload = useRecoilValue(jwtPayload);
@@ -107,11 +105,6 @@ export default () => {
         forwardSubscription: (operation) => subscriptionClient.request(operation),
       }),
     ];
-
-    if (__DEV__) {
-      const { devtoolsExchange } = require('@urql/devtools');
-      exchanges.unshift(devtoolsExchange);
-    }
 
     return createClient({
       url: GRAPHQL_SERVER_URL,

@@ -24,7 +24,6 @@ const Team = () => {
   const [location, setLocation] = useLocation();
   const { withAuthPrefix } = useAppSettings();
   const basePath = withAuthPrefix('/team');
-  const { queries: { execQueryCurrentUser } } = useCurrentUser();
   const { currentTeamState: currentTeam, setCurrentTeamState } = useCurrentTeamState();
 
   const isNewTeam = location.pathname.includes('/new');
@@ -101,7 +100,6 @@ const Team = () => {
         setCurrentTeamState(team);
       }
 
-      execQueryCurrentUser();
       execQueryAll();
     }
   };
