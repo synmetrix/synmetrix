@@ -41,7 +41,7 @@ const Login = () => {
     if (res.statusCode && res.statusCode !== 200) {
       setMessage(res.message || res.error);
 
-      if (res.error === 'Bad Request') {
+      if (res.error === 'Bad Request' && !res.message) {
         setMessage(t('Use magic link to login'));
       }
     } else {
