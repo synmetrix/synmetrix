@@ -30,7 +30,8 @@ services:
     restart: always
     command: yarn start.dev
     volumes:
-      - ./services/cubejs:/app
+      - ./services/cubejs/src:/app/src
+      - ./services/cubejs/index.js:/app/index.js
     ports:
       - 4000:4000
       - 9231:9229
