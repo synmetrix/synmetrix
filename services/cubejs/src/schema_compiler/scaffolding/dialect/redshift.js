@@ -1,1 +1,1 @@
-export * from './PostgresQuery';
+export * from './postgres.js';

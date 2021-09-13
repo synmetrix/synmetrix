@@ -1,7 +1,3 @@
-import MSSqlDriver from '@cubejs-backend/mssql-driver';
-
-export const MSSQL_DEFAULT_PORT = 1433;
-
 export const GRANULARITY_TO_INTERVAL = {
   day: (date) => `dateadd(day, DATEDIFF(day, 0, ${date}), 0)`,
   week: (date) => `dateadd(week, DATEDIFF(week, 0, ${date}), 0)`,
