@@ -198,6 +198,7 @@ const options = {
     };
   },
   telemetry: false,
+  scheduledRefreshTimer: 600, // TODO: install securityContexts for the refresh
   orchestratorOptions: {
     queryCacheOptions: {
       refreshKeyRenewalThreshold: 45,
