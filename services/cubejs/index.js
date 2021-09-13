@@ -124,9 +124,17 @@ const driverFactory = async ({ securityContext }) => {
 
   switch (dbType) {
     case 'bigquery':
+      let keyFile = {};
+
+      try {
+        keyFile = JSON.parse(dbConfig.keyFile);
+      } catch (err) {
+        return driverError(err);
+      }
+
       dbConfig = {
         ...dbConfig,
-        credentials: { ...dbConfig.keyFile }
+        credentials: { ...keyFile }
       };
       break;
     case 'mssql':
