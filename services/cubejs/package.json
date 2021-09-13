@@ -26,9 +26,7 @@
     "pg-connection-string": "^2.2.0",
     "ramda": "^0.27.0",
     "redis": "^3.0.2",
-    "unchanged": "^2.2.1"
-  },
-  "devDependencies": {
+    "unchanged": "^2.2.1",
     "nodemon": "^2.0.2"
   }
 }
