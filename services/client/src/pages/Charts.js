@@ -6,12 +6,17 @@ import { getOr } from 'unchanged';
 import ErrorFound from 'components/ErrorFound';
 import Breadcrumbs from 'components/Breadcrumbs';
 import Chart from 'components/Chart';
+import { cellRenderer } from 'components/TableView';
 import { rowHeight } from 'pages/Dashboards';
 
+import useQuery from 'hooks/useQuery';
 import useAppSettings from 'hooks/useAppSettings';
 import usePinnedItems from 'hooks/usePinnedItems';
 import useDimensions from 'hooks/useDimensions';
 import useExplorations from 'hooks/useExplorations';
+import useAnalyticsQueryMembers from 'hooks/useAnalyticsQueryMembers';
+import useDataSourceMeta from 'hooks/useDataSourceMeta';
+import { datasourceMetaQuery } from 'hooks/useSources';
 
 const Charts = ({ match }) => {
   const { withAuthPrefix } = useAppSettings();
@@ -33,13 +38,38 @@ const Charts = ({ match }) => {
   });
 
   const {
+    current: exploration,
     queries: {
       currentData: explorationData,
     },
   } = useExplorations({
     params: {
-      editId: current?.exploration?.id,
+      editId: current?.exploration_id,
     },
+  });
+
+  const datasourceId = exploration?.datasource_id;
+
+  const [metaData] = useQuery({
+    query: datasourceMetaQuery,
+    pause: false,
+    variables: {
+      datasource_id: datasourceId,
+    },
+  }, {
+    requestPolicy: 'cache-first',
+    role: 'user',
+  });
+
+  const meta = metaData?.data?.fetch_meta?.cubes || [];
+
+  const {
+    selectedQueryMembers,
+  } = useDataSourceMeta({ meta, playgroundState: exploration?.playground_state || {} });
+
+  const { baseMembers: { index: membersIndex } } = useAnalyticsQueryMembers({ 
+    selectedQueryMembers,
+    settings: exploration?.playground_settings,
   });
 
   const [height, setHeight] = useState(400);
@@ -65,6 +95,8 @@ const Charts = ({ match }) => {
     return <ErrorFound status={400} />;
   };
 
+  const loading = loadingPinnedItem || explorationData.fetching || metaData.fetching;
+
   return (
     <>
       <div style={{ margin: '15px 20px' }}>
@@ -74,8 +106,9 @@ const Charts = ({ match }) => {
         <Chart
           spec={current?.spec}
           values={explorationData?.data?.fetch_dataset?.data}
-          loading={loadingPinnedItem || explorationData.fetching}
+          loading={loading}
           size={size}
+          defaultTableCellRenderer={(args) => cellRenderer(args, membersIndex)}
         />
       </div>
     </>

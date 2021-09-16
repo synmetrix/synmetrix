@@ -40,14 +40,11 @@ const editPinnedItemQuery = `
       name
       spec
       spec_config
+      exploration_id
       dashboard {
         id
         layout
         name
-      }
-      exploration {
-        id
-        datasource_id
       }
     }
   }

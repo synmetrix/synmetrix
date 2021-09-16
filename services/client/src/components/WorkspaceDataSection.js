@@ -4,7 +4,6 @@ import PropTypes from 'prop-types';
 import { useSetState } from 'ahooks';
 
 import { Row, Col, Button, Icon, Collapse, Radio } from 'antd';
-import { defaultTableCellRenderer } from 'react-virtualized';
 import { useTranslation } from 'react-i18next';
 import { CSVLink } from 'react-csv';
 import cx from 'classnames';
@@ -16,7 +15,7 @@ import ComponentSwitcher from 'components/ComponentSwitcher';
 import PopoverButton from 'components/PopoverButton';
 import SimpleForm from 'components/SimpleForm';
 import PrismCode from 'components/PrismCode';
-import TableView from 'components/TableView';
+import TableView, { cellRenderer } from 'components/TableView';
 import SavePinnedItemButton from 'components/SavePinnedItemButton';
 
 import genName from 'utils/genName';
@@ -117,57 +116,6 @@ const WorkspaceDataSection = (props) => {
         });
       }
 
-      const cellRenderer = (args) => {
-        const { cellData, dataKey } = args;
-
-        const format = membersIndex?.[dataKey]?.format;
-        const meta = membersIndex?.[dataKey]?.meta;
-
-        if (format?.toString().toLowerCase() === 'link' || format?.type?.toString()?.toLowerCase() === 'link') {
-          const label = typeof(format) === 'object' ? format?.label : null;
-
-          return (
-            <a href={cellData?.toString()} target="_blank" rel="noopener noreferrer">
-              {label?.toString() || cellData?.toString()}
-            </a>
-          );
-        }
-
-        if (format?.toString().toLowerCase() === 'currency' || format?.type?.toString()?.toLowerCase() === 'currency') {
-          const symbol = typeof(meta) === 'object' ? meta?.currencySymbol : null;
-
-          return (
-            <>
-              <span>{!!cellData?.toString() && (symbol || '$')}</span>
-              <span>{cellData?.toString()}</span>
-            </>
-          );
-        }
-
-        if (format?.toString().toLowerCase() === 'imageUrl') {
-          return (
-            <a href={cellData?.toString()} target="_blank" rel="noopener noreferrer">
-              <img src={cellData.toString()} alt={cellData.toString()} />
-            </a>
-          );
-        }
-
-        if (format?.toString().toLowerCase() === 'percent') {
-          return (
-            <>
-              <span>{cellData?.toString()}</span>
-              <span>{!!cellData?.toString() && '%'}</span>
-            </>
-          );
-        }
-
-        if (format?.toString().toLowerCase() === 'id') {
-          return <i>{cellData?.toString()}</i>;
-        }
-
-        return defaultTableCellRenderer(args);
-      };
-
       return (
         <TableView
           messages={messages}
@@ -178,7 +126,7 @@ const WorkspaceDataSection = (props) => {
           columns={columns}
           data={rows}
           sortBy={order}
-          cellRenderer={cellRenderer}
+          cellRenderer={args => cellRenderer(args, membersIndex)}
           orderByFn={arr => arr}
           onSortUpdate={onQueryChange('order')}
           emptyDesc={tableEmptyDesc}

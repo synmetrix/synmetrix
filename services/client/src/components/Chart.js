@@ -16,7 +16,7 @@ const getSize = (size, diff) => {
   return result;
 };
 
-const Chart = ({ id, spec, loading, size, values }) => {
+const Chart = ({ id, spec, loading, size, values, defaultTableCellRenderer }) => {
   const data = {
     values,
   };
@@ -60,13 +60,14 @@ const Chart = ({ id, spec, loading, size, values }) => {
           width={width}
           height={height}
           data={data.values}
+          cellRenderer={defaultTableCellRenderer}
           columns={spec?.columns}
           colWidth={(size.width - 10) / spec?.columns?.length}
         />
       );
     }
     return null;
-  }, [data, id, size.height, size.width, spec]);
+  }, [data, id, size.height, size.width, spec, defaultTableCellRenderer]);
 
   return (
     <>
@@ -90,6 +91,7 @@ Chart.propTypes = {
   spec: PropTypes.object,
   values: PropTypes.array,
   loading: PropTypes.bool,
+  defaultTableCellRenderer: PropTypes.func,
 };
 
 Chart.defaultProps = {
@@ -98,6 +100,7 @@ Chart.defaultProps = {
   spec: {},
   values: [],
   loading: false,
+  defaultTableCellRenderer: undefined
 };
 
 export default Chart;

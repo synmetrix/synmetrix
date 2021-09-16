@@ -68,7 +68,7 @@ const editdatasourceQuery = `
   }
 `;
 
-const datasourceMetaQuery = `
+export const datasourceMetaQuery = `
   query ($datasource_id: uuid!) {
     fetch_meta(datasource_id: $datasource_id) {
       cubes

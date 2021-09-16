@@ -7,13 +7,18 @@ import { Link } from 'react-router-dom';
 import { Icon, Popconfirm } from 'antd';
 import Loader from 'components/Loader';
 import Chart from 'components/Chart';
+import { cellRenderer } from 'components/TableView';
 import EditableField from 'components/EditableField';
 
+import useQuery from 'hooks/useQuery';
 import useAppSettings from 'hooks/useAppSettings';
 import useCheckResponse from 'hooks/useCheckResponse';
 import useDimensions from 'hooks/useDimensions';
 import usePinnedItems from 'hooks/usePinnedItems';
 import useExplorations from 'hooks/useExplorations';
+import useAnalyticsQueryMembers from 'hooks/useAnalyticsQueryMembers';
+import useDataSourceMeta from 'hooks/useDataSourceMeta';
+import { datasourceMetaQuery } from 'hooks/useSources';
 
 import s from './PinnedItem.module.css';
 
@@ -43,13 +48,40 @@ const PinnedItem = ({ rowId, updateDashboard }) => {
   });
 
   const {
+    current: exploration,
     queries: {
       currentData: explorationData,
     },
   } = useExplorations({
     params: {
-      editId: current?.exploration?.id,
+      editId: current?.exploration_id,
     },
+  });
+
+  const slug = exploration?.id;
+  const datasourceId = exploration?.datasource_id;
+  const type = current?.spec?.type;
+
+  const [metaData] = useQuery({
+    query: datasourceMetaQuery,
+    pause: false,
+    variables: {
+      datasource_id: datasourceId,
+    },
+  }, {
+    requestPolicy: 'cache-first',
+    role: 'user',
+  });
+
+  const meta = metaData?.data?.fetch_meta?.cubes || [];
+
+  const {
+    selectedQueryMembers,
+  } = useDataSourceMeta({ meta, playgroundState: exploration?.playground_state || {} });
+
+  const { baseMembers: { index: membersIndex } } = useAnalyticsQueryMembers({ 
+    selectedQueryMembers,
+    settings: exploration?.playground_settings,
   });
 
   const onUpdate = () => {
@@ -93,10 +125,6 @@ const PinnedItem = ({ rowId, updateDashboard }) => {
       },
     });
   };
-
-  const slug = current?.exploration?.id;
-  const datasourceId = current?.exploration?.datasource_id;
-  const type = current?.spec?.type;
 
   let link = withAuthPrefix(`/explore/${datasourceId}/${slug}`);
 
@@ -144,6 +172,7 @@ const PinnedItem = ({ rowId, updateDashboard }) => {
         values={explorationData?.data?.fetch_dataset?.data}
         loading={loadingPinnedItem || explorationData.fetching}
         size={size}
+        defaultTableCellRenderer={(args) => cellRenderer(args, membersIndex)}
       />
     </div>
   );

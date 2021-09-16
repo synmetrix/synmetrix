@@ -33,6 +33,57 @@ class SortBySet extends Set {
   }
 };
 
+export const cellRenderer = (args, membersIndex) => {
+  const { cellData, dataKey } = args;
+
+  const format = membersIndex?.[dataKey]?.format;
+  const meta = membersIndex?.[dataKey]?.meta;
+
+  if (format?.toString().toLowerCase() === 'link' || format?.type?.toString()?.toLowerCase() === 'link') {
+    const label = typeof(format) === 'object' ? format?.label : null;
+
+    return (
+      <a href={cellData?.toString()} target="_blank" rel="noopener noreferrer">
+        {label?.toString() || cellData?.toString()}
+      </a>
+    );
+  }
+
+  if (format?.toString().toLowerCase() === 'currency' || format?.type?.toString()?.toLowerCase() === 'currency') {
+    const symbol = typeof(meta) === 'object' ? meta?.currencySymbol : null;
+
+    return (
+      <>
+        <span>{!!cellData?.toString() && (symbol || '$')}</span>
+        <span>{cellData?.toString()}</span>
+      </>
+    );
+  }
+
+  if (format?.toString().toLowerCase() === 'imageUrl') {
+    return (
+      <a href={cellData?.toString()} target="_blank" rel="noopener noreferrer">
+        <img src={cellData.toString()} alt={cellData.toString()} />
+      </a>
+    );
+  }
+
+  if (format?.toString().toLowerCase() === 'percent') {
+    return (
+      <>
+        <span>{cellData?.toString()}</span>
+        <span>{!!cellData?.toString() && '%'}</span>
+      </>
+    );
+  }
+
+  if (format?.toString().toLowerCase() === 'id') {
+    return <i>{cellData?.toString()}</i>;
+  }
+
+  return defaultTableCellRenderer(args);
+};
+
 const TableView = (props) => {
   const {
     sortBy,

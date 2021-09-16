@@ -24,6 +24,7 @@ const editExplorationQuery = `
   query ($id: uuid!, $offset: Int, $limit: Int) {
     explorations_by_pk(id: $id) {
       id
+      datasource_id
       playground_state
       playground_settings
       created_at
