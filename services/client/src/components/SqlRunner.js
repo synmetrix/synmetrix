@@ -2,7 +2,7 @@ import React, { useState, useRef } from 'react';
 import PropTypes from 'prop-types';
 
 import { useTranslation } from 'react-i18next';
-import { Button, Icon } from 'antd';
+import { Button, Icon, Alert } from 'antd';
 
 import MonacoEditor from 'react-monaco-editor';
 import { ResizableBox } from 'react-resizable';
@@ -32,7 +32,7 @@ const SqlRunner = ({ data, loading, error, onRun, width, height, editorHeight, .
           {t('Run')}
         </Button>
 
-        <div style={{ display: 'inline-block', marginLeft: 10 }}>
+        <div style={{ display: 'block', marginLeft: 10 }}>
           <PopoverButton
             iconType="setting"
             style={{ borderColor: 'transparent', boxShadow: 'none', color: 'rgba(0, 0, 0, 0.25)' }}
@@ -47,8 +47,12 @@ const SqlRunner = ({ data, loading, error, onRun, width, height, editorHeight, .
           />
         </div>
 
-        {Object.keys(error).length && <div className={s.error}>{error.toString()}</div> || null}
       </div>
+      {Object.keys(error).length && (
+        <div>
+          <Alert style={{ borderRadius: 0 }} type="error" message={error.toString()} closable />
+        </div>
+      ) || null}
       <div style={{ marginBottom: '22px' }}>
         <ResizableBox
           width={width}
