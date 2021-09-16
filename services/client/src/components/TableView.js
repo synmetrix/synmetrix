@@ -4,10 +4,11 @@ import PropTypes from 'prop-types';
 import { set, getOr } from 'unchanged';
 import cx from 'classnames';
 
-import { Empty } from 'antd';
+import { Empty, message } from 'antd';
 import { useTable, useSortBy } from 'react-table';
+import copy from 'copy-to-clipboard';
 
-import { Column, Table, SortDirection } from 'react-virtualized';
+import { Column, Table, SortDirection, defaultTableCellRenderer } from 'react-virtualized';
 
 import Loader from 'components/Loader';
 import MenuView from 'components/MenuView';
@@ -209,6 +210,34 @@ const TableView = (props) => {
     );
   }
 
+  const noRowsRenderer = () => {
+    return (
+      <div style={{ padding: '2px 4px', textAlign: 'center', height: rowHeight, backgroundColor: '#fff' }}>
+        No rows
+      </div>
+    );
+  };
+
+  const cellRenderer = (args) => {
+    const {
+      cellData,
+    } = args;
+
+    const onDoubleClick = () => {
+      const copied = copy(cellData);
+
+      if (copied) {
+        message.success('Column value copied to the clipboard');
+      }
+    };
+
+    return (
+      <span onDoubleClick={onDoubleClick}>
+        {defaultTableCellRenderer(args)}
+      </span>
+    );
+  }
+
   const loadingTip = loadingProgress.timeElapsed ? `${loadingProgress.stage} ${(parseFloat(loadingProgress.timeElapsed) / 1000).toFixed(2)} secs...` : loadingProgress.stage;
 
   return (
@@ -225,6 +254,7 @@ const TableView = (props) => {
             rowHeight={rowHeight}
             rowCount={rows.length}
             rowGetter={({ index }) => rows[index]}
+            noRowsRenderer={noRowsRenderer}
             overscanRowCount={3}
             onScroll={(values) => onScroll({ ...values, rowHeight })}
             scrollToAlignment='start'
@@ -253,6 +283,7 @@ const TableView = (props) => {
                   width={COL_WIDTH}
                   headerRenderer={headerRenderer}
                   cellDataGetter={cellDataGetter}
+                  cellRenderer={cellRenderer}
                   columnData={{
                     columnId: col.id,
                     onSortChange,

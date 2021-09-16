@@ -10,6 +10,7 @@
     "ahooks": "^2.10.9",
     "antd": "^3.26.20",
     "classnames": "^2.2.6",
+    "copy-to-clipboard": "^3.2.0",
     "core-js": "3",
     "dayjs": "^1.10.6",
     "dequal": "^1.0.0",
