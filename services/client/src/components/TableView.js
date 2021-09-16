@@ -53,6 +53,7 @@ const TableView = (props) => {
     scrollToIndex,
     onScroll,
     tableId,
+    cellRenderer: defaultCellRenderer,
     settings: {
       hideIndexColumn
     }
@@ -233,7 +234,7 @@ const TableView = (props) => {
 
     return (
       <span onDoubleClick={onDoubleClick}>
-        {defaultTableCellRenderer(args)}
+        {defaultCellRenderer(args)}
       </span>
     );
   }
@@ -330,6 +331,7 @@ TableView.propTypes = {
   footer: PropTypes.func,
   sortDisabled: PropTypes.bool,
   scrollToIndex: PropTypes.number,
+  cellRenderer: PropTypes.func,
   onScroll: PropTypes.func,
   tableId: PropTypes.string,
   className: PropTypes.string,
@@ -355,6 +357,7 @@ TableView.defaultProps = {
   footer: () => { },
   sortDisabled: false,
   scrollToIndex: 0,
+  cellRenderer: defaultTableCellRenderer,
   onScroll: () => {},
   tableId: null,
   className: null,
