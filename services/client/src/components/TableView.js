@@ -158,7 +158,21 @@ const TableView = (props) => {
     return children;
   };
 
-  const cellDataGetter = ({ rowData, dataKey }) => rowData.original[dataKey];
+  const cellDataGetter = ({ rowData, dataKey }) => { 
+    let val = rowData?.original?.[dataKey];
+
+    if (typeof(val) === 'object') {
+      try {
+        val = JSON.stringify(val);
+      } catch (err) {
+        console.error(`Can't stringify "${dataKey}" value: ${val}`);
+        console.error(err);
+      }
+    }
+
+    return val;
+  };
+
   const tableWidth = flatHeaders.length * COL_WIDTH;
 
   const onSortChange = (direction, columnId) => {
