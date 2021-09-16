@@ -233,7 +233,7 @@ const TableView = (props) => {
     };
 
     return (
-      <span onDoubleClick={onDoubleClick}>
+      <span title={cellData?.toString()} onDoubleClick={onDoubleClick}>
         {defaultCellRenderer(args)}
       </span>
     );
