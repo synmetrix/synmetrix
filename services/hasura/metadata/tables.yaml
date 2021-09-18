@@ -384,6 +384,19 @@
                 _eq: X-Hasura-User-Id
 - table:
     schema: public
+    name: events
+  insert_permissions:
+  - role: anonymous
+    permission:
+      check: {}
+      columns:
+      - data
+      - device_context
+      - page_context
+      - user
+      backend_only: false
+- table:
+    schema: public
     name: explorations
   object_relationships:
   - name: datasource

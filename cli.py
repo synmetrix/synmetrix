@@ -21,11 +21,13 @@ sys.path.append('.')
 
 import click
 import docker
+import uuid
 
 import json
 import signal
 
 from cli.utils import *
+from cli.telemetry import *
 from cli.services import commands as services_commands
 from cli.db import commands as db_commands
 from cli.docker import commands as docker_commands
@@ -41,20 +43,44 @@ console.log('Python Version: ', str(sys.version_info.major) + '.' + str(sys.vers
 console.log('Docker Build Time: ', docker_version_info['BuildTime'])
 console.log('Docker Version: ', docker_version_info['Version'])
 
-
 @click.group()
 @click.option('--env', envvar='ENV', default='dev', type=click.Choice(['dev', 'stage', 'prod']))
+@click.option('--config-file', '-c', default='./cli/config.yml')
+@click.option('--disable-telemetry', envvar='MLCRAFT_DISABLE_TELEMETRY', is_flag=True, default=False)
+@click.option('--telemetry-url', envvar='MLCRAFT_TELEMETRY_URL', default='https://api.mlcraft.org/v1/graphql')
 @click.pass_context
-def main(ctx, env):
+def main(ctx, env, config_file, disable_telemetry, telemetry_url):
     ctx.ensure_object(dict)
     ctx.obj['runtime_env'] = env
 
+    config = read_yaml(config_file)
+
+    if not config:
+        config = {
+            'user': {
+                'anonymous_id': str(uuid.uuid4())
+            }
+        }
+
+        write_yaml(config, config_file)
+
+    if config.get('enable_telemetry') == 'false':
+        disable_telemetry = True
+
+    if not disable_telemetry:
+        url =  config.get('telemetry_url') or telemetry_url
+        create_cli_event(url, {
+            'user': config.get('user', {})
+        })
+    else:
+        console.log('Telemetry is disabled')
+
+    ctx.obj['config'] = config
 
 main.add_command(db_commands.commands_group)
 main.add_command(services_commands.commands_group)
 main.add_command(docker_commands.commands_group)
 main.add_command(hasura_commands.commands_group)
-
 
 @main.command()
 @click.pass_context

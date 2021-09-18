@@ -6,6 +6,13 @@ actions:
     forward_client_headers: true
   permissions:
   - role: user
+- name: create_events
+  definition:
+    kind: asynchronous
+    handler: http://actions:3000/rpc/create_events
+    timeout: 10
+  permissions:
+  - role: anonymous
 - name: create_team
   definition:
     kind: synchronous
@@ -70,6 +77,7 @@ custom_types:
   enums: []
   input_objects:
   - name: SourceTable
+  - name: events_create_input
   objects:
   - name: CheckSourceOutput
   - name: GenSourceSchemaOutput
@@ -84,4 +92,5 @@ custom_types:
   - name: InviteTeamMemberOutput
   - name: CreateTeamOutput
   - name: GenSQLOutput
+  - name: events_create_mutation_response
   scalars: []

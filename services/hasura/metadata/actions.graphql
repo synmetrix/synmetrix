@@ -5,6 +5,12 @@ type Mutation {
 }
 
 type Mutation {
+  create_events(
+    objects: [events_create_input!]!
+  ): events_create_mutation_response!
+}
+
+type Mutation {
   create_team(
     name: String!
   ): CreateTeamOutput
@@ -67,6 +73,13 @@ type Mutation {
 
 input SourceTable {
   name: String!
+}
+
+input events_create_input {
+  data: json!
+  page_context: json
+  device_context: json
+  user: json!
 }
 
 type CheckSourceOutput {
@@ -137,5 +150,9 @@ type CreateTeamOutput {
 
 type GenSQLOutput {
   result: json
+}
+
+type events_create_mutation_response {
+  affected_rows: Int
 }
 
