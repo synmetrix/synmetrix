@@ -91,8 +91,8 @@ const Charts = ({ match }) => {
     ].filter(v => !!v);
   };
 
-  if (!rowId) {
-    return <ErrorFound status={400} />;
+  if (current === null || !rowId) {
+    return <ErrorFound status={404} />;
   };
 
   const loading = loadingPinnedItem || explorationData.fetching || metaData.fetching;
