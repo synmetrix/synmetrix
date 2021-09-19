@@ -36,7 +36,7 @@ def cli(ctx, admin_secret, hasura_dir, hasura_addr, cmd):
     ctx.invoke(
         docker_commands.build,
         name='hasura_cli',
-        path='./scripts/containers/hasura_cli',
+        path='./scripts/containers/hasura-cli',
     )
 
     cli_cmd = 'hasura-cli %s %s' % (' '.join(cmd), args)

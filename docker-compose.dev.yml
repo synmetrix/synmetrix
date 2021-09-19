@@ -43,7 +43,7 @@ services:
     restart: always
     command: ./start.sh
     build:
-      context: ./scripts/containers/hasura_cli
+      context: ./scripts/containers/hasura-cli
     ports:
       - 9693:9693
       - 9695:9695
@@ -79,7 +79,7 @@ services:
   hasura_plus:
     restart: always
     build:
-      context: ./scripts/containers/hasura_backend_plus
+      context: ./scripts/containers/hasura-backend-plus
     ports:
        - 8081:3000
     env_file:

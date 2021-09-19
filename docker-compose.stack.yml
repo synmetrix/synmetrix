@@ -1,0 +1,11 @@
+version: '3.8'
+
+services:
+  mlcraft_stack:
+    restart: always
+    build:
+      context: ./scripts/containers/mlcraft-stack
+    ports:
+       - 3000:3000
+    volumes:
+      - ./scripts/containers/mlcraft-stack/ecosystem.config.js:/app/ecosystem.config.js
