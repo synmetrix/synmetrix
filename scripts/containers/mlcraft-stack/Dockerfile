@@ -12,11 +12,11 @@ RUN chmod +x ./graphql-engine
 # hasura CLI
 RUN curl -L https://github.com/hasura/graphql-engine/raw/stable/cli/get.sh | bash
 
-# hasura backend plus
-RUN git clone https://github.com/nhost/hasura-backend-plus /app/hasura-backend-plus
-
 # mlcraft
 RUN git clone https://github.com/mlcraft-io/mlcraft /app/mlcraft
+
+# hasura backend plus
+RUN git clone https://github.com/nhost/hasura-backend-plus /app/hasura-backend-plus
 
 COPY . /app/
 

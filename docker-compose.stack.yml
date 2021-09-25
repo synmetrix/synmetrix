@@ -10,8 +10,6 @@ services:
       POSTGRES_USER: mlcraft_stack
       POSTGRES_PASSWORD: pg_pass
       POSTGRES_DB: mlcraft_stack
-    volumes:
-       - ./etc/schema.sql:/docker-entrypoint-initdb.d/00-schema.sql
 
   mlcraft_stack:
     restart: always
@@ -20,26 +18,19 @@ services:
     ports:
        - 5000:5000 # frontend app
        - 8080:8080 # hasura
-       - 3000:3000 # hasura-backend-plus
+       - 3030:3030 # hasura-backend-plus
+       - 3000:3000 # actions
+       - 4000:4000 # cubejs
     volumes:
       - ./scripts/containers/mlcraft-stack/ecosystem.config.js:/app/ecosystem.config.js
     environment:
       HASURA_GRAPHQL_DATABASE_URL: postgres://mlcraft_stack:pg_pass@postgres/mlcraft_stack
       HASURA_GRAPHQL_ADMIN_SECRET: mlcraft
-      HASURA_GRAPHQL_ENABLE_CONSOLE: "true"
-      HASURA_GRAPHQL_ENABLE_TELEMETRY: "false"
-      HASURA_GRAPHQL_JWT_SECRET: >-
-        {"type":"HS256", "key":
-        "jhyu89jiuhyg7678hoijhuytf7ghjiasodibagsdga9dha8os7df97a6sdgh9asudgo7f7g8h1uuoyafsod8pgasipdg8aps9dhaiaisydg8agsd87gasd9oihasd87gas78d"}
-      HASURA_GRAPHQL_UNAUTHORIZED_ROLE: anonymous
       HASURA_ENDPOINT: "http://localhost:8080/v1/graphql"
       SERVER_URL: "http://localhost:4000"
-      JWT_KEY: >-
-        jhyu89jiuhyg7678hoijhuytf7ghjiasodibagsdga9dha8os7df97a6sdgh9asudgo7f7g8h1uuoyafsod8pgasipdg8aps9dhaiaisydg8agsd87gasd9oihasd87gas78d
+      JWT_KEY: jhyu89jiuhyg7678hoijhuytf7ghjiasodibagsdga9dha8os7df97a6sdgh9asudgo7f7g8h1uuoyafsod8pgasipdg8aps9dhaiaisydg8agsd87gasd9oihasd87gas78d
       JWT_ALGORITHM: HS256
-      DATABASE_URL: postgres://mlcraft_stack:pg_pass@postgres/mlcraft_stack
-      AUTO_MIGRATE: "true"
-      AUTO_ACTIVATE_NEW_USERS: "true"
+      CUBEJS_SECRET: cubejsSecret
     depends_on:
       - redis
       - postgres
