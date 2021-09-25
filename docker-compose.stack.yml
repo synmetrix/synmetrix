@@ -27,7 +27,7 @@ services:
       HASURA_GRAPHQL_DATABASE_URL: postgres://mlcraft_stack:pg_pass@postgres/mlcraft_stack
       HASURA_GRAPHQL_ADMIN_SECRET: mlcraft
       HASURA_ENDPOINT: "http://localhost:8080/v1/graphql"
-      SERVER_URL: "http://localhost:4000"
+      HASURA_PLUS_SERVER_URL: "http://localhost:3030"
       JWT_KEY: jhyu89jiuhyg7678hoijhuytf7ghjiasodibagsdga9dha8os7df97a6sdgh9asudgo7f7g8h1uuoyafsod8pgasipdg8aps9dhaiaisydg8agsd87gasd9oihasd87gas78d
       JWT_ALGORITHM: HS256
       CUBEJS_SECRET: cubejsSecret

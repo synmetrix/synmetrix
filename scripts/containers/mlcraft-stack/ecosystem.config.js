@@ -6,7 +6,7 @@ module.exports = {
       env: {
         GRAPHQL_SERVER_URL: 'http://localhost:8080/v1/graphql',
         GRAPHQL_WS_URL: 'ws://localhost:8080/v1/graphql',
-        GRAPHQL_PLUS_SERVER_URL: 'http://localhost:3030',
+        GRAPHQL_PLUS_SERVER_URL: process.env.HASURA_PLUS_SERVER_URL,
       }
     },
     {
@@ -40,11 +40,15 @@ module.exports = {
         PORT: 3030,
         AUTO_ACTIVATE_NEW_USERS: true,
         DATABASE_URL: process.env.HASURA_GRAPHQL_DATABASE_URL,
+        SERVER_URL: process.env.HASURA_PLUS_SERVER_URL,
       }
     },
     {
       name: 'actions',
       script: 'cd mlcraft/services/actions && yarn install && yarn start',
+      env: {
+        CUBEJS_URL: 'http://localhost:4000',
+      }
     },
     {
       name: 'cubejs',
