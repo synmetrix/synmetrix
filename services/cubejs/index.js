@@ -12,6 +12,7 @@ import { dataSchemaFiles, findDataSource, getSchemaVersion } from './src/utils/d
 
 const { CUBEJS_SECRET } = process.env;
 
+const port = parseInt(process.env.PORT, 10) || 4000;
 const app = express();
 
 app.use(express.json({ limit: '50mb', extended: true }));
@@ -220,4 +221,4 @@ const cubejs = new ServerCore(options);
 app.use(routes({ basePath, setupAuthInfo, cubejs }));
 
 cubejs.initApp(app);
-app.listen(4000);
+app.listen(port);
