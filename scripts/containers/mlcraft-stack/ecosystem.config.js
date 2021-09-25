@@ -24,7 +24,7 @@ module.exports = {
   apps : [
     {
       name: 'client',
-      script: 'cd mlcraft/services/client && yarn install && yarn run build && cd /app && npx serve -s',
+      script: './run_client.sh',
       env: {
         GRAPHQL_SERVER_URL: 'http://localhost:8080/v1/graphql',
         GRAPHQL_WS_URL: 'ws://localhost:8080/v1/graphql',
@@ -59,7 +59,7 @@ module.exports = {
     },
     {
       name: 'hasura_plus',
-      script: 'cd hasura-backend-plus && yarn install && yarn run build && yarn start',
+      script: 'cd hasura-backend-plus && yarn install --network-timeout 100000 && yarn run build && yarn start',
       env: {
         PORT: HASURA_PLUS_PORT,
         AUTO_ACTIVATE_NEW_USERS: true,
@@ -73,7 +73,7 @@ module.exports = {
     },
     {
       name: 'actions',
-      script: 'cd mlcraft/services/actions && yarn install && yarn start',
+      script: 'cd mlcraft/services/actions && yarn install --network-timeout 100000 && yarn start',
       env: {
         PORT: ACTIONS_PORT,
         CUBEJS_URL,
@@ -84,7 +84,7 @@ module.exports = {
     },
     {
       name: 'cubejs',
-      script: 'cd mlcraft/services/cubejs && yarn install && yarn start',
+      script: 'cd mlcraft/services/cubejs && yarn install --network-timeout 100000 && yarn start',
       env: {
         PORT: CUBEJS_PORT,
         HASURA_ENDPOINT,

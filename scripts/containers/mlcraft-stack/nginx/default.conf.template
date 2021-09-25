@@ -1,0 +1,23 @@
+server {
+  listen 80;
+
+  location / {
+      root   /usr/share/nginx/html;
+      try_files $uri $uri/ /index.html;
+
+      sub_filter </head>
+              '</head><script language="javascript"\>
+              window.GRAPHQL_WS_URL = "$GRAPHQL_WS_URL";
+              window.GRAPHQL_SERVER_URL = "$GRAPHQL_SERVER_URL";
+              window.GRAPHQL_PLUS_SERVER_URL = "$GRAPHQL_PLUS_SERVER_URL";
+              </script>';
+      sub_filter_once on;
+  }
+
+
+  error_page   500 502 503 504  /50x.html;
+
+  location = /50x.html {
+    root   /usr/share/nginx/html;
+  }
+}

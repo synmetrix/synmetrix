@@ -24,7 +24,6 @@ services:
        - 4000:4000 # cubejs
     volumes:
       - ./scripts/containers/mlcraft-stack/ecosystem.config.js:/app/ecosystem.config.js
-      - ./scripts/containers/mlcraft-stack/nginx.conf:/app/nginx.conf
     environment:
       HASURA_GRAPHQL_DATABASE_URL: postgres://mlcraft_stack:pg_pass@postgres/mlcraft_stack
       HASURA_GRAPHQL_ADMIN_SECRET: mlcraft
