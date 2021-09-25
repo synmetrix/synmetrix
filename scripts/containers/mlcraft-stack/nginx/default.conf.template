@@ -1,23 +1,23 @@
 server {
-  listen 80;
+  listen 81;
 
   location / {
-      root   /usr/share/nginx/html;
-      try_files $uri $uri/ /index.html;
-
-      sub_filter </head>
-              '</head><script language="javascript"\>
-              window.GRAPHQL_WS_URL = "$GRAPHQL_WS_URL";
-              window.GRAPHQL_SERVER_URL = "$GRAPHQL_SERVER_URL";
-              window.GRAPHQL_PLUS_SERVER_URL = "$GRAPHQL_PLUS_SERVER_URL";
-              </script>';
-      sub_filter_once on;
+    proxy_pass http://localhost:5000;
   }
 
+  location /auth {
+    proxy_pass http://localhost:3000;
+  }
 
-  error_page   500 502 503 504  /50x.html;
+  location /v1/graphql {
+    proxy_pass http://localhost:8080;
+  }
 
-  location = /50x.html {
-    root   /usr/share/nginx/html;
+  location /v1/graphql {
+    proxy_pass http://localhost:8080;
+    proxy_http_version 1.1;
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection "Upgrade";
+    proxy_set_header Host $host;
   }
 }

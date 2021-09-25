@@ -17,6 +17,7 @@ services:
       context: ./scripts/containers/mlcraft-stack
     ports:
        - 80:80 # nginx app
+       - 81:81 # nginx app
        - 5000:5000 # frontend app
        - 8080:8080 # hasura
        - 3030:3030 # hasura-backend-plus

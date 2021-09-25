@@ -26,9 +26,9 @@ module.exports = {
       name: 'client',
       script: './run_client.sh',
       env: {
-        GRAPHQL_SERVER_URL: 'http://localhost:8080/v1/graphql',
-        GRAPHQL_WS_URL: 'ws://localhost:8080/v1/graphql',
-        GRAPHQL_PLUS_SERVER_URL: HASURA_PLUS_SERVER_URL,
+        GRAPHQL_SERVER_URL: '/v1/graphql',
+        GRAPHQL_WS_URL: 'ws://localhost:81/v1/graphql',
+        GRAPHQL_PLUS_SERVER_URL: '',
       }
     },
     {
@@ -59,7 +59,7 @@ module.exports = {
     },
     {
       name: 'hasura_plus',
-      script: 'cd hasura-backend-plus && yarn install --network-timeout 100000 && yarn run build && yarn start',
+      script: 'cd hasura-backend-plus && npm install --loglevel=error && npm run build && npm start',
       env: {
         PORT: HASURA_PLUS_PORT,
         AUTO_ACTIVATE_NEW_USERS: true,
@@ -73,7 +73,7 @@ module.exports = {
     },
     {
       name: 'actions',
-      script: 'cd mlcraft/services/actions && yarn install --network-timeout 100000 && yarn start',
+      script: 'cd mlcraft/services/actions && npm install --loglevel=error && npm start',
       env: {
         PORT: ACTIONS_PORT,
         CUBEJS_URL,
@@ -84,12 +84,16 @@ module.exports = {
     },
     {
       name: 'cubejs',
-      script: 'cd mlcraft/services/cubejs && yarn install --network-timeout 100000 && yarn start',
+      script: 'cd mlcraft/services/cubejs && npm install --loglevel=error && npm start',
       env: {
         PORT: CUBEJS_PORT,
         HASURA_ENDPOINT,
         CUBEJS_SECRET,
       }
+    },
+    {
+      name: 'nginx',
+      script: 'nginx -g "daemon off;"',
     },
   ]
 };
