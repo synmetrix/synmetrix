@@ -8,8 +8,7 @@ import dateParser from './dateParser.js';
 
 const { CubejsApi: CubejsApiClient } = cubejsClientCore;
 const CUBEJS_SECRET = process.env.CUBEJS_SECRET || 'testToken';
-const CUBEJS_URI = process.env.CUBEJS_URI || 'http://cubejs:4000';
-export const CUBEJS_DATA_LIMIT = 10000;
+const CUBEJS_URL = process.env.CUBEJS_URL || 'http://cubejs:4000';
 
 const queryBaseMembers = [
   'measures',
@@ -71,7 +70,7 @@ const cubejsApi = ({ dataSourceId, userId, authToken }) => {
     'X-Hasura-Authorization': authToken,
   };
 
-  const apiUrl = `${CUBEJS_URI}/cubejs/datasources/v1`;
+  const apiUrl = `${CUBEJS_URL}/cubejs/datasources/v1`;
   const init = new CubejsApiClient(cubejsToken, { apiUrl, headers: reqHeaders });
 
   const fetchCubeJS = async ({ route, method = 'get', params }) => {
