@@ -1,4 +1,4 @@
-export HASURA_GRAPHQL_ADMIN_SECRET=agGdvASmKl
+export HASURA_GRAPHQL_ADMIN_SECRET=devsecret
 
 ./create-network.sh
 
