@@ -63,6 +63,9 @@ module.exports = {
       env: {
         PORT: HASURA_PLUS_PORT,
         AUTO_ACTIVATE_NEW_USERS: true,
+        MAGIC_LINK_ENABLED: true,
+        EMAILS_ENABLED: true,
+        MIN_PASSWORD_LENGTH: process.env.MIN_PASSWORD_LENGTH || 6,
         DATABASE_URL: process.env.HASURA_GRAPHQL_DATABASE_URL,
         SERVER_URL: HASURA_PLUS_SERVER_URL,
         JWT_KEY,

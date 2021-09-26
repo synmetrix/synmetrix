@@ -17,5 +17,11 @@ services:
     environment:
       HASURA_GRAPHQL_DATABASE_URL: postgres://mlcraft_stack:pg_pass@postgres/mlcraft_stack
       HASURA_GRAPHQL_ADMIN_SECRET: mlcraft
+      SMTP_HOST: ${SECRETS_SMTP_HOST}
+      SMTP_PORT: ${SECRETS_SMTP_PORT}
+      SMTP_SECURE: ${SECRETS_SMTP_SECURE}
+      SMTP_USER: ${SECRETS_SMTP_USER}
+      SMTP_PASS: ${SECRETS_SMTP_PASS}
+      SMTP_SENDER: ${SECRETS_SMTP_SENDER}
     depends_on:
       - postgres
