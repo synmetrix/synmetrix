@@ -47,18 +47,17 @@ module.exports = {
           key: JWT_KEY,
           claims_namespace: JWT_CLAIMS_NAMESPACE,
         }),
-        AUTO_MIGRATE: true,
         ACTIONS_URL,
       }
     },
     {
       name: 'hasura_migrations',
-      script: 'cd mlcraft/services/hasura && hasura migrate apply --skip-update-check',
+      script: 'wait-on http-get://localhost:8080 && cd mlcraft/services/hasura && hasura migrate apply --skip-update-check --disable-interactive',
       autorestart: false,
     },
     {
       name: 'hasura_metadata',
-      script: 'cd mlcraft/services/hasura && hasura metadata apply --skip-update-check',
+      script: 'wait-on --delay 10000 http-get://localhost:8080 && cd mlcraft/services/hasura && hasura metadata apply --skip-update-check',
       autorestart: false,
     },
     {

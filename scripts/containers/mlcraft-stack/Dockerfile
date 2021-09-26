@@ -1,6 +1,6 @@
 FROM node:16.10-bullseye
 
-RUN yarn global add pm2
+RUN yarn global add pm2 wait-on
 
 RUN apt-get update -y && apt-get install -y curl git unixodbc-dev nginx gettext-base
 
