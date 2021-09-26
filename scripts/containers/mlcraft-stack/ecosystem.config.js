@@ -93,7 +93,7 @@ module.exports = {
     },
     {
       name: 'nginx',
-      script: 'nginx -g "daemon off;"',
+      script: 'envsubst < /app/nginx/default.conf.template > /etc/nginx/sites-enabled/default.conf && nginx -g "daemon off;"',
     },
   ]
 };
