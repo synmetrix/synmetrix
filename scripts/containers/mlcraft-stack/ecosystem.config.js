@@ -27,7 +27,7 @@ module.exports = {
       script: './run_client.sh',
       env: {
         GRAPHQL_SERVER_URL: '/v1/graphql',
-        GRAPHQL_WS_URL: 'ws://localhost:81/v1/graphql',
+        GRAPHQL_WS_URL: '/v1/graphql',
         GRAPHQL_PLUS_SERVER_URL: '',
       }
     },
@@ -93,7 +93,7 @@ module.exports = {
     },
     {
       name: 'nginx',
-      script: 'envsubst < /app/nginx/default.conf.template > /etc/nginx/sites-enabled/default.conf && nginx -g "daemon off;"',
+      script: 'envsubst < /app/nginx/default.conf.template > /etc/nginx/sites-enabled/default && nginx -g "daemon off;"',
     },
   ]
 };

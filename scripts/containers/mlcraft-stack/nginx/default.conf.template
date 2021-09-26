@@ -1,12 +1,12 @@
 server {
-  listen 81;
+  listen 80;
 
   location / {
     proxy_pass http://localhost:5000;
   }
 
-  location /auth {
-    proxy_pass http://localhost:3000;
+  location ~ ^/auth {
+    proxy_pass http://localhost:3030;
   }
 
   location /v1/graphql {
