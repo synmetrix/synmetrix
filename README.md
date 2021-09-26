@@ -40,9 +40,21 @@ Login: `demo@mlcraft.io`
 
 Password: `demodemo`
 
-## Quick Start 
+## Quick start
 
-NOTE: Please, install  `docker`, `python3`, `pip3`, `yarn` and `node` on your host machine before.
+---
+
+If you want to schedule a 20-min call with our team to help you get set up, please select [some time directly here](https://calendly.com/mlcraft-io/video-meeting).
+
+## Local development 
+
+Prerequisites
+-------------
+
+- Docker
+- Docker-compose
+- Python3 (with pip3)
+- Node.js 8.9+ with `yarn` installed
 
 ```
 git clone https://github.com/mlcraft-io/mlcraft.git
@@ -57,8 +69,6 @@ python3 cli.py ui
 ```
 
 Then visit [http://localhost:3000](http://localhost:3000)
-
-If you want to schedule a 20-min call with our team to help you get set up, please select [some time directly here](https://calendly.com/mlcraft-io/video-meeting).
 
 ---
 
@@ -94,7 +104,9 @@ Check out our [roadmap](https://github.com/mlcraft-io/mlcraft/projects) to get i
 
 ## License
 
-MLCraft is licensed under the MIT license. See the [LICENSE](https://github.com/mlcraft-io/mlcraft/blob/main/LICENSE) file for licensing information.
+The core MLCraft is available under the [Apache License 2.0](https://github.com/mlcraft-io/mlcraft/blob/main/LICENSE) (Apache-2.0).
+
+All **other contents** are available under the [MIT License](LICENSE-community).
 
 ## Authors
 
