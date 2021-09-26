@@ -5,11 +5,19 @@ const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin');
 const webpack = require('webpack');
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
+const getEnv = (envValue, defaultValue) => {
+  if (typeof(envValue) === 'undefined') {
+    return defaultValue;
+  }
+
+  return envValue;
+};
+
 const __DEV__ = process.env.NODE_ENV !== 'production';
-const GRAPHQL_SERVER_URL = process.env.GRAPHQL_SERVER_URL || 'http://localhost:8080/v1/graphql';
-const GRAPHQL_PLUS_SERVER_URL = process.env.GRAPHQL_PLUS_SERVER_URL || 'http://localhost:8081';
-const GRAPHQL_WS_URL = process.env.GRAPHQL_WS_URL || 'ws://localhost:8080/v1/graphql';
-const AUTH_PREFIX = process.env.AUTH_PREFIX || '/~';
+const GRAPHQL_SERVER_URL = getEnv(process.env.GRAPHQL_SERVER_URL, 'http://localhost:8080/v1/graphql');
+const GRAPHQL_PLUS_SERVER_URL = getEnv(process.env.GRAPHQL_PLUS_SERVER_URL, 'http://localhost:8081');
+const GRAPHQL_WS_URL = getEnv(process.env.GRAPHQL_WS_URL, 'ws://localhost:8080/v1/graphql');
+const AUTH_PREFIX = getEnv(process.env.AUTH_PREFIX, '/~');
 
 module.exports = {
   use: [
