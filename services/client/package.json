@@ -49,7 +49,7 @@
     "wouter": "^2.7.4"
   },
   "scripts": {
-    "start": "webpack-dev-server --mode development --host 0.0.0.0",
+    "start": "webpack-dev-server --mode development",
     "download-dev-schema": "get-graphql-schema http://localhost:5000/graphql > schema.graphql",
     "build": "NODE_ENV=production webpack --mode production"
   },
