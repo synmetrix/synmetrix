@@ -36,5 +36,5 @@ The data is sent to MLCraft's servers addressed by ``api.mlcraft.org``.
 You can turn off telemetry on **the CLI**
 by setting the env variable ``MLCRAFT_DISABLE_TELEMETRY=true`` on the
 machine running the CLI. You can also set ``"enable_telemetry": false`` in the
-JSON config file created by the CLI at ``./cli/config.yml`` to persist the
+YAML config file created by the CLI at ``./cli/config.yml`` to persist the
 setting.

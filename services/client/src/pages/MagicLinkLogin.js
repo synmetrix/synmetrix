@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { Button } from 'antd';
+import { Button, message } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { useSetState } from 'ahooks';
@@ -22,7 +22,7 @@ const MagicLinkLogin = () => {
     magicLink: false
   });
 
-  const { message, magicLink } = state;
+  const { message: errMessage, magicLink } = state;
 
   const formConfig = {
     email: {
@@ -35,33 +35,47 @@ const MagicLinkLogin = () => {
   };
 
   const createAccount = async (values) => {
-    const regRes = await register.run(values);
+    let res = {};
 
-    if (regRes?.statusCode !== 200) {
-      setState({ message: regRes?.message });
-      return;
+    try {
+      res = await register.run(values);
+    } catch (err) {
+      message.error(err.toString());
     }
 
-    doAuth(regRes.jwt_token, regRes.refresh_token);
+    if (res.statusCode && res.statusCode !== 200) {
+      setState({ message: res.message });
+    } else if (res?.jwt_token) {
+      setState({ message: null });
+      doAuth(res.jwt_token, res.refresh_token);
+    }
   };
 
   const handleSubmit = async (values) => {
-    const loginRes = await login.run(values);
+    let res = {};
 
-    if (loginRes?.statusCode === 400) {
-      await createAccount(values);
+    try {
+      res = await login.run(values);
+    } catch (err) {
+      message.error(err.toString());
     }
 
-    if (loginRes?.statusCode !== 200) {
-      setState({ message: loginRes?.message });
+    if (res?.statusCode === 400) {
+      return createAccount(values);
     }
 
-    if (loginRes?.magicLink) {
+    if (res?.statusCode !== 200) {
+      setState({ message: res?.message });
+    }
+
+    if (res?.magicLink) {
       setState({
-        message: 'Magic link has been sent to email',
+        message: t('Magic link has been sent to email'),
         magicLink: true
       });
     }
+
+    return null;
   };
 
   const layout = {
@@ -87,7 +101,7 @@ const MagicLinkLogin = () => {
           />
         )}
 
-        {message && <div style={{ textAlign: 'center', color: 'green' }}>{message}</div>}
+        {errMessage && <div style={{ textAlign: 'center', color: 'green' }}>{errMessage}</div>}
 
         <div className={s.formFooter}>
           <Link to="/login">

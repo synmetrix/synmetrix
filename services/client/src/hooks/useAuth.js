@@ -10,40 +10,6 @@ export default () => {
   const refreshToken = useRecoilValue(currentRefreshToken);
   const authToken = useRecoilValue(currentToken);
 
-  const login = useRequest(async (values) => {
-    const response = await fetch(`${GRAPHQL_PLUS_SERVER_URL}/auth/login`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        ...values,
-        cookie: false,
-      }),
-    });
-
-    return response.json();
-  }, {
-    manual: true,
-  });
-
-  const register = useRequest(async (values) => {
-    const response = await fetch(`${GRAPHQL_PLUS_SERVER_URL}/auth/register`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        ...values,
-        cookie: false,
-      }),
-    });
-
-    return response.json();
-  }, {
-    manual: true,
-  });
-
   const validateResponse = async response => {
     let data = {};
 
@@ -63,6 +29,42 @@ export default () => {
     return data;
   };
 
+  const login = useRequest(async (values) => {
+    const response = await fetch(`${GRAPHQL_PLUS_SERVER_URL}/auth/login`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        ...values,
+        cookie: false,
+      }),
+    });
+
+    return validateResponse(response);
+  }, {
+    manual: true,
+    throwOnError: true,
+  });
+
+  const register = useRequest(async (values) => {
+    const response = await fetch(`${GRAPHQL_PLUS_SERVER_URL}/auth/register`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        ...values,
+        cookie: false,
+      }),
+    });
+
+    return validateResponse(response);
+  }, {
+    manual: true,
+    throwOnError: true,
+  });
+
   const logout = useRequest(async (values) => {
     const response = await fetch(`${GRAPHQL_PLUS_SERVER_URL}/auth/logout?refresh_token=${refreshToken}`, {
       method: 'POST',
@@ -76,6 +78,7 @@ export default () => {
     return validateResponse(response);
   }, {
     manual: true,
+    throwOnError: true,
   });
 
   const refresh = useRequest(async (values) => {
@@ -104,6 +107,7 @@ export default () => {
     return validateResponse(response);
   }, {
     manual: true,
+    throwOnError: true,
   });
 
   const changePass = useRequest(async (values) => {
@@ -119,6 +123,7 @@ export default () => {
     return validateResponse(response);
   }, {
     manual: true,
+    throwOnError: true,
   });
 
   return {

@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:12
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: mlcraft_stack
+      POSTGRES_PASSWORD: pg_pass
+      POSTGRES_DB: mlcraft_stack
+
+  mlcraft_stack:
+    image: mlcraft/mlcraft-stack:${MLCRAFT_VERSION}
+    restart: always
+    build:
+      context: ./scripts/containers/mlcraft-stack
+    ports:
+       - 80:8888 # nginx app
+    environment:
+      # postgres database used by Hasura as a data source and to store Hasura metadata
+      HASURA_GRAPHQL_DATABASE_URL: postgres://mlcraft_stack:pg_pass@postgres:5432/mlcraft_stack
+      # secure your Hasura console via admin secret
+      HASURA_GRAPHQL_ADMIN_SECRET: mlcraft
+      # SMTP credentials to send emails from MLCraft
+      SMTP_HOST: ${SECRETS_SMTP_HOST}
+      SMTP_PORT: ${SECRETS_SMTP_PORT}
+      SMTP_SECURE: ${SECRETS_SMTP_SECURE}
+      SMTP_USER: ${SECRETS_SMTP_USER}
+      SMTP_PASS: ${SECRETS_SMTP_PASS}
+      SMTP_SENDER: ${SECRETS_SMTP_SENDER}
+    depends_on:
+      - postgres
+
+volumes:
+  db_data:

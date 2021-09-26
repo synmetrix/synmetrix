@@ -32,9 +32,9 @@ services:
 
   hasura_plus:
     build:
-      context: ./scripts/containers/hasura_backend_plus
+      context: ./scripts/containers/hasura-backend-plus
     volumes:
-       - ./scripts/containers/hasura_backend_plus/storage-rules/rules.yaml:/app/custom/storage-rules/rules.yaml
+       - ./scripts/containers/hasura-backend-plus/storage-rules/rules.yaml:/app/custom/storage-rules/rules.yaml
     networks:
       - mlcraft_default
 

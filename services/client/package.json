@@ -14,6 +14,7 @@
     "dayjs": "^1.10.6",
     "dequal": "^1.0.0",
     "graphql": "^14.2.1",
+    "graphqurl": "^1.0.1",
     "i18next": "^15.1.0",
     "jwt-decode": "^2.2.0",
     "moment": "^2.24.0",
@@ -50,7 +51,7 @@
   },
   "scripts": {
     "start": "webpack-dev-server --mode development",
-    "download-dev-schema": "get-graphql-schema http://localhost:5000/graphql > schema.graphql",
+    "download-dev-schema": "gq http://localhost:8080/v1/graphql -H \"X-Hasura-Admin-Secret: devsecret\" --introspect > schema.graphql",
     "build": "NODE_ENV=production webpack --mode production"
   },
   "browserslist": {
@@ -84,7 +85,6 @@
     "eslint-plugin-prettier": "^3.1.1",
     "eslint-plugin-react": "^7.17.0",
     "eslint-plugin-react-hooks": "^2.3.0",
-    "get-graphql-schema": "^2.1.2",
     "husky": "^2.2.0",
     "lint-staged": "^8.1.6",
     "monaco-editor-webpack-plugin": "^1.7.0",

@@ -20,6 +20,10 @@ jobs:
           username: ${{ secrets.DOCKER_USER }}
           password: ${{ secrets.DOCKER_PASS }}
 
-      - name: Build docker images and push to Docker Hub registry
+      - name: Build services docker images and push to Docker Hub registry
         run: |
           REGISTRY_HOST=index.docker.io python cli.py --env stage services push
+
+      - name: Build and push mlcraft stack image
+        run: |
+          docker-compose -f docker-compose.stack.yml push

@@ -44,7 +44,7 @@ console.log('Docker Build Time: ', docker_version_info['BuildTime'])
 console.log('Docker Version: ', docker_version_info['Version'])
 
 @click.group()
-@click.option('--env', envvar='ENV', default='dev', type=click.Choice(['dev', 'stage', 'prod']))
+@click.option('--env', envvar='ENV', default='dev', type=click.Choice(['dev', 'stage']))
 @click.option('--config-file', '-c', default='./cli/config.yml')
 @click.option('--disable-telemetry', envvar='MLCRAFT_DISABLE_TELEMETRY', is_flag=True, default=False)
 @click.option('--telemetry-url', envvar='MLCRAFT_TELEMETRY_URL', default='https://api.mlcraft.org/v1/graphql')

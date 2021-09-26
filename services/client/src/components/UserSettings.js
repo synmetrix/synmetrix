@@ -18,12 +18,18 @@ const Profile = () => {
   const { cleanTokens } = useAuthToken();
 
   const revokeTokens = useCallback(async () => {
-    const data = await revoke.run();
+    let data = {};
 
-    if (data.statusCode >= 200 && data.statusCode <= 300) {
+    try {
+      data = await revoke.run();
+    } catch (err) {
+      message.error(err.toString());
+    }
+
+    if (data?.statusCode >= 200 && data?.statusCode <= 300) {
       message.success('All tokens expired');
       cleanTokens();
-    } else {
+    } else if (data?.message) {
       message.error(data.message);
     }
   }, [cleanTokens, revoke]);
