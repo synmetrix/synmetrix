@@ -66,7 +66,7 @@ Warning: every AMI has it's own default login. Use default login to connect.
 AWS_PROFILE_ID=mlcraft_bi \
 AWS_ACCESS_KEY_ID=<your-key-id> \
 AWS_SECRET_ACCESS_KEY=<your-access-key> \
-./install-aws-cli.sh
+./scripts/install-aws-cli.sh
 ```
 
 For more information go to [intallation guide.](https://github.com/aws/aws-cli/tree/v2#installation)

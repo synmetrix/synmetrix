@@ -16,7 +16,7 @@ MLCraft itself will be available on `http://localhost/`
 
 GraphQL endpoint will be `http://localhost/v1/graphql`
 
-Admin Console will be available on `http://localhost/console`
+Admin Console (Hasura Console) will be available on `http://localhost/console`
 
 ## Connecting to External Postgres
 

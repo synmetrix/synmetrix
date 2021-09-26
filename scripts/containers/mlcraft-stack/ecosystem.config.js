@@ -1,6 +1,7 @@
 // internal cubejs server url
 const CUBEJS_PORT = process.env.CUBEJS_PORT || 4000;
 const CUBEJS_URL = process.env.CUBEJS_URL || `http://localhost:${CUBEJS_PORT}`;
+// cubejs JWT secret
 const CUBEJS_SECRET = process.env.CUBEJS_SECRET || 'cubejsSecret';
 
 // internal actions server url
@@ -16,8 +17,11 @@ const HASURA_ENDPOINT = process.env.HASURA_ENDPOINT || 'http://localhost:8080/v1
 // public hasura plus url
 const HASURA_PLUS_SERVER_URL = process.env.HASURA_PLUS_SERVER_URL || `http://localhost:${HASURA_PLUS_PORT}`;
 
+// auth JWT algo
 const JWT_ALGORITHM = process.env.JWT_ALGORITHM || 'HS256';
+// auth JWT key
 const JWT_KEY = process.env.JWT_KEY || 'jhyu89jiuhyg7678hoijhuytf7ghjiasodibagsdga9dha8os7df97a6sdgh9asudgo7f7g8h1uuoyafsod8pgasipdg8aps9dhaiaisydg8agsd87gasd9oihasd87gas78d';
+// don't change namespace
 const JWT_CLAIMS_NAMESPACE = process.env.JWT_CLAIMS_NAMESPACE || 'hasura';
 
 module.exports = {
