@@ -1,11 +1,9 @@
-import React, { useRef } from 'react';
-import PropTypes from 'prop-types';
+import React from 'react';
 
-import { Form, Button, message } from 'antd';
+import { useTranslation } from 'react-i18next';
+import { message } from 'antd';
 
-import Loader from 'components/Loader';
-
-import useFormItems from 'hooks/useFormItems';
+import SimpleForm from 'components/SimpleForm';
 import useAuth from 'hooks/useAuth';
 
 const formConfig = {
@@ -25,49 +23,44 @@ const formConfig = {
   },
 };
 
-const UpdatePasswordForm = props => {
-  const { form } = props;
-  const formRef = useRef(null);
+const UpdatePasswordForm = () => {
+  const { t } = useTranslation();
 
   const {
     changePass,
   } = useAuth();
 
-  const onSubmit = () => {
-    const { form: formObject } = formRef.current;
+  const handleSubmit = async (values) => {
+    let res = {};
 
-    formObject.validateFields(async (err, values) => {
-      if (err) {
-        return;
-      }
+    try {
+      res = await changePass.run(values);
+    } catch (err) {
+      message.error(err.toString());
+    }
 
-      formObject.resetFields();
-      const pass = await changePass.run(values);
+    if (res?.statusCode >= 200 && res?.statusCode <= 300) {
+      message.success(t('Password updated!'));
+    } else if (res?.message) {
+      message.error(res.message);
+    }
 
-      if (pass.statusCode >= 200 && pass.statusCode <= 300) {
-        message.success('Password updated!');
-      } else {
-        message.error(pass.message);
-      }
-    });
+    return null;
   };
 
-  const [updatePasswordForm] = useFormItems({ ref: formRef, form, config: formConfig });
-
   return (
-    <>
-      <Form onSubmit={onSubmit}>
-        <Loader spinning={changePass.loading}>
-          {updatePasswordForm}
-        </Loader>
-      </Form>
-      <Button type="primary" onClick={onSubmit}>Update Password</Button>
-    </>
+    <SimpleForm
+      config={formConfig}
+      onSubmit={handleSubmit}
+      submitText={t('Update password')}
+      style={{ width: '100%' }}
+      labelAlign="left"
+      size="large"
+      loading={changePass.loading}
+    />
   );
 };
 
-UpdatePasswordForm.propTypes = {
-  form: PropTypes.object.isRequired,
-};
+UpdatePasswordForm.propTypes = {};
 
-export default Form.create()(UpdatePasswordForm);
+export default UpdatePasswordForm;

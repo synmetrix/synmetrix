@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-import { Button } from 'antd';
+import { Button, message } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 
@@ -15,7 +15,7 @@ const Login = () => {
   const { login } = useAuth();
 
   const { t } = useTranslation();
-  const [message, setMessage] = useState();
+  const [state, setState] = useState();
 
   const formConfig = {
     email: {
@@ -36,16 +36,22 @@ const Login = () => {
   };
 
   const handleSubmit = async (values) => {
-    const res = await login.run(values);
+    let res = {};
+
+    try {
+      res = await login.run(values);
+    } catch (err) {
+      message.error(err.toString());
+    }
 
     if (res.statusCode && res.statusCode !== 200) {
-      setMessage(res.message || res.error);
+      setState(res.message || res.error);
 
       if (res.error === 'Bad Request' && !res.message) {
-        setMessage(t('Use magic link to login'));
+        setState(t('Use magic link to login'));
       }
-    } else {
-      setMessage(null);
+    } else if (res?.jwt_token) {
+      setState(null);
       doAuth(res.jwt_token, res.refresh_token);
     }
   };
@@ -71,7 +77,7 @@ const Login = () => {
           {...layout}
         />
 
-        {message && <div style={{ textAlign: 'center', color: 'red' }}>{message}</div>}
+        {state && <div style={{ textAlign: 'center', color: 'red' }}>{state}</div>}
 
         <div className={s.formFooter}>
           <Link to="/link_login">

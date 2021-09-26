@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-import { Button } from 'antd';
+import { Button, message } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 
@@ -15,7 +15,7 @@ const SignUp = () => {
   const { register } = useAuth();
 
   const { t } = useTranslation();
-  const [message, setMessage] = useState();
+  const [state, setState] = useState();
 
   const formConfig = {
     email: {
@@ -36,12 +36,18 @@ const SignUp = () => {
   };
 
   const handleSubmit = async (values) => {
-    const res = await register.run(values);
+    let res = {};
+
+    try {
+      res = await register.run(values);
+    } catch (err) {
+      message.error(err.toString());
+    }
 
     if (res.statusCode && res.statusCode !== 200) {
-      setMessage(res.message);
-    } else {
-      setMessage(null);
+      setState(res.message);
+    } else if (res?.jwt_token) {
+      setState(null);
       doAuth(res.jwt_token, res.refresh_token);
     }
   };
@@ -67,7 +73,7 @@ const SignUp = () => {
           {...layout}
         />
 
-        {message && <div style={{ textAlign: 'center', color: 'red' }}>{message}</div>}
+        {state && <div style={{ textAlign: 'center', color: 'red' }}>{state}</div>}
 
         <div className={s.formFooter}>
           <Link to="/login">

@@ -39,7 +39,7 @@ const createTeam = async ({ name }) => {
 export default async (session, input, headers) => {
   const { name } = input || {};
   const userId = session?.['x-hasura-user-id'];
-  const authToken = headers?.authorization;
+  // const authToken = headers?.authorization;
 
   let newTeam;
 
@@ -57,7 +57,7 @@ export default async (session, input, headers) => {
       role: OWNER_ROLE,
     });
 
-    await fetchGraphQL(updateAssetsMutation, { teamId, userId }, authToken);
+    await fetchGraphQL(updateAssetsMutation, { teamId, userId });
 
     return newTeam;
   } catch (err) {
