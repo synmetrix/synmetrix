@@ -26,4 +26,5 @@ jobs:
 
       - name: Build and push mlcraft stack image
         run: |
+          docker-compose -f docker-compose.stack.yml build && \
           docker-compose -f docker-compose.stack.yml push
