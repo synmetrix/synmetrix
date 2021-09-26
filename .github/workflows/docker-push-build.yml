@@ -22,7 +22,7 @@ jobs:
 
       - name: Build services docker images and push to Docker Hub registry
         run: |
-          REGISTRY_HOST=index.docker.io python cli.py --env stage services push
+          REGISTRY_HOST=index.docker.io ANONYMOUS_ID=GITHUB_ACTIONS python cli.py --env stage services push
 
       - name: Build and push mlcraft stack image
         run: |

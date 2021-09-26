@@ -125,6 +125,8 @@ jobs:
 
           # build images and push
           export ENV=stage
+          export ANONYMOUS_ID=AWS_STAGING
+
           python3 cli.py services push
 
           # up the stack
@@ -138,6 +140,7 @@ jobs:
             cd $PROJECT_ROOT_PATH/$PROJECT_DIR
 
             export HASURA_GRAPHQL_ADMIN_SECRET=${{ secrets.HASURA_GRAPHQL_ADMIN_SECRET }}
+            export ANONYMOUS_ID=AWS_STAGING
 
             bash -i migrate.sh
           EOL

@@ -58,7 +58,7 @@ def main(ctx, env, config_file, disable_telemetry, telemetry_url):
     if not config:
         config = {
             'user': {
-                'anonymous_id': str(uuid.uuid4())
+                'anonymous_id': os.environ.get('ANONYMOUS_ID', str(uuid.uuid4()))
             }
         }
 
