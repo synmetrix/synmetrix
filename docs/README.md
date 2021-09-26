@@ -5,4 +5,4 @@
 * [Infrastructure deployment](infra-deployment/README.md)
 * [Docker Swarm Production](docker-swarm-production/README.md)
 * [Telemetry](telemetry/README.md)
-* [Local developmet](development/README.md)
+* [Local development](development/README.md)
