@@ -61,6 +61,11 @@ module.exports = {
       autorestart: false,
     },
     {
+      name: 'hasura_seeds',
+      script: 'wait-on --delay 10000 http-get://localhost:8080 && cd mlcraft/services/hasura && hasura seeds apply --skip-update-check',
+      autorestart: false,
+    },
+    {
       name: 'hasura_plus',
       script: 'cd hasura-backend-plus && npm install --loglevel=error && npm run build && npm start',
       env: {
@@ -101,5 +106,11 @@ module.exports = {
       name: 'nginx',
       script: 'envsubst < /app/nginx/default.conf.template > /etc/nginx/sites-enabled/default && nginx -g "daemon off;"',
     },
+    {
+      name: 'wait_ready',
+      script: './wait_ready.sh',
+      autorestart: false,
+    },
+
   ]
 };

@@ -90,7 +90,8 @@ c8f342d086f3 mlcraft/mlcraft-stack ... 1m ago  Up 1m  80->8888/tcp ...
 30ea14ddaa5e postgres:12           ... 1m ago  Up 1m  5432/tcp    
 ```
 
-It will take about 2-5 minutes to install all dependencies (Read logs by `docker-compose logs -f` to understand if it's finished).
+It will take about 2-5 minutes to install all dependencies, wait until `MLCraft Stack is ready` message.
+Read logs by `docker-compose logs -f` to understand if it's finished.
 
 ### Step 3: Try out MLCraft
 
