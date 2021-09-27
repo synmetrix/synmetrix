@@ -26,6 +26,12 @@ app.use(express.urlencoded({ extended: true })) // for parsing application/x-www
 
 app.use(logger.middleware);
 
+app.get('/healthz', (req, res) => {
+  return res.status(200).json({
+    code: 'ok',
+  });
+});
+
 app.post('/rpc/:method', async (req, res) => {
   const { method } = req.params;
 
