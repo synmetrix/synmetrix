@@ -53,6 +53,9 @@ const pinoObj = pino({
 const env = process.env.LOGGER_ENV || 'development';
 
 const logger = new Cabin({
+  key: '',
+  endpoint: '',
+  capture: false,
   axe: {
     logger: env === 'production' ? pinoObj : (new Signale(loggerOptions)),
     appInfo: false,
