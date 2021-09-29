@@ -50,7 +50,7 @@ const pinoObj = pino({
   }
 });
 
-const env = process.env.NODE_ENV || 'development';
+const env = process.env.LOGGER_ENV || 'development';
 
 const logger = new Cabin({
   axe: {
