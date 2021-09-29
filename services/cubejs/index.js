@@ -146,13 +146,15 @@ const driverFactory = async ({ securityContext }) => {
       };
       break;
     case 'clickhouse':
+      const auth = [dbConfig.user, dbConfig.password].filter(Boolean).join(':');
+
       dbConfig = {
         host: dbConfig.host,
         port: dbConfig.port,
-        auth: `${dbConfig.user}:${dbConfig.password}`,
+        auth,
         protocol: dbConfig.ssl ? 'https:' : 'http:',
         queryOptions: {
-          database: dbConfig.database || 'default'
+          database: dbConfig.database || 'default',
         },
       };
       break;
