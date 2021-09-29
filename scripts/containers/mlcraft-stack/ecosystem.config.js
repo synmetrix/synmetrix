@@ -29,6 +29,7 @@ module.exports = {
     {
       name: 'client',
       script: './run_client.sh',
+      out_file: null,
       env: {
         GRAPHQL_SERVER_URL: '/v1/graphql',
         GRAPHQL_WS_URL: '/v1/graphql',
@@ -38,6 +39,8 @@ module.exports = {
     {
       name: 'hasura',
       script: './graphql-engine serve',
+      max_restarts: 100,
+      restart_delay: 5000,
       env: {
         HASURA_GRAPHQL_ENABLE_CONSOLE: true,
         HASURA_GRAPHQL_ENABLE_TELEMETRY: false,
@@ -67,7 +70,8 @@ module.exports = {
     },
     {
       name: 'hasura_plus',
-      script: 'cd hasura-backend-plus && npm install --loglevel=error && npm run build && npm start',
+      script: 'wait-on http-get://localhost:8080 && cd hasura-backend-plus && npm install --loglevel=error && npm run --loglevel=error build && npm start',
+      out_file: null,
       env: {
         PORT: HASURA_PLUS_PORT,
         AUTO_ACTIVATE_NEW_USERS: true,
@@ -85,7 +89,10 @@ module.exports = {
     {
       name: 'actions',
       script: 'cd mlcraft/services/actions && npm install --loglevel=error && npm start',
+      out_file: null,
       env: {
+        NODE_ENV: 'production',
+        LOGGER_ENV: 'production',
         PORT: ACTIONS_PORT,
         CUBEJS_URL,
         CUBEJS_SECRET,
@@ -104,6 +111,7 @@ module.exports = {
     },
     {
       name: 'nginx',
+      out_file: null,
       script: 'envsubst < /app/nginx/default.conf.template > /etc/nginx/sites-enabled/default && nginx -g "daemon off;"',
     },
     {
