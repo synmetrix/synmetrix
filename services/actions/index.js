@@ -70,6 +70,5 @@ app.listen(port);
 
 if (dev) {
   logger.log('Development mode: ON')
+  logger.log(`Express server is running, go to http://localhost:${port}`);
 }
-
-logger.log(`Express server is running, go to http://localhost:${port}`);
