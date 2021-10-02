@@ -71,6 +71,7 @@ const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
     mutations: {
       createMutation,
       execCreateMutation,
+      updateMutation,
       execUpdateMutation,
       deleteMutation,
       execDeleteMutation,
@@ -103,11 +104,13 @@ const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
     disableSubscription: true,
   });
 
+  const genSchemaModalVisible = slug === 'genschema';
+
   useEffect(() => {
-    if (dataSourceId) {
+    if (genSchemaModalVisible && dataSourceId) {
       execQueryTables();
     }
-  }, [dataSourceId, execQueryTables]);
+  }, [dataSourceId, execQueryTables, genSchemaModalVisible]);
 
   useCheckResponse(tablesData, (res, err) => {
     if (res) {
@@ -273,7 +276,7 @@ const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
     <ModalView
       key="genschemaModal"
       title={t('Generate Data Schema Files')}
-      visible={slug === 'genschema'}
+      visible={genSchemaModalVisible}
       onCancel={onModalClose}
       loading={fetching}
       content={(
@@ -287,14 +290,16 @@ const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
     <Loader key="content" spinning={fetching}>
       <div className={s.root}>
         <div className={s.sidebar}>
-          <IdeSchemasList
-            schemas={all}
-            onItemClick={openSchema}
-            onCreate={onClickCreate}
-            onEdit={onClickUpdate}
-            onDelete={onClickDelete}
-            moreMenu={routes}
-          />
+          <Loader spinning={updateMutation.fetching}>
+            <IdeSchemasList
+              schemas={all}
+              onItemClick={openSchema}
+              onCreate={onClickCreate}
+              onEdit={onClickUpdate}
+              onDelete={onClickDelete}
+              moreMenu={routes}
+            />
+          </Loader>
         </div>
         <div className={s.content}>
           <Tabs

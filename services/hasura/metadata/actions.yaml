@@ -40,6 +40,7 @@ actions:
     kind: ""
     handler: '{{ACTIONS_URL}}/rpc/fetch_tables'
     forward_client_headers: true
+    timeout: 180
   permissions:
   - role: user
 - name: gen_dataschemas
@@ -47,6 +48,7 @@ actions:
     kind: synchronous
     handler: '{{ACTIONS_URL}}/rpc/gen_schemas'
     forward_client_headers: true
+    timeout: 180
   permissions:
   - role: user
 - name: gen_sql

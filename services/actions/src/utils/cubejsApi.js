@@ -77,11 +77,17 @@ const cubejsApi = ({ dataSourceId, userId, authToken }) => {
     const url = `${apiUrl}${route}`;
     let res;
 
+    let signal = timeoutSignal(10 * 1000);
+
+    if (route === '/get-schema' || route === '/generate-dataschema') {
+      signal = timeoutSignal(180 * 1000)
+    }
+
     if (method === 'get') {
       res = await fetch(url, {
         headers: reqHeaders,
         params,
-        signal: timeoutSignal(10000),
+        signal,
       });
     } else {
       res = await fetch(url, {
@@ -92,7 +98,7 @@ const cubejsApi = ({ dataSourceId, userId, authToken }) => {
         },
         method: 'POST',
         body: JSON.stringify(params),
-        signal: timeoutSignal(10000),
+        signal,
       });
     }
 
