@@ -23,6 +23,7 @@ const JWT_ALGORITHM = process.env.JWT_ALGORITHM || 'HS256';
 const JWT_KEY = process.env.JWT_KEY || 'jhyu89jiuhyg7678hoijhuytf7ghjiasodibagsdga9dha8os7df97a6sdgh9asudgo7f7g8h1uuoyafsod8pgasipdg8aps9dhaiaisydg8agsd87gasd9oihasd87gas78d';
 // don't change namespace
 const JWT_CLAIMS_NAMESPACE = process.env.JWT_CLAIMS_NAMESPACE || 'hasura';
+const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || 10800;
 
 module.exports = {
   apps : [
@@ -80,6 +81,7 @@ module.exports = {
         MIN_PASSWORD_LENGTH: process.env.MIN_PASSWORD_LENGTH || 6,
         DATABASE_URL: process.env.HASURA_GRAPHQL_DATABASE_URL,
         SERVER_URL: HASURA_PLUS_SERVER_URL,
+        JWT_EXPIRES_IN,
         JWT_KEY,
         JWT_ALGORITHM,
         JWT_CLAIMS_NAMESPACE,
