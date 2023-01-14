@@ -62,6 +62,9 @@
             _eq: X-Hasura-User-Id
 - table:
     schema: auth
+    name: migrations
+- table:
+    schema: auth
     name: providers
   array_relationships:
   - name: account_providers
@@ -399,6 +402,14 @@
   - name: datasource
     using:
       foreign_key_constraint_on: datasource_id
+  array_relationships:
+  - name: pinned_items
+    using:
+      foreign_key_constraint_on:
+        column: exploration_id
+        table:
+          schema: public
+          name: pinned_items
   insert_permissions:
   - role: user
     permission:
@@ -652,6 +663,13 @@
     schema: public
     name: teams
   array_relationships:
+  - name: dashboards
+    using:
+      foreign_key_constraint_on:
+        column: team_id
+        table:
+          schema: public
+          name: dashboards
   - name: datasources
     using:
       foreign_key_constraint_on:
