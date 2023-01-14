@@ -29,6 +29,7 @@ import Dashboards from './pages/Dashboards';
 import Team from './pages/Team';
 import Profile from './pages/Profile';
 import Charts from './pages/Charts';
+import Reports from './pages/Reports';
 import ErrorFound from './components/ErrorFound';
 
 const Routes = () => {
@@ -64,6 +65,10 @@ const Routes = () => {
                         <Route path={withAuthPrefix('/team/invite')} component={Team} />
                         <Route path={withAuthPrefix('/team/settings')} component={Team} />
                         <Route path={withAuthPrefix('/team')} component={Team} />
+
+                        <Route path={withAuthPrefix('/reports/new/:deliveryType?')} component={Reports} />
+                        <Route path={withAuthPrefix('/reports/:editId')} component={Reports} />
+                        <Route path={withAuthPrefix('/reports')} component={Reports} />
 
                         <Route path={withAuthPrefix('/profile')} component={Profile} />
                         <Route path={withAuthPrefix('/schemas/:rest*')} component={DataSchemas} />

@@ -150,6 +150,11 @@ const MainMenu = (props) => {
       scope: 'explore/header'
     },
     {
+      path: withAuthPrefix('/reports'),
+      title: t('Reports'),
+      scope: 'reports'
+    },
+    {
       path: withAuthPrefix('/sources'),
       title: t('Data Sources'),
       scope: 'datasources'
