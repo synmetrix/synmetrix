@@ -16,6 +16,7 @@
     "graphql": "^14.2.1",
     "graphqurl": "^1.0.1",
     "i18next": "^15.1.0",
+    "immer": "^9.0.18",
     "jwt-decode": "^2.2.0",
     "moment": "^2.24.0",
     "nanoid": "^2.0.1",

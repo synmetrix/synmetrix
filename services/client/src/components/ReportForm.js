@@ -1,4 +1,5 @@
-import React, { useMemo } from 'react';
+/* eslint-disable no-param-reassign */
+import React from 'react';
 import PropTypes from 'prop-types';
 
 import { Row, Col, Form, Input } from 'antd';
@@ -8,55 +9,9 @@ import postgres from 'assets/images/postgres.svg';
 import mongobi from 'assets/images/mongobi.svg';
 
 import useFormItems from 'hooks/useFormItems';
+import useReportsConfig from 'hooks/useReportsConfig';
+
 import FormTiles from './FormTiles';
-
-const defaultFormItems = {
-  'delivery_config.metric': {
-    label: 'Metric',
-    required: true,
-  },
-  'delivery_config.granularity': {
-    label: 'Granularity',
-    required: true,
-  },
-  'delivery_config.date_range': {
-    label: 'Date Range',
-    required: true,
-  },
-  'delivery_config.schedule': {
-    label: 'Schedule (cron format)',
-    required: true,
-    placeholder: '* * * * * (Minute, Hour, Day, Month, Weekday)',
-  },
-};
-
-const deliveryFormItems = {
-  default: defaultFormItems,
-  webhook: {
-    ...defaultFormItems,
-    url: {
-      label: 'URL',
-      required: true,
-      placeholder: 'https://webhook.catch',
-    },
-  },
-  slack: {
-    ...defaultFormItems,
-    channel_name: {
-      label: 'Channel Name',
-      required: true,
-      placeholder: '#general',
-    },
-  },
-  email: {
-    ...defaultFormItems,
-    address: {
-      label: 'Email',
-      required: true,
-      placeholder: 'one@example.com',
-    },
-  },
-};
 
 const deliveryTiles = [
   { title: 'Webhook', imgSrc: postgres },
@@ -73,10 +28,7 @@ const ReportForm = React.forwardRef((props, ref) => {
 
   const { delivery_type: deliveryType } = initialValues;
 
-  const config = useMemo(
-    () => deliveryFormItems[deliveryType && deliveryType.toLowerCase()] || deliveryFormItems.default,
-    [deliveryType]
-  );
+  const config = useReportsConfig({ deliveryType, form });
 
   const [formItems] = useFormItems({ ref, form, initialValues, config });
 

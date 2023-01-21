@@ -14,7 +14,7 @@ import Container from 'components/Container';
 
 import usePermissions from 'hooks/usePermissions';
 
-import iconDataSources from 'assets/images/icon_data_sources.svg';
+// import iconDataSources from 'assets/images/icon_data_sources.svg';
 
 const DataSources = ({ match }) => {
   const { t } = useTranslation();
@@ -51,8 +51,8 @@ const DataSources = ({ match }) => {
   return (
     <Container>
       <PageInfo
-        imgSrc={iconDataSources}
-        imgStyle={{ padding: 3 }}
+        // imgSrc={iconDataSources}
+        // imgStyle={{ padding: 3 }}
         title={t('Reports')}
         description={(
           <>

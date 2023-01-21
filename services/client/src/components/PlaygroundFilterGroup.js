@@ -11,7 +11,7 @@ import PlaygroundFilterSelect from './PlaygroundFilterSelect';
 const FilterGroup = ({ members, availableMembers, addMemberName, updateMethods }) => (
   <span>
     {members.map(m => (
-      <div style={{ marginBottom: 12 }} key={m.index}>
+      <div style={{ marginBottom: 12, display: 'flex' }} key={m.index}>
         <Button
           shape="circle"
           type="danger"
