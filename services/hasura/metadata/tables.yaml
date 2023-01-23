@@ -741,6 +741,44 @@
                 members:
                   user_id:
                     _eq: X-Hasura-User-Id
+  event_triggers:
+    - name: create_cron_task_by_report
+      definition:
+        enable_manual: true
+        insert:
+          columns: '*'
+        update:
+          columns:
+            - schedule
+      retry_conf:
+        interval_sec: 10
+        num_retries: 0
+        timeout_sec: 60
+      webhook: '{{ACTIONS_URL}}/rpc/create_cron_task_by_report'
+      cleanup_config:
+        batch_size: 10000
+        clean_invocation_logs: false
+        clear_older_than: 168
+        paused: true
+        schedule: 0 0 * * *
+        timeout: 60
+    - name: delete_cron_task_by_report
+      definition:
+        delete:
+          columns: '*'
+        enable_manual: true
+      retry_conf:
+        interval_sec: 10
+        num_retries: 0
+        timeout_sec: 60
+      webhook: '{{ACTIONS_URL}}/rpc/delete_cron_task_by_report'
+      cleanup_config:
+        batch_size: 10000
+        clean_invocation_logs: false
+        clear_older_than: 168
+        paused: true
+        schedule: 0 0 * * *
+        timeout: 60
 - table:
     name: team_roles
     schema: public
