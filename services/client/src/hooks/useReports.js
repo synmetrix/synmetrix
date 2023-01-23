@@ -1,16 +1,30 @@
 import { useEffect, useMemo } from 'react';
 import { set } from 'unchanged';
 import { useTrackedEffect, useThrottleFn } from 'ahooks';
+import { useSubscription } from 'urql';
 
 import useQuery from './useQuery';
 import useMutation from './useMutation';
 import useCurrentTeamState from './useCurrentTeamState';
 
-const newReportMutation = `
-  mutation ($object: reports_insert_input!) {
-    insert_reports_one(object: $object) {
+export const reportFragment = `
+  id
+  name
+  schedule
+  delivery_type
+  delivery_config
+  created_at
+  updated_at
+  exploration {
+    datasource_id
+    playground_state
+  }
+`;
+
+const upsertReportWithExplorationMutation = `
+  mutation ($object: explorations_insert_input!) {
+    insert_explorations_one(object: $object) {
       id
-      name
     }
   }
 `;
@@ -34,27 +48,10 @@ const reportsQuery = `
   }
 `;
 
-const editReportMutation = `
-  mutation (
-    $pk_columns: reports_pk_columns_input!,
-    $_set: reports_set_input!
-  ) {
-    update_reports_by_pk(pk_columns: $pk_columns, _set: $_set) {
-      id
-    }
-  }
-`;
-
 const editReportQuery = `
   query ($id: uuid!) {
     reports_by_pk(id: $id) {
-      id
-      name
-      schedule
-      delivery_type
-      delivery_config
-      created_at
-      updated_at
+      ${reportFragment}
     }
   }
 `;
@@ -63,6 +60,14 @@ const delReportMutation = `
   mutation ($id: uuid!) {
     delete_reports_by_pk(id: $id) {
       id
+    }
+  }
+`;
+
+const reportsSubscription = `
+  subscription ($offset: Int, $limit: Int, $where: reports_bool_exp, $order_by: [reports_order_by!]) {
+    reports (offset: $offset, limit: $limit, where: $where, order_by: $order_by) {
+      ${reportFragment}
     }
   }
 `;
@@ -88,8 +93,10 @@ const getListVariables = (pagination, params = {}) => {
   return res;
 };
 
+const handleSubscription = (_, response) => response;
+
 const role = 'user';
-export default ({ pauseQueryAll, pagination = {}, params = {} }) => {
+export default ({ pauseQueryAll, pagination = {}, params = {}, disableSubscription = true }) => {
   const { editId } = params;
   const { currentTeamState } = useCurrentTeamState();
 
@@ -98,8 +105,7 @@ export default ({ pauseQueryAll, pagination = {}, params = {} }) => {
     teamId: currentTeamState?.id,
   };
 
-  const [createMutation, execCreateMutation] = useMutation(newReportMutation, { role });
-  const [updateMutation, execUpdateMutation] = useMutation(editReportMutation, { role });
+  const [upsertMutation, execUpsertMutation] = useMutation(upsertReportWithExplorationMutation, { role });
   const [deleteMutation, execDeleteMutation] = useMutation(delReportMutation, { role });
 
   const [allData, doQueryAll] = useQuery({
@@ -155,6 +161,12 @@ export default ({ pauseQueryAll, pagination = {}, params = {} }) => {
     }
   }, [editId, execQueryCurrent]);
 
+  const [subscription, execSubscription] = useSubscription({
+    query: reportsSubscription,
+    variables: getListVariables(pagination),
+    pause: disableSubscription,
+  }, handleSubscription);
+
   return {
     all,
     totalCount,
@@ -166,12 +178,12 @@ export default ({ pauseQueryAll, pagination = {}, params = {} }) => {
       execQueryCurrent,
     },
     mutations: {
-      createMutation,
-      execCreateMutation,
+      upsertMutation,
+      execUpsertMutation,
       deleteMutation,
       execDeleteMutation,
-      updateMutation,
-      execUpdateMutation,
     },
+    subscription,
+    execSubscription,
   };
 };

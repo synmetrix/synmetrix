@@ -2,14 +2,11 @@ import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useSetState , useTrackedEffect } from 'ahooks';
 
-
-import { useTranslation } from 'react-i18next';
 import { Row, Col } from 'antd';
 
 import equals from 'utils/equals';
 import useReports from 'hooks/useReports';
 import useTableState from 'hooks/useTableState';
-import useCheckResponse from 'hooks/useCheckResponse';
 import useCurrentUserState from 'hooks/useCurrentUserState';
 
 import ReportModal from 'components/ReportModal';
@@ -18,7 +15,6 @@ import TableList from 'components/TableList';
 import formatDistanceToNow from '../utils/formatDistanceToNow';
 
 const ReportTable = ({ editId, onModalClose, onModalOpen }) => {
-  const { t } = useTranslation();
   const initModal = id => ({
     editId: id,
     visibleModal: !!id,
@@ -55,9 +51,6 @@ const ReportTable = ({ editId, onModalClose, onModalOpen }) => {
       execQueryAll,
       execQueryCurrent,
     },
-    mutations: {
-      updateMutation, execUpdateMutation,
-    },
   } = useReports({
     params: {
       editId: state.editId,
@@ -93,20 +86,9 @@ const ReportTable = ({ editId, onModalClose, onModalOpen }) => {
     setState({ editId: null, visibleModal: false });
   };
 
-  const onSave = (_record, values) => {
-    execUpdateMutation({ 
-      pk_columns: { id: state.editId },
-      _set: values,
-    });
-  };
-
   const onDelete = () => {
     onReportClose();
   };
-
-  useCheckResponse(updateMutation, () => {}, {
-    successMessage: t('Saved')
-  });
 
   const columns = [
     {
@@ -151,8 +133,7 @@ const ReportTable = ({ editId, onModalClose, onModalOpen }) => {
       report={report}
       onCancel={onReportClose}
       visible={state.visibleModal}
-      loading={currentLoading || updateMutation.fetching}
-      onSave={onSave}
+      loading={currentLoading}
       onDelete={onDelete}
       initialValues={{
         id: editId,

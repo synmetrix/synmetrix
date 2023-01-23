@@ -22,7 +22,7 @@ const ReportModal = (props) => {
 
   const {
     mutations: {
-      createMutation, execCreateMutation,
+      upsertMutation, execUpsertMutation,
       deleteMutation, execDeleteMutation,
     },
   } = useReports({ pauseQueryAll: true });
@@ -31,7 +31,6 @@ const ReportModal = (props) => {
     loading,
     report,
     initialValues,
-    onSave,
     onChange, 
     onDelete: onDeleteAction,
   } = props;
@@ -44,8 +43,8 @@ const ReportModal = (props) => {
     }
   };
   
-  useCheckResponse(createMutation, onCreate, {
-    successMessage: t('Source created')
+  useCheckResponse(upsertMutation, onCreate, {
+    successMessage: t('Report saved')
   });
 
   const onDelete = (res) => {
@@ -62,21 +61,46 @@ const ReportModal = (props) => {
     const { form } = formRef.current;
 
     return form.validateFields().then(values => {
-      if (report.id) {
-        // call onSave if already present
-        return onSave(report, values);
-      } 
-
-      // or create new
-      const newSource = {
-        ...values,
+      const playgroundState = {
+        page: 0,
+        limit: 1000,
+        order:  {
+          id: values.granularity,
+          desc: true
+        },
+        offset: 0,
+        filters: [{
+          values: values.since,
+          operator: 'afterDate',
+          dimension: values.granularity
+        }],
+        segments: [],
+        timezone: 'UTC',
+        measures: [values.measure],
+        dimensions: [values.granularity],
+        timeDimensions: []
       };
 
-      if (currentTeamState.id) {
-        newSource.team_id = currentTeamState.id;
-      }
+      const newExplorationWithReport = {
+        playground_state: playgroundState,
+        datasource_id: values.datasource_id,
+        reports: {
+          on_conflict: {
+            constraint: 'reports_pkey',
+            update_columns: ['name', 'schedule', 'delivery_config', 'exploration_id']
+          },
+          data: [{
+            id: report.id,
+            name: values.name,
+            schedule: values.schedule,
+            delivery_type: values.delivery_type,
+            delivery_config: values.delivery_config,
+            team_id: currentTeamState?.id,
+          }]
+        }
+      };
 
-      return execCreateMutation({ object: newSource });
+      return execUpsertMutation({ object: newExplorationWithReport });
     }).catch(err => {
       console.error('Error: ', err);
     });

@@ -29,8 +29,8 @@ const defaultFormItems = {
     required: true,
     span: 8
   },
-  date_range: {
-    label: 'Date Range',
+  since: {
+    label: 'Since',
     required: true,
     type: 'filter',
     span: 8
@@ -51,7 +51,7 @@ const deliveryFormItems = {
   default: defaultFormItems,
   webhook: {
     ...defaultFormItems,
-    url: {
+    'delivery_config.url': {
       label: 'URL',
       required: true,
       placeholder: 'https://webhook.catch',
@@ -59,7 +59,7 @@ const deliveryFormItems = {
   },
   slack: {
     ...defaultFormItems,
-    channel_name: {
+    'delivery_config.channel_name': {
       label: 'Channel Name',
       required: true,
       placeholder: '#general',
@@ -67,7 +67,7 @@ const deliveryFormItems = {
   },
   email: {
     ...defaultFormItems,
-    address: {
+    'delivery_config.address': {
       label: 'Email',
       required: true,
       placeholder: 'one@example.com',
@@ -75,10 +75,15 @@ const deliveryFormItems = {
   },
 };
 
-export default ({ form, deliveryType }) => {
+export default ({ form, initialValues }) => {
   const { all: allDatasources } = useSources({ pauseQueryAll: false });
+  const {
+    delivery_type: deliveryType,
+    datasource_id: initialDatasourceId,
+    since: initialSince
+  } = initialValues;
 
-  const datasourceId = useMemo(() => form.getFieldValue('datasource_id'), [form]);
+  const datasourceId = useMemo(() => form.getFieldValue('datasource_id') || initialDatasourceId, [form, initialDatasourceId]);
 
   const [metaData] = useQuery({
     query: datasourceMetaQuery,
@@ -112,19 +117,19 @@ export default ({ form, deliveryType }) => {
   
         draft.cube.display = datasourceId ? 'select' : 'none';
         draft.cube.values = cubeSelectorValues;
-  
+
         draft.measure.values = measureSelectorValues;
         draft.measure.display = selectedCube ? 'select' : 'none';
-  
+
         draft.granularity.values = granularitySelectorValues;
         draft.granularity.display = selectedCube ? 'select' : 'none';
-  
-        draft.date_range.values = form.getFieldValue('date_range') ?? [];
-        draft.date_range.display = selectedCube ? 'date' : 'none';
-        draft.date_range.onChange = (value) => form.setFieldsValue({ date_range: value });
+
+        draft.since.values = form.getFieldValue('since') ?? initialSince;
+        draft.since.display = selectedCube ? 'date' : 'none';
+        draft.since.onChange = (value) => form.setFieldsValue({ since: value });
       });
     },
-    [deliveryType, allDatasources, cubesMeta, selectedCube, datasourceId, form]
+    [deliveryType, allDatasources, cubesMeta, selectedCube, datasourceId, form, initialSince]
   );
 
   return config;

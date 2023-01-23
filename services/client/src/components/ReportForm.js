@@ -1,5 +1,5 @@
 /* eslint-disable no-param-reassign */
-import React from 'react';
+import React, { useMemo } from 'react';
 import PropTypes from 'prop-types';
 
 import { Row, Col, Form, Input } from 'antd';
@@ -26,11 +26,22 @@ const ReportForm = React.forwardRef((props, ref) => {
     ...restProps
   } = props;
 
-  const { delivery_type: deliveryType } = initialValues;
+  const { exploration, ...reportInitialValues } = initialValues;
+  const { delivery_type: deliveryType } = reportInitialValues;
+  const { playground_state: playgroundState, datasource_id: datasourceId } = exploration || {};
 
-  const config = useReportsConfig({ deliveryType, form });
+  const preparedInitialValues = useMemo(() => ({
+    ...reportInitialValues,
+    datasource_id: datasourceId,
+    cube: playgroundState?.measures?.[0]?.split('.')?.[0],
+    measure: playgroundState?.measures?.[0],
+    granularity: playgroundState?.dimensions?.[0],
+    since: playgroundState?.filters?.[0]?.values
+  }), [datasourceId, playgroundState, reportInitialValues]);
 
-  const [formItems] = useFormItems({ ref, form, initialValues, config });
+  const config = useReportsConfig({ form, initialValues: preparedInitialValues });
+
+  const [formItems] = useFormItems({ ref, form, initialValues: preparedInitialValues, config });
 
   if (!deliveryType && !edit) {
     return (
