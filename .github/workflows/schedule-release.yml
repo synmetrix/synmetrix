@@ -1,0 +1,59 @@
+name: Schedule Release
+
+on:
+  schedule:
+    - cron: '0 23 * * 5'
+  workflow_dispatch:
+
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    permissions:
+        # write permission is required to create a github release
+        contents: write
+        
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Create tag from date
+      id: create_tag
+      run: |
+        tag=builds-$(date +%Y.%m.%d__%H:%M)
+        echo "::set-output name=tag::$tag" #  https://github.com/ruby/ruby-dev-builder/blob/master/.github/workflows/build.yml
+        
+    - uses: actions/checkout@v1
+    - name: "call action"
+      id: last_release
+      uses: InsonusK/get-latest-release@v1.0.1
+      with:
+        myToken: ${{ github.token }}
+        exclude_types: "release"
+        view_top: 1
+        
+    - name: "Print result"
+      run: |
+        echo "id: ${{ steps.last_release.outputs.id }}"
+        echo "name: ${{ steps.last_release.outputs.name }}"
+        echo "tag_name: ${{ steps.last_release.outputs.tag_name }}"
+        echo "created_at: ${{ steps.last_release.outputs.created_atd }}"
+        echo "draft: ${{ steps.last_release.outputs.draft }}"
+        echo "prerelease: ${{ steps.last_release.outputs.prerelease }}"
+        
+    - name: Update draft to ${{ github.event.client_payload.release_tag }}
+      run: |
+        curl \
+          -u user:${{ secrets.GITHUB_TOKEN }} \
+          -X PATCH \
+          -H "Accept: application/vnd.github.v3+json" \
+          https://api.github.com/repos/{owner}/{repository}/releases/${{ steps.last_release.outputs.release_id }} \
+          -d '{"tag_name":"${{ steps.last_release.outputs.tag_name }}", "name": "${{ steps.last_release.outputs.tag_name }}", "draft": "false"}'
+
+    - name: Create a Release
+      uses: eregon/publish-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        release_id: ${{ steps.last_release.outputs.id }}
