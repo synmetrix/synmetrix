@@ -69,8 +69,18 @@ const connectionFormItems = {
     },
     'db_params.awsS3OutputLocation': {
       label: 'S3 Output Location',
-      required: true,
+      required: false,
       placeholder: 's3://your-s3-bucket-for-query-results/',
+    },
+    'db_params.workGroup': {
+      label: 'Work group',
+      required: false,
+      placeholder: 'primary',
+    },
+    'db_params.catalog': {
+      label: 'Catalog',
+      required: false,
+      placeholder: '',
     },
   },
   bigquery: {

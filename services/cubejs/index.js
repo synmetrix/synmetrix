@@ -158,6 +158,15 @@ const driverFactory = async ({ securityContext }) => {
         },
       };
       break;
+    case 'athena':
+      dbConfig = {
+        ...dbConfig,
+        accessKeyId: dbConfig.awsKey,
+        secretAccessKey: dbConfig.awsSecret,
+        S3OutputLocation: dbConfig.awsS3OutputLocation,
+        region: dbConfig.awsRegion,
+      };
+      break;
     default:
       break;
   }
