@@ -4,9 +4,9 @@ import PropTypes from 'prop-types';
 
 import { Row, Col, Form, Input } from 'antd';
 
-import mysql from 'assets/images/mysql.svg';
-import postgres from 'assets/images/postgres.svg';
-import mongobi from 'assets/images/mongobi.svg';
+import webhook from 'assets/images/webhook.svg';
+import slack from 'assets/images/slack.svg';
+import email from 'assets/images/email.svg';
 
 import useFormItems from 'hooks/useFormItems';
 import useReportsConfig from 'hooks/useReportsConfig';
@@ -16,9 +16,9 @@ import FormTiles from './FormTiles';
 const DEFAULT_SINCE_VALUE = 'Yesterday';
 
 const deliveryTiles = [
-  { title: 'Webhook', imgSrc: postgres },
-  { title: 'Slack', imgSrc: mysql },
-  { title: 'Email', imgSrc: mongobi }
+  { title: 'Webhook', imgSrc: webhook },
+  { title: 'Slack', imgSrc: slack },
+  { title: 'Email', imgSrc: email }
 ];
 
 const ReportForm = React.forwardRef((props, ref) => {
