@@ -13,6 +13,8 @@ import useReportsConfig from 'hooks/useReportsConfig';
 
 import FormTiles from './FormTiles';
 
+const DEFAULT_SINCE_VALUE = 'Yesterday';
+
 const deliveryTiles = [
   { title: 'Webhook', imgSrc: postgres },
   { title: 'Slack', imgSrc: mysql },
@@ -36,7 +38,7 @@ const ReportForm = React.forwardRef((props, ref) => {
     cube: playgroundState?.measures?.[0]?.split('.')?.[0],
     measure: playgroundState?.measures?.[0],
     granularity: playgroundState?.dimensions?.[0],
-    since: playgroundState?.filters?.[0]?.values
+    since: playgroundState?.filters?.[0]?.values ?? DEFAULT_SINCE_VALUE
   }), [datasourceId, playgroundState, reportInitialValues]);
 
   const config = useReportsConfig({ form, initialValues: preparedInitialValues });

@@ -3,14 +3,14 @@ import logger from '../utils/logger';
 import apiError from '../utils/apiError';
 
 export default async (session, input) => {
-  const reportID = input?.id;
+  const reportId = input?.data?.old?.id;
 
   const cronTaskParams = {
     type : "delete_cron_trigger",
     args : {
-      name: reportID
+      name: reportId
     }
-  }
+  };
 
   try {
     const result = await fetchMetadataAPI(cronTaskParams);

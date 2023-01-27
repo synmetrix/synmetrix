@@ -749,7 +749,10 @@
           columns: '*'
         update:
           columns:
+            - delivery_config
+            - exploration_id
             - schedule
+            - delivery_type
       retry_conf:
         interval_sec: 10
         num_retries: 0

@@ -2,42 +2,53 @@ import { fetchMetadataAPI } from '../utils/hasuraMetadataApi';
 import logger from '../utils/logger';
 import apiError from '../utils/apiError';
 
+import deleteCronTaskByReport from './deleteCronTaskByReport';
+
 const ACTIONS_PORT = process.env.ACTIONS_PORT || 3000;
 const ACTIONS_URL = process.env.ACTIONS_URL || `http://localhost:${ACTIONS_PORT}`;
 
 export default async (session, input) => {
-  const reportID = input?.id;
-  const reportPayload = input?.event?.data?.new;
-  const operationName = input?.event?.op;
-
-  if (operationName === "UPDATE") {
-    // do recreate the trigger cause schedule has been changed
-  }
+  const reportPayload = input?.data?.new;
+  const operationName = input?.op;
 
   const {
     delivery_type: deliveryType,
     delivery_config: deliveryConfig,
     schedule,
-    exploration_id
+    exploration_id: explorationId,
+    id: reportId
   } = reportPayload || {};
 
   const cronTaskParams = {
     type : "create_cron_trigger",
     args : {
-      name: reportID,
+      name: reportId,
       webhook: `${ACTIONS_URL}/rpc/deliver_message`,
       schedule,
       payload: {
         ...deliveryConfig,
-        delivery_type: deliveryType,
-        exploration_id
+        deliveryType,
+        explorationId
       },
       include_in_metadata: false,
-      comment: `Cron event for scheduled report id: ${reportID}`
+      comment: `Cron event for scheduled report id: ${reportId}`
     }
   }
 
   try {
+    // recreate the cron task if fields or exploration has been changed
+    if (operationName === "UPDATE") {
+      const deletionParams = {
+        data: {
+          old: {
+            id: reportId
+          }
+        }
+      };
+
+      await deleteCronTaskByReport(session, deletionParams);
+    }
+
     const result = await fetchMetadataAPI(cronTaskParams);
 
     return { result };
