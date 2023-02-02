@@ -14,9 +14,9 @@ const getEnv = (envValue, defaultValue) => {
 };
 
 const __DEV__ = process.env.NODE_ENV !== 'production';
-const GRAPHQL_SERVER_URL = getEnv(process.env.GRAPHQL_SERVER_URL, 'http://localhost:8080/v1/graphql');
+const GRAPHQL_SERVER_URL = getEnv(process.env.GRAPHQL_SERVER_URL, 'https://1ea6-176-33-97-236.eu.ngrok.io/v1/graphql');
 const GRAPHQL_PLUS_SERVER_URL = getEnv(process.env.GRAPHQL_PLUS_SERVER_URL, 'http://localhost:8081');
-const GRAPHQL_WS_URL = getEnv(process.env.GRAPHQL_WS_URL, 'ws://localhost:8080/v1/graphql');
+const GRAPHQL_WS_URL = getEnv(process.env.GRAPHQL_WS_URL, 'wss://1ea6-176-33-97-236.eu.ngrok.io/v1/graphql');
 const AUTH_PREFIX = getEnv(process.env.AUTH_PREFIX, '/~');
 
 module.exports = {

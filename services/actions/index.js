@@ -38,10 +38,11 @@ app.post('/rpc/:method', async (req, res) => {
   const { 
     session_variables: session,
     input,
-    event
+    event,
+    payload
   } = req.body;
 
-  const requestInput = input || event;
+  const requestInput = input || event || payload;
 
   const modulePath = `./src/rpc/${hyphensToCamelCase(method)}`;
   const module = await import(modulePath);

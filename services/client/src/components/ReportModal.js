@@ -63,11 +63,11 @@ const ReportModal = (props) => {
     return form.validateFields().then(values => {
       const playgroundState = {
         page: 0,
-        limit: 1000,
-        order:  {
+        limit: values.limit,
+        order: [{
           id: values.granularity,
           desc: true
-        },
+        }],
         offset: 0,
         filters: [{
           values: values.since,

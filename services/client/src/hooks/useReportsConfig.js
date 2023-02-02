@@ -22,18 +22,26 @@ const defaultFormItems = {
   measure: {
     label: 'Measure',
     required: true,
-    span: 8
+    span: 12
   },
   granularity: {
     label: 'Granularity',
     required: true,
-    span: 8
+    span: 12
   },
   since: {
     label: 'Since',
     required: true,
     type: 'filter',
-    span: 8
+    span: 12
+  },
+  limit: {
+    label: 'Limit',
+    required: true,
+    type: 'number',
+    min: 1,
+    max: 1000,
+    span: 12
   },
   delivery_divider: {
     label: 'Delivery settings',
@@ -127,6 +135,8 @@ export default ({ form, initialValues }) => {
         draft.since.values = form.getFieldValue('since') ?? initialSince;
         draft.since.display = selectedCube ? 'date' : 'none';
         draft.since.onChange = (value) => form.setFieldsValue({ since: value });
+
+        draft.limit.display = selectedCube ? 'text' : 'none';
       });
     },
     [deliveryType, allDatasources, cubesMeta, selectedCube, datasourceId, form, initialSince]

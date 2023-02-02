@@ -23,10 +23,10 @@ export default async (session, input) => {
     type : "create_cron_trigger",
     args : {
       name: reportId,
-      webhook: `${ACTIONS_URL}/rpc/deliver_message`,
+      webhook: `${ACTIONS_URL}/rpc/send_exploration_screenshot`,
       schedule,
       payload: {
-        ...deliveryConfig,
+        deliveryConfig,
         deliveryType,
         explorationId
       },
