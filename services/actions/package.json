@@ -9,6 +9,8 @@
     "start.dev": "nodemon -L --es-module-specifier-resolution=node --inspect=0.0.0.0"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.262.0",
+    "@aws-sdk/s3-request-presigner": "^3.264.0",
     "@cubejs-client/core": "^0.28.25",
     "cabin": "^8.0.7",
     "chrono-node": "^2.3.1",

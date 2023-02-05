@@ -1,18 +1,22 @@
 import fetch from 'node-fetch';
 import puppeteer from 'puppeteer';
+import moment from 'moment-timezone';
 
 import apiError from '../utils/apiError';
 import logger from '../utils/logger';
 import { fetchGraphQL } from '../utils/graphql';
+import { putFileToBucket } from '../utils/s3';
 import generateUserAccessToken from '../utils/jwt';
 
-const APP_FRONTEND_URL = 'https://c5e8-176-33-97-236.eu.ngrok.io';
-const HASURA_ENDPOINT = 'https://1ea6-176-33-97-236.eu.ngrok.io/v1/graphql';
+const APP_FRONTEND_URL = 'https://08a3-176-33-97-236.eu.ngrok.io';
+const HASURA_ENDPOINT = 'https://3494-176-33-97-236.eu.ngrok.io/v1/graphql';
 // const APP_FRONTEND_URL = process.env.APP_FRONTEND_URL;
 // const HASURA_ENDPOINT = process.env.HASURA_ENDPOINT;
 
 const EXPLORATION_DATA_SELECTOR = '#explorationTable';
 const PUPPETEER_WAITING_TIMEOUT = 60000;
+const TIMEZONE = 'UTC';
+const BUCKET_NAME = 'explorations';
 
 const explorationQuery = `
   query ($id: uuid!) {
@@ -76,8 +80,8 @@ const getDataAndScreenshot = async (exploration) => {
       if (!fetchedData) {
         return false;
       }
-  
-      resultData = fetchedData
+
+      resultData = fetchedData;
       return true;
     }, { timeout: PUPPETEER_WAITING_TIMEOUT });
   } catch (error) {
@@ -108,7 +112,7 @@ const getDataAndScreenshot = async (exploration) => {
   });
 
   const imageBase64 = await page.screenshot({
-    encoding: 'base64',
+    encoding: 'binary',
     fullPage: true,
   });
 
@@ -129,8 +133,32 @@ export default async (session, input) => {
     return apiError(error);
   }
 
-  logger.log(`got data`);
-  logger.log(`got screenshot`);
+  const dateMoment = moment().tz(TIMEZONE).format('DD-MM-YYYY HH:mm');
+  const filePathPrefix = `${explorationId}/${dateMoment}`;
+
+  const { error: uploadDataError, url: dataUrl } = await putFileToBucket({
+    bucketName: BUCKET_NAME,
+    fileBody: JSON.stringify(data),
+    filePath: `${filePathPrefix}/data.json`,
+    fileContentType: 'text/json'
+  });
+
+  const { error: uploadScreenshotError, url: screenshotUrl } = await putFileToBucket({
+    bucketName: BUCKET_NAME,
+    fileBody: screenshot,
+    filePath: `${filePathPrefix}/screenshot.png`,
+    fileContentType: 'image/png',
+    fileContentLength: Buffer.byteLength(screenshot)
+  });
+
+  const s3Error = uploadDataError || uploadScreenshotError;
+
+  if (s3Error) {
+    return apiError(s3Error);
+  }
+
+  logger.log(`got data: ${dataUrl}`);
+  logger.log(`got screenshot: ${screenshotUrl}`);
 
   // TODO switch by deliveryType and load exploration
   // try {

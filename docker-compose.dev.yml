@@ -88,5 +88,26 @@ services:
     depends_on:
       - postgres
 
+  minio:
+    image: minio/minio:latest
+    restart: always
+    command: server --console-address ":9001" /data
+    volumes:
+      - minio-data:/data
+    ports:
+      - 9000:9000
+      - 9001:9001
+    env_file:
+      - .env
+      - .dev.env
+    networks:
+      - mlcraft_default
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+
 volumes:
   pgstorage-data:
+  minio-data:
