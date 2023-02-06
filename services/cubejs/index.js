@@ -7,7 +7,6 @@ import JSum from 'jsum';
 import DriverDependencies from '@cubejs-backend/server-core/dist/src/core/DriverDependencies.js';
 
 import routes from './src/routes/index.js';
-import { fetchGraphQL } from './src/utils/graphql.js';
 import { dataSchemaFiles, findDataSource, getSchemaVersion } from './src/utils/dataSourceHelpers.js';
 
 const { CUBEJS_SECRET } = process.env;
@@ -27,7 +26,7 @@ const setupAuthInfo = async (req, auth) => {
   const { 
     authorization: cubejsAuthToken,
     'x-hasura-authorization': authToken,
-  } = req.headers;
+  } = req.headers
 
   let jwtDecoded;
   let error;

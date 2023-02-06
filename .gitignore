@@ -103,3 +103,4 @@ __pycache__
 /set-secrets.sh
 /cli/config.yml
 /.history
+/.cubestore

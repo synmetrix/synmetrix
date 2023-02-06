@@ -88,5 +88,12 @@ services:
     depends_on:
       - postgres
 
+  cubestore:
+    image: cubejs/cubestore:v0.31.57
+    environment:
+      - CUBESTORE_REMOTE_DIR=/cube/data
+    volumes:
+      - .cubestore:/cube/data
+
 volumes:
   pgstorage-data:

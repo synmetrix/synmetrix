@@ -1,4 +1,3 @@
-import inflection from 'inflection';
 import express from 'express';
 
 import { findDataSchemas, createDataSchema } from '../utils/dataSourceHelpers.js';
