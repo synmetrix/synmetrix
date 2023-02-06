@@ -67,10 +67,10 @@ const deliveryFormItems = {
   },
   slack: {
     ...defaultFormItems,
-    'delivery_config.channel_name': {
-      label: 'Channel Name',
+    'delivery_config.url': {
+      label: 'Slack webhook URL',
       required: true,
-      placeholder: '#general',
+      placeholder: 'https://hooks.slack.com',
     },
   },
   email: {

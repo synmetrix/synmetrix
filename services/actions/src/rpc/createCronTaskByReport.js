@@ -16,6 +16,7 @@ export default async (session, input) => {
     delivery_config: deliveryConfig,
     schedule,
     exploration_id: explorationId,
+    name: reportName,
     id: reportId
   } = reportPayload || {};
 
@@ -28,7 +29,13 @@ export default async (session, input) => {
       payload: {
         deliveryConfig,
         deliveryType,
-        explorationId
+        explorationId,
+        reportName
+      },
+      retry_conf: {
+        num_retries: 5,
+        retry_interval_seconds: 10,
+        timeout: 60,
       },
       include_in_metadata: false,
       comment: `Cron event for scheduled report id: ${reportId}`

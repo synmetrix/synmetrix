@@ -1,6 +1,7 @@
 import fetch from 'node-fetch';
 import puppeteer from 'puppeteer';
 import moment from 'moment-timezone';
+import nodemailer from 'nodemailer';
 
 import apiError from '../utils/apiError';
 import logger from '../utils/logger';
@@ -8,13 +9,18 @@ import { fetchGraphQL } from '../utils/graphql';
 import { putFileToBucket } from '../utils/s3';
 import generateUserAccessToken from '../utils/jwt';
 
-const APP_FRONTEND_URL = 'https://08a3-176-33-97-236.eu.ngrok.io';
-const HASURA_ENDPOINT = 'https://3494-176-33-97-236.eu.ngrok.io/v1/graphql';
-// const APP_FRONTEND_URL = process.env.APP_FRONTEND_URL;
-// const HASURA_ENDPOINT = process.env.HASURA_ENDPOINT;
+const {
+  SMTP_HOST,
+  SMTP_PORT,
+  SMTP_SECURE,
+  SMTP_USER,
+  SMTP_PASS,
+  SMTP_SENDER,
+  APP_FRONTEND_URL
+} = process.env;
 
 const EXPLORATION_DATA_SELECTOR = '#explorationTable';
-const PUPPETEER_WAITING_TIMEOUT = 60000;
+const PUPPETEER_WAITING_TIMEOUT = 30000;
 const TIMEZONE = 'UTC';
 const BUCKET_NAME = 'explorations';
 
@@ -27,6 +33,23 @@ const explorationQuery = `
     }
   }
 `;
+
+const sendToWebhook = async ({ url, body, headers = {} }) => {
+  try {
+    const result = await fetch(
+      url,
+      {
+        method: 'POST',
+        body: JSON.stringify(body),
+        headers,
+      }
+    );
+
+    return result;
+  } catch (err) {
+    return apiError(err);
+  }
+}
 
 const getDataAndScreenshot = async (exploration) => {
   const { datasource_id: datasourceId, user_id: userId, id: explorationId } = exploration;
@@ -60,43 +83,43 @@ const getDataAndScreenshot = async (exploration) => {
     localStorage.setItem('access-token', token);
   }, accessToken);
 
-  await page.goto(explorationTableURL, {
-    waitUntil: 'networkidle2',
-  });
-
   // intercept rows fetching
 
-  let resultData = null;
+  let resultJsonData = null;
 
   try {
-    await page.waitForResponse(async response => {
-      if (response.url() !== HASURA_ENDPOINT) {
-        return false;
-      }
-  
-      const jsonResponse = await response.json();
-      const fetchedData = jsonResponse?.data?.fetch_dataset?.data;
-  
-      if (!fetchedData) {
-        return false;
-      }
+    await Promise.all([
+      await page.goto(explorationTableURL, {
+        waitUntil: 'domcontentloaded',
+      }),
+      await page.waitForResponse(async response => {
+        // skip if can't parse json
+        try {
+          const jsonResponse = await response.json();
+          const { data = [], progress } = jsonResponse?.data?.fetch_dataset || {};
 
-      resultData = fetchedData;
-      return true;
-    }, { timeout: PUPPETEER_WAITING_TIMEOUT });
+          if (progress?.loading || data.length === 0) {
+            return false;
+          }
+
+          resultJsonData = data;
+        } catch (error) {
+          return false;
+        }
+
+        return true;
+      }, { timeout: PUPPETEER_WAITING_TIMEOUT }),
+      await page.waitForSelector(EXPLORATION_DATA_SELECTOR, { timeout: PUPPETEER_WAITING_TIMEOUT }),
+    ]);
   } catch (error) {
-    logger.error(`waiting data error: ${error}`);
+    logger.error(`page data error: ${error}`);
+    await browser.close();
+
     return { error };
   }
 
-  // wait for the table and remove all useless components from viewport
-
-  try {
-    await page.waitForSelector(EXPLORATION_DATA_SELECTOR, { timeout: PUPPETEER_WAITING_TIMEOUT });
-  } catch (error) {
-    logger.error(`waiting selector ${EXPLORATION_DATA_SELECTOR} error: ${error}`);
-    return { error };
-  }
+  // wait for table resizes and side effects
+  await new Promise(r => setTimeout(r, 1000));
 
   const width = await page.evaluate((selector) => document.querySelector(selector).scrollWidth, EXPLORATION_DATA_SELECTOR);
   const height = await page.evaluate((selector) => document.querySelector(selector).scrollHeight, EXPLORATION_DATA_SELECTOR);
@@ -111,18 +134,18 @@ const getDataAndScreenshot = async (exploration) => {
     [header, footer, sider, alert].forEach(element => element?.parentNode?.removeChild(element));
   });
 
-  const imageBase64 = await page.screenshot({
+  const resultImageBinary = await page.screenshot({
     encoding: 'binary',
     fullPage: true,
   });
 
-  browser.close();
+  await browser.close();
 
-  return { data: resultData, screenshot: imageBase64 };
+  return { data: resultJsonData, screenshot: resultImageBinary };
 }
 
 export default async (session, input) => {
-  const { deliveryType, explorationId, deliveryConfig } = input || {};
+  const { deliveryType, explorationId, deliveryConfig, reportName } = input || {};
 
   const queryResult = await fetchGraphQL(explorationQuery, { id: explorationId });
   const exploration = queryResult?.data?.explorations_by_pk || {};
@@ -136,7 +159,7 @@ export default async (session, input) => {
   const dateMoment = moment().tz(TIMEZONE).format('DD-MM-YYYY HH:mm');
   const filePathPrefix = `${explorationId}/${dateMoment}`;
 
-  const { error: uploadDataError, url: dataUrl } = await putFileToBucket({
+  const { error: uploadDataError, url: jsonUrl } = await putFileToBucket({
     bucketName: BUCKET_NAME,
     fileBody: JSON.stringify(data),
     filePath: `${filePathPrefix}/data.json`,
@@ -157,24 +180,60 @@ export default async (session, input) => {
     return apiError(s3Error);
   }
 
-  logger.log(`got data: ${dataUrl}`);
-  logger.log(`got screenshot: ${screenshotUrl}`);
+  let deliveryResult;
+  const { url: webhookUrl, address: emailAddress } = deliveryConfig;
 
-  // TODO switch by deliveryType and load exploration
-  // try {
-  //   const result = await fetch(
-  //     webhook,
-  //     {
-  //       method: 'POST',
-  //       body: JSON.stringify({}),
-  //       headers,
-  //     }
-  //   );
-  // } catch (err) {
-  //   return apiError(err);
-  // }
+  switch (deliveryType) {
+    case 'WEBHOOK':
+      deliveryResult = await sendToWebhook({ url: webhookUrl, body: { jsonUrl, screenshotUrl } });
+      break;
+    case 'SLACK':
+      const body = {
+        username: 'MLCraft Scheduled Reports',
+        blocks: [
+          {
+            type: 'section',
+            text: {
+              type: 'mrkdwn',
+              text: `*Report ${reportName} at ${dateMoment}* \n\n<${jsonUrl}|Download JSON>`
+            },
+          },
+          {
+            type: 'image',
+            image_url: screenshotUrl,
+            alt_text: reportName,
+          }
+        ],
+      };
 
-  // return result;
+      deliveryResult = await sendToWebhook({ url: webhookUrl, body });
+      break;
+    case 'EMAIL':
+      const mailerOptions = {
+        host: SMTP_HOST,
+        port: SMTP_PORT,
+        secure: SMTP_SECURE ?? false,
+      };
 
-  return null;
+      if (SMTP_USER && SMTP_PASS) {
+        mailerOptions.auth = {
+          user: SMTP_USER,
+          pass: SMTP_PASS,
+        };
+      }
+
+      const mailer = nodemailer.createTransport(mailerOptions);
+      await mailer.sendMail({
+        from: SMTP_SENDER,
+        to: emailAddress,
+        subject: `Report ${reportName} at ${dateMoment}`,
+        html: `<img src=${screenshotUrl} /><br /><br /><a href=${jsonUrl}>Download JSON</a>`,
+      });
+
+      break;
+    default:
+      return apiError('Unsupported delivery type');
+  };
+
+  return { error: false, deliveryResult };
 };
