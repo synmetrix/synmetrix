@@ -1,4 +1,5 @@
 import express from 'express';
+import { ScaffoldingTemplate } from '@cubejs-backend/schema-compiler';
 
 import { findDataSchemas, createDataSchema } from '../utils/dataSourceHelpers.js';
 
@@ -100,15 +101,10 @@ export default ({ basePath, setupAuthInfo, cubejs }) => {
       const schema = await driver.tablesSchema();
       const { tables = [], overwrite = false, branch } = (req.body || {});
 
-      const scaffoldingTemplateModule = await import('../schema_compiler/scaffolding/ScaffoldingTemplate.js');
-      const dialectType = ADAPTERS[dbType];
-
-      const dialectModule = await import(`../schema_compiler/scaffolding/dialect/${dialectType}.js`);
-
-      const scaffoldingTemplate = new scaffoldingTemplateModule.default(schema, driver);
+      const scaffoldingTemplate = new ScaffoldingTemplate(schema, driver, 'js');
       const normalizedTables = tables.map(table => table?.name?.replace('/', '.'));
 
-      let files = scaffoldingTemplate.generateFilesByTableNames(normalizedTables, { dbType, dialect: dialectModule });
+      let files = scaffoldingTemplate.generateFilesByTableNames(normalizedTables);
 
       const dataSchemas = await findDataSchemas({
         dataSourceId,
