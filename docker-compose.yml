@@ -38,6 +38,15 @@ services:
     networks:
       - mlcraft_default
 
+  cubestore:
+    image: cubejs/cubestore:v0.31.57
+    environment:
+      - CUBESTORE_REMOTE_DIR=/cube/data
+    volumes:
+      - .cubestore:/cube/data
+    networks:
+      - mlcraft_default
+
 networks:
   mlcraft_default:
     external: true

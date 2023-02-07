@@ -2,12 +2,16 @@ import ServerCore from '@cubejs-backend/server-core';
 import express from 'express';
 
 import jwt from 'jsonwebtoken';
-import JSum from 'jsum';
 
 import DriverDependencies from '@cubejs-backend/server-core/dist/src/core/DriverDependencies.js';
 
 import routes from './src/routes/index.js';
-import { dataSchemaFiles, findDataSource, getSchemaVersion } from './src/utils/dataSourceHelpers.js';
+import { 
+  dataSchemaFiles,
+  findDataSource,
+  getDataSources,
+  buildSecurityContext,
+} from './src/utils/dataSourceHelpers.js';
 
 const { CUBEJS_SECRET } = process.env;
 
@@ -47,24 +51,19 @@ const setupAuthInfo = async (req, auth) => {
 
   const dataSource = await findDataSource({ dataSourceId, authToken });
 
-  if (!dataSource) {
+  if (!dataSource?.id) {
     error = `Source "${dataSourceId}" not found`;
 
     return pushError(req, error);
   }
 
-  const schemaVersion = await getSchemaVersion({ dataSourceId, authToken });
-  const dataSourceVersion = JSum.digest(dataSource, 'SHA256', 'hex');
-  const dbType = dataSource.db_type?.toLowerCase();
+  const securityContext = buildSecurityContext(dataSource);
 
   req.securityContext = {
     dataSourceId,
     userId,
-    dataSource,
-    dbType,
-    schemaVersion,
-    dataSourceVersion,
     authToken,
+    ...securityContext,
   };
 };
 
@@ -89,26 +88,26 @@ const driverError = (err) => {
 };
 
 const driverFactory = async ({ securityContext }) => {
-  const { dataSource, dbType, error: securityError } = securityContext || {};
+  const { dbParams, dbType, error: securityError } = securityContext || {};
 
-  let dbParams = {};
-
-  if (!dataSource || !Object.keys(dataSource).length) {
+  if (!dbParams || !Object.keys(dbParams).length) {
     return driverError({
-      message: 'Datasource not found',
+      message: 'Datasource credentials not found or incorrect',
     });
   }
 
+  let parsedDbParams = {};
+
   try {
-    dbParams = JSON.parse(dataSource?.db_params);
+    parsedDbParams = JSON.parse(dbParams);
   } catch (err) {
     return driverError(err);
   }
 
   // clean empty/false keys because of sideeffects
-  let dbConfig = Object.keys(dbParams || {})
-    .filter(key => !!dbParams[key])
-    .reduce((res, key) => (res[key] = dbParams[key], res), {});
+  let dbConfig = Object.keys(parsedDbParams || {})
+    .filter(key => !!parsedDbParams[key])
+    .reduce((res, key) => (res[key] = parsedDbParams[key], res), {});
 
   try {
     if (dbConfig.port) {
@@ -184,24 +183,24 @@ const driverFactory = async ({ securityContext }) => {
 };
 
 const dbType = ({ securityContext }) => {
-  const { dataSource = {} } = securityContext || {};
-  return dataSource.db_type?.toLowerCase() || 'none';
+  return securityContext?.dbType || 'none';
+};
+
+const scheduledRefreshContexts = async () => {
+  const dataSources = await getDataSources();
+
+  return dataSources.map(dataSource => {
+    return {
+      securityContext: buildSecurityContext(dataSource),
+    };
+  });
 };
 
 const basePath = `/cubejs/datasources`;
 
 const options = {
-  contextToAppId: (props) => {
-    const { securityContext } = props;
-    const { dataSourceVersion } = securityContext || {};
-
-    if (dataSourceVersion) {
-      return `CUBEJS_APP_${dataSourceVersion}`
-    }
-
-    return 'CUBEJS_APP';
-    // throw 'dataSourceVersion not found';
-  },
+  contextToAppId: ({ securityContext }) => `CUBEJS_APP_${securityContext?.dataSourceVersion}`,
+  contextToOrchestratorId: ({ securityContext }) => `CUBEJS_APP_${securityContext?.dataSourceVersion}`,
   dbType,
   devServer: false,
   checkAuth: setupAuthInfo,
@@ -216,14 +215,10 @@ const options = {
       dataSchemaFiles: () => dataSchemaFiles({ dataSourceId, authToken }),
     };
   },
+  preAggregationsSchema: ({ securityContext }) => `pre_aggregations_${securityContext?.dataSourceVersion}`,
   telemetry: false,
-  scheduledRefreshTimer: 600, // TODO: install securityContexts for the refresh
-  orchestratorOptions: {
-    queryCacheOptions: {
-      refreshKeyRenewalThreshold: 45,
-      backgroundRenew: false,
-    },
-  },
+  scheduledRefreshTimer: 60,
+  scheduledRefreshContexts,
 };
 
 const cubejs = new ServerCore(options);
