@@ -34,10 +34,25 @@ const explorationQuery = `
   }
 `;
 
-const sendToWebhook = async ({ url, body, headers = {} }) => {
+const mailerOptions = {
+  host: SMTP_HOST,
+  port: SMTP_PORT,
+  secure: SMTP_SECURE ?? false,
+};
+
+if (SMTP_USER && SMTP_PASS) {
+  mailerOptions.auth = {
+    user: SMTP_USER,
+    pass: SMTP_PASS,
+  };
+};
+
+const mailer = nodemailer.createTransport(mailerOptions);
+
+const sendToWebhook = async ({ webhookUrl, body, headers = {} }) => {
   try {
     const result = await fetch(
-      url,
+      webhookUrl,
       {
         method: 'POST',
         body: JSON.stringify(body),
@@ -142,7 +157,42 @@ const getDataAndScreenshot = async (exploration) => {
   await browser.close();
 
   return { data: resultJsonData, screenshot: resultImageBinary };
-}
+};
+
+const sendToSlack = async ({ header, jsonUrl, screenshotUrl, webhookUrl }) => {
+  const body = {
+    username: 'MLCraft Notifications',
+    blocks: [
+      {
+        type: 'section',
+        text: {
+          type: 'mrkdwn',
+          text: `*${header}* \n\n<${jsonUrl}|Download JSON>`
+        },
+      },
+      {
+        type: 'image',
+        image_url: screenshotUrl,
+        alt_text: header,
+      }
+    ],
+  };
+
+  const deliveryResult = await sendToWebhook({ webhookUrl, body });
+
+  return deliveryResult;
+};
+
+const sendToEmail = async ({ header, jsonUrl, screenshotUrl, address }) => {
+  const result = await mailer.sendMail({
+    from: SMTP_SENDER,
+    to: address,
+    subject: header,
+    html: `<img src=${screenshotUrl} /><br /><br /><a href=${jsonUrl}>Download JSON</a>`,
+  });
+
+  return result;
+};
 
 export default async (session, input) => {
   const { deliveryType, explorationId, deliveryConfig, reportName } = input || {};
@@ -181,54 +231,18 @@ export default async (session, input) => {
   }
 
   let deliveryResult;
-  const { url: webhookUrl, address: emailAddress } = deliveryConfig;
+  const { url: webhookUrl, address } = deliveryConfig;
+  const header = `Report ${reportName} at ${dateMoment}`;
 
   switch (deliveryType) {
     case 'WEBHOOK':
-      deliveryResult = await sendToWebhook({ url: webhookUrl, body: { jsonUrl, screenshotUrl } });
+      deliveryResult = await sendToWebhook({ webhookUrl, body: { jsonUrl, screenshotUrl } });
       break;
     case 'SLACK':
-      const body = {
-        username: 'MLCraft Scheduled Reports',
-        blocks: [
-          {
-            type: 'section',
-            text: {
-              type: 'mrkdwn',
-              text: `*Report ${reportName} at ${dateMoment}* \n\n<${jsonUrl}|Download JSON>`
-            },
-          },
-          {
-            type: 'image',
-            image_url: screenshotUrl,
-            alt_text: reportName,
-          }
-        ],
-      };
-
-      deliveryResult = await sendToWebhook({ url: webhookUrl, body });
+      deliveryResult = await sendToSlack({ header, jsonUrl, screenshotUrl, webhookUrl });
       break;
     case 'EMAIL':
-      const mailerOptions = {
-        host: SMTP_HOST,
-        port: SMTP_PORT,
-        secure: SMTP_SECURE ?? false,
-      };
-
-      if (SMTP_USER && SMTP_PASS) {
-        mailerOptions.auth = {
-          user: SMTP_USER,
-          pass: SMTP_PASS,
-        };
-      }
-
-      const mailer = nodemailer.createTransport(mailerOptions);
-      await mailer.sendMail({
-        from: SMTP_SENDER,
-        to: emailAddress,
-        subject: `Report ${reportName} at ${dateMoment}`,
-        html: `<img src=${screenshotUrl} /><br /><br /><a href=${jsonUrl}>Download JSON</a>`,
-      });
+      deliveryResult = await sendToEmail({ header, jsonUrl, screenshotUrl, address });
 
       break;
     default:
