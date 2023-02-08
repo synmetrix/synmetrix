@@ -146,6 +146,15 @@ Also check:
 python3 cli.py --help
 ```
 
+### ngrok tunells
+  
+[Ngrok](https://ngrok.com/) is a tool for allow you to instantly open access to remote systems. We use it for proxying requests from dockerized apps to frontend part in development mode.
+
+After installing the tool you need to obtain your authtoken in ngrok dashboard and update the variable in `ngrok.yml` file. Then run `bash ngrok.sh` command.
+It opens tunnels for backend, frontend and object storage services. Don't forget to change default routes by ngrok-generated ones.
+
+It's necessary to test such features as scheduled reports and alerts locally.
+
 ## Community support
 
 For general help using MLCraft, please refer to the official MLCraft documentation. For additional help, you can use one of these channels to ask a question:
