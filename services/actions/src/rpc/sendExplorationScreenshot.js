@@ -64,7 +64,37 @@ const sendToWebhook = async ({ webhookUrl, body, headers = {} }) => {
   } catch (err) {
     return apiError(err);
   }
-}
+};
+
+const getCleanSelectorSize = (selector) => {
+  const header = document.querySelector('.ant-layout-header');
+  const footer = document.querySelector('.ant-layout-footer');
+  const sider = document.querySelector('.ant-layout-sider');
+  const alert = document.querySelector('.ant-alert');
+
+  [header, footer, sider, alert].forEach(element => element?.parentNode?.removeChild(element));
+
+  const selectorWidth = document.querySelector(selector).scrollWidth;
+  const selectorHeight = document.querySelector(selector).scrollHeight
+
+  return { width: selectorWidth, height: selectorHeight };
+};
+
+const fetchDatasetResponseHandler = async (response) => {
+  // skip if can't parse json
+  try {
+    const jsonResponse = await response.json();
+    const { data = [], progress } = jsonResponse?.data?.fetch_dataset || {};
+
+    if (progress?.loading || data.length === 0) {
+      return false;
+    }
+  } catch (error) {
+    return false;
+  }
+
+  return true;
+};
 
 const getDataAndScreenshot = async (exploration) => {
   const { datasource_id: datasourceId, user_id: userId, id: explorationId } = exploration;
@@ -85,7 +115,7 @@ const getDataAndScreenshot = async (exploration) => {
   });
   const page = await browser.newPage();
 
-  page.on('console', msg => {
+  page.on('console', (msg) => {
     logger.log(`browser console log: ${msg.text()}`);
   });
 
@@ -103,29 +133,14 @@ const getDataAndScreenshot = async (exploration) => {
   let resultJsonData = null;
 
   try {
-    await Promise.all([
-      await page.goto(explorationTableURL, {
-        waitUntil: 'domcontentloaded',
-      }),
-      await page.waitForResponse(async response => {
-        // skip if can't parse json
-        try {
-          const jsonResponse = await response.json();
-          const { data = [], progress } = jsonResponse?.data?.fetch_dataset || {};
-
-          if (progress?.loading || data.length === 0) {
-            return false;
-          }
-
-          resultJsonData = data;
-        } catch (error) {
-          return false;
-        }
-
-        return true;
-      }, { timeout: PUPPETEER_WAITING_TIMEOUT }),
-      await page.waitForSelector(EXPLORATION_DATA_SELECTOR, { timeout: PUPPETEER_WAITING_TIMEOUT }),
+    const [, datasetResponse] = await Promise.all([
+      page.goto(explorationTableURL, { waitUntil: 'domcontentloaded' }),
+      page.waitForResponse(fetchDatasetResponseHandler, { timeout: PUPPETEER_WAITING_TIMEOUT }),
+      page.waitForSelector(EXPLORATION_DATA_SELECTOR, { timeout: PUPPETEER_WAITING_TIMEOUT }),
     ]);
+
+    const datasetJsonResponse = await datasetResponse.json();
+    resultJsonData = datasetJsonResponse.data.fetch_dataset.data;
   } catch (error) {
     logger.error(`page data error: ${error}`);
     await browser.close();
@@ -135,19 +150,9 @@ const getDataAndScreenshot = async (exploration) => {
 
   // wait for table resizes and side effects
   await new Promise(r => setTimeout(r, 1000));
-
-  const width = await page.evaluate((selector) => document.querySelector(selector).scrollWidth, EXPLORATION_DATA_SELECTOR);
-  const height = await page.evaluate((selector) => document.querySelector(selector).scrollHeight, EXPLORATION_DATA_SELECTOR);
+  
+  const { width, height } = await page.evaluate(getCleanSelectorSize, EXPLORATION_DATA_SELECTOR);
   await page.setViewport({ width, height });
-
-  await page.evaluate(() => {
-    const header = document.querySelector('.ant-layout-header');
-    const footer = document.querySelector('.ant-layout-footer');
-    const sider = document.querySelector('.ant-layout-sider');
-    const alert = document.querySelector('.ant-alert');
-
-    [header, footer, sider, alert].forEach(element => element?.parentNode?.removeChild(element));
-  });
 
   const resultImageBinary = await page.screenshot({
     encoding: 'binary',
