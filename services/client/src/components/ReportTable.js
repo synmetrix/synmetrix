@@ -107,6 +107,11 @@ const ReportTable = ({ editId, onModalClose, onModalOpen }) => {
       key: 'schedule',
     },
     {
+      title: 'Creator',
+      dataIndex: ['user', 'display_name'],
+      key: 'display_name',
+    },
+    {
       title: 'Updated At',
       dataIndex: 'updated_at',
       key: 'updated_at',

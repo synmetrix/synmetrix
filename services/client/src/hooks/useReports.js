@@ -15,6 +15,9 @@ export const reportFragment = `
   delivery_config
   created_at
   updated_at
+  user {
+    display_name
+  }
   exploration {
     datasource_id
     playground_state
@@ -39,6 +42,9 @@ const reportsQuery = `
       delivery_config
       created_at
       updated_at
+      user {
+        display_name
+      }
     }
     reports_aggregate (where: $where) {
       aggregate {
