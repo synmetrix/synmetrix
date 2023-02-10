@@ -56,7 +56,7 @@ module.exports = {
     },
     {
       name: 'hasura_migrations',
-      script: 'wait-on http-get://localhost:8080 && cd mlcraft/services/hasura && hasura migrate apply --skip-update-check --disable-interactive',
+      script: 'wait-on http-get://localhost:8080 && cd mlcraft/services/hasura && hasura migrate apply --skip-update-check --disable-interactive --all-databases',
       autorestart: false,
     },
     {
@@ -66,7 +66,7 @@ module.exports = {
     },
     {
       name: 'hasura_seeds',
-      script: 'wait-on --delay 10000 http-get://localhost:8080 && cd mlcraft/services/hasura && hasura seeds apply --skip-update-check',
+      script: 'wait-on --delay 10000 http-get://localhost:8080 && cd mlcraft/services/hasura && hasura seeds apply --skip-update-check --all-databases',
       autorestart: false,
     },
     {
