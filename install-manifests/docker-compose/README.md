@@ -34,3 +34,12 @@ SMTP_USER: ${SECRETS_SMTP_USER}
 SMTP_PASS: ${SECRETS_SMTP_PASS}
 SMTP_SENDER: ${SECRETS_SMTP_SENDER}
 ```
+
+## AWS credentials
+
+You also should provide AWS credentails if you want to use scheduled reports.
+
+```
+AWS_S3_ACCESS_KEY_ID: ${SECRETS_AWS_S3_ACCESS_KEY_ID}
+AWS_S3_SECRET_ACCESS_KEY: ${SECRETS_AWS_S3_SECRET_ACCESS_KEY}
+```
