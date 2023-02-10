@@ -4,9 +4,6 @@ import apiError from '../utils/apiError';
 
 import deleteCronTaskByReport from './deleteCronTaskByReport';
 
-const ACTIONS_PORT = process.env.ACTIONS_PORT || 3000;
-const ACTIONS_URL = process.env.ACTIONS_URL || `http://localhost:${ACTIONS_PORT}`;
-
 export default async (session, input) => {
   const reportPayload = input?.data?.new;
   const operationName = input?.op;
@@ -24,7 +21,7 @@ export default async (session, input) => {
     type : "create_cron_trigger",
     args : {
       name: reportId,
-      webhook: `${ACTIONS_URL}/rpc/send_exploration_screenshot`,
+      webhook: `{{ACTIONS_URL}}/rpc/send_exploration_screenshot`,
       schedule,
       payload: {
         deliveryConfig,

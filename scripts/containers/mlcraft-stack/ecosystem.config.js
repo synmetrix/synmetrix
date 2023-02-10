@@ -116,8 +116,7 @@ module.exports = {
         JWT_EXPIRES_IN,
         JWT_ALGORITHM,
         JWT_CLAIMS_NAMESPACE,
-        JWT_KEY,
-        ACTIONS_URL
+        JWT_KEY
       }
     },
     {
