@@ -21,7 +21,7 @@ const HASURA_METADATA_ENDPOINT = process.env.HASURA_METADATA_ENDPOINT || 'http:/
 const HASURA_PLUS_SERVER_URL = process.env.HASURA_PLUS_SERVER_URL || `http://localhost:${HASURA_PLUS_PORT}`;
 
 // app frontend URL (for exploration screenshots)
-const APP_FRONTEND_URL = process.env.APP_FRONTEND_URL || 'http://localhost';
+const APP_FRONTEND_URL = process.env.APP_FRONTEND_URL || 'http://localhost:5000';
 
 // AWS S3
 const { AWS_S3_ACCESS_KEY_ID, AWS_S3_SECRET_ACCESS_KEY } = process.env;

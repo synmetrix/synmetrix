@@ -107,13 +107,21 @@ const getDataAndScreenshot = async (exploration) => {
     return { error: 'Access token hasn`t been signed' };
   }
 
-  const browser = await puppeteer.launch({
-    headless: true,
-    defaultViewport: null,
-    executablePath: '/usr/bin/google-chrome-stable',
-    args: ['--disable-gpu', '--disable-dev-shm-usage', '--disable-setuid-sandbox', '--no-sandbox'],
-  });
-  const page = await browser.newPage();
+  let page;
+
+  try {
+    const browser = await puppeteer.launch({
+      headless: true,
+      defaultViewport: null,
+      executablePath: '/usr/bin/google-chrome-stable',
+      args: ['--disable-gpu', '--disable-dev-shm-usage', '--disable-setuid-sandbox', '--no-sandbox'],
+    });
+    page = await browser.newPage();
+  } catch (error) {
+    logger.error(`browser start error: ${error}`);
+
+    return { error };
+  }
 
   page.on('console', (msg) => {
     logger.log(`browser console log: ${msg.text()}`);
