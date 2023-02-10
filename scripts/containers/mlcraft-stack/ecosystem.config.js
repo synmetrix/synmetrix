@@ -113,6 +113,10 @@ module.exports = {
         APP_FRONTEND_URL,
         AWS_S3_ACCESS_KEY_ID,
         AWS_S3_SECRET_ACCESS_KEY,
+        JWT_EXPIRES_IN,
+        JWT_ALGORITHM,
+        JWT_CLAIMS_NAMESPACE,
+        JWT_KEY
       }
     },
     {

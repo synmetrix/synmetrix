@@ -2,10 +2,12 @@ import { SignJWT } from 'jose';
 
 import logger from '../utils/logger';
 
-const JWT_EXPIRES_IN=process.env.JWT_EXPIRES_IN;
-const JWT_ALGORITHM=process.env.JWT_ALGORITHM;
-const JWT_CLAIMS_NAMESPACE=process.env.JWT_CLAIMS_NAMESPACE;
-const JWT_KEY=process.env.JWT_KEY;
+const {
+  JWT_EXPIRES_IN,
+  JWT_ALGORITHM,
+  JWT_CLAIMS_NAMESPACE,
+  JWT_KEY
+} = process.env
 
 const generateUserAccessToken = async (userId) => {
   const hasuraCompatibleJwtPayload = {
