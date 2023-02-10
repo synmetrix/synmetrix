@@ -14,8 +14,17 @@ const HASURA_PLUS_ENDPOINT = process.env.HASURA_PLUS_ENDPOINT || `http://localho
 // internal hasura url
 const HASURA_ENDPOINT = process.env.HASURA_ENDPOINT || 'http://localhost:8080/v1/graphql';
 
+// hasura metadata url
+const HASURA_METADATA_ENDPOINT = process.env.HASURA_METADATA_ENDPOINT || 'http://localhost:8080/v1/metadata';
+
 // public hasura plus url
 const HASURA_PLUS_SERVER_URL = process.env.HASURA_PLUS_SERVER_URL || `http://localhost:${HASURA_PLUS_PORT}`;
+
+// app frontend URL (for exploration screenshots)
+const APP_FRONTEND_URL = process.env.APP_FRONTEND_URL || 'http://localhost';
+
+// AWS S3
+const { AWS_S3_ACCESS_KEY_ID, AWS_S3_SECRET_ACCESS_KEY } = process.env;
 
 // auth JWT algo
 const JWT_ALGORITHM = process.env.JWT_ALGORITHM || 'HS256';
@@ -100,6 +109,10 @@ module.exports = {
         CUBEJS_SECRET,
         HASURA_ENDPOINT,
         HASURA_PLUS_ENDPOINT,
+        HASURA_METADATA_ENDPOINT,
+        APP_FRONTEND_URL,
+        AWS_S3_ACCESS_KEY_ID,
+        AWS_S3_SECRET_ACCESS_KEY,
       }
     },
     {
