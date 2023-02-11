@@ -21,10 +21,12 @@ const HASURA_METADATA_ENDPOINT = process.env.HASURA_METADATA_ENDPOINT || 'http:/
 const HASURA_PLUS_SERVER_URL = process.env.HASURA_PLUS_SERVER_URL || `http://localhost:${HASURA_PLUS_PORT}`;
 
 // app frontend URL (for exploration screenshots)
-const APP_FRONTEND_URL = process.env.APP_FRONTEND_URL || 'http://localhost:5000';
+const APP_FRONTEND_URL = process.env.APP_FRONTEND_URL || 'http://localhost:8888';
 
 // AWS S3
 const { AWS_S3_ACCESS_KEY_ID, AWS_S3_SECRET_ACCESS_KEY } = process.env;
+const AWS_S3_ENDPOINT= process.env.AWS_S3_ENDPOINT;
+const AWS_S3_REGION = process.env.AWS_S3_REGION || 'us-east-1';
 
 // auth JWT algo
 const JWT_ALGORITHM = process.env.JWT_ALGORITHM || 'HS256';
@@ -113,6 +115,8 @@ module.exports = {
         APP_FRONTEND_URL,
         AWS_S3_ACCESS_KEY_ID,
         AWS_S3_SECRET_ACCESS_KEY,
+        AWS_S3_ENDPOINT,
+        AWS_S3_REGION,
         JWT_EXPIRES_IN,
         JWT_ALGORITHM,
         JWT_CLAIMS_NAMESPACE,

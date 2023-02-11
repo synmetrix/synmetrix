@@ -22,7 +22,7 @@ const {
 const EXPLORATION_DATA_SELECTOR = '#explorationTable';
 const PUPPETEER_WAITING_TIMEOUT = 30000;
 const TIMEZONE = 'UTC';
-const BUCKET_NAME = 'explorations';
+const BUCKET_NAME = 'mlcraft-explorations';
 
 const explorationQuery = `
   query ($id: uuid!) {
