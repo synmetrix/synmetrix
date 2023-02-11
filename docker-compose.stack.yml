@@ -32,6 +32,7 @@ services:
       # S3 credentials
       AWS_S3_ACCESS_KEY_ID: ${SECRETS_AWS_S3_ACCESS_KEY_ID}
       AWS_S3_SECRET_ACCESS_KEY: ${SECRETS_AWS_S3_SECRET_ACCESS_KEY}
+      AWS_S3_BUCKET_NAME: ${SECRETS_AWS_S3_BUCKET_NAME}
     depends_on:
       - postgres
 

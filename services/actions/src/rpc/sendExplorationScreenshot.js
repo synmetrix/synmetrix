@@ -16,13 +16,13 @@ const {
   SMTP_USER,
   SMTP_PASS,
   SMTP_SENDER,
-  APP_FRONTEND_URL
+  APP_FRONTEND_URL,
+  AWS_S3_BUCKET_NAME,
 } = process.env;
 
 const EXPLORATION_DATA_SELECTOR = '#explorationTable';
 const PUPPETEER_WAITING_TIMEOUT = 30000;
 const TIMEZONE = 'UTC';
-const BUCKET_NAME = 'mlcraft-explorations';
 
 const explorationQuery = `
   query ($id: uuid!) {
@@ -225,14 +225,14 @@ export default async (session, input) => {
   const filePathPrefix = `${explorationId}/${dateMoment}`;
 
   const { error: uploadDataError, url: jsonUrl } = await putFileToBucket({
-    bucketName: BUCKET_NAME,
+    bucketName: AWS_S3_BUCKET_NAME,
     fileBody: JSON.stringify(data),
     filePath: `${filePathPrefix}/data.json`,
     fileContentType: 'text/json'
   });
 
   const { error: uploadScreenshotError, url: screenshotUrl } = await putFileToBucket({
-    bucketName: BUCKET_NAME,
+    bucketName: AWS_S3_BUCKET_NAME,
     fileBody: screenshot,
     filePath: `${filePathPrefix}/screenshot.png`,
     fileContentType: 'image/png',

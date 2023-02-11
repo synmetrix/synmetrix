@@ -42,4 +42,5 @@ You also should provide AWS credentails if you want to use scheduled reports.
 ```
 AWS_S3_ACCESS_KEY_ID: ${SECRETS_AWS_S3_ACCESS_KEY_ID}
 AWS_S3_SECRET_ACCESS_KEY: ${SECRETS_AWS_S3_SECRET_ACCESS_KEY}
+AWS_S3_BUCKET_NAME: ${SECRETS_AWS_S3_BUCKET_NAME}
 ```
