@@ -18,8 +18,8 @@ export default async (session, input) => {
   } = reportPayload || {};
 
   const cronTaskParams = {
-    type : "create_cron_trigger",
-    args : {
+    type: "create_cron_trigger",
+    args: {
       name: reportId,
       webhook: `{{ACTIONS_URL}}/rpc/send_exploration_screenshot`,
       schedule,
