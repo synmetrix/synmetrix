@@ -24,10 +24,12 @@ const HASURA_PLUS_SERVER_URL = process.env.HASURA_PLUS_SERVER_URL || `http://loc
 const APP_FRONTEND_URL = process.env.APP_FRONTEND_URL || 'http://localhost:8888';
 
 // AWS S3
+const defaultBucketNameSuffix = (size) => Array(size).fill().map(n=>(Math.random()*36|0).toString(36)).join('');
+
 const { AWS_S3_ACCESS_KEY_ID, AWS_S3_SECRET_ACCESS_KEY } = process.env;
 const AWS_S3_ENDPOINT= process.env.AWS_S3_ENDPOINT;
 const AWS_S3_REGION = process.env.AWS_S3_REGION || 'us-east-1';
-const AWS_S3_BUCKET_NAME = process.env.AWS_S3_BUCKET_NAME || 'mlcraft-explorations';
+const AWS_S3_BUCKET_NAME = process.env.AWS_S3_BUCKET_NAME || `mlcraft-explorations-${defaultBucketNameSuffix(12)}`;
 
 // auth JWT algo
 const JWT_ALGORITHM = process.env.JWT_ALGORITHM || 'HS256';
