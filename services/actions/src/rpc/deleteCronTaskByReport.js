@@ -6,7 +6,7 @@ export default async (session, input) => {
   const reportId = input?.data?.old?.id;
 
   const cronTaskParams = {
-    type : "delete_cron_trigger",
+    type : 'delete_cron_trigger',
     args : {
       name: reportId
     }

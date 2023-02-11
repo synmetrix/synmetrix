@@ -18,7 +18,7 @@ export default async (session, input) => {
   } = reportPayload || {};
 
   const cronTaskParams = {
-    type: "create_cron_trigger",
+    type: 'create_cron_trigger',
     args: {
       name: reportId,
       webhook: `{{ACTIONS_URL}}/rpc/send_exploration_screenshot`,
@@ -41,7 +41,7 @@ export default async (session, input) => {
 
   try {
     // recreate the cron task if fields or exploration has been changed
-    if (operationName === "UPDATE") {
+    if (operationName === 'UPDATE') {
       const deletionParams = {
         data: {
           old: {
