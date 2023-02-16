@@ -4,6 +4,7 @@ import express from 'express';
 import jwt from 'jsonwebtoken';
 
 import DriverDependencies from '@cubejs-backend/server-core/dist/src/core/DriverDependencies.js';
+import CubeStoreDriverPackage from '@cubejs-backend/cubestore-driver';
 
 import routes from './src/routes/index.js';
 import { 
@@ -13,6 +14,7 @@ import {
   buildSecurityContext,
 } from './src/utils/dataSourceHelpers.js';
 
+const { CubeStoreDriver } = CubeStoreDriverPackage;
 const { CUBEJS_SECRET } = process.env;
 
 const port = parseInt(process.env.PORT, 10) || 4000;
@@ -219,6 +221,11 @@ const options = {
   telemetry: false,
   scheduledRefreshTimer: 60,
   scheduledRefreshContexts,
+  externalDbType: 'cubestore',
+  externalDriverFactory: () => new CubeStoreDriver({
+      host: 'cubestore',
+      port: 3306
+  })
 };
 
 const cubejs = new ServerCore(options);

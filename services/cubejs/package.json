@@ -10,6 +10,7 @@
     "@cubejs-backend/athena-driver": "^0.31.58",
     "@cubejs-backend/bigquery-driver": "^0.31.58",
     "@cubejs-backend/clickhouse-driver": "^0.31.58",
+    "@cubejs-backend/cubestore-driver": "^0.31.58",
     "@cubejs-backend/mongobi-driver": "^0.31.58",
     "@cubejs-backend/mssql-driver": "^0.31.58",
     "@cubejs-backend/mysql-driver": "^0.31.58",
@@ -19,14 +20,14 @@
     "@hapi/joi": "17.1.1",
     "body-parser": "^1.19.0",
     "express": "^4.18.2",
-    "ioredis": "^4.17.3",
+    "ioredis": "^5.3.0",
     "jsonwebtoken": "^8.5.1",
     "jsum": "^2.0.0-alpha.3",
     "nodemon": "^2.0.2",
     "pg": "^8.7.1",
     "pg-connection-string": "^2.2.0",
     "ramda": "^0.27.0",
-    "redis": "^3.0.2",
+    "redis": "^4.6.4",
     "unchanged": "^2.2.1"
   }
 }

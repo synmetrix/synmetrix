@@ -88,5 +88,10 @@ services:
     depends_on:
       - postgres
 
+  cubestore:
+    ports:
+       - 3306:3306
+       - 3030:3030
+
 volumes:
   pgstorage-data:
