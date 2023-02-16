@@ -18,6 +18,7 @@ import usePermissions from 'hooks/usePermissions';
 import useLocation from 'hooks/useLocation';
 import useCheckResponse from 'hooks/useCheckResponse';
 import useCurrentUserState from 'hooks/useCurrentUserState';
+import useCurrentTeamState from 'hooks/useCurrentTeamState';
 import useAppSettings from 'hooks/useAppSettings';
 
 import Loader from 'components/Loader';
@@ -36,6 +37,7 @@ const reservedSlugs = ['sqlrunner', 'genschema'];
 const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
   const { t } = useTranslation();
   const { currentUserState: currentUser } = useCurrentUserState();
+  const { currentTeamState: currentTeam } = useCurrentTeamState();
   const [, setLocation] = useLocation();
   const { withAuthPrefix } = useAppSettings();
 
@@ -75,6 +77,8 @@ const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
       execUpdateMutation,
       deleteMutation,
       execDeleteMutation,
+      exportMutation,
+      execExportMutation,
     },
   } = useSchemas({
     params: {
@@ -120,6 +124,13 @@ const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
     }
   }, {
     successMessage: null
+  });
+
+  useCheckResponse(exportMutation, (res) => {
+    if (res) {
+      const url = res?.export_data_models?.download_url;
+      window.location.assign(url);
+    }
   });
 
   const schemaIdToCode = useMemo(() => all.reduce((acc, curr) => {
@@ -199,10 +210,22 @@ const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
     }
   }, [sourceTablesSchema]);
 
+  const exportData = () => {
+    execExportMutation({
+      teamId: currentTeam?.id,
+      // branch,
+    });
+  };
+
   const routes = [
     {
       path: `${basePath}/${dataSourceId}/genschema`,
       title: t('Generate Schema'),
+    },
+    {
+      path: `${basePath}/${dataSourceId}`,
+      title: t('Export data models'),
+      onClick: () => exportData(),
     },
   ];
 
@@ -226,7 +249,7 @@ const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
   }
 
   const fetching = allData.fetching || deleteMutation.fetching || createMutation.fetching 
-    || validateMutation.fetching || genSchemaMutation.fetching || tablesData.fetching;
+    || validateMutation.fetching || genSchemaMutation.fetching || tablesData.fetching || exportMutation.fetching;
 
   if (error) {
     return <ErrorFound status={404} />;

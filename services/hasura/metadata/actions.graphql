@@ -16,6 +16,13 @@ type Mutation {
   ): CreateTeamOutput
 }
 
+type Mutation {
+  export_data_models(
+    teamId: String
+    branch: String
+  ): ExportDataModelsOutput
+}
+
 type Query {
   fetch_dataset(
     exploration_id: uuid!
@@ -154,5 +161,9 @@ type GenSQLOutput {
 
 type events_create_mutation_response {
   affected_rows: Int
+}
+
+type ExportDataModelsOutput {
+  download_url: String!
 }
 
