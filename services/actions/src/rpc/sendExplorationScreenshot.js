@@ -215,11 +215,16 @@ export default async (session, input) => {
   const queryResult = await fetchGraphQL(explorationQuery, { id: explorationId });
   const exploration = queryResult?.data?.explorations_by_pk || {};
 
-  const { data, screenshot, error } = await getDataAndScreenshot(exploration);
+  try {
+    const { data, screenshot, error } = await getDataAndScreenshot(exploration);
 
-  if (error) {
+    if (error) {
+      return apiError(error);
+    }
+  } catch (error) {
     return apiError(error);
   }
+
 
   const dateMoment = moment().tz(TIMEZONE).format('DD-MM-YYYY HH:mm');
   const filePathPrefix = `${explorationId}/${dateMoment}`;
