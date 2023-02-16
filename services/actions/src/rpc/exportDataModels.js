@@ -63,7 +63,7 @@ export default async (session, input) => {
 
     const yamlObj = {
       branch,
-      created_at: now,
+      createdAt: now,
       schemas: schemasMeta,
     }
 
@@ -89,10 +89,12 @@ export default async (session, input) => {
 
     const yamlMd5Hex = createMd5Hex(yamlResult);
 
+    const filePath = `${teamId || userId}/schemas/${branch}/${yamlMd5Hex}.zip`;
+
     const { error: uploadDataError, url } = await putFileToBucket({
       bucketName: AWS_S3_BUCKET_NAME,
       fileBody: zipBuffer,
-      filePath: `${teamId}/schemas/${branch}/${yamlMd5Hex}.zip`,
+      filePath,
       fileContentType: 'application/zip',
     });
 
