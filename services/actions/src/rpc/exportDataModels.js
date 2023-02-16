@@ -31,7 +31,7 @@ const getListVariables = (params) => {
         },
       },
       branch: {
-        _eq: params?.branch || 'main',
+        _eq: params.branch,
       },
     },
   };
@@ -44,7 +44,8 @@ const getListVariables = (params) => {
 }
 
 export default async (session, input) => {
-  const { teamId, branch } = input;
+  const branch = input?.branch || 'main';
+  const { teamId } = input;
 
   const userId = session?.['x-hasura-user-id'];
 
@@ -58,10 +59,10 @@ export default async (session, input) => {
       [schema?.name]: {
         checksum: schema?.checksum,
       },
-      branch: schema?.branch,
     }));
 
     const yamlObj = {
+      branch,
       created_at: now,
       schemas: schemasMeta,
     }
@@ -84,8 +85,7 @@ export default async (session, input) => {
       zip.file(file.filename, file.content);
     });
 
-    let zipBuffer = await zip.generateAsync({ type: 'blob' });
-    zipBuffer = await zipBuffer.arrayBuffer();
+    const zipBuffer = await zip.generateAsync({ type: 'arraybuffer' });
 
     const yamlMd5Hex = createMd5Hex(yamlResult);
 
@@ -94,7 +94,6 @@ export default async (session, input) => {
       fileBody: zipBuffer,
       filePath: `${teamId}/schemas/${branch}/${yamlMd5Hex}.zip`,
       fileContentType: 'application/zip',
-      fileContentLength: zipBuffer.byteLength,
     });
 
     if (uploadDataError) {
