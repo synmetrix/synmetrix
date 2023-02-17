@@ -118,6 +118,18 @@ services:
     networks:
       - mlcraft_default
 
+  client:
+    build:
+      context: ./services/client/
+      args:
+        NODE_ENV: 
+    environment:
+      GRAPHQL_SERVER_URL: http://hasura:8080/v1/graphql
+      GRAPHQL_WS_URL: ws://hasura:8080/v1/graphql
+      GRAPHQL_PLUS_SERVER_URL: http://hasura_plus:8080
+    networks:
+      - mlcraft_default
+
 volumes:
   pgstorage-data:
   minio-data:

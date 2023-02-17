@@ -215,13 +215,9 @@ export default async (session, input) => {
   const queryResult = await fetchGraphQL(explorationQuery, { id: explorationId });
   const exploration = queryResult?.data?.explorations_by_pk || {};
 
-  try {
-    const { data, screenshot, error } = await getDataAndScreenshot(exploration);
+  const { data, screenshot, error } = await getDataAndScreenshot(exploration);
 
-    if (error) {
-      return apiError(error);
-    }
-  } catch (error) {
+  if (error) {
     return apiError(error);
   }
 
