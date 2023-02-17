@@ -7,6 +7,7 @@ import { useSetState } from 'ahooks';
 import Slider from 'components/Slider';
 import InputNumber from 'components/InputNumber';
 import ErrorMessage from 'components/ErrorMessage';
+import InputDate from 'components/InputDate';
 
 const { TextArea } = Input;
 const { Option } = Select;
@@ -64,15 +65,8 @@ export default ({ ref, form, initialValues, config, size = DEFAULT_INPUT_SIZE, i
     }
 
     if (value.display === 'checkbox') {
-
       return (
-        // <div
-        //   onClick={e => { e.stopPropagation() }}
-        //   onKeyDown={e => { e.stopPropagation() }}
-        //   role="none"
-        // >
         <Checkbox disabled={disabled} />
-        // {/* </div> */}
       );
     }
 
@@ -155,6 +149,15 @@ export default ({ ref, form, initialValues, config, size = DEFAULT_INPUT_SIZE, i
       );
     }
 
+    if (value.display === 'date' && value.type === 'filter') {
+      return (
+        <InputDate
+          values={value.values}
+          onChange={value.onChange}
+        />
+      );
+    }
+
     if (value.display === 'text' && value.type === 'string') {
       return (
         <TextArea
@@ -221,6 +224,10 @@ export default ({ ref, form, initialValues, config, size = DEFAULT_INPUT_SIZE, i
 
     if (typeof(initialValue) === 'undefined') {
       initialValue = value.default;
+    }
+
+    if (value.display === 'none') {
+      return null;
     }
 
     if (value.display === 'button') {

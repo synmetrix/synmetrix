@@ -1,102 +1,102 @@
 actions:
-- name: check_connection
-  definition:
-    kind: synchronous
-    handler: '{{ACTIONS_URL}}/rpc/check_connection'
-    forward_client_headers: true
-  permissions:
-  - role: user
-- name: create_events
-  definition:
-    kind: asynchronous
-    handler: '{{ACTIONS_URL}}/rpc/create_events'
-    forward_client_headers: true
-    timeout: 10
-  permissions:
-  - role: anonymous
-- name: create_team
-  definition:
-    kind: synchronous
-    handler: '{{ACTIONS_URL}}/rpc/create_team'
-    forward_client_headers: true
-  permissions:
-  - role: user
-- name: fetch_dataset
-  definition:
-    kind: ""
-    handler: '{{ACTIONS_URL}}/rpc/fetch_dataset'
-    forward_client_headers: true
-  permissions:
-  - role: user
-- name: fetch_meta
-  definition:
-    kind: ""
-    handler: '{{ACTIONS_URL}}/rpc/fetch_meta'
-    forward_client_headers: true
-  permissions:
-  - role: user
-- name: fetch_tables
-  definition:
-    kind: ""
-    handler: '{{ACTIONS_URL}}/rpc/fetch_tables'
-    forward_client_headers: true
-    timeout: 180
-  permissions:
-  - role: user
-- name: gen_dataschemas
-  definition:
-    kind: synchronous
-    handler: '{{ACTIONS_URL}}/rpc/gen_schemas'
-    forward_client_headers: true
-    timeout: 180
-  permissions:
-  - role: user
-- name: gen_sql
-  definition:
-    kind: synchronous
-    handler: '{{ACTIONS_URL}}/rpc/gen_sql'
-    forward_client_headers: true
-  permissions:
-  - role: user
-- name: invite_team_member
-  definition:
-    kind: synchronous
-    handler: '{{ACTIONS_URL}}/rpc/invite_team_member'
-    forward_client_headers: true
-  permissions:
-  - role: user
-- name: run_query
-  definition:
-    kind: synchronous
-    handler: '{{ACTIONS_URL}}/rpc/run_query'
-    forward_client_headers: true
-  permissions:
-  - role: user
-- name: validate_datasource
-  definition:
-    kind: synchronous
-    handler: '{{ACTIONS_URL}}/rpc/validate_source'
-    forward_client_headers: true
-  permissions:
-  - role: user
+  - name: check_connection
+    definition:
+      kind: synchronous
+      handler: '{{ACTIONS_URL}}/rpc/check_connection'
+      forward_client_headers: true
+    permissions:
+      - role: user
+  - name: create_events
+    definition:
+      kind: asynchronous
+      handler: '{{ACTIONS_URL}}/rpc/create_events'
+      forward_client_headers: true
+      timeout: 10
+    permissions:
+      - role: anonymous
+  - name: create_team
+    definition:
+      kind: synchronous
+      handler: '{{ACTIONS_URL}}/rpc/create_team'
+      forward_client_headers: true
+    permissions:
+      - role: user
+  - name: fetch_dataset
+    definition:
+      kind: ""
+      handler: '{{ACTIONS_URL}}/rpc/fetch_dataset'
+      forward_client_headers: true
+    permissions:
+      - role: user
+  - name: fetch_meta
+    definition:
+      kind: ""
+      handler: '{{ACTIONS_URL}}/rpc/fetch_meta'
+      forward_client_headers: true
+    permissions:
+      - role: user
+  - name: fetch_tables
+    definition:
+      kind: ""
+      handler: '{{ACTIONS_URL}}/rpc/fetch_tables'
+      forward_client_headers: true
+      timeout: 180
+    permissions:
+      - role: user
+  - name: gen_dataschemas
+    definition:
+      kind: synchronous
+      handler: '{{ACTIONS_URL}}/rpc/gen_schemas'
+      forward_client_headers: true
+      timeout: 180
+    permissions:
+      - role: user
+  - name: gen_sql
+    definition:
+      kind: synchronous
+      handler: '{{ACTIONS_URL}}/rpc/gen_sql'
+      forward_client_headers: true
+    permissions:
+      - role: user
+  - name: invite_team_member
+    definition:
+      kind: synchronous
+      handler: '{{ACTIONS_URL}}/rpc/invite_team_member'
+      forward_client_headers: true
+    permissions:
+      - role: user
+  - name: run_query
+    definition:
+      kind: synchronous
+      handler: '{{ACTIONS_URL}}/rpc/run_query'
+      forward_client_headers: true
+    permissions:
+      - role: user
+  - name: validate_datasource
+    definition:
+      kind: synchronous
+      handler: '{{ACTIONS_URL}}/rpc/validate_source'
+      forward_client_headers: true
+    permissions:
+      - role: user
 custom_types:
   enums: []
   input_objects:
-  - name: SourceTable
-  - name: events_create_input
+    - name: SourceTable
+    - name: events_create_input
   objects:
-  - name: CheckSourceOutput
-  - name: GenSourceSchemaOutput
-  - name: SourceTablesOutput
-  - name: SourceMetaOutput
-  - name: RunSourceQueryOutput
-  - name: ValidateSourceSchemaOutput
-  - name: ValidateSourceSchemasOutput
-  - name: ValidateSourceOutput
-  - name: CheckConnectionOutput
-  - name: FetchDatasetOutput
-  - name: InviteTeamMemberOutput
-  - name: CreateTeamOutput
-  - name: GenSQLOutput
-  - name: events_create_mutation_response
+    - name: CheckSourceOutput
+    - name: GenSourceSchemaOutput
+    - name: SourceTablesOutput
+    - name: SourceMetaOutput
+    - name: RunSourceQueryOutput
+    - name: ValidateSourceSchemaOutput
+    - name: ValidateSourceSchemasOutput
+    - name: ValidateSourceOutput
+    - name: CheckConnectionOutput
+    - name: FetchDatasetOutput
+    - name: InviteTeamMemberOutput
+    - name: CreateTeamOutput
+    - name: GenSQLOutput
+    - name: events_create_mutation_response
   scalars: []

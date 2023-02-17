@@ -25,11 +25,9 @@ import s from './ExploreWorkspace.module.css';
 
 const DEFAULT_ACTIVE_TAB = 0;
 
-const ExploreWorkspace = (props) => {
-  const [, size] = useDimensions(document.querySelector('#data-view'));
-  const { width } = size;
-  const { currentUserState: currentUser } = useCurrentUserState();
+const DEFAULT_ROW_HEIGHT = 20;
 
+const ExploreWorkspace = (props) => {
   const {
     header,
     source: dataSource,
@@ -38,8 +36,14 @@ const ExploreWorkspace = (props) => {
       explorationId,
       tabId,
       chartId,
+      screenshotMode,
     },
   } = props;
+
+  const selector = screenshotMode ? document.querySelector('.ant-layout-content') : document.querySelector('#data-view');
+  const [, size] = useDimensions(selector);
+  const { width } = size;
+  const { currentUserState: currentUser } = useCurrentUserState();
 
   const { state: tabsState } = useTabs({
     activeTab: tabId ? Number(tabId) : DEFAULT_ACTIVE_TAB,
@@ -80,6 +84,8 @@ const ExploreWorkspace = (props) => {
     pauseQueryAll: true,
   });
 
+  const tableHeight = useMemo(() => DEFAULT_ROW_HEIGHT * explorationState.rows.length + 30, [explorationState.rows.length]);
+
   useTrackedEffect((changes, previousDeps, currentDeps) => {
     const prevData = previousDeps?.[0];
     const currData = currentDeps?.[0];
@@ -102,12 +108,12 @@ const ExploreWorkspace = (props) => {
     }
   }, [dataSource.id, execValidateMutation]);
 
-  const onRunQuery = (e) => {
+  const onRunQuery = useCallback((e) => {
     runQuery();
 
     e.preventDefault();
     e.stopPropagation();
-  };
+  }, [runQuery]);
 
   const onQueryChange = useCallback(
     (type, ...args) => {
@@ -164,6 +170,28 @@ const ExploreWorkspace = (props) => {
     />,
   ];
 
+  const dataSection = (
+    <WorkspaceDataSection
+      key="dataSec"
+      width={width}
+      height={screenshotMode ? tableHeight : undefined}
+      selectedQueryMembers={selectedQueryMembers}
+      onToggleSection={onToggleSection}
+      onSectionChange={onDataSectionChange}
+      onExec={onRunQuery}
+      onQueryChange={onQueryChange}
+      disabled={!isQueryChanged}
+      state={state}
+      queryState={explorationState}
+      explorationRowId={explorationRowId}
+      screenshotMode={screenshotMode}
+      rowHeight={DEFAULT_ROW_HEIGHT}
+    />
+  );
+
+  if (screenshotMode) {
+    return dataSection;
+  }
 
   const workspaceLayout = {
     md: 16,
@@ -200,19 +228,7 @@ const ExploreWorkspace = (props) => {
               enter: () => { },
             }}
           >
-            <WorkspaceDataSection
-              key="dataSec"
-              width={width}
-              selectedQueryMembers={selectedQueryMembers}
-              onToggleSection={onToggleSection}
-              onSectionChange={onDataSectionChange}
-              onExec={onRunQuery}
-              onQueryChange={onQueryChange}
-              disabled={!isQueryChanged}
-              state={state}
-              queryState={explorationState}
-              explorationRowId={explorationRowId}
-            />
+            {dataSection}
             {!filtersFallback && (
               <WorkspaceFiltersSection
                 key="filtersSec"
@@ -247,6 +263,7 @@ ExploreWorkspace.propTypes = {
     explorationId: PropTypes.string,
     tabId: PropTypes.string,
     chartId: PropTypes.string,
+    screenshotMode: PropTypes.bool,
   }).isRequired,
   source: PropTypes.object,
   meta: PropTypes.array,
