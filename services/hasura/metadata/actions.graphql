@@ -18,7 +18,7 @@ type Mutation {
 
 type Mutation {
   export_data_models(
-    teamId: String
+    team_id: String
     branch: String
   ): ExportDataModelsOutput
 }

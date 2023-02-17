@@ -68,8 +68,8 @@ const allSchemasSubscription = `
 `;
 
 const exportDataMutation = `
-  mutation ($teamId: String, $branch: String) {
-    export_data_models(teamId: $teamId, branch: $branch) {
+  mutation ($team_id: String, $branch: String) {
+    export_data_models(team_id: $team_id, branch: $branch) {
       download_url
     }
   }

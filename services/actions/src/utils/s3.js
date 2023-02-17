@@ -15,7 +15,7 @@ const {
   AWS_S3_ACCESS_KEY_ID,
   AWS_S3_SECRET_ACCESS_KEY,
   AWS_S3_REGION,
-  MINIO_DEV_ADDR,
+  MINIO_DEV_PROXY,
   NODE_ENV,
 } = process.env;
 
@@ -105,7 +105,7 @@ export const putFileToBucket = async ({ bucketName, fileBody, filePath, fileCont
 
   let resultUrl = url;
   if (dev) {
-    resultUrl = resultUrl.replace(AWS_S3_ENDPOINT, MINIO_DEV_ADDR);
+    resultUrl = resultUrl.replace(AWS_S3_ENDPOINT, MINIO_DEV_PROXY);
   }
 
   return { url: resultUrl };

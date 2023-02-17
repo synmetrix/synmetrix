@@ -23,7 +23,7 @@ const fetchSchemasQuery = `
 `;
 
 const getListVariables = (params) => {
-  const res = {
+  let res = {
     where: {
       user: {
         id: {
@@ -45,7 +45,7 @@ const getListVariables = (params) => {
 
 export default async (session, input) => {
   const branch = input?.branch || 'main';
-  const { teamId } = input;
+  const { team_id: teamId } = input;
 
   const userId = session?.['x-hasura-user-id'];
 

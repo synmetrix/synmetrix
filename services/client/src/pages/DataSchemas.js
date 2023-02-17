@@ -212,7 +212,7 @@ const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
 
   const exportData = () => {
     execExportMutation({
-      teamId: currentTeam?.id,
+      team_id: currentTeam?.id,
       // branch,
     });
   };
