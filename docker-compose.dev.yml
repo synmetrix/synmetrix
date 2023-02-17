@@ -103,13 +103,7 @@ services:
     networks:
       - mlcraft_default
     healthcheck:
-      test:
-        [
-          "CMD",
-          "curl",
-          "-f",
-          "http://localhost:9000/minio/health/live"
-        ]
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
       interval: 30s
       timeout: 20s
       retries: 3
@@ -129,6 +123,20 @@ services:
     ports:
       - 1025:1025 # smtp server
       - 8025:8025 # web ui
+    networks:
+      - mlcraft_default
+
+  client:
+    build:
+      context: ./services/client/
+      args:
+        NODE_ENV: 
+    environment:
+      GRAPHQL_SERVER_URL: http://hasura:8080/v1/graphql
+      GRAPHQL_WS_URL: ws://hasura:8080/v1/graphql
+      GRAPHQL_PLUS_SERVER_URL: http://hasura_plus:8080
+    networks:
+      - mlcraft_default
 
 volumes:
   pgstorage-data:
