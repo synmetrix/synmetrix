@@ -97,6 +97,99 @@
             name: accounts
             schema: auth
 - table:
+    name: alerts
+    schema: public
+  object_relationships:
+    - name: exploration
+      using:
+        foreign_key_constraint_on: exploration_id
+    - name: team
+      using:
+        foreign_key_constraint_on: team_id
+    - name: user
+      using:
+        foreign_key_constraint_on: user_id
+  insert_permissions:
+    - role: user
+      permission:
+        check:
+          _or:
+            - user_id:
+                _eq: X-Hasura-User-Id
+            - team:
+                members:
+                  user_id:
+                    _eq: X-Hasura-User-Id
+        set:
+          user_id: x-hasura-user-id
+        columns:
+          - delivery_config
+          - delivery_type
+          - exploration_id
+          - id
+          - name
+          - team_id
+          - trigger_config
+          - user_id
+  select_permissions:
+    - role: user
+      permission:
+        columns:
+          - delivery_config
+          - trigger_config
+          - delivery_type
+          - name
+          - created_at
+          - updated_at
+          - exploration_id
+          - id
+          - team_id
+          - user_id
+        filter:
+          _or:
+            - user_id:
+                _eq: X-Hasura-User-Id
+            - team:
+                members:
+                  user_id:
+                    _eq: X-Hasura-User-Id
+  update_permissions:
+    - role: user
+      permission:
+        columns:
+          - delivery_config
+          - delivery_type
+          - exploration_id
+          - name
+          - trigger_config
+        filter:
+          _or:
+            - user_id:
+                _eq: X-Hasura-User-Id
+            - team:
+                members:
+                  user_id:
+                    _eq: X-Hasura-User-Id
+        check:
+          _or:
+            - user_id:
+                _eq: X-Hasura-User-Id
+            - team:
+                members:
+                  user_id:
+                    _eq: X-Hasura-User-Id
+  delete_permissions:
+    - role: user
+      permission:
+        filter:
+          _or:
+            - user_id:
+                _eq: X-Hasura-User-Id
+            - team:
+                members:
+                  user_id:
+                    _eq: X-Hasura-User-Id
+- table:
     name: dashboards
     schema: public
   object_relationships:
