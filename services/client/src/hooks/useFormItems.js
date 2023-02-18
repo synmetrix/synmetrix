@@ -246,7 +246,7 @@ export default ({ ref, form, initialValues, config, size = DEFAULT_INPUT_SIZE, i
 
     const rules = [];
     if (value.required) {
-      rules.push({ required: value.required, message: `${value.label} is required` });
+      rules.push({ required: value.required, message: `${value.name || value.label} is required` });
     }
 
     if (value.rules && Array.isArray(value.rules)) {

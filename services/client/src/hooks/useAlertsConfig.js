@@ -1,11 +1,11 @@
 /* eslint-disable no-param-reassign */
-import { useMemo } from 'react';
+import React, { useMemo } from 'react';
 import produce from 'immer';
 
 import useQuery from 'hooks/useQuery';
 import useSources, { datasourceMetaQuery } from 'hooks/useSources';
 
-const defaultFormItems = {
+const commonFormItems = {
   exploration_divider: {
     label: 'Data settings',
     display: 'divider'
@@ -43,22 +43,10 @@ const defaultFormItems = {
     max: 1000,
     span: 12
   },
-  delivery_divider: {
-    label: 'Delivery settings',
-    display: 'divider'
-  },
-  schedule: {
-    label: 'Cron Schedule (UTC)',
-    required: true,
-    placeholder: 'Minute Hour Day Month Weekday',
-    default: '* * * * *'
-  },
 };
 
 const deliveryFormItems = {
-  default: defaultFormItems,
   webhook: {
-    ...defaultFormItems,
     'delivery_config.url': {
       label: 'URL',
       required: true,
@@ -66,7 +54,6 @@ const deliveryFormItems = {
     },
   },
   slack: {
-    ...defaultFormItems,
     'delivery_config.url': {
       label: 'Slack webhook URL',
       required: true,
@@ -74,7 +61,6 @@ const deliveryFormItems = {
     },
   },
   email: {
-    ...defaultFormItems,
     'delivery_config.address': {
       label: 'Email',
       required: true,
@@ -83,7 +69,30 @@ const deliveryFormItems = {
   },
 };
 
-export default ({ form, initialValues }) => {
+const triggerFormItems = {
+  alert: {
+    'trigger_config.lowerBound': {
+      label: 'Lower Bound',
+      type: 'number'
+    },
+    'trigger_config.upperBound': {
+      label: 'Upper Bound',
+      type: 'number'
+    },
+  },
+  report: {
+    schedule: {
+      label: (<>Schedule (<a target="_blank" rel="noopener noreferrer" href="https://crontab.guru/">Build cron expression</a>)</>),
+      name: 'Schedule',
+      required: true,
+      placeholder: 'Minute Hour Day Month Weekday',
+      default: '* * * * *',
+      suffix: 'in UTC timezone'
+    },
+  },
+};
+
+export default ({ form, initialValues, entity = 'alert' }) => {
   const { all: allDatasources } = useSources({ pauseQueryAll: false });
   const {
     delivery_type: deliveryType,
@@ -109,8 +118,28 @@ export default ({ form, initialValues }) => {
 
   const config = useMemo(
     () => {
-      const defaultConfig = deliveryFormItems[deliveryType && deliveryType.toLowerCase()] || deliveryFormItems.default;
-  
+      const triggerFormItemsByEntity = {
+        trigger_divider: {
+          label: 'Trigger settings',
+          display: 'divider'
+        },
+        ...(triggerFormItems[entity] || {})
+      };
+
+      const deliveryFormItemsByType = {
+        delivery_divider: {
+          label: 'Delivery settings',
+          display: 'divider'
+        },
+        ...(deliveryFormItems[deliveryType?.toLowerCase()] || {})
+      };
+
+      const combinedFormItems = {
+        ...commonFormItems,
+        ...triggerFormItemsByEntity,
+        ...deliveryFormItemsByType,
+      };
+
       const datasourceSelectorValues = allDatasources?.map(ds => ({ [ds.name]: ds.id })) || [];
   
       const cubeSelectorValues = cubesMeta?.map(cube => ({ [cube.title]: cube.name })) || [];
@@ -120,7 +149,7 @@ export default ({ form, initialValues }) => {
           ?.filter(dimension => dimension.type === 'time')
           ?.map(dimension => ({ [dimension.shortTitle]: dimension.name })) || [];
   
-      return produce(defaultConfig, draft => {
+      return produce(combinedFormItems, draft => {
         draft.datasource_id.values = datasourceSelectorValues;
   
         draft.cube.display = datasourceId ? 'select' : 'none';
@@ -139,7 +168,7 @@ export default ({ form, initialValues }) => {
         draft.limit.display = selectedCube ? 'text' : 'none';
       });
     },
-    [deliveryType, allDatasources, cubesMeta, selectedCube, datasourceId, form, initialSince]
+    [deliveryType, entity, allDatasources, cubesMeta, selectedCube, datasourceId, form, initialSince]
   );
 
   return config;

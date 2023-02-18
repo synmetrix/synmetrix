@@ -153,6 +153,7 @@
                 members:
                   user_id:
                     _eq: X-Hasura-User-Id
+        allow_aggregations: true
   update_permissions:
     - role: user
       permission:
@@ -489,6 +490,13 @@
       using:
         foreign_key_constraint_on: datasource_id
   array_relationships:
+    - name: alerts
+      using:
+        foreign_key_constraint_on:
+          column: exploration_id
+          table:
+            name: alerts
+            schema: public
     - name: pinned_items
       using:
         foreign_key_constraint_on:
@@ -888,6 +896,13 @@
     name: teams
     schema: public
   array_relationships:
+    - name: alerts
+      using:
+        foreign_key_constraint_on:
+          column: team_id
+          table:
+            name: alerts
+            schema: public
     - name: dashboards
       using:
         foreign_key_constraint_on:
@@ -974,6 +989,13 @@
             name: accounts
             schema: auth
   array_relationships:
+    - name: alerts
+      using:
+        foreign_key_constraint_on:
+          column: user_id
+          table:
+            name: alerts
+            schema: public
     - name: dataschemas
       using:
         foreign_key_constraint_on:
