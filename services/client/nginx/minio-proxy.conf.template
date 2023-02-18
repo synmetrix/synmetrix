@@ -1,0 +1,13 @@
+server {
+    listen       9055;
+    server_name  localhost;
+
+    location / {
+        client_max_body_size 0;
+        proxy_pass http://minio:9000;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_set_header Host 'minio:9000';
+    }
+}
