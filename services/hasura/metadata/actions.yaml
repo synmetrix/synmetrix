@@ -21,6 +21,12 @@ actions:
       forward_client_headers: true
     permissions:
       - role: user
+  - name: export_data_models
+    definition:
+      kind: synchronous
+      handler: '{{ACTIONS_URL}}/rpc/export_data_models'
+    permissions:
+      - role: user
   - name: fetch_dataset
     definition:
       kind: ""
@@ -99,4 +105,5 @@ custom_types:
     - name: CreateTeamOutput
     - name: GenSQLOutput
     - name: events_create_mutation_response
+    - name: ExportDataModelsOutput
   scalars: []

@@ -103,7 +103,6 @@ const InputDate = ({ values, onChange }) => {
   return (
     <div className={s.inputDate} ref={filterContainer}>
       <Input
-        style={{ width: '200px' }}
         onChange={onInputChange}
         value={state.inputValue}
         suffix={(

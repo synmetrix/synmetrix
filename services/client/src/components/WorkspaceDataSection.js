@@ -46,6 +46,8 @@ const WorkspaceDataSection = (props) => {
     disableSettings,
     className,
     emptyDesc,
+    screenshotMode,
+    rowHeight,
     ...restProps
   } = props;
 
@@ -65,10 +67,9 @@ const WorkspaceDataSection = (props) => {
   const { baseMembers: { index: membersIndex } } = useAnalyticsQueryMembers({ 
     selectedQueryMembers,
     settings: queryState?.settings,
-  })
+  });
 
   const tableEmptyDesc = emptyDesc || t('Select dimensions & measures from left menu and run query');
-
 
   const Table = useMemo(
     () => {
@@ -118,8 +119,9 @@ const WorkspaceDataSection = (props) => {
 
       return (
         <TableView
+          tableId={screenshotMode ? 'explorationTable' : null}
           messages={messages}
-          loading={loading}
+          loading={screenshotMode ? false : loading}
           loadingProgress={progress}
           width={width}
           height={height}
@@ -131,23 +133,26 @@ const WorkspaceDataSection = (props) => {
           onSortUpdate={onQueryChange('order')}
           emptyDesc={tableEmptyDesc}
           settings={settings}
+          rowHeight={rowHeight}
           footer={tableRows => (
             <Row type="flex" style={{ marginLeft: 10, marginTop: 10, fontSize: '0.9em' }}>
               <Col xs={12}>
                 {t('Shown')}: {tableRows.length} / {limit}, {t('Offset')}: {offset}, {t('Columns')}: {columns.length}
               </Col>
-              <Col xs={12} style={{ textAlign: 'right' }}>
-                <CSVLink data={rows} filename={`exploration-${genName(5)}.csv`}>
-                  Download Shown CSV &nbsp;
-                  <Icon type="download" />
-                </CSVLink>
-              </Col>
+              {!screenshotMode && (
+                <Col xs={12} style={{ textAlign: 'right' }}>
+                  <CSVLink data={rows} filename={`exploration-${genName(5)}.csv`}>
+                    Download Shown CSV &nbsp;
+                    <Icon type="download" />
+                  </CSVLink>
+                </Col>
+              )}
             </Row>
           )}
         />
       );
     },
-    [queryState, querySettingsFallback, width, height, onQueryChange, tableEmptyDesc, t, membersIndex]
+    [queryState, querySettingsFallback, width, height, onQueryChange, tableEmptyDesc, rowHeight, membersIndex, t, screenshotMode]
   );
 
   const Sql = useMemo(
@@ -165,6 +170,10 @@ const WorkspaceDataSection = (props) => {
     },
     [queryState]
   );
+
+  if (screenshotMode) {
+    return Table;
+  }
 
   const {
     limit,
@@ -361,7 +370,9 @@ WorkspaceDataSection.propTypes = {
   width: PropTypes.number,
   height: PropTypes.number,
   explorationRowId: PropTypes.string,
-  isActive: PropTypes.bool
+  isActive: PropTypes.bool,
+  screenshotMode: PropTypes.bool,
+  rowHeight: PropTypes.number,
 };
 
 WorkspaceDataSection.defaultProps = {
@@ -379,7 +390,9 @@ WorkspaceDataSection.defaultProps = {
   width: 300,
   height: 300,
   explorationRowId: null,
-  isActive: true
+  isActive: true,
+  screenshotMode: false,
+  rowHeight: 20
 };
 
 export default WorkspaceDataSection;

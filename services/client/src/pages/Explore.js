@@ -29,6 +29,7 @@ const Explore = (props) => {
   const urlParams = new URLSearchParams(window.location.search);
   const tabId = urlParams.get('tabId');
   const chartId = urlParams.get('chart');
+  const screenshotMode = urlParams.get('screenshot') === '1';
 
   const [dataSourceId, explorationId] = (params?.rest || '').split('/');
   const basePath = [withAuthPrefix('/explore'), dataSourceId, explorationId].filter(v => !!v).join('/');
@@ -128,6 +129,7 @@ const Explore = (props) => {
           explorationId,
           tabId,
           chartId,
+          screenshotMode,
         })}
       />
     </Loader>

@@ -4,7 +4,7 @@ services:
   postgres:
     image: postgres:12.2
     ports:
-       - 5435:5432
+      - 5435:5432
     volumes:
       - pgstorage-data:/var/lib/postgresql/data
       - ./etc/postgres.conf:/var/lib/postgresql/data/postgresql.conf
@@ -65,7 +65,7 @@ services:
   hasura:
     restart: always
     ports:
-       - 8080:8080
+      - 8080:8080
     env_file:
       - .env
       - .dev.env
@@ -81,12 +81,62 @@ services:
     build:
       context: ./scripts/containers/hasura-backend-plus
     ports:
-       - 8081:3000
+      - 8081:3000
     env_file:
       - .env
       - .dev.env
     depends_on:
       - postgres
+
+  minio:
+    image: minio/minio:latest
+    restart: always
+    command: server --console-address ":9001" /data
+    volumes:
+      - minio-data:/data
+    ports:
+      - 9000:9000
+      - 9001:9001
+    env_file:
+      - .env
+      - .dev.env
+    networks:
+      - mlcraft_default
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+
+  minio-dev-proxy:
+    build:
+      context: ./scripts/containers/minio-dev-proxy
+    ports:
+      - 9055:9055
+    networks:
+      - mlcraft_default
+
+  mailhog:
+    image: mailhog/mailhog
+    logging:
+      driver: 'none'
+    ports:
+      - 1025:1025 # smtp server
+      - 8025:8025 # web ui
+    networks:
+      - mlcraft_default
+
+  client:
+    build:
+      context: ./services/client/
+      args:
+        NODE_ENV: 
+    environment:
+      GRAPHQL_SERVER_URL: http://hasura:8080/v1/graphql
+      GRAPHQL_WS_URL: ws://hasura:8080/v1/graphql
+      GRAPHQL_PLUS_SERVER_URL: http://hasura_plus:8080
+    networks:
+      - mlcraft_default
 
   cubestore:
     ports:
@@ -95,3 +145,4 @@ services:
 
 volumes:
   pgstorage-data:
+  minio-data:

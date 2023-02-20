@@ -16,6 +16,7 @@
     "graphql": "^14.2.1",
     "graphqurl": "^1.0.1",
     "i18next": "^15.1.0",
+    "immer": "^9.0.18",
     "jwt-decode": "^2.2.0",
     "moment": "^2.24.0",
     "nanoid": "^2.0.1",
@@ -52,7 +53,8 @@
   "scripts": {
     "start": "webpack-dev-server --mode development",
     "download-dev-schema": "gq http://localhost:8080/v1/graphql -H \"X-Hasura-Admin-Secret: devsecret\" --introspect > schema.graphql",
-    "build": "NODE_ENV=production webpack --mode production"
+    "build": "NODE_ENV=production webpack --mode production",
+    "serve": "serve -c ./serve.json"
   },
   "browserslist": {
     "production": [
@@ -90,6 +92,7 @@
     "monaco-editor-webpack-plugin": "^1.7.0",
     "neutrino": "^9.4.0",
     "prettier": "^1.17.0",
+    "serve": "^14.2.0",
     "webpack": "^4.41.2",
     "webpack-bundle-analyzer": "^3.5.1",
     "webpack-cli": "^3.3.2",

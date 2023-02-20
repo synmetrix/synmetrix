@@ -67,6 +67,14 @@ const allSchemasSubscription = `
   }
 `;
 
+const exportDataMutation = `
+  mutation ($team_id: String, $branch: String) {
+    export_data_models(team_id: $team_id, branch: $branch) {
+      download_url
+    }
+  }
+`;
+
 const getListVariables = (pagination, params) => {
   let res = {
     order_by: {
@@ -107,6 +115,7 @@ export default (props = {}) => {
   const [createMutation, execCreateMutation] = useMutation(newSchemaMutation, { role });
   const [updateMutation, execUpdateMutation] = useMutation(editSchemaMutation, { role });
   const [deleteMutation, execDeleteMutation] = useMutation(delSchemaMutation, { role });
+  const [exportMutation, execExportMutation] = useMutation(exportDataMutation, { role });
 
   const [allData, execQueryAll] = useQuery({
     query: allSchemasQuery,
@@ -156,6 +165,8 @@ export default (props = {}) => {
       execDeleteMutation,
       updateMutation,
       execUpdateMutation,
+      exportMutation,
+      execExportMutation,
     },
     subscription,
     execSubscription,

@@ -1,11 +1,11 @@
-import { useEffect, useCallback } from 'react';
+import { useEffect } from 'react';
 
 import {
   useRecoilValue,
   useRecoilState,
 } from 'recoil';
 
-import { useDebounceFn, useUpdateEffect, useMount, useTrackedEffect } from 'ahooks';
+import { useDebounceFn, useUpdateEffect, useMount } from 'ahooks';
 
 import { useQuery } from 'urql';
 
@@ -19,6 +19,7 @@ import useSources from './useSources';
 import useDashboards from './useDashboards';
 import useSchemas from './useSchemas';
 import useCurrentTeamState from './useCurrentTeamState';
+import useReports, { reportFragment } from './useReports';
 
 const membersFragment = `
   team {
@@ -70,6 +71,12 @@ const currentUserQuery = `
       ${sourcesFragment}
     }
 
+    reports (
+      order_by: { created_at: desc }
+    ) {
+      ${reportFragment}
+    }
+
     dataschemas (
       order_by: { created_at: desc }
     ) {
@@ -102,6 +109,13 @@ const currentUserWithTeamQuery = `
       where: { team_id: { _eq: $teamId } }
     ) {
       ${sourcesFragment}
+    }
+
+    reports (
+      order_by: { created_at: desc }
+      where: { team_id: { _eq: $teamId } }
+    ) {
+      ${reportFragment}
     }
 
     dataschemas (
@@ -198,8 +212,19 @@ export default (props = {}) => {
     disableSubscription: true,
   });
 
+  const { 
+    subscription: reportsSubscription,
+    execSubscription: execReportsSubscription,
+  } = useReports({
+    pauseQueryAll: true,
+    disableSubscription: true,
+  });
+
   useUpdateEffect(() => {
-    const anyData = sourcesSubscription.data || dashboardsSubscription.data || schemasSubscription.data;
+    const anyData = reportsSubscription.data ||
+      sourcesSubscription.data ||
+      dashboardsSubscription.data ||
+      schemasSubscription.data;
 
     if (anyData) {
       if (currentUser && Object.keys(currentUser).length) {
@@ -212,13 +237,21 @@ export default (props = {}) => {
       sourcesSubscription.data = null;
       dashboardsSubscription.data = null;
       schemasSubscription.data = null;
+      reportsSubscription.data = null;
     }
-  }, [sourcesSubscription.data, dashboardsSubscription.data, schemasSubscription.data, currentUser]);
+  }, [
+    reportsSubscription.data,
+    sourcesSubscription.data,
+    dashboardsSubscription.data,
+    schemasSubscription.data,
+    currentUser
+  ]);
 
   useMount(() => {
     execSchemasSubscription();
     execSourcesSubscription();
     execDashboardsSubscription();
+    execReportsSubscription();
   });
 
   return {
