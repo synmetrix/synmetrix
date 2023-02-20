@@ -221,7 +221,6 @@ export default async (session, input) => {
     return apiError(error);
   }
 
-
   const dateMoment = moment().tz(TIMEZONE).format('DD-MM-YYYY HH:mm');
   const filePathPrefix = `${explorationId}/${dateMoment}`;
 
