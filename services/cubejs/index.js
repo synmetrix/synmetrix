@@ -224,7 +224,7 @@ const options = {
   externalDbType: 'cubestore',
   externalDriverFactory: () => new CubeStoreDriver({
       host: 'cubestore',
-      port: 3306
+      port: 3030
   })
 };
 
