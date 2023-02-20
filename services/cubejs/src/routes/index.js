@@ -3,27 +3,6 @@ import { ScaffoldingTemplate } from '@cubejs-backend/schema-compiler';
 
 import { findDataSchemas, createDataSchema } from '../utils/dataSourceHelpers.js';
 
-const ADAPTERS = {
-  postgres: 'postgres',
-  redshift: 'redshift',
-  mysql: 'mysql',
-  mysqlauroraserverless: 'mysql',
-  mongobi: 'mongobi',
-  mssql: 'mssql',
-  bigquery: 'bigquery',
-  prestodb: 'prestodb',
-  qubole_prestodb: 'qubolePrestodb',
-  athena: 'prestodb',
-  vertica: 'vertica',
-  snowflake: 'snowflake',
-  clickhouse: 'clickhouse',
-  hive: 'hive',
-  oracle: 'oracle',
-  sqlite: 'sqlite',
-  awselasticsearch: 'awselasticsearch',
-  elasticsearch: 'elasticsearch',
-};
-
 const router = express.Router();
 export default ({ basePath, setupAuthInfo, cubejs }) => {
   router.use(async (req, res, next) => {
