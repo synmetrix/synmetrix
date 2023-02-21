@@ -35,6 +35,8 @@ services:
     ports:
       - 4000:4000
       - 9231:9229
+      - 3306:3306
+      - 5432:5432
     env_file:
       - .env
       - .dev.env

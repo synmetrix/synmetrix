@@ -225,7 +225,9 @@ const options = {
   externalDriverFactory: () => new CubeStoreDriver({
       host: 'cubestore',
       port: 3030
-  })
+  }),
+  pgSqlPort: 5432,
+  sqlPort: 3306,
 };
 
 const cubejs = new ServerCore(options);
@@ -233,4 +235,8 @@ const cubejs = new ServerCore(options);
 app.use(routes({ basePath, setupAuthInfo, cubejs }));
 
 cubejs.initApp(app);
+
+const sqlServer = cubejs.initSQLServer();
+sqlServer.init(options);
+
 app.listen(port);

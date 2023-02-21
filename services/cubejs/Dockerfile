@@ -1,4 +1,4 @@
-FROM node:16.8.0-stretch
+FROM node:16.8.0-buster
 
 RUN DEBIAN_FRONTEND=noninteractive \
     && apt-get update \
@@ -10,8 +10,7 @@ ENV NODE_ENV production
 
 # Required for node-oracledb to buld on ARM64
 RUN apt-get update \
-    && apt-get install -y python3 gcc g++ make cmake \
-    && npm config set python /usr/bin/python2.7 \
+    && apt-get install -y python3 gcc g++ make cmake libc-bin libc6 \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
