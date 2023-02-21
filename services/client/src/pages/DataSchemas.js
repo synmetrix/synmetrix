@@ -1,10 +1,14 @@
-import React, { useMemo, useEffect, useState } from 'react';
+import React, { useMemo, useEffect, useState, useRef } from 'react';
 import PropTypes from 'prop-types';
 
 import equals from 'utils/equals';
 import { useTrackedEffect } from 'ahooks';
 import { useTranslation } from 'react-i18next';
-import { Tabs } from 'antd';
+import { Tabs, message } from 'antd';
+
+import JSZip from 'jszip';
+import { load } from 'js-yaml';
+import md5 from 'md5';
 
 import { getOr } from 'unchanged';
 
@@ -79,6 +83,8 @@ const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
       execDeleteMutation,
       exportMutation,
       execExportMutation,
+      batchMutation,
+      execBatchMutation,
     },
   } = useSchemas({
     params: {
@@ -176,6 +182,10 @@ const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
     successMessage: t('Schema created')
   });
 
+  useCheckResponse(batchMutation, () => {}, {
+    successMessage: t('Schemas created')
+  });
+
   useCheckResponse(genSchemaMutation, (res) => {
     if (res) {
       execQueryAll();
@@ -217,10 +227,66 @@ const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
     });
   };
 
+  const inputFile = useRef(null);
+
+  const uploadFile = () => {
+    inputFile.current.click();
+  };
+
+  const onUploadFile = async ({ target }) => {
+    const file = target.files?.[0];
+
+    if (file?.type !== 'application/zip') {
+      message.error('Format is unsupported.');
+      return false;
+    }
+
+    const zip = new JSZip();
+    await zip.loadAsync(file);
+
+    if (!zip?.files?.['meta.yaml']) {
+      message.error('Wrong archive.');
+      return false;
+    }
+
+    const yamlFile = await zip.file('meta.yaml').async('string');
+    const zipMeta = load(yamlFile);
+    zipMeta.schemas = zipMeta.schemas.reduce((acc, cur) => ({ ...acc, ...cur }), {});
+
+    zip.remove('meta.yaml');
+
+    const newSchemas = await Promise.all(Object.entries(zip.files || []).map(async ([name, rawData]) => {
+      const content = await rawData.async('string');
+      const checksum = md5(`${name}-${content}`);
+
+      if (zipMeta?.schemas?.[name]?.checksum !== checksum) {
+        message.warning(`Checksum of file "${name}" do not match.`);
+        return false;
+      }
+
+      return {
+        name,
+        branch: zipMeta?.branch,
+        code: content,
+        user_id: currentUser?.id,
+        datasource_id: dataSourceId,
+      };
+    }));
+
+    await execBatchMutation({ objects: newSchemas });
+
+    return newSchemas;
+  };
+
   const routes = [
     {
       path: `${basePath}/${dataSourceId}/genschema`,
       title: t('Generate Schema'),
+    },
+    {
+      path: `${basePath}/${dataSourceId}`,
+      title: t('Import data models'),
+      onClick: () => uploadFile(),
     },
     {
       path: `${basePath}/${dataSourceId}`,
@@ -314,14 +380,17 @@ const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
       <div className={s.root}>
         <div className={s.sidebar}>
           <Loader spinning={updateMutation.fetching}>
-            <IdeSchemasList
-              schemas={all}
-              onItemClick={openSchema}
-              onCreate={onClickCreate}
-              onEdit={onClickUpdate}
-              onDelete={onClickDelete}
-              moreMenu={routes}
-            />
+            <>
+              <IdeSchemasList
+                schemas={all}
+                onItemClick={openSchema}
+                onCreate={onClickCreate}
+                onEdit={onClickUpdate}
+                onDelete={onClickDelete}
+                moreMenu={routes}
+              />
+              <input type='file' ref={inputFile} onChange={onUploadFile} style={{ display: 'none' }} />
+            </>
           </Loader>
         </div>
         <div className={s.content}>

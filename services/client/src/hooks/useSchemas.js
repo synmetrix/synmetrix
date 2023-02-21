@@ -16,6 +16,20 @@ const newSchemaMutation = `
   }
 `;
 
+const newBatchSchemaMutation = `
+  mutation ($objects: [dataschemas_insert_input!]!) {
+    insert_dataschemas(
+      objects: $objects, 
+      on_conflict: {
+        constraint: dataschemas_datasource_id_branch_name_key, 
+        update_columns: []
+      }
+    ) {
+      affected_rows
+    }
+  }
+`;
+
 const allSchemasQuery = `
   query ($offset: Int, $limit: Int, $where: dataschemas_bool_exp, $order_by: [dataschemas_order_by!]) {
     dataschemas (offset: $offset, limit: $limit, where: $where, order_by: $order_by) {
@@ -116,6 +130,7 @@ export default (props = {}) => {
   const [updateMutation, execUpdateMutation] = useMutation(editSchemaMutation, { role });
   const [deleteMutation, execDeleteMutation] = useMutation(delSchemaMutation, { role });
   const [exportMutation, execExportMutation] = useMutation(exportDataMutation, { role });
+  const [batchMutation, execBatchMutation] = useMutation(newBatchSchemaMutation, { role });
 
   const [allData, execQueryAll] = useQuery({
     query: allSchemasQuery,
@@ -167,6 +182,8 @@ export default (props = {}) => {
       execUpdateMutation,
       exportMutation,
       execExportMutation,
+      batchMutation,
+      execBatchMutation,
     },
     subscription,
     execSubscription,
