@@ -22,7 +22,7 @@ const newBatchSchemaMutation = `
       objects: $objects, 
       on_conflict: {
         constraint: dataschemas_datasource_id_branch_name_key, 
-        update_columns: []
+        update_columns: [code]
       }
     ) {
       affected_rows
