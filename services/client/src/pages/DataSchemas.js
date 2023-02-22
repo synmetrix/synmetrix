@@ -261,12 +261,12 @@ const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
 
     zip.remove('meta.yaml');
 
-    const newSchemas = await Promise.all(Object.entries(zip.files || []).map(async ([name, rawData]) => {
+    let newSchemas = await Promise.all(Object.entries(zip.files || []).map(async ([name, rawData]) => {
       const content = await rawData.async('string');
       const checksum = md5(`${name}-${content}`);
 
       if (zipMeta?.schemas?.[name]?.checksum !== checksum) {
-        message.warning(`Checksum of file "${name}" do not match.`);
+        message.warning(`Checksum of file "${name}" do not match. Skipped.`);
         return false;
       }
 
@@ -279,7 +279,11 @@ const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
       };
     }));
 
-    await execBatchMutation({ objects: newSchemas });
+    newSchemas = newSchemas.filter(Boolean);
+
+    if (newSchemas.length) {
+      await execBatchMutation({ objects: newSchemas });
+    }
 
     return newSchemas;
   };
