@@ -242,7 +242,13 @@ const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
     }
 
     const zip = new JSZip();
-    await zip.loadAsync(file);
+    
+    try {
+      await zip.loadAsync(file);
+    } catch (err) {
+      message.error('Bad archive.');
+      return false;
+    }
 
     if (!zip?.files?.['meta.yaml']) {
       message.error('Wrong archive.');
@@ -389,7 +395,13 @@ const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
                 onDelete={onClickDelete}
                 moreMenu={routes}
               />
-              <input type='file' ref={inputFile} onChange={onUploadFile} style={{ display: 'none' }} />
+              <input
+                type='file'
+                accept='application/zip'
+                ref={inputFile}
+                onChange={onUploadFile}
+                style={{ display: 'none' }}
+              />
             </>
           </Loader>
         </div>
