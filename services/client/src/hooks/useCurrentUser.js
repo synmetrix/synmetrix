@@ -119,6 +119,13 @@ const currentUserWithTeamQuery = `
       ${reportFragment}
     }
 
+    alerts (
+      order_by: { created_at: desc }
+      where: { team_id: { _eq: $teamId } }
+    ) {
+      ${alertFragment}
+    }
+
     dataschemas (
       order_by: { created_at: desc },
       where: { datasource: {
@@ -244,6 +251,7 @@ export default (props = {}) => {
         });
       }
 
+      alertsSubscription.data = null;
       sourcesSubscription.data = null;
       dashboardsSubscription.data = null;
       schemasSubscription.data = null;

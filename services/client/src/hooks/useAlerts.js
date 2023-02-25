@@ -56,7 +56,7 @@ const alertsQuery = `
 
 const editAlertQuery = `
   query ($id: uuid!) {
-    reports_by_pk(id: $id) {
+    alerts_by_pk(id: $id) {
       ${alertFragment}
     }
   }

@@ -130,7 +130,7 @@ const AlertTable = ({ editId, onModalClose, onModalOpen }) => {
     <AlertModal
       key="modal"
       title={alert.name || ''}
-      report={alert}
+      alert={alert}
       onCancel={onAlertClose}
       visible={state.visibleModal}
       loading={currentLoading}

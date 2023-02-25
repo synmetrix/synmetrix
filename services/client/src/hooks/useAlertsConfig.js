@@ -148,7 +148,21 @@ export default ({ form, initialValues, entity = 'alert' }) => {
       const granularitySelectorValues = selectedCube?.dimensions
           ?.filter(dimension => dimension.type === 'time')
           ?.map(dimension => ({ [dimension.shortTitle]: dimension.name })) || [];
-  
+
+      const setupAlertBoundsValidation = draft => {
+        const lowerBoundValue = form.getFieldValue('trigger_config.lowerBound');
+        const upperBoundValue = form.getFieldValue('trigger_config.upperBound');
+
+        const areBoundsRequired = !lowerBoundValue && !upperBoundValue;
+
+        draft['trigger_config.lowerBound'].rules = [
+          { required: areBoundsRequired, message: 'At least one bound is required' },
+        ];
+        draft['trigger_config.upperBound'].rules = [
+          { required: areBoundsRequired, message: 'At least one bound is required' },
+        ];
+      };
+
       return produce(combinedFormItems, draft => {
         draft.datasource_id.values = datasourceSelectorValues;
   
@@ -166,6 +180,10 @@ export default ({ form, initialValues, entity = 'alert' }) => {
         draft.since.onChange = (value) => form.setFieldsValue({ since: value });
 
         draft.limit.display = selectedCube ? 'text' : 'none';
+
+        if (entity === 'alert') {
+          setupAlertBoundsValidation(draft);
+        }
       });
     },
     [deliveryType, entity, allDatasources, cubesMeta, selectedCube, datasourceId, form, initialSince]
