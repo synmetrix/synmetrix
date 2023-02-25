@@ -73,11 +73,13 @@ const triggerFormItems = {
   alert: {
     'trigger_config.lowerBound': {
       label: 'Lower Bound',
-      type: 'number'
+      type: 'number',
+      span: 8
     },
     'trigger_config.upperBound': {
       label: 'Upper Bound',
-      type: 'number'
+      type: 'number',
+      span: 8
     },
     'trigger_config.timeoutOnFire': {
       label: 'Timeout On Fire (minutes)',
@@ -85,6 +87,7 @@ const triggerFormItems = {
       type: 'number',
       step: 1,
       min: 0,
+      span: 8
     },
   },
   report: {
