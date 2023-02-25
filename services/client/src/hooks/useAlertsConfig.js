@@ -79,6 +79,13 @@ const triggerFormItems = {
       label: 'Upper Bound',
       type: 'number'
     },
+    'trigger_config.timeoutOnFire': {
+      label: 'Timeout On Fire (minutes)',
+      display: 'text',
+      type: 'number',
+      step: 1,
+      min: 0,
+    },
   },
   report: {
     schedule: {
