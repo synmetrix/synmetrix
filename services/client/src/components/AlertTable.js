@@ -102,6 +102,27 @@ const AlertTable = ({ editId, onModalClose, onModalOpen }) => {
       key: 'delivery_type',
     },
     {
+      title: 'Bounds',
+      key: 'updated_at',
+      render: (_, record) => {
+        const { lowerBound, upperBound } = record.trigger_config;
+
+        if (lowerBound && upperBound) {
+          return `${lowerBound}-${upperBound}`;
+        }
+
+        if (lowerBound) {
+          return `< ${lowerBound}`;
+        }
+
+        if (upperBound) {
+          return `> ${upperBound}`;
+        }
+
+        return null;
+      },
+    },
+    {
       title: 'Creator',
       dataIndex: ['user', 'display_name'],
       key: 'display_name',
