@@ -13,7 +13,7 @@ export default async (session, input) => {
     delivery_config: deliveryConfig,
     schedule,
     exploration_id: explorationId,
-    name: reportName,
+    name,
     id: reportId
   } = reportPayload || {};
 
@@ -27,7 +27,7 @@ export default async (session, input) => {
         deliveryConfig,
         deliveryType,
         explorationId,
-        reportName
+        name: `Report ${name}`
       },
       retry_conf: {
         num_retries: 5,

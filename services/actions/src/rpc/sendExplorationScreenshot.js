@@ -210,7 +210,7 @@ const sendToEmail = async ({ header, jsonUrl, screenshotUrl, address }) => {
 };
 
 export default async (session, input) => {
-  const { deliveryType, explorationId, deliveryConfig, reportName } = input || {};
+  const { deliveryType, explorationId, deliveryConfig, name } = input || {};
 
   const queryResult = await fetchGraphQL(explorationQuery, { id: explorationId });
   const exploration = queryResult?.data?.explorations_by_pk || {};
@@ -247,7 +247,7 @@ export default async (session, input) => {
 
   let deliveryResult;
   const { url: webhookUrl, address } = deliveryConfig;
-  const header = `Report ${reportName} at ${dateMoment}`;
+  const header = `${name} at ${dateMoment}`;
 
   switch (deliveryType) {
     case 'WEBHOOK':
