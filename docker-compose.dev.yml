@@ -4,7 +4,7 @@ services:
   postgres:
     image: postgres:12.2
     ports:
-       - 5435:5432
+      - 5435:5432
     volumes:
       - pgstorage-data:/var/lib/postgresql/data
       - ./etc/postgres.conf:/var/lib/postgresql/data/postgresql.conf
@@ -65,7 +65,7 @@ services:
   hasura:
     restart: always
     ports:
-       - 8080:8080
+      - 8080:8080
     env_file:
       - .env
       - .dev.env
@@ -81,7 +81,7 @@ services:
     build:
       context: ./scripts/containers/hasura-backend-plus
     ports:
-       - 8081:3000
+      - 8081:3000
     env_file:
       - .env
       - .dev.env
@@ -107,6 +107,14 @@ services:
       interval: 30s
       timeout: 20s
       retries: 3
+
+  minio-dev-proxy:
+    build:
+      context: ./scripts/containers/minio-dev-proxy
+    ports:
+      - 9055:9055
+    networks:
+      - mlcraft_default
 
   mailhog:
     image: mailhog/mailhog

@@ -15,7 +15,11 @@ const {
   AWS_S3_ACCESS_KEY_ID,
   AWS_S3_SECRET_ACCESS_KEY,
   AWS_S3_REGION,
+  MINIO_DEV_PROXY,
+  NODE_ENV,
 } = process.env;
+
+const dev = NODE_ENV !== 'production';
 
 // 7 days
 const AWS_S3_PRESIGNED_URL_EXPIRES_IN = 7 * 24 * 60 * 60;
@@ -56,7 +60,7 @@ export const findOrCreateBucket = async (bucketName) => {
 export const getPresignedDowloadUrl = async ({ bucketName, filePath }) => {
   const command = new GetObjectCommand({
     Bucket: bucketName,
-    Key: filePath
+    Key: filePath,
   });
 
   try {
@@ -99,5 +103,10 @@ export const putFileToBucket = async ({ bucketName, fileBody, filePath, fileCont
     return { error: presignError };
   }
 
-  return { url };
+  let resultUrl = url;
+  if (dev) {
+    resultUrl = resultUrl.replace(AWS_S3_ENDPOINT, MINIO_DEV_PROXY);
+  }
+
+  return { url: resultUrl };
 };

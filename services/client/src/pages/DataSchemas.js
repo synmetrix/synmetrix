@@ -1,10 +1,14 @@
-import React, { useMemo, useEffect, useState } from 'react';
+import React, { useMemo, useEffect, useState, useRef } from 'react';
 import PropTypes from 'prop-types';
 
 import equals from 'utils/equals';
 import { useTrackedEffect } from 'ahooks';
 import { useTranslation } from 'react-i18next';
-import { Tabs } from 'antd';
+import { Tabs, message } from 'antd';
+
+import JSZip from 'jszip';
+import { load } from 'js-yaml';
+import md5 from 'md5';
 
 import { getOr } from 'unchanged';
 
@@ -18,6 +22,7 @@ import usePermissions from 'hooks/usePermissions';
 import useLocation from 'hooks/useLocation';
 import useCheckResponse from 'hooks/useCheckResponse';
 import useCurrentUserState from 'hooks/useCurrentUserState';
+import useCurrentTeamState from 'hooks/useCurrentTeamState';
 import useAppSettings from 'hooks/useAppSettings';
 
 import Loader from 'components/Loader';
@@ -36,6 +41,7 @@ const reservedSlugs = ['sqlrunner', 'genschema'];
 const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
   const { t } = useTranslation();
   const { currentUserState: currentUser } = useCurrentUserState();
+  const { currentTeamState: currentTeam } = useCurrentTeamState();
   const [, setLocation] = useLocation();
   const { withAuthPrefix } = useAppSettings();
 
@@ -75,6 +81,10 @@ const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
       execUpdateMutation,
       deleteMutation,
       execDeleteMutation,
+      exportMutation,
+      execExportMutation,
+      batchMutation,
+      execBatchMutation,
     },
   } = useSchemas({
     params: {
@@ -122,6 +132,13 @@ const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
     successMessage: null
   });
 
+  useCheckResponse(exportMutation, (res) => {
+    if (res) {
+      const url = res?.export_data_models?.download_url;
+      window.location.assign(url);
+    }
+  });
+
   const schemaIdToCode = useMemo(() => all.reduce((acc, curr) => {
     acc[curr.id] = { name: curr.name, code: curr.code };
     return acc;
@@ -165,6 +182,10 @@ const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
     successMessage: t('Schema created')
   });
 
+  useCheckResponse(batchMutation, () => {}, {
+    successMessage: t('Schemas created')
+  });
+
   useCheckResponse(genSchemaMutation, (res) => {
     if (res) {
       execQueryAll();
@@ -199,10 +220,88 @@ const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
     }
   }, [sourceTablesSchema]);
 
+  const exportData = () => {
+    execExportMutation({
+      team_id: currentTeam?.id,
+      // branch,
+    });
+  };
+
+  const inputFile = useRef(null);
+
+  const uploadFile = () => {
+    inputFile.current.click();
+  };
+
+  const onUploadFile = async ({ target }) => {
+    const file = target.files?.[0];
+
+    if (file?.type !== 'application/zip') {
+      message.error('Format is unsupported.');
+      return false;
+    }
+
+    const zip = new JSZip();
+    
+    try {
+      await zip.loadAsync(file);
+    } catch (err) {
+      message.error('Bad archive.');
+      return false;
+    }
+
+    if (!zip?.files?.['meta.yaml']) {
+      message.error('Wrong archive.');
+      return false;
+    }
+
+    const yamlFile = await zip.file('meta.yaml').async('string');
+    const zipMeta = load(yamlFile);
+    zipMeta.schemas = zipMeta.schemas.reduce((acc, cur) => ({ ...acc, ...cur }), {});
+
+    zip.remove('meta.yaml');
+
+    let newSchemas = await Promise.all(Object.entries(zip.files || []).map(async ([name, rawData]) => {
+      const content = await rawData.async('string');
+      const checksum = md5(`${name}-${content}`);
+
+      if (zipMeta?.schemas?.[name]?.checksum !== checksum) {
+        message.warning(`Checksum of file "${name}" do not match. Skipped.`);
+        return false;
+      }
+
+      return {
+        name,
+        branch: zipMeta?.branch,
+        code: content,
+        user_id: currentUser?.id,
+        datasource_id: dataSourceId,
+      };
+    }));
+
+    newSchemas = newSchemas.filter(Boolean);
+
+    if (newSchemas.length) {
+      await execBatchMutation({ objects: newSchemas });
+    }
+
+    return newSchemas;
+  };
+
   const routes = [
     {
       path: `${basePath}/${dataSourceId}/genschema`,
       title: t('Generate Schema'),
+    },
+    {
+      path: `${basePath}/${dataSourceId}`,
+      title: t('Import data models'),
+      onClick: () => uploadFile(),
+    },
+    {
+      path: `${basePath}/${dataSourceId}`,
+      title: t('Export data models'),
+      onClick: () => exportData(),
     },
   ];
 
@@ -226,7 +325,7 @@ const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
   }
 
   const fetching = allData.fetching || deleteMutation.fetching || createMutation.fetching 
-    || validateMutation.fetching || genSchemaMutation.fetching || tablesData.fetching;
+    || validateMutation.fetching || genSchemaMutation.fetching || tablesData.fetching || exportMutation.fetching;
 
   if (error) {
     return <ErrorFound status={404} />;
@@ -291,14 +390,23 @@ const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
       <div className={s.root}>
         <div className={s.sidebar}>
           <Loader spinning={updateMutation.fetching}>
-            <IdeSchemasList
-              schemas={all}
-              onItemClick={openSchema}
-              onCreate={onClickCreate}
-              onEdit={onClickUpdate}
-              onDelete={onClickDelete}
-              moreMenu={routes}
-            />
+            <>
+              <IdeSchemasList
+                schemas={all}
+                onItemClick={openSchema}
+                onCreate={onClickCreate}
+                onEdit={onClickUpdate}
+                onDelete={onClickDelete}
+                moreMenu={routes}
+              />
+              <input
+                type='file'
+                accept='application/zip'
+                ref={inputFile}
+                onChange={onUploadFile}
+                style={{ display: 'none' }}
+              />
+            </>
           </Loader>
         </div>
         <div className={s.content}>
