@@ -142,7 +142,6 @@ services:
 
   cubestore:
     ports:
-       - 3306:3306
        - 3030:3030
 
 volumes:

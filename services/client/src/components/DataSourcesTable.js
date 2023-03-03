@@ -139,6 +139,33 @@ const DataSourcesTable = ({ editId, onModalClose, onModalOpen }) => {
     },
   ];
 
+  const expandedTableColumns = [
+    {
+      title: 'Host',
+      dataIndex: 'host',
+      key: 'host',
+    },
+    {
+      title: 'Username',
+      dataIndex: 'username',
+      key: 'username',
+    },
+    {
+      title: 'Created by',
+      dataIndex: 'user_id',
+      key: 'user_id',
+    },
+    {
+      title: 'Created At',
+      dataIndex: 'created_at',
+      key: 'created_at',
+      render: (_, record) => {
+        const createdAt = formatDistanceToNow(record.created_at);
+        return createdAt;
+      },
+    },
+  ];
+
   return [
     <DataSourceModal
       key="modal"
@@ -169,6 +196,15 @@ const DataSourcesTable = ({ editId, onModalClose, onModalOpen }) => {
             current: currentPage,
           }}
           onChange={onPageChange}
+          expandedRowRender={record => (
+            <TableList
+              columns={expandedTableColumns}
+              pagination={false}
+              dataSource={[]}
+              locale={{ emptyText: t('No attached SQL interfaces') }}
+              noEmptyImage
+            />
+          )}
         />
       </Col>
     </Row>

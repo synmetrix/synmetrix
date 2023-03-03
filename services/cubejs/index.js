@@ -223,8 +223,8 @@ const options = {
   scheduledRefreshContexts,
   externalDbType: 'cubestore',
   externalDriverFactory: () => new CubeStoreDriver({
-      host: 'cubestore',
-      port: 3030
+    host: 'cubestore',
+    port: 3030
   }),
   pgSqlPort: 5432,
   sqlPort: 3306,

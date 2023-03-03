@@ -61,6 +61,9 @@
             id:
               _eq: X-Hasura-User-Id
 - table:
+    name: migrations
+    schema: auth
+- table:
     name: providers
     schema: auth
   array_relationships:
@@ -779,6 +782,16 @@
         paused: true
         schedule: 0 0 * * *
         timeout: 60
+- table:
+    name: sql_credentials
+    schema: public
+  object_relationships:
+    - name: datasource
+      using:
+        foreign_key_constraint_on: datasource_id
+    - name: user
+      using:
+        foreign_key_constraint_on: user_id
 - table:
     name: team_roles
     schema: public

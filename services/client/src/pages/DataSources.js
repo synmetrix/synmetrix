@@ -8,6 +8,7 @@ import useLocation from 'hooks/useLocation';
 import useAppSettings from 'hooks/useAppSettings';
 
 import DataSourceModal from 'components/DataSourceModal';
+import SQLInterfaceModal from 'components/SQLInterfaceModal';
 import DataSourcesTable from 'components/DataSourcesTable';
 import PageInfo from 'components/PageInfo';
 import Container from 'components/Container';
@@ -40,11 +41,17 @@ const DataSources = ({ match }) => {
     setLocation(`${basePath}/new/${(dbType || '').toLowerCase()}`);
   };
 
+  const onSQLInterfaceNewClick = () => {
+    setLocation(`${basePath}/sql-interface`);
+  };
+
   const showNewForm = location.pathname.includes('/new');
+  const showSQLInterfaceForm = location.pathname.includes('/sql-interface');
 
   const breadcrumbs = [
     { path: basePath, title: 'Data Sources' },
-    { path: `${basePath}/new`, title: 'New' },
+    showSQLInterfaceForm && { path: `${basePath}/sql-interface`, title: 'New SQL Interface' },
+    showNewForm && { path: `${basePath}/new`, title: 'New' },
     params?.dbType && { path: `${basePath}/new/${params?.dbType}`, title: params?.dbType },
   ].filter(v => !!v);
 
@@ -64,6 +71,10 @@ const DataSources = ({ match }) => {
               <Icon type="plus" />
               {t('Connect')}
             </Button>
+            <Button size="small" shape="round" onClick={() => onSQLInterfaceNewClick()} style={{ marginLeft: 10 }}>
+              <Icon type="plus" />
+              {t('SQL interface')}
+            </Button>
           </>
         )}
       />
@@ -78,6 +89,14 @@ const DataSources = ({ match }) => {
         onCancel={onModalClose}
         onSave={onModalOpen}
         visible={showNewForm}
+      />
+      <SQLInterfaceModal
+        title={t('New SQL Interface')}
+        breadcrumbs={breadcrumbs}
+        onChange={onConnectNewClick}
+        onCancel={onModalClose}
+        onSave={onModalClose}
+        visible={showSQLInterfaceForm}
       />
       <DataSourcesTable
         editId={params?.rowId}
