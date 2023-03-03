@@ -115,8 +115,8 @@ const validateSourceMutation = `
 
 
 const genSourceSchemasMutation = `
-  mutation ($datasource_id: uuid!, $tables: [SourceTable!]!, $overwrite: Boolean) {
-    gen_dataschemas(datasource_id: $datasource_id, tables: $tables, overwrite: $overwrite) {
+  mutation ($datasource_id: uuid!, $branch_id: uuid!, $tables: [SourceTable!]!, $overwrite: Boolean) {
+    gen_dataschemas(datasource_id: $datasource_id, branch_id: $branch_id, tables: $tables, overwrite: $overwrite) {
       code
       message
     }

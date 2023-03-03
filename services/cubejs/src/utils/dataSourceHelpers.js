@@ -24,11 +24,10 @@ const allSchemasQuery = `
 `;
 
 
-const upsertSchemaMutation = `
-  mutation ($object: dataschemas_insert_input!) {
-    insert_dataschemas_one(
-      object: $object,
-      on_conflict: {constraint: dataschemas_datasource_id_branch_name_key, update_columns: code}
+const upsertCommitMutation = `
+  mutation ($object: commits_insert_input!) {
+    insert_commits_one(
+      object: $object
     ) {
       id
     }
@@ -43,10 +42,13 @@ export const findDataSource = async ({ dataSourceId, authToken }) => {
 };
 
 export const createDataSchema = async (object) => {
-  const { authToken, ...newObject } = object;
+  const { authToken, ...commit } = object;
 
-  let res = await fetchGraphQL(upsertSchemaMutation, { object: newObject }, authToken);
+  let res = await fetchGraphQL(upsertCommitMutation, { object: commit }, authToken);
+  console.log(res);
   res = res?.data?.insert_dataschemas_one;
+
+  console.log(commit);
 
   return res;
 };

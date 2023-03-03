@@ -32,21 +32,25 @@ import IdeSchemasList from 'components/IdeSchemasList';
 import SqlRunner from 'components/SqlRunner';
 import GenDataSchemasForm from 'components/GenDataSchemasForm';
 import IdeConsole from 'components/IdeConsole';
-
 import ErrorFound from 'components/ErrorFound';
+import SelectWithInput from '../components/SelectWithInput';
+
 import s from './DataSchemas.module.css';
 
 const reservedSlugs = ['sqlrunner', 'genschema'];
 
 const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
   const { t } = useTranslation();
-  const { currentUserState: currentUser } = useCurrentUserState();
   const { currentTeamState: currentTeam } = useCurrentTeamState();
+  const { currentUserState } = useCurrentUserState();
+  const currentUser = currentUserState?.users_by_pk;
+
   const [, setLocation] = useLocation();
   const { withAuthPrefix } = useAppSettings();
 
   const basePath = withAuthPrefix('/schemas');
   const [isConsoleOpen, toggleConsole] = useState(false);
+  const [currentBranchId, setCurrentBranchId] = useState(null);
   const [error, setError] = useState(null);
 
   const { params = {} } = match;
@@ -55,7 +59,7 @@ const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
     [params]
   );
 
-  const onModalClose = () => setLocation(`${basePath}/${dataSourceId}`);
+  const onModalClose = () => setLocation(`${basePath}/${dataSourceId}}`);
   const dataSchemaName = reservedSlugs.indexOf(slug) === -1 && slug || null;
 
   const {
@@ -85,6 +89,10 @@ const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
       execExportMutation,
       batchMutation,
       execBatchMutation,
+      branchMutation,
+      execBranchMutation,
+      commitMutation,
+      execCommitMutation,
     },
   } = useSchemas({
     params: {
@@ -139,28 +147,32 @@ const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
     }
   });
 
-  const schemaIdToCode = useMemo(() => all.reduce((acc, curr) => {
+  const currentBranch = useMemo(() => all.find(branch => branch.id === currentBranchId), [all, currentBranchId]);
+  const lastCommit = useMemo(() => currentBranch?.commits?.[0] || [], [currentBranch]);
+  const dataschemas = useMemo(() => lastCommit?.dataschemas || [], [lastCommit]);
+
+  const schemaIdToCode = useMemo(() => dataschemas.reduce((acc, curr) => {
     acc[curr.id] = { name: curr.name, code: curr.code };
     return acc;
   }, {}),
-  [all]
+  [dataschemas]
   );
 
   const openedSchemas = useMemo(() => Object.keys(openedTabs)
-      .map(id => all.find(schema => schema.id === id))
+      .map(id => dataschemas.find(schema => schema.id === id))
       .filter(Boolean),
-  [all, openedTabs]
+  [dataschemas, openedTabs]
   );
 
   useEffect(() => {
     if (dataSchemaName) {
-      const schemaObj = all.find(schema => schema.name === dataSchemaName);
+      const schemaObj = dataschemas.find(schema => schema.name === dataSchemaName);
 
       if (schemaObj && !Object.keys(openedTabs).includes(schemaObj.id)) {
         openTab(schemaObj);
       }
     }
-  }, [all, dataSchemaName, openTab, openedTabs]);
+  }, [dataschemas, dataSchemaName, openTab, openedTabs]);
 
   useTrackedEffect((changes, previousDeps, currentDeps) => {
     const prevData = previousDeps?.[0];
@@ -176,7 +188,7 @@ const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
     if (dataDiff) {
       execQueryAll({ requestPolicy: 'network-only' });
     }
-  }, [currentUser.dataschemas, execQueryAll]);
+  }, [currentUserState.dataschemas, execQueryAll]);
 
   useCheckResponse(createMutation, () => {}, {
     successMessage: t('Schema created')
@@ -192,6 +204,22 @@ const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
     }
   }, {
     successMessage: t('Schema generated')
+  });
+
+  useCheckResponse(branchMutation, (res) => {
+    if (res) {
+      execQueryAll();
+    }
+  }, {
+    successMessage: t('Branch created')
+  });
+
+  useCheckResponse(commitMutation, (res) => {
+    if (res) {
+      execQueryAll();
+    }
+  }, {
+    successMessage: t('Commit created')
   });
 
   const validationError = useMemo(
@@ -312,6 +340,7 @@ const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
 
     await execGenSchemaMutation({
       datasource_id: dataSourceId,
+      branch_id: currentBranchId,
       tables,
       overwrite: true,
     });
@@ -347,10 +376,46 @@ const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
   };
 
   const onClickUpdate = (editId, values) => {
-    execUpdateMutation({
-      pk_columns: { id: editId },
-      _set: values,
+    let newDataschemas = [...lastCommit.dataschemas];
+    const editSchemaIndex = newDataschemas.findIndex(schema => schema.id === editId);
+    
+    newDataschemas = newDataschemas.map((schema, i) => {
+      let updatedData = {
+        ...schema,
+        datasource_id: dataSourceId,
+      };
+
+      if (editSchemaIndex === i) {
+        updatedData = {
+          ...updatedData,
+          ...values,
+        };
+      }
+      
+      delete updatedData.id;
+
+      return updatedData;
     });
+
+    let checksum = newDataschemas.reduce((acc, cur) => acc + cur, '');
+    checksum = md5(checksum);
+
+    if (lastCommit.checksum === checksum) {
+      message.info('There is no changes.');
+      return false;
+    }
+
+    const commitData = {
+      checksum,
+      branch_id: currentBranchId,
+      datasource_id: dataSourceId,
+      dataschemas: {
+        data: newDataschemas,
+      },
+    };
+
+    execCommitMutation({ object: commitData });
+    return commitData;
   };
 
   const onClickDelete = async id => {
@@ -361,6 +426,7 @@ const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
   const onCodeSave = (id, code) => {
     onClickUpdate(id, { code });
     execValidateMutation({ id: dataSourceId });
+    execQueryAll();
   };
 
   const onRunSQL = (query, limit) => {
@@ -369,6 +435,36 @@ const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
       query,
       limit,
     });
+  };
+
+  const onChangeBranch = (value) => {
+    setCurrentBranchId(value);
+  };
+
+  const onCreateBranch = (name) => {
+    const newSchemas = lastCommit.dataschemas.map(schema => ({
+      name: schema.name,
+      code: schema.code,
+      datasource_id: dataSourceId,
+    }));
+
+    const branchData = {
+      name,
+      status: 'created',
+      user_id: currentUser.id,
+      datasource_id: dataSourceId,
+      commits: {
+        data: {
+          checksum: lastCommit.checksum,
+          datasource_id: dataSourceId,
+          dataschemas: {
+            data: newSchemas,
+          }
+        }
+      }
+    };
+
+    execBranchMutation({ object: branchData });
   };
 
   return [
@@ -391,8 +487,18 @@ const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
         <div className={s.sidebar}>
           <Loader spinning={updateMutation.fetching}>
             <>
+              <SelectWithInput
+                title={t('Branch')}
+                placeholder={t('Select branch')}
+                onChange={onChangeBranch}
+                onCreate={onCreateBranch}
+              />
+              <div>
+                Last commit id:<br />
+                {lastCommit?.id}
+              </div>
               <IdeSchemasList
-                schemas={all}
+                schemas={dataschemas}
                 onItemClick={openSchema}
                 onCreate={onClickCreate}
                 onEdit={onClickUpdate}
@@ -421,7 +527,7 @@ const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
             {openedSchemas.map(schema => (
               <Tabs.TabPane key={getTabId(schema)} tab={schema.name}>
                 <IdeTab
-                  value={schemaIdToCode[getTabId(schema)].code}
+                  value={schemaIdToCode?.[getTabId(schema)]?.code}
                   onSave={(value) => onCodeSave(schema.id, value)}
                   width={editorWidth}
                   height={editorHeight}

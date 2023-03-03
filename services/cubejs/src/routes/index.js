@@ -2,6 +2,7 @@ import inflection from 'inflection';
 import express from 'express';
 
 import { findDataSchemas, createDataSchema } from '../utils/dataSourceHelpers.js';
+import createMd5Hex from '../utils/md5Hex.js';
 
 const ADAPTERS = {
   postgres: 'postgres',
@@ -99,7 +100,7 @@ export default ({ basePath, setupAuthInfo, cubejs }) => {
 
     try {
       const schema = await driver.tablesSchema();
-      const { tables = [], overwrite = false, branch } = (req.body || {});
+      const { tables = [], overwrite = false, branchId } = (req.body || {});
 
       const scaffoldingTemplateModule = await import('../schema_compiler/scaffolding/ScaffoldingTemplate.js');
       const dialectType = ADAPTERS[dbType];
@@ -113,7 +114,6 @@ export default ({ basePath, setupAuthInfo, cubejs }) => {
 
       const dataSchemas = await findDataSchemas({
         dataSourceId,
-        branch,
         authToken,
       });
 
@@ -128,16 +128,27 @@ export default ({ basePath, setupAuthInfo, cubejs }) => {
         return [...acc, file];
       }, []);
 
-      const schemaUpdateQueries = filteredFiles.map(file => createDataSchema({
+      let commitChecksum = filteredFiles.reduce((acc, cur) => acc + cur.code, '');
+      commitChecksum = createMd5Hex(commitChecksum);
+
+      const preparedSchemas = filteredFiles.map(file => ({
         datasource_id: dataSourceId,
         name: file.fileName,
         code: file.content,
+        branch_id: branchId,
         user_id: userId,
-      }, authToken));
+      }));
 
-      if (schemaUpdateQueries.length) {
-        await Promise.all(schemaUpdateQueries);
-      }
+      const commitObject = {
+        branch_id: branchId,
+        datasource_id: dataSourceId,
+        checksum: commitChecksum,
+        dataschemas: {
+          data: [...preparedSchemas],
+        },
+      };
+
+      await createDataSchema(commitObject);
 
       if (cubejs.compilerCache) {
         cubejs.compilerCache.prune();

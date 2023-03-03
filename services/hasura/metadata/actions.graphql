@@ -46,6 +46,7 @@ type Query {
 type Mutation {
   gen_dataschemas(
     datasource_id: uuid!
+    branch_id: uuid!
     tables: [SourceTable!]!
     overwrite: Boolean
   ): GenSourceSchemaOutput

@@ -31,17 +31,20 @@ const newBatchSchemaMutation = `
 `;
 
 const allSchemasQuery = `
-  query ($offset: Int, $limit: Int, $where: dataschemas_bool_exp, $order_by: [dataschemas_order_by!]) {
-    dataschemas (offset: $offset, limit: $limit, where: $where, order_by: $order_by) {
+  query ($offset: Int, $limit: Int, $where: branches_bool_exp, $order_by: [branches_order_by!]) {
+    branches (offset: $offset, limit: $limit, where: $where, order_by: $order_by) {
       id
       name
-      code
-      created_at
-      updated_at
-    }
-    dataschemas_aggregate (where: $where) {
-      aggregate {
-        count
+      commits (order_by: {created_at: desc}) {
+        id
+        checksum
+        dataschemas  {
+          id
+          name
+          code
+          created_at
+          updated_at
+        }
       }
     }
   }
@@ -89,6 +92,22 @@ const exportDataMutation = `
   }
 `;
 
+const newBranchMutation = `
+  mutation ($object: branches_insert_input!) {
+    insert_branches_one(object: $object) {
+      id
+    }
+  }
+`;
+
+const newCommitMutation = `
+  mutation ($object: commits_insert_input!) {
+    insert_commits_one(object: $object) {
+      id
+    }
+  }
+`;
+
 const getListVariables = (pagination, params) => {
   let res = {
     order_by: {
@@ -118,7 +137,7 @@ const handleSubscription = (_, response) => response;
 
 const role = 'user';
 export default (props = {}) => {
-  const { pauseQueryAll, pagination = {}, params = {}, disableSubscription = true } = props;
+  const { pauseQueryAll, pagination = {}, params = {}, disableSubscription = true, branchId } = props;
   const { currentTeamState } = useCurrentTeamState();
 
   const reqParams = {
@@ -131,6 +150,8 @@ export default (props = {}) => {
   const [deleteMutation, execDeleteMutation] = useMutation(delSchemaMutation, { role });
   const [exportMutation, execExportMutation] = useMutation(exportDataMutation, { role });
   const [batchMutation, execBatchMutation] = useMutation(newBatchSchemaMutation, { role });
+  const [branchMutation, execBranchMutation] = useMutation(newBranchMutation, { role });
+  const [commitMutation, execCommitMutation] = useMutation(newCommitMutation, { role });
 
   const [allData, execQueryAll] = useQuery({
     query: allSchemasQuery,
@@ -153,8 +174,8 @@ export default (props = {}) => {
     }
   }, [pauseQueryAll, execQueryAll]);
 
-  const all = useMemo(() => allData.data?.dataschemas || [], [allData.data]);
-  const totalCount = useMemo(() => allData.data?.dataschemas_aggregate.aggregate.count, [allData.data]);
+  const all = useMemo(() => allData.data?.branches || [], [allData.data]);
+  // const totalCount = useMemo(() => allData.data?.dataschemas_aggregate.aggregate.count, [allData.data]);
 
   useTrackedEffect((changes, prevDeps, currDeps) => {
     const prevTeam = prevDeps?.[0];
@@ -168,7 +189,7 @@ export default (props = {}) => {
 
   return {
     all,
-    totalCount,
+    // totalCount,
     queries: {
       allData,
       execQueryAll,
@@ -184,6 +205,10 @@ export default (props = {}) => {
       execExportMutation,
       batchMutation,
       execBatchMutation,
+      branchMutation,
+      execBranchMutation,
+      commitMutation,
+      execCommitMutation,
     },
     subscription,
     execSubscription,

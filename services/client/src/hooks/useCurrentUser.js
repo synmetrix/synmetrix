@@ -35,13 +35,20 @@ const sourcesFragment = `
   team_id
 `;
 
-const schemasFragment = `
+const branchesFragment = `
   id
-  user_id
   name
-  checksum
-  datasource {
-    team_id
+  commits {
+    checksum
+    dataschemas {
+      id
+      user_id
+      name
+      checksum
+      datasource {
+        team_id
+      }
+    }
   }
 `;
 
@@ -77,10 +84,10 @@ const currentUserQuery = `
       ${reportFragment}
     }
 
-    dataschemas (
+    branches (
       order_by: { created_at: desc }
     ) {
-      ${schemasFragment}
+      ${branchesFragment}
     }
 
     dashboards (
@@ -118,13 +125,13 @@ const currentUserWithTeamQuery = `
       ${reportFragment}
     }
 
-    dataschemas (
+    branches (
       order_by: { created_at: desc },
       where: { datasource: {
         team_id: { _eq: $teamId }
       } }
     ) {
-      ${schemasFragment}
+      ${branchesFragment}
     }
 
     dashboards (

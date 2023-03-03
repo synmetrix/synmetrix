@@ -11,6 +11,7 @@ import pickKeys from 'utils/pickKeys';
 
 import useCheckResponse from 'hooks/useCheckResponse';
 import useSources from 'hooks/useSources';
+import useCurrentUserState from 'hooks/useCurrentUserState';
 import useCurrentTeamState from 'hooks/useCurrentTeamState';
 
 import ModalView from 'components/ModalView';
@@ -19,6 +20,8 @@ import DataSourceForm from 'components/DataSourceForm';
 const DataSourceModal = (props) => {
   const formRef = useRef(null);
   const { currentTeamState } = useCurrentTeamState();
+  const { currentUserState } = useCurrentUserState();
+  const currentUser = currentUserState?.users_by_pk;
 
   const {
     mutations: {
@@ -95,6 +98,12 @@ const DataSourceModal = (props) => {
       // or create new
       const newSource = {
         ...values,
+        branches: {
+          data: {
+            user_id: currentUser.id,
+            name: 'main',
+          }
+        }
       };
 
       if (currentTeamState.id) {

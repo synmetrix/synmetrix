@@ -61,6 +61,9 @@
             id:
               _eq: X-Hasura-User-Id
 - table:
+    name: migrations
+    schema: auth
+- table:
     name: providers
     schema: auth
   array_relationships:
@@ -96,6 +99,96 @@
           table:
             name: accounts
             schema: auth
+- table:
+    name: branches
+    schema: public
+  object_relationships:
+    - name: datasource
+      using:
+        foreign_key_constraint_on: datasource_id
+    - name: user
+      using:
+        foreign_key_constraint_on: user_id
+  array_relationships:
+    - name: commits
+      using:
+        foreign_key_constraint_on:
+          column: branch_id
+          table:
+            name: commits
+            schema: public
+  insert_permissions:
+    - role: user
+      permission:
+        check:
+          user_id:
+            _eq: X-Hasura-User-Id
+        columns:
+          - datasource_id
+          - name
+          - status
+          - user_id
+  select_permissions:
+    - role: user
+      permission:
+        columns:
+          - name
+          - status
+          - created_at
+          - updated_at
+          - datasource_id
+          - id
+          - user_id
+        filter:
+          user_id:
+            _eq: X-Hasura-User-Id
+  update_permissions:
+    - role: user
+      permission:
+        columns:
+          - name
+          - status
+        filter:
+          user_id:
+            _eq: X-Hasura-User-Id
+        check: null
+- table:
+    name: commits
+    schema: public
+  object_relationships:
+    - name: branch
+      using:
+        foreign_key_constraint_on: branch_id
+    - name: datasource
+      using:
+        foreign_key_constraint_on: datasource_id
+  array_relationships:
+    - name: dataschemas
+      using:
+        foreign_key_constraint_on:
+          column: commit_id
+          table:
+            name: dataschemas
+            schema: public
+  insert_permissions:
+    - role: user
+      permission:
+        check: {}
+        columns:
+          - branch_id
+          - checksum
+          - datasource_id
+  select_permissions:
+    - role: user
+      permission:
+        columns:
+          - checksum
+          - created_at
+          - updated_at
+          - branch_id
+          - datasource_id
+          - id
+        filter: {}
 - table:
     name: dashboards
     schema: public
@@ -184,6 +277,9 @@
     name: dataschemas
     schema: public
   object_relationships:
+    - name: commit
+      using:
+        foreign_key_constraint_on: commit_id
     - name: datasource
       using:
         foreign_key_constraint_on: datasource_id
@@ -206,21 +302,20 @@
         set:
           user_id: x-hasura-user-id
         columns:
-          - branch
           - code
+          - commit_id
           - created_at
           - datasource_id
           - id
           - name
           - updated_at
-          - user_id
   select_permissions:
     - role: user
       permission:
         columns:
-          - branch
           - checksum
           - code
+          - commit_id
           - created_at
           - datasource_id
           - id
@@ -288,6 +383,20 @@
       using:
         foreign_key_constraint_on: user_id
   array_relationships:
+    - name: branches
+      using:
+        foreign_key_constraint_on:
+          column: datasource_id
+          table:
+            name: branches
+            schema: public
+    - name: commits
+      using:
+        foreign_key_constraint_on:
+          column: datasource_id
+          table:
+            name: commits
+            schema: public
     - name: dataschemas
       using:
         foreign_key_constraint_on:
@@ -881,6 +990,13 @@
             name: accounts
             schema: auth
   array_relationships:
+    - name: branches
+      using:
+        foreign_key_constraint_on:
+          column: user_id
+          table:
+            name: branches
+            schema: public
     - name: dataschemas
       using:
         foreign_key_constraint_on:
