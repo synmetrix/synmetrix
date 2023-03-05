@@ -171,6 +171,23 @@ export default ({ form, initialValues, entity = 'alert' }) => {
         draft['trigger_config.upperBound'].rules = [
           { required: areBoundsRequired, message: 'At least one bound is required' },
         ];
+
+        draft['trigger_config.lowerBound'].rules = [
+          {
+            message: 'Lower bound must be less',
+            validator: async (rule, value) => {
+              if (value === null) {
+                return Promise.resolve();
+              }
+
+              if (value >= upperBoundValue) {
+                return Promise.reject(new Error());
+              }
+
+              return Promise.resolve();
+            }
+          },
+        ];
       };
 
       return produce(combinedFormItems, draft => {
