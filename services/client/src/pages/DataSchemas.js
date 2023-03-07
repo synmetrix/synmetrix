@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import equals from 'utils/equals';
 import { useTrackedEffect } from 'ahooks';
 import { useTranslation } from 'react-i18next';
-import { Tabs, message } from 'antd';
+import { Tabs, Divider, message } from 'antd';
 
 import JSZip from 'jszip';
 import { load } from 'js-yaml';
@@ -33,7 +33,8 @@ import SqlRunner from 'components/SqlRunner';
 import GenDataSchemasForm from 'components/GenDataSchemasForm';
 import IdeConsole from 'components/IdeConsole';
 import ErrorFound from 'components/ErrorFound';
-import SelectWithInput from '../components/SelectWithInput';
+import VersionsModal from '../components/VersionsModal';
+import BranchesMenu from '../components/BranchesMenu';
 
 import s from './DataSchemas.module.css';
 
@@ -59,7 +60,7 @@ const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
     [params]
   );
 
-  const onModalClose = () => setLocation(`${basePath}/${dataSourceId}}`);
+  const onModalClose = () => setLocation(`${basePath}/${dataSourceId}`);
   const dataSchemaName = reservedSlugs.indexOf(slug) === -1 && slug || null;
 
   const {
@@ -93,6 +94,8 @@ const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
       execBranchMutation,
       commitMutation,
       execCommitMutation,
+      setDefaultMutation,
+      execSetDefaultMutation,
     },
   } = useSchemas({
     params: {
@@ -123,6 +126,7 @@ const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
   });
 
   const genSchemaModalVisible = slug === 'genschema';
+  const versionsModalVisible = slug === 'versions';
 
   useEffect(() => {
     if (genSchemaModalVisible && dataSourceId) {
@@ -148,8 +152,8 @@ const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
   });
 
   const currentBranch = useMemo(() => all.find(branch => branch.id === currentBranchId), [all, currentBranchId]);
-  const lastCommit = useMemo(() => currentBranch?.commits?.[0] || [], [currentBranch]);
-  const dataschemas = useMemo(() => lastCommit?.dataschemas || [], [lastCommit]);
+  const lastVersion = useMemo(() => currentBranch?.versions?.[0] || [], [currentBranch]);
+  const dataschemas = useMemo(() => lastVersion?.dataschemas || [], [lastVersion]);
 
   const schemaIdToCode = useMemo(() => dataschemas.reduce((acc, curr) => {
     acc[curr.id] = { name: curr.name, code: curr.code };
@@ -220,6 +224,10 @@ const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
     }
   }, {
     successMessage: t('Commit created')
+  });
+
+  useCheckResponse(setDefaultMutation, () => {}, {
+    successMessage: t('Current branch is now default.')
   });
 
   const validationError = useMemo(
@@ -322,6 +330,10 @@ const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
       title: t('Generate Schema'),
     },
     {
+      path: `${basePath}/${dataSourceId}/versions`,
+      title: t('Show versions'),
+    },
+    {
       path: `${basePath}/${dataSourceId}`,
       title: t('Import data models'),
       onClick: () => uploadFile(),
@@ -375,47 +387,50 @@ const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
     execQueryAll({ requestPolicy: 'cache-and-network' });
   };
 
-  const onClickUpdate = (editId, values) => {
-    let newDataschemas = [...lastCommit.dataschemas];
-    const editSchemaIndex = newDataschemas.findIndex(schema => schema.id === editId);
-    
-    newDataschemas = newDataschemas.map((schema, i) => {
-      let updatedData = {
+  const createNewCommit = async (checksum, data) => {
+    const preparedDataschemas = data.map((schema) => {
+      const updatedData = {
         ...schema,
         datasource_id: dataSourceId,
       };
 
-      if (editSchemaIndex === i) {
-        updatedData = {
-          ...updatedData,
-          ...values,
-        };
-      }
-      
       delete updatedData.id;
-
       return updatedData;
     });
-
-    let checksum = newDataschemas.reduce((acc, cur) => acc + cur, '');
-    checksum = md5(checksum);
-
-    if (lastCommit.checksum === checksum) {
-      message.info('There is no changes.');
-      return false;
-    }
 
     const commitData = {
       checksum,
       branch_id: currentBranchId,
       datasource_id: dataSourceId,
       dataschemas: {
-        data: newDataschemas,
+        data: preparedDataschemas,
       },
     };
 
-    execCommitMutation({ object: commitData });
-    return commitData;
+    await execCommitMutation({ object: commitData });
+    await execQueryAll();
+  };
+
+  const onClickUpdate = async (editId, values) => {
+    const newDataschemas = [...lastVersion.dataschemas];
+    const editSchemaIndex = newDataschemas.findIndex(schema => schema.id === editId);
+    
+    newDataschemas[editSchemaIndex] = {
+      ...newDataschemas[editSchemaIndex],
+      ...values,
+    };
+
+    let checksum = newDataschemas.reduce((acc, cur) => acc + cur.code, '');
+    checksum = md5(checksum);
+
+    if (lastVersion.checksum === checksum) {
+      message.info('There is no changes.');
+      return false;
+    }
+
+    await createNewCommit(checksum, newDataschemas);
+
+    return newDataschemas;
   };
 
   const onClickDelete = async id => {
@@ -441,8 +456,8 @@ const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
     setCurrentBranchId(value);
   };
 
-  const onCreateBranch = (name) => {
-    const newSchemas = lastCommit.dataschemas.map(schema => ({
+  const onCreateBranch = async (name) => {
+    const newSchemas = lastVersion.dataschemas.map(schema => ({
       name: schema.name,
       code: schema.code,
       datasource_id: dataSourceId,
@@ -453,9 +468,9 @@ const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
       status: 'created',
       user_id: currentUser.id,
       datasource_id: dataSourceId,
-      commits: {
+      versions: {
         data: {
-          checksum: lastCommit.checksum,
+          checksum: lastVersion.checksum,
           datasource_id: dataSourceId,
           dataschemas: {
             data: newSchemas,
@@ -464,7 +479,17 @@ const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
       }
     };
 
-    execBranchMutation({ object: branchData });
+    await execBranchMutation({ object: branchData });
+    await execQueryAll();
+  };
+
+  const onSetDefault = async () => {
+    await execSetDefaultMutation({
+      user_id: currentUser.id,
+      branch_id: currentBranchId,
+      datasource_id: dataSourceId,
+    });
+    await execQueryAll();
   };
 
   return [
@@ -482,21 +507,32 @@ const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
       )}
       footer={null}
     />,
+    <ModalView
+      key="versions"
+      title={t('Versions list')}
+      visible={versionsModalVisible}
+      onCancel={onModalClose}
+      loading={fetching}
+      content={(
+        <VersionsModal 
+          versions={currentBranch?.versions}
+          onRestore={createNewCommit}
+        />
+      )}
+      footer={null}
+    />,
     <Loader key="content" spinning={fetching}>
       <div className={s.root}>
         <div className={s.sidebar}>
           <Loader spinning={updateMutation.fetching}>
             <>
-              <SelectWithInput
-                title={t('Branch')}
-                placeholder={t('Select branch')}
+              <BranchesMenu
                 onChange={onChangeBranch}
                 onCreate={onCreateBranch}
+                onSetDefault={onSetDefault}
+                currentBranch={currentBranch}
               />
-              <div>
-                Last commit id:<br />
-                {lastCommit?.id}
-              </div>
+              <Divider style={{ margin: '5px 0' }} />
               <IdeSchemasList
                 schemas={dataschemas}
                 onItemClick={openSchema}

@@ -35,9 +35,12 @@ const allSchemasQuery = `
     branches (offset: $offset, limit: $limit, where: $where, order_by: $order_by) {
       id
       name
-      commits (order_by: {created_at: desc}) {
+      status
+      versions (order_by: {created_at: desc}) {
         id
         checksum
+        created_at
+        updated_at
         dataschemas  {
           id
           name
@@ -101,8 +104,19 @@ const newBranchMutation = `
 `;
 
 const newCommitMutation = `
-  mutation ($object: commits_insert_input!) {
-    insert_commits_one(object: $object) {
+  mutation ($object: versions_insert_input!) {
+    insert_versions_one(object: $object) {
+      id
+    }
+  }
+`;
+const setDefaultBranchMutation = `
+  mutation ($branch_id: uuid!, $datasource_id: uuid!, $user_id: uuid!) {
+    update_branches(_set: {status: "created"}, where: {datasource_id: {_eq: $datasource_id}, user_id: {_eq: $user_id}, status: {_eq: "active"}}) {
+      affected_rows
+    }
+
+    update_branches_by_pk(_set: {status: "active"}, pk_columns: {id: $branch_id}) {
       id
     }
   }
@@ -152,6 +166,7 @@ export default (props = {}) => {
   const [batchMutation, execBatchMutation] = useMutation(newBatchSchemaMutation, { role });
   const [branchMutation, execBranchMutation] = useMutation(newBranchMutation, { role });
   const [commitMutation, execCommitMutation] = useMutation(newCommitMutation, { role });
+  const [setDefaultMutation, execSetDefaultMutation] = useMutation(setDefaultBranchMutation, { role });
 
   const [allData, execQueryAll] = useQuery({
     query: allSchemasQuery,
@@ -209,6 +224,8 @@ export default (props = {}) => {
       execBranchMutation,
       commitMutation,
       execCommitMutation,
+      setDefaultMutation,
+      execSetDefaultMutation,
     },
     subscription,
     execSubscription,

@@ -14,7 +14,17 @@ const sourceQuery = `
 `;
 
 const allSchemasQuery = `
-  query ($offset: Int, $limit: Int, $where: dataschemas_bool_exp, $order_by: [dataschemas_order_by!]) {
+  query ($offset: Int, $limit: Int, $where: branches_bool_exp, $order_by: [branches_order_by!]) {
+    branches(where: $where) {
+      versions(limit: 1, order_by: {created_at: desc}) {
+        dataschemas {
+          id
+          name
+          code
+        }
+      }
+    }
+
     dataschemas (offset: $offset, limit: $limit, where: $where, order_by: $order_by) {
       id
       name
@@ -25,8 +35,8 @@ const allSchemasQuery = `
 
 
 const upsertCommitMutation = `
-  mutation ($object: commits_insert_input!) {
-    insert_commits_one(
+  mutation ($object: versions_insert_input!) {
+    insert_versions_one(
       object: $object
     ) {
       id
@@ -57,6 +67,7 @@ export const findDataSchemas = async (args) => {
   let vars = {
     order_by: {
       created_at: 'asc',
+      status: 'active',
     },
   };
 

@@ -38,7 +38,7 @@ const sourcesFragment = `
 const branchesFragment = `
   id
   name
-  commits {
+  versions {
     checksum
     dataschemas {
       id
