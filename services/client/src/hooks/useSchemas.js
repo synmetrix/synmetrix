@@ -66,7 +66,7 @@ const editSchemaMutation = `
 
 const delSchemaMutation = `
   mutation ($id: uuid!) {
-    delete_dataschemas_by_pk(id: $id) {
+    update_branches_by_pk(_set: {status: "arhived"}, pk_columns: {id: $id}) {
       id
     }
   }
@@ -126,6 +126,11 @@ const getListVariables = (pagination, params) => {
   let res = {
     order_by: {
       created_at: 'desc',
+    },
+    where: {
+      status: {
+        _in: ['active', 'created'],
+      },
     },
   };
 

@@ -38,6 +38,7 @@ const sourcesFragment = `
 const branchesFragment = `
   id
   name
+  status
   versions {
     checksum
     dataschemas {

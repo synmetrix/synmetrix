@@ -227,7 +227,15 @@ const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
   });
 
   useCheckResponse(setDefaultMutation, () => {}, {
-    successMessage: t('Current branch is now default.')
+    successMessage: t(`Branch "${currentBranch?.name}" is now default.`)
+  });
+
+  useCheckResponse(deleteMutation, (res) => {
+    if (res) {
+      execQueryAll();
+    }
+  }, {
+    successMessage: t('Branch created')
   });
 
   const validationError = useMemo(
@@ -324,14 +332,10 @@ const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
     return newSchemas;
   };
 
-  const routes = [
+  const ideMenu = [
     {
       path: `${basePath}/${dataSourceId}/genschema`,
       title: t('Generate Schema'),
-    },
-    {
-      path: `${basePath}/${dataSourceId}/versions`,
-      title: t('Show versions'),
     },
     {
       path: `${basePath}/${dataSourceId}`,
@@ -342,6 +346,18 @@ const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
       path: `${basePath}/${dataSourceId}`,
       title: t('Export data models'),
       onClick: () => exportData(),
+    },
+  ];
+
+  const branchMenu = [
+    {
+      path: `${basePath}/${dataSourceId}/versions`,
+      title: t('Show versions'),
+    },
+    {
+      path: `${basePath}/${dataSourceId}`,
+      title: t('Remove branch'),
+      onClick: () => execDeleteMutation({ id: currentBranchId }),
     },
   ];
 
@@ -527,10 +543,12 @@ const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
           <Loader spinning={updateMutation.fetching}>
             <>
               <BranchesMenu
+                branches={all}
+                moreMenu={branchMenu}
+                branchStatus={currentBranch?.status}
                 onChange={onChangeBranch}
                 onCreate={onCreateBranch}
                 onSetDefault={onSetDefault}
-                currentBranch={currentBranch}
               />
               <Divider style={{ margin: '5px 0' }} />
               <IdeSchemasList
@@ -539,7 +557,7 @@ const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
                 onCreate={onClickCreate}
                 onEdit={onClickUpdate}
                 onDelete={onClickDelete}
-                moreMenu={routes}
+                moreMenu={ideMenu}
               />
               <input
                 type='file'

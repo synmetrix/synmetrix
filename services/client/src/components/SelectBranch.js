@@ -6,13 +6,11 @@ import { Button, Icon, Select, Input, Divider } from 'antd';
 
 import { useSetState, useLocalStorageState } from 'ahooks';
 
-import useCurrentUserState from 'hooks/useCurrentUserState';
+import s from './SelectBranch.module.css';
 
 const { Option } = Select;
 
-const SelectWithInput = ({ title, placeholder, onChange, onCreate, loading }) => {
-  const { currentUserState: currentUser } = useCurrentUserState();
-
+const SelectBranch = ({ title, placeholder, onChange, onCreate, loading, branches }) => {
   const [state, updateState,] = useLocalStorageState('currentBranch' ,{
     defaultValue: {
       selectOpen: false,
@@ -40,13 +38,22 @@ const SelectWithInput = ({ title, placeholder, onChange, onCreate, loading }) =>
   }, [state.selectedBranch, onChange]);
 
   useEffect(() => {
-    if (!state.selectedBranch && currentUser.branches) {
-      updateState(prev => ({ ...prev, selectedBranch: currentUser.branches?.[0]?.id }));
+    if (!state.selectedBranch && branches) {
+      updateState(prev => ({ ...prev, selectedBranch: branches?.[0]?.id }));
     }
-  }, [state.selectedBranch, currentUser.branches, updateState]);
+  }, [state.selectedBranch, branches, updateState]);
+
+  const options = useMemo(() => branches?.map((item) => (
+    <Option 
+      key={item.id}
+      className={item.status === 'active' && s.defaultBranch}
+    >
+      {item.name}
+    </Option>
+  )), [branches]);
 
   return (
-    <>
+    <div>
       <div>
         {title && title}
       </div>
@@ -77,7 +84,7 @@ const SelectWithInput = ({ title, placeholder, onChange, onCreate, loading }) =>
                   addonAfter={(
                     <Icon
                       onClick={onCreateBranch}
-                      type={false ? 'loading' : 'plus'}
+                      type={loading ? 'loading' : 'plus'}
                     />
                   )}
                 />
@@ -85,30 +92,30 @@ const SelectWithInput = ({ title, placeholder, onChange, onCreate, loading }) =>
             </div>
           )}
         >
-          {currentUser.branches?.map((item) => <Option key={item.id}>{item.name}</Option>)}
+          {options}
         </Select>
       </div>
-    </>
+    </div>
   );
 };
 
 
-SelectWithInput.propTypes = {
+SelectBranch.propTypes = {
   title: PropTypes.string,
   placeholder: PropTypes.string,
-  defaultName: PropTypes.string,
   onChange: PropTypes.func,
   onCreate: PropTypes.func,
   loading: PropTypes.bool,
+  branches: PropTypes.array,
 };
 
-SelectWithInput.defaultProps = {
+SelectBranch.defaultProps = {
   title: null,
   placeholder: null,
-  defaultName: '',
   onChange: () => {},
   onCreate: () => {},
   loading: false,
+  branches: [],
 };
 
-export default SelectWithInput;
+export default SelectBranch;

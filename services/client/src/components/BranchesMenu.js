@@ -4,47 +4,29 @@ import PropTypes from 'prop-types';
 import { Button } from 'antd';
 
 import { useTranslation } from 'react-i18next';
-import useLocation from 'hooks/useLocation';
-import SelectWithInput from './SelectWithInput';
-import PopoverButton from './PopoverButton';
+import SelectBranch from './SelectBranch';
+import MoreMenu from './MoreMenu';
 
 
-const BranchesMenu = ({ onChange, onCreate, onSetDefault, currentBranch }) => {
-  const [, setLocation] = useLocation();
+const BranchesMenu = ({ onChange, onCreate, onSetDefault, branchStatus, moreMenu, branches }) => {
   const { t } = useTranslation();
-    
-  const IsBranchActive = currentBranch?.status !== 'active';
+
+  const IsDefaultBranch = branchStatus === 'active';
 
   return (
     <div style={{ padding: '0 10px' }}>
-      <div style={{ padding: '5px 0' }}>
-        <SelectWithInput
+      <div style={{ display: 'flex', padding: '5px 0' }}>
+        <SelectBranch
           title={t('Branch')}
           placeholder={t('Select branch')}
           onChange={onChange}
           onCreate={onCreate}
+          branches={branches}
         />
-        <PopoverButton
-          type="dropdown"
-          iconType="more"
-          // visible={moreMenuVisible}
-          // onVisibleChange={(vis) => setMoreMenuVisible(vis)}
-          // overlay={(
-          //   <MenuView 
-          //     mode={null}
-          //     nodes={moreMenu}
-          //     selectable={false}
-          //     onClick={() => setMoreMenuVisible(false)}
-          //   />
-          // )}
-          trigger={['click']}
-        />
+        <MoreMenu menuNodes={moreMenu} />
       </div>
-      <div style={{ padding: '5px 0' }} onClick={() => setLocation(`${basePath}/${dataSourceId}/versions`)}>
-        Show versions
-      </div>
-      {IsBranchActive && (
-        <Button onClick={onSetDefault}>{t('Set default branch')}</Button>
+      {!IsDefaultBranch && (
+        <Button onClick={onSetDefault}>{t('Set as default')}</Button>
       )}
     </div>
   );
@@ -54,14 +36,18 @@ BranchesMenu.propTypes = {
   onChange: PropTypes.func,
   onCreate: PropTypes.func,
   onSetDefault: PropTypes.func,
-  currentBranch: PropTypes.object,
+  branchStatus: PropTypes.string,
+  moreMenu: PropTypes.array,
+  branches: PropTypes.array,
 };
 
 BranchesMenu.defaultProps = {
   onChange: () => {},
   onCreate: () => {},
   onSetDefault: () => {},
-  currentBranch: {},
+  branchStatus: null,
+  moreMenu: [],
+  branches: [],
 };
 
 export default BranchesMenu;

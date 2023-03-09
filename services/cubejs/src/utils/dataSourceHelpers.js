@@ -14,21 +14,15 @@ const sourceQuery = `
 `;
 
 const allSchemasQuery = `
-  query ($offset: Int, $limit: Int, $where: branches_bool_exp, $order_by: [branches_order_by!]) {
+  query ($offset: Int, $limit: Int, $where: branches_bool_exp, $order_by: [versions_order_by!]) {
     branches(where: $where) {
-      versions(limit: 1, order_by: {created_at: desc}) {
+      versions(limit: 1, order_by: $order_by) {
         dataschemas {
           id
           name
           code
         }
       }
-    }
-
-    dataschemas (offset: $offset, limit: $limit, where: $where, order_by: $order_by) {
-      id
-      name
-      code
     }
   }
 `;
@@ -55,10 +49,7 @@ export const createDataSchema = async (object) => {
   const { authToken, ...commit } = object;
 
   let res = await fetchGraphQL(upsertCommitMutation, { object: commit }, authToken);
-  console.log(res);
   res = res?.data?.insert_dataschemas_one;
-
-  console.log(commit);
 
   return res;
 };
@@ -66,8 +57,12 @@ export const createDataSchema = async (object) => {
 export const findDataSchemas = async (args) => {
   let vars = {
     order_by: {
-      created_at: 'asc',
-      status: 'active',
+      created_at: 'desc',
+    },
+    where: {
+      status: {
+        _eq: 'active',
+      },
     },
   };
 
@@ -80,7 +75,7 @@ export const findDataSchemas = async (args) => {
   }
 
   let dataSchemas = await fetchGraphQL(allSchemasQuery, vars, args.authToken);
-  dataSchemas = dataSchemas?.data?.dataschemas;
+  dataSchemas = dataSchemas?.data?.branches?.[0]?.versions?.[0]?.dataschemas;
 
   return dataSchemas;
 };
