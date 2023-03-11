@@ -24,6 +24,16 @@ const datasourcesQuery = `
       db_type
       created_at
       updated_at
+      sql_credentials {
+        id
+        username
+        created_at
+        updated_at
+        user {
+          id
+          display_name
+        }
+      }
     }
     datasources_aggregate (where: $where) {
       aggregate {
@@ -98,8 +108,19 @@ const datasourcesSubscription = `
     datasources (offset: $offset, limit: $limit, where: $where, order_by: $order_by) {
       id
       name
-      user_id
-      team_id
+      db_type
+      created_at
+      updated_at
+      sql_credentials {
+        id
+        username
+        created_at
+        updated_at
+        user {
+          id
+          display_name
+        }
+      }
     }
   }
 `;

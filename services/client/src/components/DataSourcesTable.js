@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { useSetState , useTrackedEffect } from 'ahooks';
+import { useSetState, useTrackedEffect } from 'ahooks';
 
 
 import { useTranslation } from 'react-i18next';
@@ -94,7 +94,7 @@ const DataSourcesTable = ({ editId, onModalClose, onModalOpen }) => {
   };
 
   const onSave = (_record, values) => {
-    execUpdateMutation({ 
+    execUpdateMutation({
       pk_columns: { id: state.editId },
       _set: values,
     });
@@ -104,7 +104,7 @@ const DataSourcesTable = ({ editId, onModalClose, onModalOpen }) => {
     onDataSourceClose();
   };
 
-  useCheckResponse(updateMutation, () => {}, {
+  useCheckResponse(updateMutation, () => { }, {
     successMessage: t('Saved')
   });
 
@@ -154,6 +154,7 @@ const DataSourcesTable = ({ editId, onModalClose, onModalOpen }) => {
       title: 'Created by',
       dataIndex: 'user_id',
       key: 'user_id',
+      render: (_, record) => record?.user?.display_name,
     },
     {
       title: 'Created At',
@@ -200,7 +201,8 @@ const DataSourcesTable = ({ editId, onModalClose, onModalOpen }) => {
             <TableList
               columns={expandedTableColumns}
               pagination={false}
-              dataSource={[]}
+              rowKey={row => row.id}
+              dataSource={dataSources?.find(({ id }) => id === record.id)?.sql_credentials || []}
               locale={{ emptyText: t('No attached SQL interfaces') }}
               noEmptyImage
             />
