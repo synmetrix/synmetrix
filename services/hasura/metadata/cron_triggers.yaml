@@ -1,6 +1,1 @@
-- name: check alerts
-  webhook: '{{ACTIONS_URL}}/rpc/check_alerts'
-  schedule: '* * * * *'
-  include_in_metadata: true
-  payload: {}
-  comment: Cron trigger for checking alerts bounds and sending notifications
+[]

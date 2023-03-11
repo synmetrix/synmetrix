@@ -210,7 +210,7 @@ const sendToEmail = async ({ header, jsonUrl, screenshotUrl, address }) => {
 };
 
 export default async (session, input) => {
-  const { deliveryType, explorationId, deliveryConfig, name } = input || {};
+  const { deliveryType, explorationId, deliveryConfig, name } = input?.payload || {};
 
   const queryResult = await fetchGraphQL(explorationQuery, { id: explorationId });
   const exploration = queryResult?.data?.explorations_by_pk || {};

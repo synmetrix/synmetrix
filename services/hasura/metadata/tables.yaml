@@ -128,6 +128,7 @@
           - exploration_id
           - id
           - name
+          - schedule
           - team_id
           - trigger_config
           - user_id
@@ -135,15 +136,16 @@
     - role: user
       permission:
         columns:
-          - delivery_config
-          - trigger_config
-          - delivery_type
-          - name
           - created_at
-          - updated_at
+          - delivery_config
+          - delivery_type
           - exploration_id
           - id
+          - name
+          - schedule
           - team_id
+          - trigger_config
+          - updated_at
           - user_id
         filter:
           _or:
@@ -162,6 +164,7 @@
           - delivery_type
           - exploration_id
           - name
+          - schedule
           - trigger_config
         filter:
           _or:
@@ -190,6 +193,48 @@
                 members:
                   user_id:
                     _eq: X-Hasura-User-Id
+  event_triggers:
+    - name: create_cron_task_by_alert
+      definition:
+        enable_manual: true
+        insert:
+          columns: '*'
+        update:
+          columns:
+            - delivery_config
+            - delivery_type
+            - exploration_id
+            - trigger_config
+            - schedule
+      retry_conf:
+        interval_sec: 10
+        num_retries: 3
+        timeout_sec: 60
+      webhook: '{{ACTIONS_URL}}/rpc/create_cron_task_by_alert'
+      cleanup_config:
+        batch_size: 10000
+        clean_invocation_logs: false
+        clear_older_than: 168
+        paused: true
+        schedule: 0 0 * * *
+        timeout: 60
+    - name: delete_cron_task_by_alert
+      definition:
+        delete:
+          columns: '*'
+        enable_manual: true
+      retry_conf:
+        interval_sec: 10
+        num_retries: 3
+        timeout_sec: 60
+      webhook: '{{ACTIONS_URL}}/rpc/delete_cron_task_by_alert'
+      cleanup_config:
+        batch_size: 10000
+        clean_invocation_logs: false
+        clear_older_than: 168
+        paused: true
+        schedule: 0 0 * * *
+        timeout: 60
 - table:
     name: dashboards
     schema: public
@@ -853,9 +898,9 @@
             - delivery_type
       retry_conf:
         interval_sec: 10
-        num_retries: 0
+        num_retries: 3
         timeout_sec: 60
-      webhook: '{{ACTIONS_URL}}/rpc/create_cron_task_by_report'
+      webhook: '{{ACTIONS_URL}}/rpc/create_cron_task_by_alert'
       cleanup_config:
         batch_size: 10000
         clean_invocation_logs: false
@@ -870,9 +915,9 @@
         enable_manual: true
       retry_conf:
         interval_sec: 10
-        num_retries: 0
+        num_retries: 3
         timeout_sec: 60
-      webhook: '{{ACTIONS_URL}}/rpc/delete_cron_task_by_report'
+      webhook: '{{ACTIONS_URL}}/rpc/delete_cron_task_by_alert'
       cleanup_config:
         batch_size: 10000
         clean_invocation_logs: false

@@ -87,11 +87,12 @@ const AlertModal = (props) => {
         alerts: {
           on_conflict: {
             constraint: 'alerts_pkey',
-            update_columns: ['name', 'trigger_config', 'delivery_config', 'exploration_id']
+            update_columns: ['name', 'trigger_config', 'delivery_config', 'exploration_id', 'schedule']
           },
           data: [{
             id: alert.id,
             name: values.name,
+            schedule: values.schedule,
             trigger_config: values.trigger_config,
             delivery_type: values.delivery_type,
             delivery_config: values.delivery_config,

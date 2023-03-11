@@ -45,6 +45,21 @@ const commonFormItems = {
   },
 };
 
+const triggerFormItems = {
+  trigger_divider: {
+    label: 'Trigger settings',
+    display: 'divider'
+  },
+  schedule: {
+    label: (<>Schedule (<a target="_blank" rel="noopener noreferrer" href="https://crontab.guru/">Build cron expression</a>)</>),
+    name: 'Schedule',
+    required: true,
+    placeholder: 'Minute Hour Day Month Weekday',
+    default: '* * * * *',
+    suffix: 'in UTC timezone'
+  },
+};
+
 const deliveryFormItems = {
   webhook: {
     'delivery_config.url': {
@@ -69,37 +84,40 @@ const deliveryFormItems = {
   },
 };
 
-const triggerFormItems = {
+const triggerFormItemsByEntity = {
   alert: {
+    ...triggerFormItems,
     'trigger_config.lowerBound': {
       label: 'Lower Bound',
       type: 'number',
-      span: 8
+      span: 12
     },
     'trigger_config.upperBound': {
       label: 'Upper Bound',
       type: 'number',
-      span: 8
+      span: 12
+    },
+    'trigger_config.requestTimeout': {
+      label: 'Request Timeout (minutes)',
+      required: true,
+      display: 'text',
+      type: 'number',
+      default: 1,
+      step: 1,
+      min: 1,
+      span: 12
     },
     'trigger_config.timeoutOnFire': {
       label: 'Timeout On Fire (minutes)',
       display: 'text',
       type: 'number',
       step: 1,
+      default: 0,
       min: 0,
-      span: 8
+      span: 12
     },
   },
-  report: {
-    schedule: {
-      label: (<>Schedule (<a target="_blank" rel="noopener noreferrer" href="https://crontab.guru/">Build cron expression</a>)</>),
-      name: 'Schedule',
-      required: true,
-      placeholder: 'Minute Hour Day Month Weekday',
-      default: '* * * * *',
-      suffix: 'in UTC timezone'
-    },
-  },
+  report: triggerFormItems,
 };
 
 export default ({ form, initialValues, entity = 'alert' }) => {
@@ -128,14 +146,6 @@ export default ({ form, initialValues, entity = 'alert' }) => {
 
   const config = useMemo(
     () => {
-      const triggerFormItemsByEntity = {
-        trigger_divider: {
-          label: 'Trigger settings',
-          display: 'divider'
-        },
-        ...(triggerFormItems[entity] || {})
-      };
-
       const deliveryFormItemsByType = {
         delivery_divider: {
           label: 'Delivery settings',
@@ -146,7 +156,7 @@ export default ({ form, initialValues, entity = 'alert' }) => {
 
       const combinedFormItems = {
         ...commonFormItems,
-        ...triggerFormItemsByEntity,
+        ...(triggerFormItemsByEntity[entity] || {}),
         ...deliveryFormItemsByType,
       };
 

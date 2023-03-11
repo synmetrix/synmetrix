@@ -15,6 +15,7 @@ export const alertFragment = `
   trigger_config
   created_at
   updated_at
+  schedule
   user {
     display_name
   }
