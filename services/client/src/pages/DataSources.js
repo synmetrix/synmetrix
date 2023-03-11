@@ -14,6 +14,7 @@ import PageInfo from 'components/PageInfo';
 import Container from 'components/Container';
 
 import usePermissions from 'hooks/usePermissions';
+import genName from '../utils/genName';
 
 import iconDataSources from 'assets/images/icon_data_sources.svg';
 
@@ -97,6 +98,10 @@ const DataSources = ({ match }) => {
         onCancel={onModalClose}
         onSave={onModalClose}
         visible={showSQLInterfaceForm}
+        initialValues={{
+          username: genName(10),
+          password: genName(20),
+        }}
       />
       <DataSourcesTable
         editId={params?.rowId}

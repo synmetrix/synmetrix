@@ -19,44 +19,38 @@ const SQLInterfaceModal = (props) => {
   const { t } = useTranslation();
   const formRef = useRef(null);
 
-  const handleSave = () => {};
-  // const { currentTeamState } = useCurrentTeamState();
+  const {
+    mutations: {
+      createMutation, execCreateMutation,
+    },
+  } = useSQLCredentials({ pauseQueryAll: true });
 
-  // const {
-  //   mutations: {
-  //     createMutation, execCreateMutation,
-  //     checkMutation, execCheckMutation,
-  //     deleteMutation, execDeleteMutation,
-  //   },
-  // } = useSQLInterfaces({ pauseQueryAll: true });
+  const handleSave = () => {
+    const { form } = formRef.current;
+
+    form.validateFields((err, fieldsValue) => {
+      if (err) return;
+
+      execCreateMutation({ object: fieldsValue });
+    });
+  };
 
   const {
     loading,
-    dataSource,
     initialValues,
-    onSave,
-    onChange, 
-    onDelete: onDeleteAction,
+    onCancel,
   } = props;
 
 
-  // const onCreate = (res) => {
-  //   if (res) {
-  //     props.onCancel();
-  //   }
-  // };
-  
-  // useCheckResponse(createMutation, onCreate, {
-  //   successMessage: t('Source created')
-  // });
+  const onCreate = (res) => {
+    if (res) {
+      onCancel();
+    }
+  };
 
-  // const onCheck = (res) => {
-  //   if (res?.check_connection?.code === 'ok') {
-  //     message.success(res?.check_connection?.message);
-  //   } else if (res?.check_connection?.message) {
-  //     message.error(res?.check_connection?.message);
-  //   }
-  // };
+  useCheckResponse(createMutation, onCreate, {
+    successMessage: t('SQL Interface created')
+  });
 
   const modalFooter = (
     <Row type="flex">

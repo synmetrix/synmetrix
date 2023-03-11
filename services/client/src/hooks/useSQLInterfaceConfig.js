@@ -34,12 +34,9 @@ export default ({ form }) => {
     () => {
       const defaultConfig = { ...formItems };
       const datasourceSelectorValues = allDatasources?.map(ds => ({ [ds.name]: ds.id })) || [];
-  
+
       return produce(defaultConfig, draft => {
         draft.datasource_id.values = datasourceSelectorValues;
-  
-        draft.username.value = 'test';
-        draft.password.value = 'test';
       });
     },
     [allDatasources]
