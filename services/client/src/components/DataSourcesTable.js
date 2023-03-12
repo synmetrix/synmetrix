@@ -14,6 +14,7 @@ import useCurrentUserState from 'hooks/useCurrentUserState';
 
 import DataSourceModal from 'components/DataSourceModal';
 import TableList from 'components/TableList';
+import { CUBEJS_PUBLIC_URL } from '../hooks/useAppSettings';
 
 import formatDistanceToNow from '../utils/formatDistanceToNow';
 
@@ -144,6 +145,7 @@ const DataSourcesTable = ({ editId, onModalClose, onModalOpen }) => {
       title: 'Host',
       dataIndex: 'host',
       key: 'host',
+      render: () => CUBEJS_PUBLIC_URL,
     },
     {
       title: 'Username',

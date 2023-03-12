@@ -17,6 +17,7 @@ const __DEV__ = process.env.NODE_ENV !== 'production';
 const GRAPHQL_SERVER_URL = getEnv(process.env.GRAPHQL_SERVER_URL, 'http://localhost:8080/v1/graphql');
 const GRAPHQL_PLUS_SERVER_URL = getEnv(process.env.GRAPHQL_PLUS_SERVER_URL, 'http://localhost:8081');
 const GRAPHQL_WS_URL = getEnv(process.env.GRAPHQL_WS_URL, 'ws://localhost:8080/v1/graphql');
+const CUBEJS_PUBLIC_URL = getEnv(process.env.CUBEJS_PUBLIC_URL, 'http://localhost:4000');
 const AUTH_PREFIX = getEnv(process.env.AUTH_PREFIX, '/~');
 
 module.exports = {
@@ -107,6 +108,7 @@ module.exports = {
           GRAPHQL_PLUS_SERVER_URL: JSON.stringify(GRAPHQL_PLUS_SERVER_URL),
           GRAPHQL_WS_URL: JSON.stringify(GRAPHQL_WS_URL),
           AUTH_PREFIX: JSON.stringify(AUTH_PREFIX),
+          CUBEJS_PUBLIC_URL: JSON.stringify(CUBEJS_PUBLIC_URL),
           __DEV__: JSON.stringify(__DEV__),
         },
       }]);

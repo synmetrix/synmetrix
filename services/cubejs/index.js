@@ -12,6 +12,7 @@ import {
   findDataSource,
   getDataSources,
   buildSecurityContext,
+  findSqlCredentials,
 } from './src/utils/dataSourceHelpers.js';
 
 const { CubeStoreDriver } = CubeStoreDriverPackage;
@@ -228,6 +229,20 @@ const options = {
   }),
   pgSqlPort: 5432,
   sqlPort: 3306,
+  checkSqlAuth: async (req, user) => {
+    const sqlCredentials = await findSqlCredentials(user);
+
+    if (!sqlCredentials) {
+      throw new Error('Incorrect user name or password');
+    }
+
+    const securityContext = buildSecurityContext(sqlCredentials.datasource);
+
+    return {
+      password: sqlCredentials.password,
+      securityContext,
+    };
+  },
 };
 
 const cubejs = new ServerCore(options);

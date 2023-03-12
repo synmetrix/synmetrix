@@ -3,18 +3,22 @@ import JSum from 'jsum';
 import createMd5Hex from './md5Hex.js';
 import { fetchGraphQL } from './graphql.js';
 
+const sourceFragment = `
+  id
+  name
+  db_type
+  db_params
+  dataschemas {
+    id
+    name
+    code
+  }
+`;
+
 const sourceQuery = `
   query ($id: uuid!) {
     datasources_by_pk(id: $id) {
-      id
-      name
-      db_type
-      db_params
-      dataschemas {
-        id
-        name
-        code
-      }
+      ${sourceFragment}
     }
   }
 `;
@@ -22,15 +26,7 @@ const sourceQuery = `
 const sourcesQuery = `
   {
     datasources {
-      id
-      name
-      db_type
-      db_params
-      dataschemas {
-        id
-        name
-        code
-      }
+      ${sourceFragment}
     }
   }
 `;
@@ -57,9 +53,29 @@ const upsertSchemaMutation = `
   }
 `;
 
+const sqlCredentialsQuery = `
+  query ($username: String!) {
+    sql_credentials(where: {username: {_eq: $username}}) {
+      id
+      password
+      username
+      datasource {
+        ${sourceFragment}
+      }
+    }
+  }
+`;
+
 export const findDataSource = async ({ dataSourceId, authToken }) => {
   let res = await fetchGraphQL(sourceQuery, { id: dataSourceId }, authToken);
   res = res?.data?.datasources_by_pk;
+
+  return res;
+};
+
+export const findSqlCredentials = async (username) => {
+  let res = await fetchGraphQL(sqlCredentialsQuery, { username });
+  res = res?.data?.sql_credentials?.[0];
 
   return res;
 };
