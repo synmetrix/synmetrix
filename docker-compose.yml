@@ -39,7 +39,7 @@ services:
       - mlcraft_default
 
   cubestore:
-    image: cubejs/cubestore:v0.31.59
+    image: cubejs/cubestore:v0.32.4
     environment:
       - CUBESTORE_REMOTE_DIR=/cube/data
     volumes:

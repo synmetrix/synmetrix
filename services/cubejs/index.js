@@ -243,6 +243,8 @@ const options = {
       securityContext,
     };
   },
+  canSwitchSqlUser: () => false,
+  // cacheAndQueueDriver: 'cubestore',
 };
 
 const cubejs = new ServerCore(options);
