@@ -100,8 +100,9 @@ const DataSourceModal = (props) => {
         ...values,
         branches: {
           data: {
-            user_id: currentUser.id,
             name: 'main',
+            status: 'active',
+            user_id: currentUser.id,
           }
         }
       };

@@ -1,27 +1,27 @@
-import React, { useCallback, useEffect, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import PropTypes from 'prop-types';
 
 import { useTranslation } from 'react-i18next';
-import { Button, Icon, Select, Input, Divider } from 'antd';
+import { Icon, Select, Input, Divider, Button, Row, Col } from 'antd';
 
-import { useSetState, useLocalStorageState } from 'ahooks';
-
-import s from './SelectBranch.module.css';
+import MoreMenu from './MoreMenu';
 
 const { Option } = Select;
 
-const SelectBranch = ({ title, placeholder, onChange, onCreate, loading, branches }) => {
-  const [state, updateState,] = useLocalStorageState('currentBranch' ,{
-    defaultValue: {
-      selectOpen: false,
-      selectedBranch: null,
-      newBranchName: 'New branch',
-    },
+const SelectBranch = ({ onChange, onCreate, onSetDefault, branchStatus, currentBranchId, moreMenu, branches, loading }) => {
+  const { t } = useTranslation();
+
+  const isDefaultBranch = useMemo(() => branchStatus === 'active', [branchStatus]);
+
+  const [state, updateState] = useState({
+    selectOpen: false,
+    newBranchName: 'New branch',
   });
 
   const onSelect = useCallback((value) => {
     updateState(prev => ({ ...prev, selectedBranch: value, selectOpen: false }));
-  }, [updateState]);
+    onChange(value);
+  }, [updateState, onChange]);
 
   const onChangeInput = (e) => {
     updateState({ newBranchName: e.target.value });
@@ -32,90 +32,102 @@ const SelectBranch = ({ title, placeholder, onChange, onCreate, loading, branche
   };
 
   useEffect(() => {
-    if (state.selectedBranch) {
-      onChange(state.selectedBranch);
+    if ((!currentBranchId && branches) || (branches.length && !branches.find(b => b.id === currentBranchId))) {
+      onChange(branches?.[0]?.id);
     }
-  }, [state.selectedBranch, onChange]);
-
-  useEffect(() => {
-    if (!state.selectedBranch && branches) {
-      updateState(prev => ({ ...prev, selectedBranch: branches?.[0]?.id }));
-    }
-  }, [state.selectedBranch, branches, updateState]);
+  }, [currentBranchId, branches, onChange]);
 
   const options = useMemo(() => branches?.map((item) => (
     <Option 
       key={item.id}
-      className={item.status === 'active' && s.defaultBranch}
     >
-      {item.name}
+      {item.name}{item.status === 'active' && ' - default'}
     </Option>
   )), [branches]);
 
   return (
-    <div>
-      <div>
-        {title && title}
+    <div style={{ padding: '10px' }}>
+      <div style={{ paddingBottom: '10px' }}>
+        {t('Branch')}
       </div>
-      <div onClick={() => updateState(prev => ({ ...prev, selectOpen: !state.selectOpen }))}>
-        <Select
-          style={{ width: 240, cursor: 'pointer' }}
-          placeholder={placeholder}
-          open={state.selectOpen}
-          loading={loading}
-          onSelect={onSelect}
-          defaultValue={state.selectedBranch}
-          dropdownRender={menu => (
-            <div
-              onMouseLeave={() => updateState(prev => ({ ...prev, selectOpen: false }))}
-              style={{  marginTop: '-50px', paddingTop: '50px', cursor: 'pointer'  }}
-            >
-              {menu}
-              <Divider style={{ margin: '0' }} />
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '5px',
+        }}
+        onClick={() => updateState(prev => ({ ...prev, selectOpen: !state.selectOpen }))}
+      >
+        <div style={{ flex: 1 }}>
+          <Select
+            style={{ width: '100%', cursor: 'pointer' }}
+            placeholder={t('Select branch')}
+            open={state.selectOpen}
+            loading={loading}
+            onSelect={onSelect}
+            defaultValue={currentBranchId}
+            dropdownRender={menu => (
               <div
-                style={{ padding: '4px 8px' }}
+                onMouseLeave={() => updateState(prev => ({ ...prev, selectOpen: false }))}
+                style={{  marginTop: '-50px', paddingTop: '50px', cursor: 'pointer'  }}
               >
-                <Input
-                  value={state.newBranchName}
-                  onChange={onChangeInput}
-                  onClick={e => e.stopPropagation()}
-                  // disabled={createPinnedItemMutation.fetching}
-                  maxLength={20}
-                  addonAfter={(
-                    <Icon
-                      onClick={onCreateBranch}
-                      type={loading ? 'loading' : 'plus'}
-                    />
-                  )}
-                />
+                {menu}
+                <Divider style={{ margin: '0' }} />
+                <div
+                  style={{ padding: '4px 8px' }}
+                >
+                  <Input
+                    value={state.newBranchName}
+                    onChange={onChangeInput}
+                    onClick={e => e.stopPropagation()}
+                    disabled={loading}
+                    maxLength={20}
+                    addonAfter={(
+                      <Icon
+                        onClick={onCreateBranch}
+                        type={loading ? 'loading' : 'plus'}
+                      />
+                    )}
+                  />
+                </div>
               </div>
-            </div>
-          )}
-        >
-          {options}
-        </Select>
+            )}
+          >
+            {options}
+          </Select>
+        </div>
+        <MoreMenu menuNodes={moreMenu} />
       </div>
+      {!isDefaultBranch && (
+        <div style={{ margin: '10px 0' }}>
+          <Button onClick={onSetDefault}>{t('Set as default')}</Button>
+        </div>
+      )}
     </div>
   );
 };
 
 
 SelectBranch.propTypes = {
-  title: PropTypes.string,
-  placeholder: PropTypes.string,
   onChange: PropTypes.func,
   onCreate: PropTypes.func,
+  onSetDefault: PropTypes.func,
+  branchStatus: PropTypes.string,
+  moreMenu: PropTypes.array,
   loading: PropTypes.bool,
   branches: PropTypes.array,
+  currentBranchId: PropTypes.string,
 };
 
 SelectBranch.defaultProps = {
-  title: null,
-  placeholder: null,
   onChange: () => {},
   onCreate: () => {},
+  onSetDefault: () => {},
+  branchStatus: null,
+  moreMenu: [],
   loading: false,
   branches: [],
+  currentBranchId: null,
 };
 
 export default SelectBranch;

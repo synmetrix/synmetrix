@@ -103,7 +103,7 @@ const newBranchMutation = `
   }
 `;
 
-const newCommitMutation = `
+const newVersionMutation = `
   mutation ($object: versions_insert_input!) {
     insert_versions_one(object: $object) {
       id
@@ -170,7 +170,7 @@ export default (props = {}) => {
   const [exportMutation, execExportMutation] = useMutation(exportDataMutation, { role });
   const [batchMutation, execBatchMutation] = useMutation(newBatchSchemaMutation, { role });
   const [branchMutation, execBranchMutation] = useMutation(newBranchMutation, { role });
-  const [commitMutation, execCommitMutation] = useMutation(newCommitMutation, { role });
+  const [versionMutation, execVersionMutation] = useMutation(newVersionMutation, { role });
   const [setDefaultMutation, execSetDefaultMutation] = useMutation(setDefaultBranchMutation, { role });
 
   const [allData, execQueryAll] = useQuery({
@@ -227,8 +227,8 @@ export default (props = {}) => {
       execBatchMutation,
       branchMutation,
       execBranchMutation,
-      commitMutation,
-      execCommitMutation,
+      versionMutation,
+      execVersionMutation,
       setDefaultMutation,
       execSetDefaultMutation,
     },

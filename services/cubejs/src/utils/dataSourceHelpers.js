@@ -14,8 +14,8 @@ const sourceQuery = `
 `;
 
 const allSchemasQuery = `
-  query ($offset: Int, $limit: Int, $where: branches_bool_exp, $order_by: [versions_order_by!]) {
-    branches(where: $where) {
+  query ($order_by: [versions_order_by!], $datasource_id: uuid) {
+    branches(limit: 1, where: {status: {_eq: "active"}, datasource_id: {_eq: $datasource_id}}) {
       versions(limit: 1, order_by: $order_by) {
         dataschemas {
           id
@@ -28,7 +28,7 @@ const allSchemasQuery = `
 `;
 
 
-const upsertCommitMutation = `
+const upsertVersionMutation = `
   mutation ($object: versions_insert_input!) {
     insert_versions_one(
       object: $object
@@ -46,9 +46,9 @@ export const findDataSource = async ({ dataSourceId, authToken }) => {
 };
 
 export const createDataSchema = async (object) => {
-  const { authToken, ...commit } = object;
+  const { authToken, ...version } = object;
 
-  let res = await fetchGraphQL(upsertCommitMutation, { object: commit }, authToken);
+  let res = await fetchGraphQL(upsertVersionMutation, { object: version }, authToken);
   res = res?.data?.insert_dataschemas_one;
 
   return res;
@@ -59,23 +59,11 @@ export const findDataSchemas = async (args) => {
     order_by: {
       created_at: 'desc',
     },
-    where: {
-      status: {
-        _eq: 'active',
-      },
-    },
+    datasource_id: args?.dataSourceId,
   };
 
-  if (args.dataSourceId) {
-    vars = set('where.datasource_id._eq', args.dataSourceId, vars);
-  }
-
-  if (args.branch) {
-    vars = set('where.branch._eq', args.branch, vars);
-  }
-
   let dataSchemas = await fetchGraphQL(allSchemasQuery, vars, args.authToken);
-  dataSchemas = dataSchemas?.data?.branches?.[0]?.versions?.[0]?.dataschemas;
+  dataSchemas = dataSchemas?.data?.branches?.[0]?.versions?.[0]?.dataschemas || [];
 
   return dataSchemas;
 };

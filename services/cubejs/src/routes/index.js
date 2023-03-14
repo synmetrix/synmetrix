@@ -113,7 +113,7 @@ export default ({ basePath, setupAuthInfo, cubejs }) => {
       let files = scaffoldingTemplate.generateFilesByTableNames(normalizedTables, { dbType, dialect: dialectModule });
 
       const dataSchemas = await findDataSchemas({
-        dataSourceId,
+        branchId,
         authToken,
       });
 
@@ -135,7 +135,6 @@ export default ({ basePath, setupAuthInfo, cubejs }) => {
         datasource_id: dataSourceId,
         name: file.fileName,
         code: file.content,
-        branch_id: branchId,
         user_id: userId,
       }));
 
