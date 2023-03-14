@@ -6,7 +6,7 @@
     "start.dev": "nodemon -L --inspect=0.0.0.0  --max-old-space-size=8096 --max-http-header-size=32768"
   },
   "dependencies": {
-    "@cubejs-backend/api-gateway": "^0.32.4",
+    "@cubejs-backend/api-gateway": "^0.32.5",
     "@cubejs-backend/athena-driver": "^0.32.4",
     "@cubejs-backend/bigquery-driver": "^0.32.4",
     "@cubejs-backend/clickhouse-driver": "^0.32.2",
@@ -16,7 +16,7 @@
     "@cubejs-backend/mysql-driver": "^0.32.4",
     "@cubejs-backend/postgres-driver": "^0.32.4",
     "@cubejs-backend/query-orchestrator": "^0.32.4",
-    "@cubejs-backend/server-core": "^0.32.4",
+    "@cubejs-backend/server-core": "^0.32.5",
     "body-parser": "^1.19.0",
     "express": "^4.18.2",
     "ioredis": "^5.3.0",

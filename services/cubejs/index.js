@@ -4,7 +4,6 @@ import express from 'express';
 import jwt from 'jsonwebtoken';
 
 import DriverDependencies from '@cubejs-backend/server-core/dist/src/core/DriverDependencies.js';
-import CubeStoreDriverPackage from '@cubejs-backend/cubestore-driver';
 
 import routes from './src/routes/index.js';
 import { 
@@ -15,7 +14,6 @@ import {
   findSqlCredentials,
 } from './src/utils/dataSourceHelpers.js';
 
-const { CubeStoreDriver } = CubeStoreDriverPackage;
 const { CUBEJS_SECRET } = process.env;
 
 const port = parseInt(process.env.PORT, 10) || 4000;
@@ -223,12 +221,16 @@ const options = {
   scheduledRefreshTimer: 60,
   scheduledRefreshContexts,
   externalDbType: 'cubestore',
-  externalDriverFactory: () => new CubeStoreDriver({
+  externalDriverFactory: async () => ServerCore.createDriver('cubestore', {
     host: 'cubestore',
     port: 3030
   }),
+  cacheAndQueueDriver: 'cubestore',
+
+  // sql server
   pgSqlPort: 5432,
   sqlPort: 3306,
+  canSwitchSqlUser: () => false,
   checkSqlAuth: async (req, user) => {
     const sqlCredentials = await findSqlCredentials(user);
 
@@ -243,8 +245,6 @@ const options = {
       securityContext,
     };
   },
-  canSwitchSqlUser: () => false,
-  // cacheAndQueueDriver: 'cubestore',
 };
 
 const cubejs = new ServerCore(options);
