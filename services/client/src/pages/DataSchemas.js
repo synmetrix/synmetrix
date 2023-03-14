@@ -2,7 +2,7 @@ import React, { useMemo, useEffect, useState, useRef } from 'react';
 import PropTypes from 'prop-types';
 
 import equals from 'utils/equals';
-import { useTrackedEffect } from 'ahooks';
+import { useTrackedEffect, useLocalStorageState } from 'ahooks';
 import { useTranslation } from 'react-i18next';
 import { Tabs, Divider, message } from 'antd';
 
@@ -14,6 +14,7 @@ import { getOr } from 'unchanged';
 
 import withSizes from 'react-sizes';
 import compose from 'utils/compose';
+import getChecksum from 'utils/dataschemasChecksum';
 
 import useSources from 'hooks/useSources';
 import useSchemas from 'hooks/useSchemas';
@@ -34,9 +35,9 @@ import GenDataSchemasForm from 'components/GenDataSchemasForm';
 import IdeConsole from 'components/IdeConsole';
 import ErrorFound from 'components/ErrorFound';
 import VersionsModal from '../components/VersionsModal';
-import BranchesMenu from '../components/BranchesMenu';
 
 import s from './DataSchemas.module.css';
+import SelectBranch from '../components/SelectBranch';
 
 const reservedSlugs = ['sqlrunner', 'genschema'];
 
@@ -51,14 +52,19 @@ const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
 
   const basePath = withAuthPrefix('/schemas');
   const [isConsoleOpen, toggleConsole] = useState(false);
-  const [currentBranchId, setCurrentBranchId] = useState(null);
   const [error, setError] = useState(null);
-
+  
   const { params = {} } = match;
-
+  
   const [dataSourceId, slug] = useMemo(() => getOr('', 'rest', params).split('/'),
     [params]
   );
+
+  const [currentBranchId, setCurrentBranchId,] = useLocalStorageState(`${dataSourceId}:currentBranch` ,{
+    defaultValue: {
+      selectedBranch: null,
+    },
+  });
 
   const onModalClose = () => setLocation(`${basePath}/${dataSourceId}`);
   const dataSchemaName = reservedSlugs.indexOf(slug) === -1 && slug || null;
@@ -92,8 +98,8 @@ const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
       execBatchMutation,
       branchMutation,
       execBranchMutation,
-      commitMutation,
-      execCommitMutation,
+      versionMutation,
+      execVersionMutation,
       setDefaultMutation,
       execSetDefaultMutation,
     },
@@ -151,7 +157,7 @@ const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
     }
   });
 
-  const currentBranch = useMemo(() => all.find(branch => branch.id === currentBranchId), [all, currentBranchId]);
+  const currentBranch = useMemo(() => (all || []).find(branch => branch.id === currentBranchId), [all, currentBranchId]);
   const lastVersion = useMemo(() => currentBranch?.versions?.[0] || [], [currentBranch]);
   const dataschemas = useMemo(() => lastVersion?.dataschemas || [], [lastVersion]);
 
@@ -218,12 +224,12 @@ const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
     successMessage: t('Branch created')
   });
 
-  useCheckResponse(commitMutation, (res) => {
+  useCheckResponse(versionMutation, (res) => {
     if (res) {
       execQueryAll();
     }
   }, {
-    successMessage: t('Commit created')
+    successMessage: t('Version created')
   });
 
   useCheckResponse(setDefaultMutation, () => {}, {
@@ -354,12 +360,12 @@ const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
       path: `${basePath}/${dataSourceId}/versions`,
       title: t('Show versions'),
     },
-    {
+    all.length > 1 && {
       path: `${basePath}/${dataSourceId}`,
       title: t('Remove branch'),
       onClick: () => execDeleteMutation({ id: currentBranchId }),
     },
-  ];
+  ].filter(Boolean);
 
   const onGenSubmit = async (values) => {
     const tables = Object.keys(values).filter(v => values[v]).map(v => ({
@@ -403,7 +409,7 @@ const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
     execQueryAll({ requestPolicy: 'cache-and-network' });
   };
 
-  const createNewCommit = async (checksum, data) => {
+  const createNewVersion = async (checksum, data) => {
     const preparedDataschemas = data.map((schema) => {
       const updatedData = {
         ...schema,
@@ -414,7 +420,7 @@ const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
       return updatedData;
     });
 
-    const commitData = {
+    const versionData = {
       checksum,
       branch_id: currentBranchId,
       datasource_id: dataSourceId,
@@ -423,7 +429,7 @@ const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
       },
     };
 
-    await execCommitMutation({ object: commitData });
+    await execVersionMutation({ object: versionData });
     await execQueryAll();
   };
 
@@ -436,22 +442,26 @@ const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
       ...values,
     };
 
-    let checksum = newDataschemas.reduce((acc, cur) => acc + cur.code, '');
-    checksum = md5(checksum);
+    const checksum = getChecksum(newDataschemas);
 
     if (lastVersion.checksum === checksum) {
       message.info('There is no changes.');
       return false;
     }
 
-    await createNewCommit(checksum, newDataschemas);
+    await createNewVersion(checksum, newDataschemas);
 
     return newDataschemas;
   };
 
   const onClickDelete = async id => {
-    await execDeleteMutation({ id });
-    execQueryAll({ requestPolicy: 'cache-and-network' });
+    const newDataschemas = [...lastVersion.dataschemas];
+    const deleteSchemaIndex = newDataschemas.findIndex(schema => schema.id === id);
+    newDataschemas.splice(deleteSchemaIndex, 1);
+
+    const checksum = getChecksum(newDataschemas);
+
+    await createNewVersion(checksum, newDataschemas);
   };
 
   const onCodeSave = (id, code) => {
@@ -466,10 +476,6 @@ const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
       query,
       limit,
     });
-  };
-
-  const onChangeBranch = (value) => {
-    setCurrentBranchId(value);
   };
 
   const onCreateBranch = async (name) => {
@@ -532,7 +538,7 @@ const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
       content={(
         <VersionsModal 
           versions={currentBranch?.versions}
-          onRestore={createNewCommit}
+          onRestore={createNewVersion}
         />
       )}
       footer={null}
@@ -542,15 +548,17 @@ const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
         <div className={s.sidebar}>
           <Loader spinning={updateMutation.fetching}>
             <>
-              <BranchesMenu
+              <SelectBranch
                 branches={all}
                 moreMenu={branchMenu}
+                currentBranchId={currentBranchId}
                 branchStatus={currentBranch?.status}
-                onChange={onChangeBranch}
+                dataSourceId={dataSourceId}
+                onChange={setCurrentBranchId}
                 onCreate={onCreateBranch}
                 onSetDefault={onSetDefault}
               />
-              <Divider style={{ margin: '5px 0' }} />
+              <Divider style={{ margin: '0' }} />
               <IdeSchemasList
                 schemas={dataschemas}
                 onItemClick={openSchema}
