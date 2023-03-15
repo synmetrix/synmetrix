@@ -4,7 +4,7 @@ import { useSetState, useTrackedEffect } from 'ahooks';
 
 
 import { useTranslation } from 'react-i18next';
-import { Row, Col } from 'antd';
+import { Row, Col, Button } from 'antd';
 
 import equals from 'utils/equals';
 import useSources from 'hooks/useSources';
@@ -14,7 +14,8 @@ import useCurrentUserState from 'hooks/useCurrentUserState';
 
 import DataSourceModal from 'components/DataSourceModal';
 import TableList from 'components/TableList';
-import { CUBEJS_PUBLIC_URL } from '../hooks/useAppSettings';
+import { CUBEJS_MYSQL_API_URL, CUBEJS_PG_API_URL } from '../hooks/useAppSettings';
+import useSQLCredentials from '../hooks/useSQLCredentials';
 
 import formatDistanceToNow from '../utils/formatDistanceToNow';
 
@@ -27,6 +28,13 @@ const DataSourcesTable = ({ editId, onModalClose, onModalOpen }) => {
 
   const [state, setState] = useSetState(initModal(editId));
   const { currentUserState: currentUser } = useCurrentUserState();
+
+  const { 
+    mutations: {
+      deleteMutation: deleteSqlCredential,
+      execDeleteMutation: execDeleteSqlCredential,
+    }
+  } = useSQLCredentials();
 
   useEffect(
     () => setState(initModal(editId)),
@@ -109,6 +117,10 @@ const DataSourcesTable = ({ editId, onModalClose, onModalOpen }) => {
     successMessage: t('Saved')
   });
 
+  useCheckResponse(deleteSqlCredential, () => { }, {
+    successMessage: t('Deleted')
+  });
+
   const columns = [
     {
       title: 'Name',
@@ -142,10 +154,16 @@ const DataSourcesTable = ({ editId, onModalClose, onModalOpen }) => {
 
   const expandedTableColumns = [
     {
-      title: 'Host',
-      dataIndex: 'host',
-      key: 'host',
-      render: () => CUBEJS_PUBLIC_URL,
+      title: 'PG Host',
+      dataIndex: 'pg_host',
+      key: 'pg_host',
+      render: () => CUBEJS_MYSQL_API_URL,
+    },
+    {
+      title: 'MySQL Host',
+      dataIndex: 'mysql_host',
+      key: 'mysql_host',
+      render: () => CUBEJS_PG_API_URL,
     },
     {
       title: 'Username',
@@ -165,6 +183,17 @@ const DataSourcesTable = ({ editId, onModalClose, onModalOpen }) => {
       render: (_, record) => {
         const createdAt = formatDistanceToNow(record.created_at);
         return createdAt;
+      },
+    },
+    {
+      title: 'Action',
+      dataIndex: 'action',
+      render: (_, record) => {
+        return (
+          <Button style={{ padding: 0 }} type="link" onClick={() => execDeleteSqlCredential({ id: record.id })}>
+            Delete
+          </Button>
+        );
       },
     },
   ];

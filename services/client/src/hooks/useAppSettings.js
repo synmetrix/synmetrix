@@ -1,7 +1,8 @@
 export const AUTH_PREFIX = window.AUTH_PREFIX || process.env.AUTH_PREFIX;
 export const GRAPHQL_SERVER_URL = window.GRAPHQL_SERVER_URL || process.env.GRAPHQL_SERVER_URL;
 export const GRAPHQL_PLUS_SERVER_URL = window.GRAPHQL_PLUS_SERVER_URL || process.env.GRAPHQL_PLUS_SERVER_URL;
-export const CUBEJS_PUBLIC_URL = window.CUBEJS_PUBLIC_URL || process.env.CUBEJS_PUBLIC_URL;
+export const CUBEJS_MYSQL_API_URL = window.CUBEJS_MYSQL_API_URL || process.env.CUBEJS_MYSQL_API_URL;
+export const CUBEJS_PG_API_URL = window.CUBEJS_PG_API_URL || process.env.CUBEJS_PG_API_URL;
 
 const getWsUrl = (path) => {
   // if url contains ws:// already

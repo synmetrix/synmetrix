@@ -1,5 +1,3 @@
-// import { useEffect, useMemo } from 'react';
-// import useQuery from './useQuery';
 import useMutation from './useMutation';
 
 const newSqlCredentialMutation = `
@@ -10,26 +8,25 @@ const newSqlCredentialMutation = `
   }
 `;
 
-// const editSqlCredentialQuery = `
-//   query ($id: uuid!, $offset: Int, $limit: Int) {
-//     sql_credentials_by_pk(id: $id) {
-//       id
-//       datasource_id
-//       user_id
-//       username
-//       password
-//     }
-//   }
-// `;
+const delSqlCredentialMutation = `
+  mutation ($id: uuid!) {
+    delete_sql_credentials_by_pk(id: $id) {
+      id
+    }
+  }
+`;
 
 const role = 'user';
 export default () => {
   const [createMutation, execCreateMutation] = useMutation(newSqlCredentialMutation, { role });
+  const [deleteMutation, execDeleteMutation] = useMutation(delSqlCredentialMutation, { role });
 
   return {
     mutations: {
       createMutation,
       execCreateMutation,
+      deleteMutation,
+      execDeleteMutation,
     },
   };
 };
