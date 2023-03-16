@@ -20,10 +20,7 @@ const newBatchSchemaMutation = `
   mutation ($objects: [dataschemas_insert_input!]!) {
     insert_dataschemas(
       objects: $objects, 
-      on_conflict: {
-        constraint: dataschemas_datasource_id_branch_name_key, 
-        update_columns: [code]
-      }
+      on_conflict: {}
     ) {
       affected_rows
     }
@@ -53,17 +50,6 @@ const allSchemasQuery = `
   }
 `;
 
-const editSchemaMutation = `
-  mutation (
-    $pk_columns: dataschemas_pk_columns_input!,
-    $_set: dataschemas_set_input!
-  ) {
-    update_dataschemas_by_pk(pk_columns: $pk_columns, _set: $_set) {
-      id
-    }
-  }
-`;
-
 const delSchemaMutation = `
   mutation ($id: uuid!) {
     update_branches_by_pk(_set: {status: "arhived"}, pk_columns: {id: $id}) {
@@ -88,17 +74,9 @@ const allSchemasSubscription = `
 `;
 
 const exportDataMutation = `
-  mutation ($team_id: String, $branch: String) {
-    export_data_models(team_id: $team_id, branch: $branch) {
+  mutation ($branch_id: String) {
+    export_data_models(branch_id: $branch_id) {
       download_url
-    }
-  }
-`;
-
-const newBranchMutation = `
-  mutation ($object: branches_insert_input!) {
-    insert_branches_one(object: $object) {
-      id
     }
   }
 `;
@@ -156,7 +134,7 @@ const handleSubscription = (_, response) => response;
 
 const role = 'user';
 export default (props = {}) => {
-  const { pauseQueryAll, pagination = {}, params = {}, disableSubscription = true, branchId } = props;
+  const { pauseQueryAll, pagination = {}, params = {}, disableSubscription = true } = props;
   const { currentTeamState } = useCurrentTeamState();
 
   const reqParams = {
@@ -165,11 +143,9 @@ export default (props = {}) => {
   };
 
   const [createMutation, execCreateMutation] = useMutation(newSchemaMutation, { role });
-  const [updateMutation, execUpdateMutation] = useMutation(editSchemaMutation, { role });
   const [deleteMutation, execDeleteMutation] = useMutation(delSchemaMutation, { role });
   const [exportMutation, execExportMutation] = useMutation(exportDataMutation, { role });
   const [batchMutation, execBatchMutation] = useMutation(newBatchSchemaMutation, { role });
-  const [branchMutation, execBranchMutation] = useMutation(newBranchMutation, { role });
   const [versionMutation, execVersionMutation] = useMutation(newVersionMutation, { role });
   const [setDefaultMutation, execSetDefaultMutation] = useMutation(setDefaultBranchMutation, { role });
 
@@ -219,14 +195,10 @@ export default (props = {}) => {
       execCreateMutation,
       deleteMutation,
       execDeleteMutation,
-      updateMutation,
-      execUpdateMutation,
       exportMutation,
       execExportMutation,
       batchMutation,
       execBatchMutation,
-      branchMutation,
-      execBranchMutation,
       versionMutation,
       execVersionMutation,
       setDefaultMutation,

@@ -8,7 +8,7 @@ import MoreMenu from './MoreMenu';
 
 const { Option } = Select;
 
-const SelectBranch = ({ onChange, onCreate, onSetDefault, branchStatus, currentBranchId, moreMenu, branches, loading }) => {
+const SelectBranch = ({ onChange, onCreate, onSetDefault, branchStatus, currentBranchId, curVersion, moreMenu, branches, loading }) => {
   const { t } = useTranslation();
 
   const isDefaultBranch = useMemo(() => branchStatus === 'active', [branchStatus]);
@@ -44,9 +44,9 @@ const SelectBranch = ({ onChange, onCreate, onSetDefault, branchStatus, currentB
       {item.name}{item.status === 'active' && ' - default'}
     </Option>
   )), [branches]);
-
+  console.log(currentBranchId);
   return (
-    <div style={{ padding: '10px' }}>
+    <div style={{ padding: '10px', maxWidth: '100%' }}>
       <div style={{ paddingBottom: '10px' }}>
         {t('Branch')}
       </div>
@@ -56,9 +56,11 @@ const SelectBranch = ({ onChange, onCreate, onSetDefault, branchStatus, currentB
           alignItems: 'center',
           gap: '5px',
         }}
-        onClick={() => updateState(prev => ({ ...prev, selectOpen: !state.selectOpen }))}
       >
-        <div style={{ flex: 1 }}>
+        <div 
+          style={{ flex: 1 }}
+          onClick={() => updateState(prev => ({ ...prev, selectOpen: !state.selectOpen }))}
+        >
           <Select
             style={{ width: '100%', cursor: 'pointer' }}
             placeholder={t('Select branch')}
@@ -98,6 +100,11 @@ const SelectBranch = ({ onChange, onCreate, onSetDefault, branchStatus, currentB
         </div>
         <MoreMenu menuNodes={moreMenu} />
       </div>
+      {curVersion && (
+        <div style={{ paddingTop: '5px' }}>
+          {t('Version')}: {curVersion}
+        </div>
+      )}
       {!isDefaultBranch && (
         <div style={{ margin: '10px 0' }}>
           <Button onClick={onSetDefault}>{t('Set as default')}</Button>
@@ -117,6 +124,7 @@ SelectBranch.propTypes = {
   loading: PropTypes.bool,
   branches: PropTypes.array,
   currentBranchId: PropTypes.string,
+  curVersion: PropTypes.string,
 };
 
 SelectBranch.defaultProps = {
@@ -128,6 +136,7 @@ SelectBranch.defaultProps = {
   loading: false,
   branches: [],
   currentBranchId: null,
+  curVersion: null,
 };
 
 export default SelectBranch;

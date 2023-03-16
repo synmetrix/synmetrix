@@ -14,7 +14,7 @@ import { getOr } from 'unchanged';
 
 import withSizes from 'react-sizes';
 import compose from 'utils/compose';
-import getChecksum from 'utils/dataschemasChecksum';
+import calcChecksum from 'utils/dataschemasChecksum';
 
 import useSources from 'hooks/useSources';
 import useSchemas from 'hooks/useSchemas';
@@ -43,7 +43,7 @@ const reservedSlugs = ['sqlrunner', 'genschema'];
 
 const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
   const { t } = useTranslation();
-  const { currentTeamState: currentTeam } = useCurrentTeamState();
+  // const { currentTeamState: currentTeam } = useCurrentTeamState();
   const { currentUserState } = useCurrentUserState();
   const currentUser = currentUserState?.users_by_pk;
 
@@ -60,11 +60,7 @@ const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
     [params]
   );
 
-  const [currentBranchId, setCurrentBranchId,] = useLocalStorageState(`${dataSourceId}:currentBranch` ,{
-    defaultValue: {
-      selectedBranch: null,
-    },
-  });
+  const [currentBranchId, setCurrentBranchId,] = useLocalStorageState(`${dataSourceId}:currentBranch` , null);
 
   const onModalClose = () => setLocation(`${basePath}/${dataSourceId}`);
   const dataSchemaName = reservedSlugs.indexOf(slug) === -1 && slug || null;
@@ -89,13 +85,11 @@ const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
       createMutation,
       execCreateMutation,
       updateMutation,
-      execUpdateMutation,
       deleteMutation,
       execDeleteMutation,
       exportMutation,
       execExportMutation,
       batchMutation,
-      execBatchMutation,
       branchMutation,
       execBranchMutation,
       versionMutation,
@@ -158,8 +152,8 @@ const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
   });
 
   const currentBranch = useMemo(() => (all || []).find(branch => branch.id === currentBranchId), [all, currentBranchId]);
-  const lastVersion = useMemo(() => currentBranch?.versions?.[0] || [], [currentBranch]);
-  const dataschemas = useMemo(() => lastVersion?.dataschemas || [], [lastVersion]);
+  const currentVersion = useMemo(() => currentBranch?.versions?.[0] || [], [currentBranch]);
+  const dataschemas = useMemo(() => currentVersion?.dataschemas || [], [currentVersion]);
 
   const schemaIdToCode = useMemo(() => dataschemas.reduce((acc, curr) => {
     acc[curr.id] = { name: curr.name, code: curr.code };
@@ -272,8 +266,7 @@ const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
 
   const exportData = () => {
     execExportMutation({
-      team_id: currentTeam?.id,
-      // branch,
+      branch_id: currentBranchId,
     });
   };
 
@@ -281,61 +274,6 @@ const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
 
   const uploadFile = () => {
     inputFile.current.click();
-  };
-
-  const onUploadFile = async ({ target }) => {
-    const file = target.files?.[0];
-
-    if (file?.type !== 'application/zip') {
-      message.error('Format is unsupported.');
-      return false;
-    }
-
-    const zip = new JSZip();
-    
-    try {
-      await zip.loadAsync(file);
-    } catch (err) {
-      message.error('Bad archive.');
-      return false;
-    }
-
-    if (!zip?.files?.['meta.yaml']) {
-      message.error('Wrong archive.');
-      return false;
-    }
-
-    const yamlFile = await zip.file('meta.yaml').async('string');
-    const zipMeta = load(yamlFile);
-    zipMeta.schemas = zipMeta.schemas.reduce((acc, cur) => ({ ...acc, ...cur }), {});
-
-    zip.remove('meta.yaml');
-
-    let newSchemas = await Promise.all(Object.entries(zip.files || []).map(async ([name, rawData]) => {
-      const content = await rawData.async('string');
-      const checksum = md5(`${name}-${content}`);
-
-      if (zipMeta?.schemas?.[name]?.checksum !== checksum) {
-        message.warning(`Checksum of file "${name}" do not match. Skipped.`);
-        return false;
-      }
-
-      return {
-        name,
-        branch: zipMeta?.branch,
-        code: content,
-        user_id: currentUser?.id,
-        datasource_id: dataSourceId,
-      };
-    }));
-
-    newSchemas = newSchemas.filter(Boolean);
-
-    if (newSchemas.length) {
-      await execBatchMutation({ objects: newSchemas });
-    }
-
-    return newSchemas;
   };
 
   const ideMenu = [
@@ -433,8 +371,61 @@ const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
     await execQueryAll();
   };
 
+  const onUploadFile = async ({ target }) => {
+    const file = target.files?.[0];
+
+    if (file?.type !== 'application/zip') {
+      message.error('Format is unsupported.');
+      return false;
+    }
+
+    const zip = new JSZip();
+    
+    try {
+      await zip.loadAsync(file);
+    } catch (err) {
+      message.error('Bad archive.');
+      return false;
+    }
+
+    if (!zip?.files?.['meta.yaml']) {
+      message.error('Wrong archive.');
+      return false;
+    }
+
+    const yamlFile = await zip.file('meta.yaml').async('string');
+    const zipMeta = load(yamlFile);
+    zipMeta.schemas = zipMeta.schemas.reduce((acc, cur) => ({ ...acc, ...cur }), {});
+
+    zip.remove('meta.yaml');
+
+    let newSchemas = await Promise.all(Object.entries(zip.files || []).map(async ([name, rawData]) => {
+      const content = await rawData.async('string');
+      const checksum = md5(`${name}-${content}`);
+
+      if (zipMeta?.schemas?.[name]?.checksum !== checksum) {
+        message.warning(`Checksum of file "${name}" do not match. Skipped.`);
+        return false;
+      }
+
+      return {
+        name,
+        code: content,
+      };
+    }));
+
+    newSchemas = newSchemas.filter(Boolean);
+    const schemasChecksum = calcChecksum(newSchemas);
+
+    if (newSchemas.length) {
+      await createNewVersion(schemasChecksum, newSchemas);
+    }
+
+    return newSchemas;
+  };
+
   const onClickUpdate = async (editId, values) => {
-    const newDataschemas = [...lastVersion.dataschemas];
+    const newDataschemas = [...currentVersion.dataschemas];
     const editSchemaIndex = newDataschemas.findIndex(schema => schema.id === editId);
     
     newDataschemas[editSchemaIndex] = {
@@ -442,9 +433,9 @@ const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
       ...values,
     };
 
-    const checksum = getChecksum(newDataschemas);
+    const checksum = calcChecksum(newDataschemas);
 
-    if (lastVersion.checksum === checksum) {
+    if (currentVersion.checksum === checksum) {
       message.info('There is no changes.');
       return false;
     }
@@ -455,11 +446,11 @@ const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
   };
 
   const onClickDelete = async id => {
-    const newDataschemas = [...lastVersion.dataschemas];
+    const newDataschemas = [...currentVersion.dataschemas];
     const deleteSchemaIndex = newDataschemas.findIndex(schema => schema.id === id);
     newDataschemas.splice(deleteSchemaIndex, 1);
 
-    const checksum = getChecksum(newDataschemas);
+    const checksum = calcChecksum(newDataschemas);
 
     await createNewVersion(checksum, newDataschemas);
   };
@@ -479,7 +470,7 @@ const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
   };
 
   const onCreateBranch = async (name) => {
-    const newSchemas = lastVersion.dataschemas.map(schema => ({
+    const newSchemas = currentVersion.dataschemas.map(schema => ({
       name: schema.name,
       code: schema.code,
       datasource_id: dataSourceId,
@@ -492,7 +483,7 @@ const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
       datasource_id: dataSourceId,
       versions: {
         data: {
-          checksum: lastVersion.checksum,
+          checksum: currentVersion.checksum,
           datasource_id: dataSourceId,
           dataschemas: {
             data: newSchemas,
@@ -557,6 +548,7 @@ const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
                 onChange={setCurrentBranchId}
                 onCreate={onCreateBranch}
                 onSetDefault={onSetDefault}
+                curVersion={currentVersion?.checksum}
               />
               <Divider style={{ margin: '0' }} />
               <IdeSchemasList

@@ -31,9 +31,9 @@ const VersionssModal = ({ versions, onRestore }) => {
 
   const versionColumns = [
     {
-      title: 'Id',
-      dataIndex: 'id',
-      key: 'id',
+      title: 'Checksum',
+      dataIndex: 'checksum',
+      key: 'checksum',
     },
     {
       title: 'Created At',
