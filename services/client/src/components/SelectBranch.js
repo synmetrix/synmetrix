@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import PropTypes from 'prop-types';
 
 import { useTranslation } from 'react-i18next';
-import { Icon, Select, Input, Divider, Button, Row, Col } from 'antd';
+import { Icon, Select, Input, Divider, Button } from 'antd';
 
 import MoreMenu from './MoreMenu';
 
@@ -44,7 +44,7 @@ const SelectBranch = ({ onChange, onCreate, onSetDefault, branchStatus, currentB
       {item.name}{item.status === 'active' && ' - default'}
     </Option>
   )), [branches]);
-  console.log(currentBranchId);
+
   return (
     <div style={{ padding: '10px', maxWidth: '100%' }}>
       <div style={{ paddingBottom: '10px' }}>

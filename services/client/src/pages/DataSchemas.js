@@ -82,14 +82,10 @@ const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
       execQueryAll,
     },
     mutations: {
-      createMutation,
-      execCreateMutation,
-      updateMutation,
       deleteMutation,
       execDeleteMutation,
       exportMutation,
       execExportMutation,
-      batchMutation,
       branchMutation,
       execBranchMutation,
       versionMutation,
@@ -194,14 +190,6 @@ const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
     }
   }, [currentUserState.dataschemas, execQueryAll]);
 
-  useCheckResponse(createMutation, () => {}, {
-    successMessage: t('Schema created')
-  });
-
-  useCheckResponse(batchMutation, () => {}, {
-    successMessage: t('Schemas created')
-  });
-
   useCheckResponse(genSchemaMutation, (res) => {
     if (res) {
       execQueryAll();
@@ -226,7 +214,11 @@ const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
     successMessage: t('Version created')
   });
 
-  useCheckResponse(setDefaultMutation, () => {}, {
+  useCheckResponse(setDefaultMutation, (res) => {
+    if (res) {
+      execQueryAll();
+    }
+  }, {
     successMessage: t(`Branch "${currentBranch?.name}" is now default.`)
   });
 
@@ -325,7 +317,7 @@ const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
     return fallback;
   }
 
-  const fetching = allData.fetching || deleteMutation.fetching || createMutation.fetching 
+  const fetching = allData.fetching || deleteMutation.fetching 
     || validateMutation.fetching || genSchemaMutation.fetching || tablesData.fetching || exportMutation.fetching;
 
   if (error) {
@@ -335,17 +327,6 @@ const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
   if (!all.length && !dataSourceId) {
     return <ErrorFound status={404} />;
   }
-
-  const onClickCreate = async values => {
-    const data = {
-      ...values,
-      code: '',
-      datasource_id: dataSourceId,
-    };
-
-    await execCreateMutation({ object: data });
-    execQueryAll({ requestPolicy: 'cache-and-network' });
-  };
 
   const createNewVersion = async (checksum, data) => {
     const preparedDataschemas = data.map((schema) => {
@@ -357,7 +338,7 @@ const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
       delete updatedData.id;
       return updatedData;
     });
-
+    
     const versionData = {
       checksum,
       branch_id: currentBranchId,
@@ -366,9 +347,22 @@ const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
         data: preparedDataschemas,
       },
     };
-
+    
     await execVersionMutation({ object: versionData });
-    await execQueryAll();
+  };
+
+  const onClickCreate = async values => {
+    const newSchemas = [
+      ...dataschemas,
+      {
+        ...values,
+        code: '',
+      }
+    ];
+
+    const checksum = calcChecksum(newSchemas);
+
+    await createNewVersion(checksum, newSchemas);
   };
 
   const onUploadFile = async ({ target }) => {
@@ -493,16 +487,14 @@ const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
     };
 
     await execBranchMutation({ object: branchData });
-    await execQueryAll();
   };
 
-  const onSetDefault = async () => {
-    await execSetDefaultMutation({
+  const onSetDefault = () => {
+    execSetDefaultMutation({
       user_id: currentUser.id,
       branch_id: currentBranchId,
       datasource_id: dataSourceId,
     });
-    await execQueryAll();
   };
 
   return [
@@ -537,7 +529,7 @@ const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
     <Loader key="content" spinning={fetching}>
       <div className={s.root}>
         <div className={s.sidebar}>
-          <Loader spinning={updateMutation.fetching}>
+          <Loader spinning={false}>
             <>
               <SelectBranch
                 branches={all}

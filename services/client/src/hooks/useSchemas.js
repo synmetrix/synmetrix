@@ -7,26 +7,6 @@ import useQuery from './useQuery';
 import useMutation from './useMutation';
 import useCurrentTeamState from './useCurrentTeamState';
 
-const newSchemaMutation = `
-  mutation ($object: dataschemas_insert_input!) {
-    insert_dataschemas_one(object: $object) {
-      id
-      name
-    }
-  }
-`;
-
-const newBatchSchemaMutation = `
-  mutation ($objects: [dataschemas_insert_input!]!) {
-    insert_dataschemas(
-      objects: $objects, 
-      on_conflict: {}
-    ) {
-      affected_rows
-    }
-  }
-`;
-
 const allSchemasQuery = `
   query ($offset: Int, $limit: Int, $where: branches_bool_exp, $order_by: [branches_order_by!]) {
     branches (offset: $offset, limit: $limit, where: $where, order_by: $order_by) {
@@ -77,6 +57,14 @@ const exportDataMutation = `
   mutation ($branch_id: String) {
     export_data_models(branch_id: $branch_id) {
       download_url
+    }
+  }
+`;
+
+const newBranchMutation = `
+  mutation ($object: branches_insert_input!) {
+    insert_branches_one(object: $object) {
+      id
     }
   }
 `;
@@ -142,10 +130,9 @@ export default (props = {}) => {
     teamId: currentTeamState?.id,
   };
 
-  const [createMutation, execCreateMutation] = useMutation(newSchemaMutation, { role });
   const [deleteMutation, execDeleteMutation] = useMutation(delSchemaMutation, { role });
   const [exportMutation, execExportMutation] = useMutation(exportDataMutation, { role });
-  const [batchMutation, execBatchMutation] = useMutation(newBatchSchemaMutation, { role });
+  const [branchMutation, execBranchMutation] = useMutation(newBranchMutation, { role });
   const [versionMutation, execVersionMutation] = useMutation(newVersionMutation, { role });
   const [setDefaultMutation, execSetDefaultMutation] = useMutation(setDefaultBranchMutation, { role });
 
@@ -191,14 +178,12 @@ export default (props = {}) => {
       execQueryAll,
     },
     mutations: {
-      createMutation,
-      execCreateMutation,
       deleteMutation,
       execDeleteMutation,
       exportMutation,
       execExportMutation,
-      batchMutation,
-      execBatchMutation,
+      branchMutation,
+      execBranchMutation,
       versionMutation,
       execVersionMutation,
       setDefaultMutation,
