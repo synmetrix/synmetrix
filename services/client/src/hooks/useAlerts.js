@@ -38,6 +38,7 @@ const alertsQuery = `
     alerts (offset: $offset, limit: $limit, where: $where, order_by: $order_by) {
       id
       name
+      schedule
       delivery_type
       delivery_config
       trigger_config

@@ -1,8 +1,9 @@
 import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useSetState , useTrackedEffect } from 'ahooks';
+import cronstrue from 'cronstrue';
 
-import { Row, Col } from 'antd';
+import { Row, Col, Tooltip } from 'antd';
 
 import equals from 'utils/equals';
 import useAlerts from 'hooks/useAlerts';
@@ -121,6 +122,16 @@ const AlertTable = ({ editId, onModalClose, onModalOpen }) => {
 
         return null;
       },
+    },
+    {
+      title: 'Schedule',
+      dataIndex: 'schedule',
+      key: 'schedule',
+      render: (_, record) => (
+        <Tooltip title={cronstrue.toString(record.schedule)}>
+          <span>{record.schedule}</span>
+        </Tooltip>
+      )
     },
     {
       title: 'Creator',

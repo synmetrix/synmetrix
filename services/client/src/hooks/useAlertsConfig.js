@@ -182,20 +182,32 @@ export default ({ form, initialValues, entity = 'alert' }) => {
           { required: areBoundsRequired, message: 'At least one bound is required' },
         ];
 
+        const validateBounds = async (value, comparableValue) => {
+          if (value === null) {
+            return Promise.resolve();
+          }
+
+          const numericValue = parseFloat(value);
+          const numericComparableValue = parseFloat(comparableValue);
+
+          if (numericValue >= numericComparableValue) {
+            return Promise.reject(new Error());
+          }
+
+          return Promise.resolve();
+        };
+
         draft['trigger_config.lowerBound'].rules = [
           {
-            message: 'Lower bound must be less',
-            validator: async (rule, value) => {
-              if (value === null) {
-                return Promise.resolve();
-              }
+            message: 'Lower bound must be less than upper one',
+            validator: async (rule, value) => validateBounds(value, upperBoundValue),
+          },
+        ];
 
-              if (value >= upperBoundValue) {
-                return Promise.reject(new Error());
-              }
-
-              return Promise.resolve();
-            }
+        draft['trigger_config.upperBound'].rules = [
+          {
+            message: 'Upper bound must be bigger than lower one',
+            validator: async (rule, value) => validateBounds(lowerBoundValue, value),
           },
         ];
       };
