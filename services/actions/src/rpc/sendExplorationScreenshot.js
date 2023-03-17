@@ -24,16 +24,6 @@ const EXPLORATION_DATA_SELECTOR = '#explorationTable';
 const PUPPETEER_WAITING_TIMEOUT = 30000;
 const TIMEZONE = 'UTC';
 
-const explorationQuery = `
-  query ($id: uuid!) {
-    explorations_by_pk(id: $id) {
-      id
-      datasource_id
-      user_id
-    }
-  }
-`;
-
 const mailerOptions = {
   host: SMTP_HOST,
   port: SMTP_PORT,
@@ -209,12 +199,8 @@ const sendToEmail = async ({ header, jsonUrl, screenshotUrl, address }) => {
   return result;
 };
 
-export default async (session, input) => {
-  const { deliveryType, explorationId, deliveryConfig, name } = input?.payload || {};
-
-  const queryResult = await fetchGraphQL(explorationQuery, { id: explorationId });
-  const exploration = queryResult?.data?.explorations_by_pk || {};
-
+export default async ({ deliveryType, exploration, deliveryConfig, name }) => {
+  const { id: explorationId } = exploration;
   const { data, screenshot, error } = await getDataAndScreenshot(exploration);
 
   if (error) {

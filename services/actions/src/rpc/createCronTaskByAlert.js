@@ -8,11 +8,7 @@ import deleteCronTaskByReport from './deleteCronTaskByAlert';
 const getCronTaskParamsForAlert = (payload) => {
   const {
     trigger_config: triggerConfig,
-    delivery_type: deliveryType,
-    delivery_config: deliveryConfig,
     schedule,
-    exploration_id: explorationId,
-    name,
     id
   } = payload || {};
 
@@ -25,11 +21,6 @@ const getCronTaskParamsForAlert = (payload) => {
       webhook: `{{ACTIONS_URL}}/rpc/check_alert`,
       schedule,
       payload: {
-        triggerConfig,
-        deliveryConfig,
-        deliveryType,
-        explorationId,
-        name: `Alert ${name}`,
         id
       },
       retry_conf: {
@@ -45,11 +36,7 @@ const getCronTaskParamsForAlert = (payload) => {
 
 const getCronTaskParamsForReport = (payload) => {
   const {
-    delivery_type: deliveryType,
-    delivery_config: deliveryConfig,
     schedule,
-    exploration_id: explorationId,
-    name,
     id
   } = payload || {};
 
@@ -57,13 +44,10 @@ const getCronTaskParamsForReport = (payload) => {
     type: 'create_cron_trigger',
     args: {
       name: id,
-      webhook: `{{ACTIONS_URL}}/rpc/send_exploration_screenshot`,
+      webhook: `{{ACTIONS_URL}}/rpc/check_report`,
       schedule,
       payload: {
-        deliveryConfig,
-        deliveryType,
-        explorationId,
-        name: `Report ${name}`
+        id
       },
       retry_conf: {
         num_retries: 5,

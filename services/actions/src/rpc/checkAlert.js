@@ -6,13 +6,20 @@ import generateUserAccessToken from '../utils/jwt';
 import { fetchGraphQL } from '../utils/graphql';
 import redisClient from '../utils/redis';
 
-const explorationQuery = `
+const alertQuery = `
   query ($id: uuid!) {
-    explorations_by_pk(id: $id) {
+    alerts_by_pk(id: $id) {
       id
-      datasource_id
-      user_id
-      playground_state
+      name
+      trigger_config
+      delivery_type
+      delivery_config
+      exploration {
+        id
+        datasource_id
+        user_id
+        playground_state
+      }
     }
   }
 `;
@@ -30,11 +37,11 @@ const checkAndTriggerAlert = async (alert) => {
     id,
     name,
     exploration,
-    triggerConfig,
-    deliveryType,
-    deliveryConfig,
+    trigger_config: triggerConfig,
+    delivery_type: deliveryType,
+    delivery_config: deliveryConfig,
   } = alert;
-  const { playground_state: playgroundState, id: explorationId, user_id: userId } = exploration;
+  const { playground_state: playgroundState, user_id: userId } = exploration;
 
   const lockKey = `alert:${id}:lock`;
   const lockValue = await redisClient.get(lockKey);
@@ -104,13 +111,11 @@ const checkAndTriggerAlert = async (alert) => {
     return result;
   }
 
-  const { error } = await sendExplorationScreenshot(null, {
-    payload: {
-      deliveryType,
-      deliveryConfig,
-      explorationId,
-      name
-    }
+  const { error } = await sendExplorationScreenshot({
+    deliveryType,
+    deliveryConfig,
+    exploration,
+    name: `Alert ${name}`
   });
 
   await redisClient.del(lockKey);
@@ -134,19 +139,10 @@ const checkAndTriggerAlert = async (alert) => {
 };
 
 export default async (session, input) => {
-  const { deliveryType, explorationId, deliveryConfig, triggerConfig, name, id } = input?.payload || {};
+  const { id } = input?.payload || {};
 
-  const queryResult = await fetchGraphQL(explorationQuery, { id: explorationId });
-  const exploration = queryResult?.data?.explorations_by_pk || {};
-
-  const alert = {
-    id,
-    name,
-    exploration,
-    triggerConfig,
-    deliveryType,
-    deliveryConfig,
-  };
+  const queryResult = await fetchGraphQL(alertQuery, { id });
+  const alert = queryResult?.data?.alerts_by_pk || {};
 
   let result;
 
