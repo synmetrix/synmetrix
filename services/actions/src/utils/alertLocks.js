@@ -49,7 +49,7 @@ export const getLockData = async (alert) => {
 
   result.key = lockKey;
   result.value = value;
-  result.ttl = ttl;
+  result.ttl = Math.abs(ttl);
 
   return result;
 };
