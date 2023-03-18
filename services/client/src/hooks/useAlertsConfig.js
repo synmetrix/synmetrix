@@ -170,17 +170,8 @@ export default ({ form, initialValues, entity = 'alert' }) => {
           ?.map(dimension => ({ [dimension.shortTitle]: dimension.name })) || [];
 
       const setupAlertBoundsValidation = draft => {
-        const lowerBoundValue = form.getFieldValue('trigger_config.lowerBound');
-        const upperBoundValue = form.getFieldValue('trigger_config.upperBound');
-
-        const areBoundsRequired = !lowerBoundValue && !upperBoundValue;
-
-        draft['trigger_config.lowerBound'].rules = [
-          { required: areBoundsRequired, message: 'At least one bound is required' },
-        ];
-        draft['trigger_config.upperBound'].rules = [
-          { required: areBoundsRequired, message: 'At least one bound is required' },
-        ];
+        draft['trigger_config.lowerBound'].rules = [];
+        draft['trigger_config.upperBound'].rules = [];
 
         const validateBounds = async (value, comparableValue) => {
           if (value === null) {
@@ -197,19 +188,30 @@ export default ({ form, initialValues, entity = 'alert' }) => {
           return Promise.resolve();
         };
 
-        draft['trigger_config.lowerBound'].rules = [
+        const lowerBoundValue = form.getFieldValue('trigger_config.lowerBound');
+        const upperBoundValue = form.getFieldValue('trigger_config.upperBound');
+        const areBoundsRequired = !lowerBoundValue && !upperBoundValue;
+
+        draft['trigger_config.lowerBound'].rules.push(
+          { required: areBoundsRequired, message: 'At least one bound is required' },
+        );
+        draft['trigger_config.upperBound'].rules.push(
+          { required: areBoundsRequired, message: 'At least one bound is required' },
+        );
+
+        draft['trigger_config.lowerBound'].rules.push(
           {
             message: 'Lower bound must be less than upper one',
             validator: async (rule, value) => validateBounds(value, upperBoundValue),
           },
-        ];
+        );
 
-        draft['trigger_config.upperBound'].rules = [
+        draft['trigger_config.upperBound'].rules.push(
           {
             message: 'Upper bound must be bigger than lower one',
             validator: async (rule, value) => validateBounds(lowerBoundValue, value),
           },
-        ];
+        );
       };
 
       return produce(combinedFormItems, draft => {

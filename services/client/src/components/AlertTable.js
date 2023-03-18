@@ -113,11 +113,11 @@ const AlertTable = ({ editId, onModalClose, onModalOpen }) => {
         }
 
         if (lowerBound) {
-          return `< ${lowerBound}`;
+          return `${lowerBound}+`;
         }
 
         if (upperBound) {
-          return `> ${upperBound}`;
+          return `up to ${upperBound}`;
         }
 
         return null;
