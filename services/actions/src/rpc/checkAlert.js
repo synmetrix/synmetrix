@@ -4,7 +4,7 @@ import sendExplorationScreenshot from './sendExplorationScreenshot';
 import apiError from '../utils/apiError';
 import generateUserAccessToken from '../utils/jwt';
 import { fetchGraphQL } from '../utils/graphql';
-import redisClient from '../utils/redis';
+import { getLockKey, getLockData, setLockData, delLockData } from '../utils/alertLocks';
 
 const alertQuery = `
   query ($id: uuid!) {
@@ -14,6 +14,7 @@ const alertQuery = `
       trigger_config
       delivery_type
       delivery_config
+      locks_config
       exploration {
         id
         datasource_id
@@ -43,14 +44,11 @@ const checkAndTriggerAlert = async (alert) => {
   } = alert;
   const { playground_state: playgroundState, user_id: userId } = exploration;
 
-  const lockKey = `alert:${id}:lock`;
-  const lockValue = await redisClient.get(lockKey);
+  const { value: lockValue, ttl } = await getLockData(alert);
 
   if (lockValue) {
-    const ttl = await redisClient.ttl(lockKey);
-
     result.locked = true;
-    result.lockKey = lockKey;
+    result.lockKey = getLockKey(id);
     result.lockValue = lockValue;
     result.lockTTL = ttl;
 
@@ -70,7 +68,7 @@ const checkAndTriggerAlert = async (alert) => {
     throw new Error('Error while generating auth token');
   }
 
-  await redisClient.set(lockKey, 'on request', 'EX', requestTimeout);
+  await setLockData(alert, { value: 'on request', ttl: requestTimeout })
 
   let dataset = [];
 
@@ -85,7 +83,7 @@ const checkAndTriggerAlert = async (alert) => {
 
     dataset = data;
   } catch (error) {
-    await redisClient.del(lockKey);
+    await delLockData(alert);
     throw new Error(error);
   }
 
@@ -107,7 +105,7 @@ const checkAndTriggerAlert = async (alert) => {
   });
 
   if (!isMatched) {
-    await redisClient.del(lockKey);
+    await delLockData(alert);
     return result;
   }
 
@@ -118,7 +116,7 @@ const checkAndTriggerAlert = async (alert) => {
     name: `Alert ${name}`
   });
 
-  await redisClient.del(lockKey);
+  await delLockData(alert);
 
   if (error) {
     throw new Error(error);
@@ -126,11 +124,11 @@ const checkAndTriggerAlert = async (alert) => {
 
   if (timeoutOnFire > 0) {
     result.locked = true;
-    result.lockKey = lockKey;
+    result.lockKey = getLockKey(id);
     result.lockValue = 'on fire';
     result.lockTTL = timeoutOnFire;
 
-    await redisClient.set(lockKey, 'on fire', 'EX', timeoutOnFire);
+    await setLockData(alert, { value: 'on fire', ttl: timeoutOnFire })
   }
 
   result.fired = true;

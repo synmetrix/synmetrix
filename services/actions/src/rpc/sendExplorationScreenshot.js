@@ -5,7 +5,6 @@ import nodemailer from 'nodemailer';
 
 import apiError from '../utils/apiError';
 import logger from '../utils/logger';
-import { fetchGraphQL } from '../utils/graphql';
 import { putFileToBucket } from '../utils/s3';
 import generateUserAccessToken from '../utils/jwt';
 

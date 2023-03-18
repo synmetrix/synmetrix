@@ -2,6 +2,10 @@ import Redis from 'ioredis';
 
 const { REDIS_ADDR } = process.env;
 
-const redisClient = new Redis(REDIS_ADDR);
+let redisClient = null;
+
+if (REDIS_ADDR) {
+  redisClient = new Redis(REDIS_ADDR);
+}
 
 export default redisClient;
