@@ -97,6 +97,145 @@
             name: accounts
             schema: auth
 - table:
+    name: alerts
+    schema: public
+  object_relationships:
+    - name: exploration
+      using:
+        foreign_key_constraint_on: exploration_id
+    - name: team
+      using:
+        foreign_key_constraint_on: team_id
+    - name: user
+      using:
+        foreign_key_constraint_on: user_id
+  insert_permissions:
+    - role: user
+      permission:
+        check:
+          _or:
+            - user_id:
+                _eq: X-Hasura-User-Id
+            - team:
+                members:
+                  user_id:
+                    _eq: X-Hasura-User-Id
+        set:
+          user_id: x-hasura-user-id
+        columns:
+          - delivery_config
+          - delivery_type
+          - exploration_id
+          - id
+          - name
+          - schedule
+          - team_id
+          - trigger_config
+          - user_id
+  select_permissions:
+    - role: user
+      permission:
+        columns:
+          - created_at
+          - delivery_config
+          - delivery_type
+          - exploration_id
+          - id
+          - name
+          - schedule
+          - team_id
+          - trigger_config
+          - updated_at
+          - user_id
+        filter:
+          _or:
+            - user_id:
+                _eq: X-Hasura-User-Id
+            - team:
+                members:
+                  user_id:
+                    _eq: X-Hasura-User-Id
+        allow_aggregations: true
+  update_permissions:
+    - role: user
+      permission:
+        columns:
+          - delivery_config
+          - delivery_type
+          - exploration_id
+          - name
+          - schedule
+          - trigger_config
+        filter:
+          _or:
+            - user_id:
+                _eq: X-Hasura-User-Id
+            - team:
+                members:
+                  user_id:
+                    _eq: X-Hasura-User-Id
+        check:
+          _or:
+            - user_id:
+                _eq: X-Hasura-User-Id
+            - team:
+                members:
+                  user_id:
+                    _eq: X-Hasura-User-Id
+  delete_permissions:
+    - role: user
+      permission:
+        filter:
+          _or:
+            - user_id:
+                _eq: X-Hasura-User-Id
+            - team:
+                members:
+                  user_id:
+                    _eq: X-Hasura-User-Id
+  event_triggers:
+    - name: create_cron_task_by_alert
+      definition:
+        enable_manual: true
+        insert:
+          columns: '*'
+        update:
+          columns:
+            - delivery_config
+            - delivery_type
+            - exploration_id
+            - trigger_config
+            - schedule
+      retry_conf:
+        interval_sec: 10
+        num_retries: 3
+        timeout_sec: 60
+      webhook: '{{ACTIONS_URL}}/rpc/create_cron_task_by_alert'
+      cleanup_config:
+        batch_size: 10000
+        clean_invocation_logs: false
+        clear_older_than: 168
+        paused: true
+        schedule: 0 0 * * *
+        timeout: 60
+    - name: delete_cron_task_by_alert
+      definition:
+        delete:
+          columns: '*'
+        enable_manual: true
+      retry_conf:
+        interval_sec: 10
+        num_retries: 3
+        timeout_sec: 60
+      webhook: '{{ACTIONS_URL}}/rpc/delete_cron_task_by_alert'
+      cleanup_config:
+        batch_size: 10000
+        clean_invocation_logs: false
+        clear_older_than: 168
+        paused: true
+        schedule: 0 0 * * *
+        timeout: 60
+- table:
     name: dashboards
     schema: public
   object_relationships:
@@ -396,6 +535,13 @@
       using:
         foreign_key_constraint_on: datasource_id
   array_relationships:
+    - name: alerts
+      using:
+        foreign_key_constraint_on:
+          column: exploration_id
+          table:
+            name: alerts
+            schema: public
     - name: pinned_items
       using:
         foreign_key_constraint_on:
@@ -752,9 +898,9 @@
             - delivery_type
       retry_conf:
         interval_sec: 10
-        num_retries: 0
+        num_retries: 3
         timeout_sec: 60
-      webhook: '{{ACTIONS_URL}}/rpc/create_cron_task_by_report'
+      webhook: '{{ACTIONS_URL}}/rpc/create_cron_task_by_alert'
       cleanup_config:
         batch_size: 10000
         clean_invocation_logs: false
@@ -769,9 +915,9 @@
         enable_manual: true
       retry_conf:
         interval_sec: 10
-        num_retries: 0
+        num_retries: 3
         timeout_sec: 60
-      webhook: '{{ACTIONS_URL}}/rpc/delete_cron_task_by_report'
+      webhook: '{{ACTIONS_URL}}/rpc/delete_cron_task_by_alert'
       cleanup_config:
         batch_size: 10000
         clean_invocation_logs: false
@@ -795,6 +941,13 @@
     name: teams
     schema: public
   array_relationships:
+    - name: alerts
+      using:
+        foreign_key_constraint_on:
+          column: team_id
+          table:
+            name: alerts
+            schema: public
     - name: dashboards
       using:
         foreign_key_constraint_on:
@@ -881,6 +1034,13 @@
             name: accounts
             schema: auth
   array_relationships:
+    - name: alerts
+      using:
+        foreign_key_constraint_on:
+          column: user_id
+          table:
+            name: alerts
+            schema: public
     - name: dataschemas
       using:
         foreign_key_constraint_on:

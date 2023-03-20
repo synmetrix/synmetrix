@@ -11,6 +11,7 @@
     "classnames": "^2.2.6",
     "copy-to-clipboard": "^3.2.0",
     "core-js": "3",
+    "cronstrue": "^2.23.0",
     "dayjs": "^1.10.6",
     "dequal": "^1.0.0",
     "graphql": "^14.2.1",

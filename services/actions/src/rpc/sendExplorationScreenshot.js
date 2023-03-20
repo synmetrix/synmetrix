@@ -5,7 +5,6 @@ import nodemailer from 'nodemailer';
 
 import apiError from '../utils/apiError';
 import logger from '../utils/logger';
-import { fetchGraphQL } from '../utils/graphql';
 import { putFileToBucket } from '../utils/s3';
 import generateUserAccessToken from '../utils/jwt';
 
@@ -23,16 +22,6 @@ const {
 const EXPLORATION_DATA_SELECTOR = '#explorationTable';
 const PUPPETEER_WAITING_TIMEOUT = 30000;
 const TIMEZONE = 'UTC';
-
-const explorationQuery = `
-  query ($id: uuid!) {
-    explorations_by_pk(id: $id) {
-      id
-      datasource_id
-      user_id
-    }
-  }
-`;
 
 const mailerOptions = {
   host: SMTP_HOST,
@@ -209,12 +198,8 @@ const sendToEmail = async ({ header, jsonUrl, screenshotUrl, address }) => {
   return result;
 };
 
-export default async (session, input) => {
-  const { deliveryType, explorationId, deliveryConfig, reportName } = input || {};
-
-  const queryResult = await fetchGraphQL(explorationQuery, { id: explorationId });
-  const exploration = queryResult?.data?.explorations_by_pk || {};
-
+export default async ({ deliveryType, exploration, deliveryConfig, name }) => {
+  const { id: explorationId } = exploration;
   const { data, screenshot, error } = await getDataAndScreenshot(exploration);
 
   if (error) {
@@ -247,7 +232,7 @@ export default async (session, input) => {
 
   let deliveryResult;
   const { url: webhookUrl, address } = deliveryConfig;
-  const header = `Report ${reportName} at ${dateMoment}`;
+  const header = `${name} at ${dateMoment}`;
 
   switch (deliveryType) {
     case 'WEBHOOK':
