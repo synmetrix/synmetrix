@@ -331,23 +331,23 @@ const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
   const createNewVersion = async (checksum, data) => {
     const preparedDataschemas = data.map((schema) => {
       const updatedData = {
-        ...schema,
-        datasource_id: dataSourceId,
+        name: schema.name,
+        code: schema.code,
+        user_id: schema.user_id || currentUser.id,
       };
 
-      delete updatedData.id;
       return updatedData;
     });
     
     const versionData = {
       checksum,
+      user_id: currentUser.id,
       branch_id: currentBranchId,
-      datasource_id: dataSourceId,
       dataschemas: {
         data: preparedDataschemas,
       },
     };
-    
+
     await execVersionMutation({ object: versionData });
   };
 
@@ -361,7 +361,6 @@ const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
     ];
 
     const checksum = calcChecksum(newSchemas);
-
     await createNewVersion(checksum, newSchemas);
   };
 
@@ -419,7 +418,7 @@ const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
   };
 
   const onClickUpdate = async (editId, values) => {
-    const newDataschemas = [...currentVersion.dataschemas];
+    const newDataschemas = [...dataschemas];
     const editSchemaIndex = newDataschemas.findIndex(schema => schema.id === editId);
     
     newDataschemas[editSchemaIndex] = {
@@ -440,7 +439,7 @@ const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
   };
 
   const onClickDelete = async id => {
-    const newDataschemas = [...currentVersion.dataschemas];
+    const newDataschemas = [...dataschemas];
     const deleteSchemaIndex = newDataschemas.findIndex(schema => schema.id === id);
     newDataschemas.splice(deleteSchemaIndex, 1);
 
@@ -464,10 +463,9 @@ const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
   };
 
   const onCreateBranch = async (name) => {
-    const newSchemas = currentVersion.dataschemas.map(schema => ({
+    const newSchemas = dataschemas.map(schema => ({
       name: schema.name,
       code: schema.code,
-      datasource_id: dataSourceId,
     }));
 
     const branchData = {
@@ -477,8 +475,8 @@ const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
       datasource_id: dataSourceId,
       versions: {
         data: {
-          checksum: currentVersion.checksum,
-          datasource_id: dataSourceId,
+          user_id: currentUser.id,
+          checksum: currentVersion?.checksum || 'No data',
           dataschemas: {
             data: newSchemas,
           }

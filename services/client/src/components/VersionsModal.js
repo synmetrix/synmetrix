@@ -36,6 +36,11 @@ const VersionssModal = ({ versions, onRestore }) => {
       key: 'checksum',
     },
     {
+      title: 'Author',
+      dataIndex: ['user', 'display_name'],
+      key: 'display_name',
+    },
+    {
       title: 'Created At',
       dataIndex: 'created_at',
       key: 'created_at',
@@ -79,6 +84,7 @@ const VersionssModal = ({ versions, onRestore }) => {
           total: versions.length,
           current: currentPage,
         }}
+        onChange={onPageChange}
         expandRowByClick
         expandedRowRender={(version) => (
           <div>

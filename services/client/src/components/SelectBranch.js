@@ -2,11 +2,12 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import PropTypes from 'prop-types';
 
 import { useTranslation } from 'react-i18next';
-import { Icon, Select, Input, Divider, Button } from 'antd';
+import { Icon, Select, Input, Divider, Button, Typography } from 'antd';
 
 import MoreMenu from './MoreMenu';
 
 const { Option } = Select;
+const { Paragraph } = Typography;
 
 const SelectBranch = ({ onChange, onCreate, onSetDefault, branchStatus, currentBranchId, curVersion, moreMenu, branches, loading }) => {
   const { t } = useTranslation();
@@ -102,7 +103,7 @@ const SelectBranch = ({ onChange, onCreate, onSetDefault, branchStatus, currentB
       </div>
       {curVersion && (
         <div style={{ paddingTop: '5px' }}>
-          {t('Version')}: {curVersion}
+          <Paragraph ellipsis>{t('Version')}: {curVersion}</Paragraph>
         </div>
       )}
       {!isDefaultBranch && (

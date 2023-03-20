@@ -18,6 +18,9 @@ const allSchemasQuery = `
         checksum
         created_at
         updated_at
+        user {
+          display_name
+        }
         dataschemas  {
           id
           name

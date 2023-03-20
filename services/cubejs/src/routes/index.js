@@ -132,15 +132,14 @@ export default ({ basePath, setupAuthInfo, cubejs }) => {
       commitChecksum = createMd5Hex(commitChecksum);
 
       const preparedSchemas = filteredFiles.map(file => ({
-        datasource_id: dataSourceId,
         name: file.fileName,
         code: file.content,
         user_id: userId,
       }));
 
       const commitObject = {
+        user_id: userId,
         branch_id: branchId,
-        datasource_id: dataSourceId,
         checksum: commitChecksum,
         dataschemas: {
           data: [...preparedSchemas],

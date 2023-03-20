@@ -39,6 +39,9 @@ const branchesFragment = `
   id
   name
   status
+  datasource {
+    team_id
+  }
   versions {
     checksum
     dataschemas {
@@ -46,9 +49,6 @@ const branchesFragment = `
       user_id
       name
       checksum
-      datasource {
-        team_id
-      }
     }
   }
 `;
