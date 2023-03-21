@@ -20,6 +20,7 @@ import useDashboards from './useDashboards';
 import useSchemas from './useSchemas';
 import useCurrentTeamState from './useCurrentTeamState';
 import useReports, { reportFragment } from './useReports';
+import useAlerts, { alertFragment } from './useAlerts';
 
 const membersFragment = `
   team {
@@ -125,6 +126,13 @@ const currentUserWithTeamQuery = `
       where: { team_id: { _eq: $teamId } }
     ) {
       ${reportFragment}
+    }
+
+    alerts (
+      order_by: { created_at: desc }
+      where: { team_id: { _eq: $teamId } }
+    ) {
+      ${alertFragment}
     }
 
     branches (
@@ -234,8 +242,17 @@ export default (props = {}) => {
     disableSubscription: true,
   });
 
+  const { 
+    subscription: alertsSubscription,
+    execSubscription: execAlertsSubscription,
+  } = useAlerts({
+    pauseQueryAll: true,
+    disableSubscription: true,
+  });
+
   useUpdateEffect(() => {
     const anyData = reportsSubscription.data ||
+      alertsSubscription.data ||
       sourcesSubscription.data ||
       dashboardsSubscription.data ||
       schemasSubscription.data;
@@ -248,6 +265,7 @@ export default (props = {}) => {
         });
       }
 
+      alertsSubscription.data = null;
       sourcesSubscription.data = null;
       dashboardsSubscription.data = null;
       schemasSubscription.data = null;
@@ -255,6 +273,7 @@ export default (props = {}) => {
     }
   }, [
     reportsSubscription.data,
+    alertsSubscription.data,
     sourcesSubscription.data,
     dashboardsSubscription.data,
     schemasSubscription.data,
@@ -266,6 +285,7 @@ export default (props = {}) => {
     execSourcesSubscription();
     execDashboardsSubscription();
     execReportsSubscription();
+    execAlertsSubscription();
   });
 
   return {

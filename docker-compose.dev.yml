@@ -108,14 +108,6 @@ services:
       timeout: 20s
       retries: 3
 
-  minio-dev-proxy:
-    build:
-      context: ./scripts/containers/minio-dev-proxy
-    ports:
-      - 9055:9055
-    networks:
-      - mlcraft_default
-
   mailhog:
     image: mailhog/mailhog
     logging:
@@ -131,10 +123,13 @@ services:
       context: ./services/client/
       args:
         NODE_ENV: 
+        ENABLE_MINIO_PROXY: true
     environment:
       GRAPHQL_SERVER_URL: http://hasura:8080/v1/graphql
       GRAPHQL_WS_URL: ws://hasura:8080/v1/graphql
       GRAPHQL_PLUS_SERVER_URL: http://hasura_plus:8080
+    ports:
+      - 9055:9055
     networks:
       - mlcraft_default
 

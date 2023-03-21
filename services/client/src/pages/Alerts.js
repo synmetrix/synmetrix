@@ -7,8 +7,8 @@ import { useTranslation } from 'react-i18next';
 import useLocation from 'hooks/useLocation';
 import useAppSettings from 'hooks/useAppSettings';
 
-import ReportModal from 'components/ReportModal';
-import ReportTable from 'components/ReportTable';
+import AlertModal from 'components/AlertModal'; // create
+import AlertTable from 'components/AlertTable'; // create
 import PageInfo from 'components/PageInfo';
 import Container from 'components/Container';
 
@@ -19,9 +19,9 @@ const DataSources = ({ match }) => {
   const { params = {} } = match || {};
   const [location, setLocation] = useLocation();
   const { withAuthPrefix } = useAppSettings();
-  const basePath = withAuthPrefix('/reports');
+  const basePath = withAuthPrefix('/alerts');
 
-  const { fallback } = usePermissions({ scope: 'reports' });
+  const { fallback } = usePermissions({ scope: 'alerts' });
   if (fallback) {
     return fallback;
   }
@@ -34,14 +34,14 @@ const DataSources = ({ match }) => {
     setLocation(basePath);
   };
 
-  const onNewReportClick = deliveryType => {
+  const onNewAlertClick = deliveryType => {
     setLocation(`${basePath}/new/${(deliveryType || '').toLowerCase()}`);
   };
 
   const showNewForm = location.pathname.includes('/new');
 
   const breadcrumbs = [
-    { path: basePath, title: 'Reports' },
+    { path: basePath, title: 'Alerts' },
     { path: `${basePath}/new`, title: 'New' },
     params?.deliveryType && { path: `${basePath}/new/${params?.deliveryType}`, title: params?.deliveryType },
   ].filter(v => !!v);
@@ -49,33 +49,33 @@ const DataSources = ({ match }) => {
   return (
     <Container>
       <PageInfo
-        title={t('Reports')}
+        title={t('Alerts')}
         description={(
           <>
             <ul>
-              <li>List and manage your reports</li>
-              <li>Select the metrics that will be automatically sent to you at the scheduled time</li>
+              <li>List and manage your alerts</li>
+              <li>Select the metrics to track and get notified when the values go out of bounds</li>
             </ul>
-            <Button type="primary" size="small" shape="round" onClick={() => onNewReportClick()}>
+            <Button type="primary" size="small" shape="round" onClick={() => onNewAlertClick()}>
               <Icon type="plus" />
               {t('Create')}
             </Button>
           </>
         )}
       />
-      <ReportModal
-        title={t('New Report')}
+      <AlertModal
+        title={t('New Alert')}
         dataSource={{}}
         initialValues={{
           delivery_type: (params?.deliveryType || '').toUpperCase(),
         }}
         breadcrumbs={breadcrumbs}
-        onChange={onNewReportClick}
+        onChange={onNewAlertClick}
         onCancel={onModalClose}
         onSave={onModalOpen}
         visible={showNewForm}
       />
-      <ReportTable
+      <AlertTable
         editId={params?.editId}
         onModalOpen={onModalOpen}
         onModalClose={onModalClose}
