@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import PropTypes from 'prop-types';
 
+import { useThrottleEffect } from 'ahooks';
 import { useTranslation } from 'react-i18next';
 import { Icon, Select, Input, Divider, Button, Typography } from 'antd';
 
@@ -31,6 +32,15 @@ const SelectBranch = ({ onChange, onCreate, onSetDefault, branchStatus, currentB
   const onCreateBranch = () => {
     onCreate(state.newBranchName);
   };
+
+  useThrottleEffect(() => {
+    if (!loading && branches.length && !branches.find(b => b.status === 'active')) {
+      onSetDefault(branches?.[0]?.id);
+    }
+  }, 
+  [branches, loading, onSetDefault], {
+    wait: 1000,
+  });
 
   useEffect(() => {
     if ((!currentBranchId && branches) || (branches.length && !branches.find(b => b.id === currentBranchId))) {
@@ -108,7 +118,7 @@ const SelectBranch = ({ onChange, onCreate, onSetDefault, branchStatus, currentB
       )}
       {!isDefaultBranch && (
         <div style={{ margin: '10px 0' }}>
-          <Button onClick={onSetDefault}>{t('Set as default')}</Button>
+          <Button onClick={() => onSetDefault()}>{t('Set as default')}</Button>
         </div>
       )}
     </div>

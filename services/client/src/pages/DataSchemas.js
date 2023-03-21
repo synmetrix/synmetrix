@@ -86,10 +86,10 @@ const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
       execDeleteMutation,
       exportMutation,
       execExportMutation,
-      branchMutation,
-      execBranchMutation,
-      versionMutation,
-      execVersionMutation,
+      createBranchMutation,
+      execCreateBranchMutation,
+      createVersionMutation,
+      execCreateVersionMutation,
       setDefaultMutation,
       execSetDefaultMutation,
     },
@@ -198,7 +198,7 @@ const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
     successMessage: t('Schema generated')
   });
 
-  useCheckResponse(branchMutation, (res) => {
+  useCheckResponse(createBranchMutation, (res) => {
     if (res) {
       execQueryAll();
     }
@@ -206,7 +206,7 @@ const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
     successMessage: t('Branch created')
   });
 
-  useCheckResponse(versionMutation, (res) => {
+  useCheckResponse(createVersionMutation, (res) => {
     if (res) {
       execQueryAll();
     }
@@ -227,7 +227,7 @@ const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
       execQueryAll();
     }
   }, {
-    successMessage: t('Branch created')
+    successMessage: t('Branch removed')
   });
 
   const validationError = useMemo(
@@ -317,7 +317,7 @@ const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
     return fallback;
   }
 
-  const fetching = allData.fetching || deleteMutation.fetching 
+  const fetching = allData.fetching || deleteMutation.fetching || setDefaultMutation.fetching
     || validateMutation.fetching || genSchemaMutation.fetching || tablesData.fetching || exportMutation.fetching;
 
   if (error) {
@@ -348,7 +348,7 @@ const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
       },
     };
 
-    await execVersionMutation({ object: versionData });
+    await execCreateVersionMutation({ object: versionData });
   };
 
   const onClickCreate = async values => {
@@ -466,6 +466,8 @@ const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
     const newSchemas = dataschemas.map(schema => ({
       name: schema.name,
       code: schema.code,
+      user_id: currentUser.id,
+      datasource_id: dataSourceId,
     }));
 
     const branchData = {
@@ -484,13 +486,12 @@ const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
       }
     };
 
-    await execBranchMutation({ object: branchData });
+    await execCreateBranchMutation({ object: branchData });
   };
 
-  const onSetDefault = () => {
+  const onSetDefault = (branchId = null) => {
     execSetDefaultMutation({
-      user_id: currentUser.id,
-      branch_id: currentBranchId,
+      branch_id: branchId || currentBranchId,
       datasource_id: dataSourceId,
     });
   };
@@ -539,6 +540,7 @@ const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
                 onCreate={onCreateBranch}
                 onSetDefault={onSetDefault}
                 curVersion={currentVersion?.checksum}
+                loading={fetching}
               />
               <Divider style={{ margin: '0' }} />
               <IdeSchemasList

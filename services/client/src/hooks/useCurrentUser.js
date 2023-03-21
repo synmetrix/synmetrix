@@ -86,7 +86,8 @@ const currentUserQuery = `
     }
 
     branches (
-      order_by: { created_at: desc }
+      order_by: { created_at: desc },
+      where: {status: { _neq: "arhived" }}
     ) {
       ${branchesFragment}
     }
@@ -128,9 +129,14 @@ const currentUserWithTeamQuery = `
 
     branches (
       order_by: { created_at: desc },
-      where: { datasource: {
-        team_id: { _eq: $teamId }
-      } }
+      where: { 
+        datasource: {
+          team_id: { _eq: $teamId }
+        },
+        status: {
+          _neq: "arhived"
+        }
+      }
     ) {
       ${branchesFragment}
     }

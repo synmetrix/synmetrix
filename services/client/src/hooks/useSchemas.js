@@ -80,8 +80,8 @@ const newVersionMutation = `
   }
 `;
 const setDefaultBranchMutation = `
-  mutation ($branch_id: uuid!, $datasource_id: uuid!, $user_id: uuid!) {
-    update_branches(_set: {status: "created"}, where: {datasource_id: {_eq: $datasource_id}, user_id: {_eq: $user_id}, status: {_eq: "active"}}) {
+  mutation ($branch_id: uuid!, $datasource_id: uuid!) {
+    update_branches(_set: {status: "created"}, where: {datasource_id: {_eq: $datasource_id}, status: {_eq: "active"}}) {
       affected_rows
     }
 
@@ -95,11 +95,6 @@ const getListVariables = (pagination, params) => {
   let res = {
     order_by: {
       created_at: 'desc',
-    },
-    where: {
-      status: {
-        _in: ['active', 'created'],
-      },
     },
   };
 
@@ -117,6 +112,10 @@ const getListVariables = (pagination, params) => {
   if (params?.teamId) {
     res = set('where.datasource.team_id._eq', params.teamId, res);
   }
+
+  if (params?.statuses) {
+    res = set('where.status._in', params.statuses, res);
+  }
   
   return res;
 };
@@ -131,12 +130,13 @@ export default (props = {}) => {
   const reqParams = {
     ...params,
     teamId: currentTeamState?.id,
+    statuses: ['active', 'created'],
   };
 
   const [deleteMutation, execDeleteMutation] = useMutation(delSchemaMutation, { role });
   const [exportMutation, execExportMutation] = useMutation(exportDataMutation, { role });
-  const [branchMutation, execBranchMutation] = useMutation(newBranchMutation, { role });
-  const [versionMutation, execVersionMutation] = useMutation(newVersionMutation, { role });
+  const [createBranchMutation, execCreateBranchMutation] = useMutation(newBranchMutation, { role });
+  const [createVersionMutation, execCreateVersionMutation] = useMutation(newVersionMutation, { role });
   const [setDefaultMutation, execSetDefaultMutation] = useMutation(setDefaultBranchMutation, { role });
 
   const [allData, execQueryAll] = useQuery({
@@ -185,10 +185,10 @@ export default (props = {}) => {
       execDeleteMutation,
       exportMutation,
       execExportMutation,
-      branchMutation,
-      execBranchMutation,
-      versionMutation,
-      execVersionMutation,
+      createBranchMutation,
+      execCreateBranchMutation,
+      createVersionMutation,
+      execCreateVersionMutation,
       setDefaultMutation,
       execSetDefaultMutation,
     },

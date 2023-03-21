@@ -12,7 +12,7 @@ import formatDistanceToNow from '../utils/formatDistanceToNow';
 
 const { TextArea } = Input;
 
-const VersionssModal = ({ versions, onRestore }) => {
+const VersionsModal = ({ versions, onRestore }) => {
   const { t } = useTranslation();
 
   const {
@@ -111,14 +111,14 @@ const VersionssModal = ({ versions, onRestore }) => {
   );
 };
 
-VersionssModal.propTypes = {
+VersionsModal.propTypes = {
   versions: PropTypes.array,
   onRestore: PropTypes.func,
 };
 
-VersionssModal.defaultProps = {
+VersionsModal.defaultProps = {
   versions: [],
   onRestore: () => {},
 };
 
-export default VersionssModal;
+export default VersionsModal;
