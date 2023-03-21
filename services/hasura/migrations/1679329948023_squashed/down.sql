@@ -1,18 +1,18 @@
 
-alter table "public"."dataschemas" drop constraint "dataschemas_datasource_id_fkey";
+-- alter table "public"."dataschemas" drop constraint "dataschemas_datasource_id_fkey";
 
 -- Could not auto-generate a down migration.
 -- Please write an appropriate down migration for the SQL below:
 -- alter table "public"."dataschemas" add column "datasource_id" uuid
 --  null;
 
-alter table "public"."dataschemas"
-  add constraint "dataschemas_datasource_id_fkey"
-  foreign key (datasource_id)
-  references "public"."datasources"
-  (id) on update cascade on delete cascade;
-alter table "public"."dataschemas" alter column "datasource_id" drop not null;
-alter table "public"."dataschemas" add column "datasource_id" uuid;
+-- alter table "public"."dataschemas"
+--   add constraint "dataschemas_datasource_id_fkey"
+--   foreign key (datasource_id)
+--   references "public"."datasources"
+--   (id) on update cascade on delete cascade;
+-- alter table "public"."dataschemas" alter column "datasource_id" drop not null;
+-- alter table "public"."dataschemas" add column "datasource_id" uuid;
 
 alter table "public"."versions" drop constraint "versions_user_id_fkey";
 

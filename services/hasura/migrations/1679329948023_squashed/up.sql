@@ -65,13 +65,13 @@ alter table "public"."versions"
   references "public"."users"
   ("id") on update cascade on delete cascade;
 
-alter table "public"."dataschemas" drop column "datasource_id" cascade;
+-- alter table "public"."dataschemas" drop column "datasource_id" cascade;
 
-alter table "public"."dataschemas" add column "datasource_id" uuid
- null;
+-- alter table "public"."dataschemas" add column "datasource_id" uuid
+--  null;
 
-alter table "public"."dataschemas"
-  add constraint "dataschemas_datasource_id_fkey"
-  foreign key ("datasource_id")
-  references "public"."datasources"
-  ("id") on update cascade on delete cascade;
+-- alter table "public"."dataschemas"
+--   add constraint "dataschemas_datasource_id_fkey"
+--   foreign key ("datasource_id")
+--   references "public"."datasources"
+--   ("id") on update cascade on delete cascade;

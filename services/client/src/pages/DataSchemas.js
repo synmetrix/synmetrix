@@ -256,6 +256,12 @@ const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
     }
   }, [sourceTablesSchema]);
 
+  useEffect(() => {
+    if (!dataSourceId && currentUserState?.datasources?.length) {
+      setLocation(`${basePath}/${currentUserState.datasources[0].id}`);
+    }
+  }, [dataSourceId, currentUserState, basePath, setLocation]);
+
   const exportData = () => {
     execExportMutation({
       branch_id: currentBranchId,
