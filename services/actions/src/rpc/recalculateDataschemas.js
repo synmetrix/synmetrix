@@ -30,7 +30,7 @@ const createBranchMutation = `
 `;
 
 export default async (session, input, headers) => {
-  const datasourceId = input?.data?.new?.id;
+  const datasourceId = input?.event?.data?.new?.id;
 
   if (!datasourceId) {
     return apiError('There is no datasource_id!')

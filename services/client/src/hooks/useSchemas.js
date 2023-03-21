@@ -27,6 +27,7 @@ const allSchemasQuery = `
           code
           created_at
           updated_at
+          datasource_id
         }
       }
     }

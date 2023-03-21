@@ -337,17 +337,18 @@ const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
   const createNewVersion = async (checksum, data) => {
     const preparedDataschemas = data.map((schema) => {
       const updatedData = {
-        name: schema.name,
-        code: schema.code,
-        user_id: schema.user_id || currentUser.id,
+        name: schema?.name,
+        code: schema?.code || '',
+        user_id: schema?.user_id || currentUser?.id,
+        datasource_id: schema?.datasource_id || dataSourceId,
       };
 
       return updatedData;
     });
-    
+
     const versionData = {
       checksum,
-      user_id: currentUser.id,
+      user_id: currentUser?.id,
       branch_id: currentBranchId,
       dataschemas: {
         data: preparedDataschemas,
