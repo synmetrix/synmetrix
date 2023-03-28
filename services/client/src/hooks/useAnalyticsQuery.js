@@ -15,12 +15,23 @@ const defaultFilterValues = {
 };
 
 const reducer = (state, action) => {
+  let memberType = action?.memberType;
+  
   if (action.type === 'add') {
     let { value } = action;
-    const elementsCount = getOr([], action.memberType, state).length;
+    
+    if (action?.valueType === 'time') {
+      memberType = 'timeDimensions';
+      value = {
+        dimension: action.value.replace(/\+.+/, ''),
+        granularity: action.granularity,
+      };
+    }
+    
+    const elementsCount = getOr([], memberType, state).length;
 
     if (action.memberType !== 'filters') {
-      const notUniq = state[action.memberType].find(member => member === value);
+      const notUniq = state[memberType].find(member => member === value);
 
       if (notUniq) {
         return state;
@@ -32,7 +43,7 @@ const reducer = (state, action) => {
       };
     }
 
-    return set([action.memberType, elementsCount], value, state);
+    return set([memberType, elementsCount], value, state);
   }
 
   if (action.type === 'update') {
@@ -99,10 +110,10 @@ const getOperatorType = member => getOr('', 'dimension.type', member);
 
 const useAnalyticsQuery = () => {
   const [state, dispatch] = useReducer(reducer, initialState);
-
+  // console.log(state);
   const updateMember = useCallback(
     (memberType, toQuery = getName) => ({
-      add: member => dispatch({ type: 'add', memberType, value: toQuery(member), operatorType: getOperatorType(member) }),
+      add: member => dispatch({ type: 'add', memberType, valueType: member.type, value: toQuery(member), granularity: member?.granularity, operatorType: getOperatorType(member) }),
       remove: member => dispatch({ type: 'remove', memberType, index: member.index }),
       update: (member, newValue) =>
         dispatch({ type: 'update', memberType, index: member.index, newValue: toQuery(newValue) }),

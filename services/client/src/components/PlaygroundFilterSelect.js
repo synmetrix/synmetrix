@@ -37,8 +37,8 @@ const PlaygroundFilterSelect = ({ availableMembers, value, onChange }) => {
         </Option>
       ))}
     </Select>
-  )
-}
+  );
+};
 
 PlaygroundFilterSelect.propTypes = {
   availableMembers: PropTypes.array.isRequired,

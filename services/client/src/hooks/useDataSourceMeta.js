@@ -33,12 +33,15 @@ const operators = {
   ],
 };
 
-const granularities = [
+export const granularities = [
   { name: undefined, title: 'w/o grouping' },
+  { name: 'second', title: 'Second' },
+  { name: 'minute', title: 'Minute' },
   { name: 'hour', title: 'Hour' },
   { name: 'day', title: 'Day' },
   { name: 'week', title: 'Week' },
   { name: 'month', title: 'Month' },
+  { name: 'quarter', title: 'Quarter' },
   { name: 'year', title: 'Year' },
 ];
 
@@ -61,13 +64,14 @@ class Meta {
 
   resolveMember(memberName, memberType) {
     const [cube] = memberName.split('.');
-
+    
     if (!this.cubesMap[cube]) {
       return { title: memberName, error: `Cube not found ${cube} for path '${memberName}'` };
     }
-
+    
     const memberTypes = Array.isArray(memberType) ? memberType : [memberType];
-
+    
+    console.log('resolve', cube, memberTypes);
     const member = memberTypes
         .map(type => this.getCubeMembers(cube, type) && this.getCubeMembers(cube, type)[memberName])
         .find(m => m);
@@ -81,7 +85,7 @@ class Meta {
 
   // defaultTimeDimensionNameFor(memberName) {
   //   const findMember = () => this.getCubeMembers(memberName, 'dimensions');
-  //
+  
   //   return Object.keys(findMember()).find(
   //     d => findMember()[d].type === 'time'
   //   );
@@ -93,8 +97,8 @@ class Meta {
   }
 };
 
-
 const enrichPlaygroundMembers = (cubesMetaCls, playgroundState) => {
+  console.log('Enrich', playgroundState);
   const resolveWithIndex = key =>
     getOr([], key, playgroundState).map((value, index) => ({
       index,
@@ -127,6 +131,7 @@ const enrichPlaygroundMembers = (cubesMetaCls, playgroundState) => {
 
 const updatePlaygroundState = (playgroundState, cubesMeta) => {
   const keys = ['dimensions', 'measures', 'segments', 'filters'];
+  console.log('playground', playgroundState);
   const updatedPlaygroundState = Object.keys(playgroundState).reduce((acc, curKey) => {
     if (keys.find(key => key === curKey)) {
       const filteredArray = playgroundState[curKey].filter(m => {
@@ -164,13 +169,17 @@ export default ({ meta = [], playgroundState }) => {
       if (!meta) {
         return {};
       }
-
       const cubesPairs = (meta || []).map(c => [
         c.name,
-        { measures: memberMap(c.measures), dimensions: memberMap(c.dimensions), segments: memberMap(c.segments) }
+        { 
+          measures: memberMap(c.measures),
+          dimensions: memberMap(c.dimensions),
+          segments: memberMap(c.segments),
+          timeDimensions: memberMap(c.dimensions.filter(d => d.type === 'time')),
+        }
       ]);
-
       const cubesMap = fromPairs(cubesPairs);
+      console.log('meta', cubesPairs, cubesMap);
 
       const cubesMeta = new Meta(cubesMap);
       const updatedPlaygroundState = updatePlaygroundState(playgroundState, cubesMeta);
