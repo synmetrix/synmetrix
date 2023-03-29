@@ -32,6 +32,7 @@ from cli.services import commands as services_commands
 from cli.db import commands as db_commands
 from cli.docker import commands as docker_commands
 from cli.hasura import commands as hasura_commands
+from cli.test import commands as test_commands
 
 PWD = os.path.dirname(os.path.abspath(__file__))
 # low-level API
@@ -81,6 +82,7 @@ main.add_command(db_commands.commands_group)
 main.add_command(services_commands.commands_group)
 main.add_command(docker_commands.commands_group)
 main.add_command(hasura_commands.commands_group)
+main.add_command(test_commands.commands_group)
 
 @main.command()
 @click.pass_context
