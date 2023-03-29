@@ -30,9 +30,8 @@ def run(ctx, test_dir, yml_file):
     )
 
     env = ctx.obj["runtime_env"]
+    env_files = [".env", ".%s.env" % env]
 
-    # env_files = [".env", ".%s.env" % env]
-    # console.log(env, env_files)
     ctx.invoke(
         docker_commands.run,
         image_name="stepci-test",
@@ -43,5 +42,5 @@ def run(ctx, test_dir, yml_file):
         volume=[
             f"{test_dir}:/tests",
         ],
-        # env_files=env_files,
+        env_files=env_files,
     )

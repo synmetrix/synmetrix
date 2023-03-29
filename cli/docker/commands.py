@@ -60,7 +60,7 @@ def build(ctx, path, cmd, name, push, pull):
 @click.option('--tty', is_flag=True, default=True)
 @click.option('--entry')
 @click.pass_context
-def run(ctx, name, volume, env, ports, image_name, cmd, registry, tag, tty, entry):
+def run(ctx, name, volume, env, ports, image_name, cmd, registry, tag, tty, entry, env_files=None):
     volumes = [' -v %s' % v for v in volume]
     envs = [' -e %s' % e for e in env]
     ports = [' -p %s' % p for p in ports]
@@ -84,6 +84,10 @@ def run(ctx, name, volume, env, ports, image_name, cmd, registry, tag, tty, entr
 
     if entry:
         args.append('--entrypoint %s' % entry)
+
+    if env_files:
+        for env_file in env_files:
+            args.append(f"--env-file {env_file}")
 
     run_cmd = """
 	docker run --rm \
