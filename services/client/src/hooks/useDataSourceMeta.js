@@ -70,8 +70,7 @@ class Meta {
     }
     
     const memberTypes = Array.isArray(memberType) ? memberType : [memberType];
-    
-    console.log('resolve', cube, memberTypes);
+
     const member = memberTypes
         .map(type => this.getCubeMembers(cube, type) && this.getCubeMembers(cube, type)[memberName])
         .find(m => m);
@@ -98,7 +97,6 @@ class Meta {
 };
 
 const enrichPlaygroundMembers = (cubesMetaCls, playgroundState) => {
-  console.log('Enrich', playgroundState);
   const resolveWithIndex = key =>
     getOr([], key, playgroundState).map((value, index) => ({
       index,
@@ -107,7 +105,8 @@ const enrichPlaygroundMembers = (cubesMetaCls, playgroundState) => {
 
   const timeDimensions = getOr([], 'timeDimensions', playgroundState).map((m, index) => ({
     ...m,
-    dimension: { ...cubesMetaCls.resolveMember(m.dimension, 'dimensions'), granularities },
+    ...cubesMetaCls.resolveMember(m.dimension, 'dimensions'),
+    name: m.granularity ? `${m.dimension}+${m.granularity}` : m.dimension,
     index,
   }));
 
@@ -120,7 +119,7 @@ const enrichPlaygroundMembers = (cubesMetaCls, playgroundState) => {
 
   const enrichedMembers = {
     measures: resolveWithIndex('measures'),
-    dimensions: resolveWithIndex('dimensions'),
+    dimensions: resolveWithIndex('dimensions').filter(m => m.type !== 'time').concat(timeDimensions),
     segments: resolveWithIndex('segments'),
     timeDimensions,
     filters,
@@ -131,7 +130,7 @@ const enrichPlaygroundMembers = (cubesMetaCls, playgroundState) => {
 
 const updatePlaygroundState = (playgroundState, cubesMeta) => {
   const keys = ['dimensions', 'measures', 'segments', 'filters'];
-  console.log('playground', playgroundState);
+
   const updatedPlaygroundState = Object.keys(playgroundState).reduce((acc, curKey) => {
     if (keys.find(key => key === curKey)) {
       const filteredArray = playgroundState[curKey].filter(m => {
@@ -179,7 +178,6 @@ export default ({ meta = [], playgroundState }) => {
         }
       ]);
       const cubesMap = fromPairs(cubesPairs);
-      console.log('meta', cubesPairs, cubesMap);
 
       const cubesMeta = new Meta(cubesMap);
       const updatedPlaygroundState = updatePlaygroundState(playgroundState, cubesMeta);

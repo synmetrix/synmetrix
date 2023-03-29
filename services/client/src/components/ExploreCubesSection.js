@@ -26,7 +26,6 @@ const toFilter = member => ({
 });
 
 const granulateMember = (member) => {
-  // console.log('gran memb', member);
   const newMembers = [];
 
   granularities.forEach(g => {
@@ -37,7 +36,7 @@ const granulateMember = (member) => {
     if (g.name) {
       newName += `+${g.name}`;
       newTitle += ` (${g.title})`;
-      newShortTitle += ` (${g.title})`;
+      newShortTitle += ` (${g.name})`;
     };
 
     const newMember = {
@@ -46,7 +45,6 @@ const granulateMember = (member) => {
       title: newTitle,
       shortTitle: newShortTitle,
       granularity: g.name,
-      dimension: 'dimension',
       meta: {
         subSection: member.shortTitle,
       },
@@ -62,17 +60,8 @@ const getSubSections = (catMembers, membersIndex) => {
   const subSections = {};
   const freeMembers = [];
 
-  catMembers.forEach(m => {
-    const member = m;
+  catMembers.forEach(member => {
     const subSection = getOr(false, 'meta.subSection', member);
-
-    if (member.type === 'time') {
-      const granMembers = granulateMember(member);
-      subSections[member.shortTitle] = {
-        members: granMembers,
-      };
-      return;
-    }
 
     if (!subSection) {
       freeMembers.push(member);
@@ -91,7 +80,6 @@ const getSubSections = (catMembers, membersIndex) => {
 
   Object.keys(subSections).forEach(subSection => {
     const foundSelected = subSections[subSection].members.find(subMember => get([subMember.name], membersIndex));
-
     if (foundSelected) {
       subSections[subSection].haveSelected = true;
     }
@@ -105,33 +93,35 @@ const getSubSections = (catMembers, membersIndex) => {
 
 const Cube = ({ members, selectedMembers, onMemberSelect }) => {
   const { baseMembers: { index: membersIndex } } = useAnalyticsQueryMembers({ selectedQueryMembers: selectedMembers });
-  // console.log('selected members', selectedMembers);
   const shiftPress = useKeyPress('Shift');
 
   const [state, setState] = useState({
     lastClickedMember: {},
     hovered: {},
   });
-  console.log('members', members);
+
   const getMemberId = member => member.name.replace('.', '_');
   const getMembersCategory = category => Object.values(members[category] || {});
-  const getSelectedCategoryMembers = category => Object.values(selectedMembers[category] || {}).map(m => m.name.replace(/\+.+/, ''));
-  
+  const getSelectedCategoryMembers = category => Object.values(selectedMembers[category] || {}).map(m => m.name);
+
   const onAction = (type = 'over', member, memberMeta = {}) => {
-    console.log('clicked member', member);
     if (!member) {
       return;
     }
     const name = getMemberId(member);
     if (type === 'click') {
-      // console.log(name);
       const {
         category: nextCategory,
         index: nextIndex,
         selectedIndex,
       } = memberMeta;
-      console.log('ollo', nextCategory, nextIndex, selectedIndex);
+
       setState(prev => set(['lastClickedMember'], memberMeta, prev));
+
+      let searchCategory = nextCategory;
+      if (member.type === 'time') {
+        searchCategory = 'timeDimensions';
+      }
 
       // select more than one members if shift pressed
       if (shiftPress) {
@@ -160,7 +150,7 @@ const Cube = ({ members, selectedMembers, onMemberSelect }) => {
         const categorySelectedMembersBuffer = categorySelectedMembers;
         selectMembers.forEach(catMember => {
           const catSelectedIndex = categorySelectedMembersBuffer.indexOf(catMember.name);
-
+          
           if (catSelectedIndex === -1) {
             onMemberSelect(nextCategory).add(catMember);
           } else {
@@ -174,9 +164,9 @@ const Cube = ({ members, selectedMembers, onMemberSelect }) => {
       }
 
       if (selectedIndex === -1) {
-        onMemberSelect(nextCategory).add(member);
+        onMemberSelect(searchCategory).add(member);
       } else {
-        onMemberSelect(nextCategory).remove({ ...member, index: selectedIndex });
+        onMemberSelect(searchCategory).remove({ ...member, index: selectedIndex });
       }
 
       return;
@@ -214,11 +204,26 @@ const Cube = ({ members, selectedMembers, onMemberSelect }) => {
   };
 
   const getCategory = (category) => {
-    const catMembers = getMembersCategory(category);
+    let catMembers = getMembersCategory(category);
+
     if (!catMembers.length) {
       return null;
     }
-    // console.log(catMembers);
+    
+    catMembers = catMembers.reduce((acc, member) => {
+      let newMembers = acc;
+
+      if (member.type === 'time') {
+        const granMembers = granulateMember(member);
+        newMembers = newMembers.concat(granMembers);
+        
+      } else {
+        newMembers.push(member);
+      }
+
+      return newMembers;
+    }, []);
+
     const {
       subSections,
       freeMembers

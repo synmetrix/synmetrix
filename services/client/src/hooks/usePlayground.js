@@ -43,8 +43,8 @@ const reducer = (state, action) => {
 export const getTitle = (settings, column) => (settings.hideCubeNames ? column.shortTitle : column.title);
 
 export const getColumns = (selectedQueryMembers, settings = {}) => [
-  ...Object.values(selectedQueryMembers.dimensions || {}),
-  ...Object.values(selectedQueryMembers.measures || {})
+  ...Object.values(selectedQueryMembers.dimensions || {}).map(d => ({ ...d, name: d.name.replace('+', '.') })),
+  ...Object.values(selectedQueryMembers.measures || {}),
 ].map(c => ({ id: c.name, Header: getTitle(settings, c), accessor: (row) => row[c.name], colId: c.name, type: c.type }));
 
 export default ({ dataSourceId, meta = [], editId, rowsLimit, offset }) => {
