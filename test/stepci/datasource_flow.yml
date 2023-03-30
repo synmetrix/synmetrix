@@ -293,6 +293,66 @@ tests:
             status: 200
             jsonpath:
               $.data.gen_dataschemas.code: "ok"
+
+      - name: create_exploration
+        http:
+          url: ${{env.HASURA_ENDPOINT}}
+          method: POST
+          headers:
+            Content-Type: application/json
+            Authorization: Bearer ${{captures.accessToken}}
+            x-hasura-user-id: ${{captures.userId}}
+          graphql:
+            query: |
+              mutation ($object: explorations_insert_input!) {
+                insert_explorations_one(object: $object) {
+                  id
+                }
+              }
+            variables:
+              object:
+                datasource_id: ${{captures.datasourceId}}
+                playground_state:
+                  page: 0
+                  limit: 1000
+                  order: []
+                  offset: 0
+                  filters: []
+                  measures: ["CellTowers.count"]
+                  segments: []
+                  timezone: "UTC"
+                  dimensions: ["CellTowers.lon", "CellTowers.created", "CellTowers.updated"]
+                  timeDimensions: []
+          captures:
+            explorationId:
+              jsonpath: $.data.insert_explorations_one.id
+          check:
+            status: 200
+            jsonpath:
+              $.data.insert_explorations_one.id:
+                - isString: true
+      - name: fetch_dataset
+        http:
+          url: ${{env.HASURA_ENDPOINT}}
+          method: POST
+          headers:
+            Content-Type: application/json
+            Authorization: Bearer ${{captures.accessToken}}
+          graphql:
+            query: |
+              query ($exploration_id: uuid!, $offset: Int, $limit: Int) {
+                fetch_dataset(exploration_id: $exploration_id, offset: offset, limit: $limit) {
+                  data
+                }
+              }
+            variables:
+              exploration_id: ${{captures.explorationId}}
+              limit: 5
+          check:
+            status: 200
+            jsonpath:
+              $.data.fetch_dataset.data:
+                - isObject: true
       - name: export_data_models
         http:
           url: ${{env.HASURA_ENDPOINT}}
