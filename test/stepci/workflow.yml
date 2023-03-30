@@ -1,6 +1,13 @@
 version: "1.1"
 name: Step CI Testing workflow
 env:
+  DATABASE_NAME:	"default"
+  DATABASE_HOST:	"gh-api.clickhouse.tech"
+  DATABASE_PORT:	"443"
+  DATABASE_USER:	"play"
+  DATABASE_TYPE: "CLICKHOUSE"
+  DATABASE_USE_SSL: true
+  DATASOURCE_NAME:	"gh-api.clickhouse.tech (Yandex Demo Test)"
   TEST_USER_EMAIL: test@test.com
 include:
   - datasource_flow.yml

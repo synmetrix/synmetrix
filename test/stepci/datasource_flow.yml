@@ -186,13 +186,13 @@ tests:
             variables:
               object:
                 db_params:
-                  database:	"default"
-                  host:	"gh-api.clickhouse.tech"
-                  port:	"443"
-                  ssl: true
-                  user:	"play"
-                db_type: "CLICKHOUSE"
-                name:	"gh-api.clickhouse.tech (Yandex Demo Test)"
+                  database:	${{env.DATABASE_NAME}}
+                  host:	${{env.DATABASE_HOST}}
+                  port:	${{env.DATABASE_PORT}}
+                  ssl: ${{env.DATABASE_USE_SSL}}
+                  user:	${{env.DATABASE_USER}}
+                db_type: ${{env.DATABASE_TYPE}}
+                name:	${{env.DATASOURCE_NAME}}
                 team_id: ${{captures.teamId}}
           captures:
             datasourceId:
