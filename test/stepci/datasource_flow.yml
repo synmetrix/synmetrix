@@ -1,0 +1,214 @@
+tests:
+  datasource_flow:
+    steps:
+      - name: delete_user
+        http:
+          url: ${{env.HASURA_ENDPOINT}}
+          method: POST
+          headers:
+            Content-Type: application/json
+            x-hasura-admin-secret: ${{env.HASURA_GRAPHQL_ADMIN_SECRET}}
+          graphql:
+            query: |
+              mutation delete_user($display_name: String){
+                delete_users(where: {display_name: {_eq: $display_name}}) {
+                  affected_rows
+                }
+              }
+            variables:
+              display_name: ${{env.TEST_USER_EMAIL}}
+          check:
+            status: 200
+            jsonpath:
+              $.data.delete_users.affected_rows:
+                - isNumber: true
+      - name: sign_up
+        http:
+          url: ${{env.HASURA_PLUS_ENDPOINT}}/auth/register
+          method: POST
+          headers:
+            Content-Type: application/json
+          body: |
+            {
+              "email": "${{env.TEST_USER_EMAIL}}",
+              "password": "pass321",
+              "cookie": false
+            }
+          captures:
+            accessToken:
+              jsonpath: $.jwt_token
+            refreshToken:
+              jsonpath: $.refresh_token
+          check:
+            status: 200
+            jsonpath:
+              $.refresh_token:
+                - isString: true
+      - name: refresh_token
+        http:
+          url: ${{env.HASURA_PLUS_ENDPOINT}}/auth/token/refresh?refresh_token=${{captures.refreshToken}}
+          method: GET
+          headers:
+            Content-Type: application/json
+            Authorization: Bearer ${{captures.accessToken}}
+          captures:
+            refreshToken:
+              jsonpath: $.refresh_token
+          check:
+            status: 200
+            jsonpath:
+              $.refresh_token:
+                - isString: true
+      - name: change_password
+        http:
+          url: ${{env.HASURA_PLUS_ENDPOINT}}/auth/change-password
+          method: POST
+          headers:
+            Content-Type: application/json
+            Authorization: Bearer ${{captures.accessToken}}
+          body: |
+            {
+              "old_password": "pass321",
+              "new_password": "pass123"
+            }
+          check:
+            status: 204
+      - name: logout
+        http:
+          url: ${{env.HASURA_PLUS_ENDPOINT}}/auth/logout?refresh_token=${{captures.refreshToken}}
+          method: POST
+          headers:
+            Authorization: Bearer ${{captures.accessToken}}
+          check:
+            status: 204
+      - name: login
+        http:
+          url: ${{env.HASURA_PLUS_ENDPOINT}}/auth/login
+          method: POST
+          headers:
+            Content-Type: application/json
+          body: |
+            {
+              "email": "${{env.TEST_USER_EMAIL}}",
+              "password": "pass123",
+              "cookie": false
+            }
+          captures:
+            accessToken:
+              jsonpath: $.jwt_token
+            userId:
+              jsonpath: $.user.id
+            refreshToken:
+              jsonpath: $.refresh_token
+          check:
+            status: 200
+            jsonpath:
+              $.jwt_token:
+                - isString: true
+              $.user.id:
+                - isString: true
+              $.refresh_token:
+                - isString: true
+      - name: create_datasource
+        http:
+          url: ${{env.HASURA_ENDPOINT}}
+          method: POST
+          headers:
+            Content-Type: application/json
+            Authorization: Bearer ${{captures.accessToken}}
+            x-hasura-user-id: ${{captures.userId}}
+          graphql:
+            query: |
+              mutation ($object: datasources_insert_input!) {
+                insert_datasources_one(object: $object) {
+                  id
+                  name
+                }
+              }
+            variables:
+              object:
+                db_params:
+                  database:	"default"
+                  host:	"gh-api.clickhouse.tech"
+                  port:	"443"
+                  ssl: true
+                  user:	"play"
+                db_type: "CLICKHOUSE"
+                name:	"gh-api.clickhouse.tech (Yandex Demo Test)"
+          captures:
+            datasourceId:
+              jsonpath: $.data.insert_datasources_one.id
+          check:
+            status: 200
+            jsonpath:
+              $.data.insert_datasources_one.id:
+                - isString: true
+              $.data.insert_datasources_one.name:
+                - isString: true
+      - name: validate_datasource
+        http:
+          url: ${{env.HASURA_ENDPOINT}}
+          method: POST
+          headers:
+            Content-Type: application/json
+            Authorization: Bearer ${{captures.accessToken}}
+            x-hasura-user-id: ${{captures.userId}}
+          graphql:
+            query: |
+              mutation ($id: uuid!) {
+                validate_datasource(id: $id) {
+                  code
+                  message
+                }
+              }
+            variables:
+              id: ${{captures.datasourceId}}
+          check:
+            status: 200
+            jsonpath:
+              $.data.validate_datasource.code: "ok"
+      - name: fetch_tables
+        http:
+          url: ${{env.HASURA_ENDPOINT}}
+          method: POST
+          headers:
+            Content-Type: application/json
+            Authorization: Bearer ${{captures.accessToken}}
+            x-hasura-user-id: ${{captures.userId}}
+          graphql:
+            query: |
+              query ($id: uuid!) {
+                fetch_tables(datasource_id: $id) {
+                  schema
+                }
+              }
+            variables:
+              id: ${{captures.datasourceId}}
+          check:
+            status: 200
+            jsonpath:
+              $.data.fetch_tables.schema.default:
+                - isObject: true
+      - name: gen_dataschemas
+        http:
+          url: ${{env.HASURA_ENDPOINT}}
+          method: POST
+          headers:
+            Content-Type: application/json
+            Authorization: Bearer ${{captures.accessToken}}
+            x-hasura-user-id: ${{captures.userId}}
+          graphql:
+            query: |
+              mutation ($datasource_id: uuid!, $tables: [SourceTable!]!) {
+                gen_dataschemas(datasource_id: $datasource_id, tables: $tables) {
+                  code
+                  message
+                }
+              }
+            variables:
+              datasource_id: ${{captures.datasourceId}}
+              tables: [{"name":"default/cell_towers"}, {"name":"default/checks"}]
+          check:
+            status: 200
+            jsonpath:
+              $.data.gen_dataschemas.code: "ok"

@@ -1,9 +1,6 @@
 version: "1.1"
 name: Step CI Testing workflow
 env:
-  HASURA_GRAPHQL_ADMIN_SECRET: devsecret
-  HASURA_GRAPHQL_URL: http://hasura:8080/v1/graphql
-  ACTIONS_SERVER_URL: http://actions:8080
-  USER_ID: 400d3e0a-3cbf-48c2-84ba-be55e0c64631
+  TEST_USER_EMAIL: test@test.com
 include:
-  - user.yml
+  - datasource_flow.yml
