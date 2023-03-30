@@ -109,6 +109,64 @@ tests:
                 - isString: true
               $.refresh_token:
                 - isString: true
+      - name: create_team
+        http:
+          url: ${{env.HASURA_ENDPOINT}}
+          method: POST
+          headers:
+            Content-Type: application/json
+            Authorization: Bearer ${{captures.accessToken}}
+            x-hasura-user-id: ${{captures.userId}}
+          graphql:
+            query: |
+              mutation ($name: String!) {
+                create_team(name: $name) {
+                  id
+                  name
+                }
+              }
+            variables:
+              name: "Test team"
+          captures:
+            teamId:
+              jsonpath: $.data.create_team.id
+          check:
+            status: 200
+            jsonpath:
+              $.data.create_team.id:
+                - isString: true
+              $.data.create_team.name:
+                - isString: true
+      # SMTP disabled on dev
+      # - name: invite_team_member
+      #   http:
+      #     url: ${{env.HASURA_ENDPOINT}}
+      #     method: POST
+      #     headers:
+      #       Content-Type: application/json
+      #       Authorization: Bearer ${{captures.accessToken}}
+      #       x-hasura-user-id: ${{captures.userId}}
+      #     graphql:
+      #       query: |
+      #         mutation ($email: String!, $teamId: uuid) {
+      #           invite_team_member(email: $email, teamId: $teamId) {
+      #             code
+      #             message
+      #             memberId
+      #           }
+      #         }
+      #       variables:
+      #         email: "invite@test.com"
+      #         teamId: ${{captures.teamId}}
+      #     check:
+      #       status: 200
+      #       jsonpath:
+      #         $.data.invite_team_member.code:
+      #           - isString: true
+      #         $.data.invite_team_member.message:
+      #           - isString: true
+      #         $.data.invite_team_member.memberId:
+      #           - isString: true
       - name: create_datasource
         http:
           url: ${{env.HASURA_ENDPOINT}}
@@ -135,6 +193,7 @@ tests:
                   user:	"play"
                 db_type: "CLICKHOUSE"
                 name:	"gh-api.clickhouse.tech (Yandex Demo Test)"
+                team_id: ${{captures.teamId}}
           captures:
             datasourceId:
               jsonpath: $.data.insert_datasources_one.id
@@ -145,6 +204,28 @@ tests:
                 - isString: true
               $.data.insert_datasources_one.name:
                 - isString: true
+      - name: check_connection
+        http:
+          url: ${{env.HASURA_ENDPOINT}}
+          method: POST
+          headers:
+            Content-Type: application/json
+            Authorization: Bearer ${{captures.accessToken}}
+            x-hasura-user-id: ${{captures.userId}}
+          graphql:
+            query: |
+              mutation ($datasource_id: uuid!) {
+                check_connection(datasource_id: $datasource_id) {
+                  code
+                  message
+                }
+              }
+            variables:
+              datasource_id: ${{captures.datasourceId}}
+          check:
+            status: 200
+            jsonpath:
+              $.data.check_connection.code: "ok"
       - name: validate_datasource
         http:
           url: ${{env.HASURA_ENDPOINT}}
@@ -212,3 +293,69 @@ tests:
             status: 200
             jsonpath:
               $.data.gen_dataschemas.code: "ok"
+      - name: export_data_models
+        http:
+          url: ${{env.HASURA_ENDPOINT}}
+          method: POST
+          headers:
+            Content-Type: application/json
+            Authorization: Bearer ${{captures.accessToken}}
+            x-hasura-user-id: ${{captures.userId}}
+          graphql:
+            query: |
+              mutation ($team_id: String, $branch: String) {
+                export_data_models(team_id: $team_id, branch: $branch) {
+                  download_url
+                }
+              }
+            variables:
+              team_id: ${{captures.teamId}}
+          check:
+            status: 200
+            jsonpath:
+              $.data.export_data_models.download_url:
+                - isString: true
+      - name: fetch_meta
+        http:
+          url: ${{env.HASURA_ENDPOINT}}
+          method: POST
+          headers:
+            Content-Type: application/json
+            Authorization: Bearer ${{captures.accessToken}}
+          graphql:
+            query: |
+              query ($datasource_id: uuid!) {
+                fetch_meta(datasource_id: $datasource_id) {
+                  cubes
+                }
+              }
+            variables:
+              datasource_id: ${{captures.datasourceId}}
+          check:
+            status: 200
+            jsonpath:
+              $.data.fetch_meta.cubes:
+                - isObject: true
+      - name: run_query
+        http:
+          url: ${{env.HASURA_ENDPOINT}}
+          method: POST
+          headers:
+            Content-Type: application/json
+            Authorization: Bearer ${{captures.accessToken}}
+          graphql:
+            query: |
+              mutation ($datasource_id: uuid!, $query: String!, $limit: Int!) {
+                run_query(datasource_id: $datasource_id, query: $query, limit: $limit) {
+                  result
+                }
+              }
+            variables:
+              datasource_id: ${{captures.datasourceId}}
+              query: "SELECT count(check_name) FROM default.checks"
+              limit: 5
+          check:
+            status: 200
+            jsonpath:
+              $.data.run_query.result[0].count(check_name):
+                - isString: true
