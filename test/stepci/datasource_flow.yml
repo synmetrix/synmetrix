@@ -190,13 +190,13 @@ tests:
             variables:
               object:
                 db_params:
-                  database:	${{env.DATABASE_NAME}}
-                  host:	${{env.DATABASE_HOST}}
-                  port:	${{env.DATABASE_PORT}}
+                  database: ${{env.DATABASE_NAME}}
+                  host: ${{env.DATABASE_HOST}}
+                  port: ${{env.DATABASE_PORT}}
                   ssl: ${{env.DATABASE_USE_SSL}}
-                  user:	${{env.DATABASE_USER}}
+                  user: ${{env.DATABASE_USER}}
                 db_type: ${{env.DATABASE_TYPE}}
-                name:	${{env.DATASOURCE_NAME}}
+                name: ${{env.DATASOURCE_NAME}}
                 team_id: ${{captures.teamId}}
           captures:
             datasourceId:
