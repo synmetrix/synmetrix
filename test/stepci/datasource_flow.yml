@@ -1,7 +1,7 @@
 tests:
   datasource_flow:
     steps:
-      - name: delete_user
+      - name: delete_test_data
         http:
           url: ${{env.HASURA_ENDPOINT}}
           method: POST
@@ -10,13 +10,22 @@ tests:
             x-hasura-admin-secret: ${{env.HASURA_GRAPHQL_ADMIN_SECRET}}
           graphql:
             query: |
-              mutation delete_user($display_name: String){
-                delete_users(where: {display_name: {_eq: $display_name}}) {
+              mutation delete_test_data($users_where: users_bool_exp!, $teams_where: teams_bool_exp!){
+                delete_users(where: $users_where) {
+                  affected_rows
+                }
+
+                delete_teams(where: $teams_where) {
                   affected_rows
                 }
               }
             variables:
-              display_name: ${{env.TEST_USER_EMAIL}}
+              users_where:
+                display_name:
+                  _in: ["${{env.TEST_USER_EMAIL}}", "${{env.INVITE_USER_EMAIL}}"]
+              teams_where:
+                name:
+                  _in: ["${{env.TEST_TEAM_NAME}}"]
           check:
             status: 200
             jsonpath:
@@ -126,7 +135,7 @@ tests:
                 }
               }
             variables:
-              name: "Test team"
+              name: ${{env.TEST_TEAM_NAME}}
           captures:
             teamId:
               jsonpath: $.data.create_team.id
@@ -137,36 +146,31 @@ tests:
                 - isString: true
               $.data.create_team.name:
                 - isString: true
-      # SMTP disabled on dev
-      # - name: invite_team_member
-      #   http:
-      #     url: ${{env.HASURA_ENDPOINT}}
-      #     method: POST
-      #     headers:
-      #       Content-Type: application/json
-      #       Authorization: Bearer ${{captures.accessToken}}
-      #       x-hasura-user-id: ${{captures.userId}}
-      #     graphql:
-      #       query: |
-      #         mutation ($email: String!, $teamId: uuid) {
-      #           invite_team_member(email: $email, teamId: $teamId) {
-      #             code
-      #             message
-      #             memberId
-      #           }
-      #         }
-      #       variables:
-      #         email: "invite@test.com"
-      #         teamId: ${{captures.teamId}}
-      #     check:
-      #       status: 200
-      #       jsonpath:
-      #         $.data.invite_team_member.code:
-      #           - isString: true
-      #         $.data.invite_team_member.message:
-      #           - isString: true
-      #         $.data.invite_team_member.memberId:
-      #           - isString: true
+      - name: invite_team_member
+        http:
+          url: ${{env.HASURA_ENDPOINT}}
+          method: POST
+          headers:
+            Content-Type: application/json
+            Authorization: Bearer ${{captures.accessToken}}
+            x-hasura-user-id: ${{captures.userId}}
+          graphql:
+            query: |
+              mutation ($email: String!, $teamId: uuid) {
+                invite_team_member(email: $email, teamId: $teamId) {
+                  code
+                  message
+                  memberId
+                }
+              }
+            variables:
+              email: "invite@test.com"
+              teamId: ${{captures.teamId}}
+          check:
+            status: 200
+            jsonpath:
+              $.data.invite_team_member.memberId:
+                - isString: true
       - name: create_datasource
         http:
           url: ${{env.HASURA_ENDPOINT}}

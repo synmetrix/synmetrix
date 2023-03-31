@@ -9,5 +9,7 @@ env:
   DATABASE_USE_SSL: true
   DATASOURCE_NAME:	"gh-api.clickhouse.tech (Yandex Demo Test)"
   TEST_USER_EMAIL: test@test.com
+  INVITE_USER_EMAIL: invite@test.com
+  TEST_TEAM_NAME: Test team
 include:
   - datasource_flow.yml
