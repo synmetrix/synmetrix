@@ -173,6 +173,16 @@ The core MLCraft is available under the [Apache License 2.0](https://github.com/
 
 All **other contents** are available under the [MIT License](LICENSE-community).
 
+## Contributors
+
+[@ifokeev](https://github.com/ifokeev)
+
+[@ilyozzz](https://github.com/ilyozzz)
+
+[@Libertonius](https://github.com/Libertonius)
+
+[@AlinaKhay](https://github.com/alinakhay)
+
 ## Authors
 
 [@ifokeev](https://github.com/ifokeev)
