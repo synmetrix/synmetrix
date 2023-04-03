@@ -11,6 +11,7 @@ import postgres from 'assets/images/postgres.svg';
 import redshift from 'assets/images/redshift.svg';
 import mongobi from 'assets/images/mongobi.svg';
 import clickhouse from 'assets/images/clickhouse.svg';
+import snowflake from 'assets/images/snowflake.svg';
 
 import useFormItems from 'hooks/useFormItems';
 import FormTiles from './FormTiles';
@@ -118,9 +119,42 @@ const connectionFormItems = {
       label: 'SSL PASSPHRASE',
     },
   },
+  snowflake: {
+    'db_params.database': {
+      label: 'Database Name',
+      required: true,
+      placeholder: 'SNOWFLAKE',
+    },
+    'db_params.warehouse': {
+      label: 'Warehouse',
+      required: true,
+      placeholder: 'MY_WAREHOUSE',
+    },
+    'db_params.account': {
+      label: 'Account ID',
+      required: true,
+      placeholder: '<ORG_ID>-<ACCOUNT_ID>',
+    },
+    'db_params.username': {
+      label: 'Username',
+      required: true,
+      placeholder: 'user',
+    },
+    'db_params.password': {
+      label: 'Password',
+      required: true,
+      placeholder: 'pass',
+    },
+    'db_params.role': {
+      label: 'Role',
+      required: true,
+      placeholder: 'PUBLIC',
+    },
+  }
 };
 
 const dbTiles = [
+  { title: 'SNOWFLAKE', imgSrc: snowflake },
   { title: 'POSTGRES', imgSrc: postgres },
   { title: 'MYSQL', imgSrc: mysql },
   { title: 'MONGOBI', imgSrc: mongobi },
