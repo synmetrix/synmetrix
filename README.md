@@ -180,3 +180,5 @@ All **other contents** are available under the [MIT License](LICENSE-community).
 [@ilyozzz](https://github.com/ilyozzz)
 
 [@Libertonius](https://github.com/Libertonius)
+
+[@AlinaKhay](https://github.com/alinakhay)
