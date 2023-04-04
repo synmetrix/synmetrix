@@ -4,6 +4,16 @@ const CUBEJS_URL = process.env.CUBEJS_URL || `http://localhost:${CUBEJS_PORT}`;
 // cubejs JWT secret
 const CUBEJS_SECRET = process.env.CUBEJS_SECRET || 'cubejsSecret';
 
+// cubestore
+const CUBEJS_CUBESTORE_PORT = process.env.CUBEJS_CUBESTORE_PORT || 3030;
+const CUBEJS_CUBESTORE_HOST = process.env.CUBEJS_CUBESTORE_HOST || 'cubestore';
+// cubejs sql api
+const CUBEJS_SQL_PORT = process.env.CUBEJS_SQL_PORT || 13306;
+const CUBEJS_PG_SQL_PORT = process.env.CUBEJS_PG_SQL_PORT || 15432;
+
+const CUBEJS_MYSQL_API_URL = process.CUBEJS_MYSQL_API_URL || `http://localhost:${CUBEJS_SQL_PORT}`
+const CUBEJS_PG_API_URL = process.CUBEJS_PG_API_URL || `http://localhost:${CUBEJS_PG_SQL_PORT}`
+
 // internal actions server url
 const ACTIONS_PORT = process.env.ACTIONS_PORT || 3000;
 const ACTIONS_URL = process.env.ACTIONS_URL || `http://localhost:${ACTIONS_PORT}`;
@@ -49,6 +59,8 @@ module.exports = {
         GRAPHQL_SERVER_URL: '/v1/graphql',
         GRAPHQL_WS_URL: '/v1/graphql',
         GRAPHQL_PLUS_SERVER_URL: '',
+        CUBEJS_PG_API_URL,
+        CUBEJS_MYSQL_API_URL,
       }
     },
     {
@@ -134,6 +146,10 @@ module.exports = {
         PORT: CUBEJS_PORT,
         HASURA_ENDPOINT,
         CUBEJS_SECRET,
+        CUBEJS_CUBESTORE_HOST,
+        CUBEJS_CUBESTORE_PORT,
+        CUBEJS_SQL_PORT,
+        CUBEJS_PG_SQL_PORT,
       }
     },
     {

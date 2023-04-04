@@ -35,8 +35,8 @@ services:
     ports:
       - 4000:4000
       - 9231:9229
-      - 3306:3306
-      - 5432:5432
+      - 13306:13306
+      - 15432:15432
     env_file:
       - .env
       - .dev.env
@@ -105,7 +105,13 @@ services:
     networks:
       - mlcraft_default
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      test:
+        [
+          "CMD",
+          "curl",
+          "-f",
+          "http://localhost:9000/minio/health/live"
+        ]
       interval: 30s
       timeout: 20s
       retries: 3
@@ -132,7 +138,7 @@ services:
     build:
       context: ./services/client/
       args:
-        NODE_ENV: 
+        NODE_ENV:
     environment:
       GRAPHQL_SERVER_URL: http://hasura:8080/v1/graphql
       GRAPHQL_WS_URL: ws://hasura:8080/v1/graphql
@@ -142,7 +148,7 @@ services:
 
   cubestore:
     ports:
-       - 3030:3030
+      - 3030:3030
 
 volumes:
   pgstorage-data:

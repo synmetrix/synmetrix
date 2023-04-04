@@ -22,9 +22,9 @@ services:
     build:
       context: ./services/hasura
     volumes:
-       - ./services/hasura/migrations:/hasura-migrations
-       - ./services/hasura/metadata:/hasura-metadata
-       - ./services/hasura/seeds:/seeds
+      - ./services/hasura/migrations:/hasura-migrations
+      - ./services/hasura/metadata:/hasura-metadata
+      - ./services/hasura/seeds:/seeds
     environment:
       ENABLE_TELEMETRY: "false"
     networks:
@@ -34,12 +34,12 @@ services:
     build:
       context: ./scripts/containers/hasura-backend-plus
     volumes:
-       - ./scripts/containers/hasura-backend-plus/storage-rules/rules.yaml:/app/custom/storage-rules/rules.yaml
+      - ./scripts/containers/hasura-backend-plus/storage-rules/rules.yaml:/app/custom/storage-rules/rules.yaml
     networks:
       - mlcraft_default
 
   cubestore:
-    image: cubejs/cubestore:v0.32.4
+    image: cubejs/cubestore:${CUBESTORE_VERSION:-v0.32.4}
     environment:
       - CUBESTORE_REMOTE_DIR=/cube/data
     volumes:
