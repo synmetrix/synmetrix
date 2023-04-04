@@ -14,7 +14,13 @@ import {
   findSqlCredentials,
 } from './src/utils/dataSourceHelpers.js';
 
-const { CUBEJS_SECRET } = process.env;
+const { 
+  CUBEJS_SECRET,
+  CUBEJS_SQL_PORT,
+  CUBEJS_PG_SQL_PORT,
+  CUBEJS_CUBESTORE_PORT,
+  CUBEJS_CUBESTORE_HOST,
+} = process.env;
 
 const port = parseInt(process.env.PORT, 10) || 4000;
 const app = express();
@@ -222,14 +228,14 @@ const options = {
   scheduledRefreshContexts,
   externalDbType: 'cubestore',
   externalDriverFactory: async () => ServerCore.createDriver('cubestore', {
-    host: 'cubestore',
-    port: 3030
+    host: CUBEJS_CUBESTORE_HOST,
+    port: CUBEJS_CUBESTORE_PORT
   }),
   cacheAndQueueDriver: 'cubestore',
 
   // sql server
-  pgSqlPort: 5432,
-  sqlPort: 3306,
+  pgSqlPort: CUBEJS_PG_SQL_PORT,
+  sqlPort: CUBEJS_SQL_PORT,
   canSwitchSqlUser: () => false,
   checkSqlAuth: async (req, user) => {
     const sqlCredentials = await findSqlCredentials(user);
