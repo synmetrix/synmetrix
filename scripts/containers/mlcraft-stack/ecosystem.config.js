@@ -11,8 +11,8 @@ const CUBEJS_CUBESTORE_HOST = process.env.CUBEJS_CUBESTORE_HOST || 'cubestore';
 const CUBEJS_SQL_PORT = process.env.CUBEJS_SQL_PORT || 13306;
 const CUBEJS_PG_SQL_PORT = process.env.CUBEJS_PG_SQL_PORT || 15432;
 
-const CUBEJS_MYSQL_API_URL = process.CUBEJS_MYSQL_API_URL || `http://localhost:${CUBEJS_SQL_PORT}`
-const CUBEJS_PG_API_URL = process.CUBEJS_PG_API_URL || `http://localhost:${CUBEJS_PG_SQL_PORT}`
+const CUBEJS_MYSQL_API_URL = process.CUBEJS_MYSQL_API_URL || `localhost:${CUBEJS_SQL_PORT}`
+const CUBEJS_PG_API_URL = process.CUBEJS_PG_API_URL || `localhost:${CUBEJS_PG_SQL_PORT}`
 
 // internal actions server url
 const ACTIONS_PORT = process.env.ACTIONS_PORT || 3000;
