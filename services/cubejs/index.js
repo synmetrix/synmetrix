@@ -234,8 +234,8 @@ const options = {
   cacheAndQueueDriver: 'cubestore',
 
   // sql server
-  pgSqlPort: CUBEJS_PG_SQL_PORT,
-  sqlPort: CUBEJS_SQL_PORT,
+  pgSqlPort: parseInt(CUBEJS_PG_SQL_PORT, 10),
+  sqlPort: parseInt(CUBEJS_SQL_PORT, 10),
   canSwitchSqlUser: () => false,
   checkSqlAuth: async (req, user) => {
     const sqlCredentials = await findSqlCredentials(user);
