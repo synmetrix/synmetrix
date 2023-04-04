@@ -20,6 +20,7 @@ const {
   CUBEJS_PG_SQL_PORT,
   CUBEJS_CUBESTORE_PORT,
   CUBEJS_CUBESTORE_HOST,
+  CUBEJS_TELEMETRY = false,
 } = process.env;
 
 const port = parseInt(process.env.PORT, 10) || 4000;
@@ -196,7 +197,7 @@ const dbType = ({ securityContext }) => {
 const scheduledRefreshContexts = async () => {
   const dataSources = await getDataSources();
 
-  return dataSources.map(dataSource => {
+  return (dataSources || []).map(dataSource => {
     return {
       securityContext: buildSecurityContext(dataSource),
     };
@@ -223,7 +224,7 @@ const options = {
     };
   },
   preAggregationsSchema: ({ securityContext }) => `pre_aggregations_${securityContext?.dataSourceVersion}`,
-  telemetry: false,
+  telemetry: CUBEJS_TELEMETRY,
   scheduledRefreshTimer: 60,
   scheduledRefreshContexts,
   externalDbType: 'cubestore',
