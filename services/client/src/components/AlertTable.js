@@ -5,18 +5,17 @@ import cronstrue from 'cronstrue';
 
 import { Row, Col, Tooltip } from 'antd';
 
-
 import equals from 'utils/equals';
-import useReports from 'hooks/useReports';
+import useAlerts from 'hooks/useAlerts';
 import useTableState from 'hooks/useTableState';
 import useCurrentUserState from 'hooks/useCurrentUserState';
 
-import ReportModal from 'components/ReportModal';
+import AlertModal from 'components/AlertModal';
 import TableList from 'components/TableList';
 
 import formatDistanceToNow from '../utils/formatDistanceToNow';
 
-const ReportTable = ({ editId, onModalClose, onModalOpen }) => {
+const AlertTable = ({ editId, onModalClose, onModalOpen }) => {
   const initModal = id => ({
     editId: id,
     visibleModal: !!id,
@@ -40,9 +39,9 @@ const ReportTable = ({ editId, onModalClose, onModalOpen }) => {
   } = useTableState({});
 
   const {
-    all: reports,
+    all: alerts,
     totalCount,
-    current: report,
+    current: alert,
     queries: {
       allData: {
         fetching: allLoading,
@@ -53,7 +52,7 @@ const ReportTable = ({ editId, onModalClose, onModalOpen }) => {
       execQueryAll,
       execQueryCurrent,
     },
-  } = useReports({
+  } = useAlerts({
     params: {
       editId: state.editId,
     },
@@ -75,21 +74,21 @@ const ReportTable = ({ editId, onModalClose, onModalOpen }) => {
     if (dataDiff) {
       execQueryAll({ requestPolicy: 'network-only' });
     }
-  }, [currentUser.reports, execQueryAll]);
+  }, [currentUser.alerts, execQueryAll]);
 
-  const onReportOpen = (record) => {
+  const onAlertOpen = (record) => {
     onModalOpen(record);
     setState({ editId: record.id, visibleModal: true });
     execQueryCurrent();
   };
 
-  const onReportClose = () => {
+  const onAlertClose = () => {
     onModalClose();
     setState({ editId: null, visibleModal: false });
   };
 
   const onDelete = () => {
-    onReportClose();
+    onAlertClose();
   };
 
   const columns = [
@@ -102,6 +101,27 @@ const ReportTable = ({ editId, onModalClose, onModalOpen }) => {
       title: 'Delivery Type',
       dataIndex: 'delivery_type',
       key: 'delivery_type',
+    },
+    {
+      title: 'Bounds',
+      key: 'updated_at',
+      render: (_, record) => {
+        const { lowerBound, upperBound } = record.trigger_config;
+
+        if (lowerBound && upperBound) {
+          return `${lowerBound}-${upperBound}`;
+        }
+
+        if (lowerBound) {
+          return `${lowerBound}+`;
+        }
+
+        if (upperBound) {
+          return `up to ${upperBound}`;
+        }
+
+        return null;
+      },
     },
     {
       title: 'Schedule',
@@ -139,11 +159,11 @@ const ReportTable = ({ editId, onModalClose, onModalOpen }) => {
   ];
 
   return [
-    <ReportModal
+    <AlertModal
       key="modal"
-      title={report.name || ''}
-      report={report}
-      onCancel={onReportClose}
+      title={alert.name || ''}
+      alert={alert}
+      onCancel={onAlertClose}
       visible={state.visibleModal}
       loading={currentLoading}
       onDelete={onDelete}
@@ -157,9 +177,9 @@ const ReportTable = ({ editId, onModalClose, onModalOpen }) => {
           loading={allLoading}
           rowKey={row => row.id}
           columns={columns}
-          dataSource={Object.values(reports)}
+          dataSource={Object.values(alerts)}
           onRow={record => ({
-            onClick: () => onReportOpen(record),
+            onClick: () => onAlertOpen(record),
           })}
           pagination={{
             pageSize,
@@ -173,16 +193,16 @@ const ReportTable = ({ editId, onModalClose, onModalOpen }) => {
   ];
 };
 
-ReportTable.propTypes = {
+AlertTable.propTypes = {
   editId: PropTypes.string,
   onModalOpen: PropTypes.func,
   onModalClose: PropTypes.func,
 };
 
-ReportTable.defaultProps = {
+AlertTable.defaultProps = {
   editId: null,
   onModalOpen: () => { },
   onModalClose: () => { },
 };
 
-export default ReportTable;
+export default AlertTable;

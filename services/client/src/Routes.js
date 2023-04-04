@@ -30,6 +30,7 @@ import Team from './pages/Team';
 import Profile from './pages/Profile';
 import Charts from './pages/Charts';
 import Reports from './pages/Reports';
+import Alerts from './pages/Alerts';
 import ErrorFound from './components/ErrorFound';
 
 const Routes = () => {
@@ -70,6 +71,10 @@ const Routes = () => {
                         <Route path={withAuthPrefix('/reports/new/:deliveryType?')} component={Reports} />
                         <Route path={withAuthPrefix('/reports/:editId')} component={Reports} />
                         <Route path={withAuthPrefix('/reports')} component={Reports} />
+
+                        <Route path={withAuthPrefix('/alerts/new/:deliveryType?')} component={Alerts} />
+                        <Route path={withAuthPrefix('/alerts/:editId')} component={Alerts} />
+                        <Route path={withAuthPrefix('/alerts')} component={Alerts} />
 
                         <Route path={withAuthPrefix('/profile')} component={Profile} />
                         <Route path={withAuthPrefix('/schemas/:rest*')} component={DataSchemas} />

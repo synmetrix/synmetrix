@@ -23,28 +23,28 @@ const deliveryTiles = [
   { title: 'Email', imgSrc: email }
 ];
 
-const ReportForm = React.forwardRef((props, ref) => {
+const AlertForm = React.forwardRef((props, ref) => {
   const {
     edit, form, initialValues, onSubmit,
     onDeliveryTypeSelect,
     ...restProps
   } = props;
 
-  const { exploration, ...reportInitialValues } = initialValues;
-  const { delivery_type: deliveryType } = reportInitialValues;
+  const { exploration, ...alertInitialValues } = initialValues;
+  const { delivery_type: deliveryType } = alertInitialValues;
   const { playground_state: playgroundState, datasource_id: datasourceId } = exploration || {};
 
   const preparedInitialValues = useMemo(() => ({
-    ...reportInitialValues,
+    ...alertInitialValues,
     datasource_id: datasourceId,
     cube: playgroundState?.measures?.[0]?.split('.')?.[0],
     measure: playgroundState?.measures?.[0],
     granularity: playgroundState?.dimensions?.[0],
     since: playgroundState?.filters?.[0]?.values ?? DEFAULT_SINCE_VALUE,
     limit: playgroundState?.limit ?? DEFAULT_LIMIT_VALUE,
-  }), [datasourceId, playgroundState, reportInitialValues]);
+  }), [datasourceId, playgroundState, alertInitialValues]);
 
-  const config = useAlertsConfig({ form, initialValues: preparedInitialValues, entity: 'report' });
+  const config = useAlertsConfig({ form, initialValues: preparedInitialValues, entity: 'alert' });
 
   const [formItems] = useFormItems({ ref, form, initialValues: preparedInitialValues, config });
 
@@ -58,7 +58,7 @@ const ReportForm = React.forwardRef((props, ref) => {
     <Row gutter={24}>
       <Form onSubmit={onSubmit} {...restProps}>
         <Col span={12}>
-          <Form.Item label="Report Name" required>
+          <Form.Item label="Alert Name" required>
             {form.getFieldDecorator('name', {
               initialValue: initialValues.name,
               rules: [
@@ -82,7 +82,7 @@ const ReportForm = React.forwardRef((props, ref) => {
   );
 });
 
-ReportForm.propTypes = {
+AlertForm.propTypes = {
   form: PropTypes.object.isRequired,
   initialValues: PropTypes.object.isRequired,
   onSubmit: PropTypes.func.isRequired,
@@ -91,9 +91,9 @@ ReportForm.propTypes = {
   style: PropTypes.object,
 };
 
-ReportForm.defaultProps = {
+AlertForm.defaultProps = {
   edit: false,
   style: {},
 };
 
-export default Form.create()(ReportForm);
+export default Form.create()(AlertForm);
