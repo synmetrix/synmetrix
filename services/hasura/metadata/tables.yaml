@@ -61,6 +61,9 @@
             id:
               _eq: X-Hasura-User-Id
 - table:
+    name: migrations
+    schema: auth
+- table:
     name: providers
     schema: auth
   array_relationships:
@@ -1133,19 +1136,19 @@
             name: accounts
             schema: auth
   array_relationships:
-    - name: branches
-      using:
-        foreign_key_constraint_on:
-          column: user_id
-          table:
-            name: branches
-            schema: public
     - name: alerts
       using:
         foreign_key_constraint_on:
           column: user_id
           table:
             name: alerts
+            schema: public
+    - name: branches
+      using:
+        foreign_key_constraint_on:
+          column: user_id
+          table:
+            name: branches
             schema: public
     - name: dataschemas
       using:
@@ -1245,6 +1248,7 @@
           - checksum
           - created_at
           - id
+          - markdown_doc
           - updated_at
           - user_id
         filter:
@@ -1260,3 +1264,21 @@
                       user_id:
                         _eq: X-Hasura-User-Id
         allow_aggregations: true
+  event_triggers:
+    - name: generate_dataschemas_docs
+      definition:
+        enable_manual: true
+        insert:
+          columns: '*'
+      retry_conf:
+        interval_sec: 10
+        num_retries: 0
+        timeout_sec: 60
+      webhook: '{{ACTIONS_URL}}/rpc/gen_schemas_docs'
+      cleanup_config:
+        batch_size: 10000
+        clean_invocation_logs: false
+        clear_older_than: 168
+        paused: true
+        schedule: 0 0 * * *
+        timeout: 60

@@ -23,7 +23,7 @@ import usePermissions from 'hooks/usePermissions';
 import useLocation from 'hooks/useLocation';
 import useCheckResponse from 'hooks/useCheckResponse';
 import useCurrentUserState from 'hooks/useCurrentUserState';
-import useCurrentTeamState from 'hooks/useCurrentTeamState';
+// import useCurrentTeamState from 'hooks/useCurrentTeamState';
 import useAppSettings from 'hooks/useAppSettings';
 
 import Loader from 'components/Loader';
@@ -35,13 +35,14 @@ import GenDataSchemasForm from 'components/GenDataSchemasForm';
 import IdeConsole from 'components/IdeConsole';
 import ErrorFound from 'components/ErrorFound';
 import VersionsModal from '../components/VersionsModal';
+import MarkdownViewer from '../components/MarkdownViewer';
 
 import s from './DataSchemas.module.css';
 import SelectBranch from '../components/SelectBranch';
 
 const reservedSlugs = ['sqlrunner', 'genschema'];
 
-const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
+const DataSchemas = ({ editorWidth, editorHeight, match }) => {
   const { t } = useTranslation();
   // const { currentTeamState: currentTeam } = useCurrentTeamState();
   const { currentUserState } = useCurrentUserState();
@@ -587,6 +588,13 @@ const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
                 />
               </Tabs.TabPane>
             ))}
+            <Tabs.TabPane tab="Docs" key="docs" closable={false}>
+              <MarkdownViewer
+                data={currentVersion?.markdown_doc}
+                width={editorWidth}
+                height={editorHeight}
+              />
+            </Tabs.TabPane>
             <Tabs.TabPane tab="SQL Runner" key="sqlrunner" closable={false}>
               <SqlRunner
                 data={sqlResult}

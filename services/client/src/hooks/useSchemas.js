@@ -18,6 +18,7 @@ const allSchemasQuery = `
         checksum
         created_at
         updated_at
+        markdown_doc
         user {
           display_name
         }
