@@ -589,11 +589,7 @@ const DataSchemas = ({ editorWidth, editorHeight, match }) => {
               </Tabs.TabPane>
             ))}
             <Tabs.TabPane tab="Docs" key="docs" closable={false}>
-              <MarkdownViewer
-                data={currentVersion?.markdown_doc}
-                width={editorWidth}
-                height={editorHeight}
-              />
+              <MarkdownViewer versionId={currentVersion?.id} />
             </Tabs.TabPane>
             <Tabs.TabPane tab="SQL Runner" key="sqlrunner" closable={false}>
               <SqlRunner

@@ -55,38 +55,38 @@ const setMarkdownDocMutation = `
 
 const generateDataschemaDoc = (dataschema) => {
   let doc = `<details>\n`;
-  doc += `<summary><b>${dataschema.name}</b></summary>\n\n`;
+  doc += `<summary>${dataschema.name}</summary>\n\n`;
   
   if (dataschema?.measures?.length > 0) {
-    doc += header('Measures', { size: 3 });
+    doc += header('Measures', { size: 4 });
 
     doc += dataschema.measures.map(measure => {
-      const title = `Short title: ${measure.shortTitle}`;
-      const type = `Type: ${measure.type}`;
-      const aggType = `Aggregation Type: ${measure.aggType}`;
+      const title = `**Short title**: \`${measure.shortTitle}\``;
+      const type = `**Type**: \`${measure.type}\``;
+      const aggType = `**Aggregation Type**: \`${measure.aggType}\``;
 
-      return `${header(measure.name, { size: 4 })} \n ${unorderedList([title, type, aggType])}`;
+      return `${header(measure.name, { size: 5 })} \n ${unorderedList([title, type, aggType])}`;
     }).join('\n');
     doc += `\n`;
   }
 
   if (dataschema?.dimensions?.length > 0) {
-    doc += header('Dimensions', { size: 3 });
+    doc += header('Dimensions', { size: 4 });
     doc += dataschema.dimensions.map(dimension => {
-      const title = `Short title: ${dimension.shortTitle}`;
-      const type = `Type: ${dimension.type}`;
+      const title = `**Short title**: \`${dimension.shortTitle}\``;
+      const type = `**Type**: \`${dimension.type}\``;
   
-      return `${header(dimension.name, { size: 4 })} \n ${unorderedList([title, type])}`;
+      return `${header(dimension.name, { size: 5 })} \n ${unorderedList([title, type])}`;
     }).join('\n');
     doc += `\n`;
   }
 
   if (dataschema?.segments?.length > 0) {
-    doc += header('Segments', { size: 3 });
+    doc += header('Segments', { size: 4 });
     doc += dataschema?.segments?.map(segment => {
-      const name = `Name: ${segment.name}`;
+      const name = `**Name**: ${segment.name}`;
   
-      return header(name, { size: 4 });
+      return header(name, { size: 5 });
     }).join('\n');
     doc += `\n`;
   }
@@ -109,6 +109,9 @@ const generateVersionDoc = async ({ version }) => {
   let doc = header('Documentation', { size: 1 });
 
   doc += `This documentation covers branch "${branchName}" and the latest version of dataschemas.\n`;
+  doc += '\n';
+  doc += '---';
+  doc += '\n';
   doc += header('List of cubes:', { size: 4 });
 
   const dataschemasDocs = dataschemas.map(dataschema => {
@@ -119,6 +122,8 @@ const generateVersionDoc = async ({ version }) => {
   });
 
   doc += dataschemasDocs.join('\n');
+  doc += '\n';
+  doc += '---';
   doc += '\n';
 
   doc += header(`Version author: ${versionAuthorName}`, { size: 4 });
