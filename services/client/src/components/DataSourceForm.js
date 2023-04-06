@@ -11,7 +11,7 @@ import postgres from 'assets/images/postgres.svg';
 import redshift from 'assets/images/redshift.svg';
 import mongobi from 'assets/images/mongobi.svg';
 import clickhouse from 'assets/images/clickhouse.svg';
-import snowflake from 'assets/images/snowflake.svg';
+import snowflake from 'assets/images/snowflakes.svg';
 
 import useFormItems from 'hooks/useFormItems';
 import FormTiles from './FormTiles';
