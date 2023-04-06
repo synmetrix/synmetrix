@@ -37,6 +37,9 @@ services:
       - 9231:9229
       - 13306:13306
       - 15432:15432
+      - 3306:3306
+      - 5432:5432
+      - 9229:9229
     env_file:
       - .env
       - .dev.env
@@ -130,8 +133,8 @@ services:
     build:
       context: ./services/client/
       args:
-        NODE_ENV: 
-        ENABLE_MINIO_PROXY: true
+        NODE_ENV:
+        ENABLE_MINIO_PROXY: 'true'
     environment:
       GRAPHQL_SERVER_URL: http://hasura:8080/v1/graphql
       GRAPHQL_WS_URL: ws://hasura:8080/v1/graphql
@@ -144,6 +147,107 @@ services:
   cubestore:
     ports:
       - 3030:3030
+
+  trino:
+    image: trinodb/trino
+    volumes:
+      - ./trino/password.db:/etc/trino/password.db
+      - ./trino/password-authenticator.properties:/etc/trino/password-authenticator.properties
+      - ./trino/config.properties:/etc/trino/config.properties
+      - ./trino/pem/password.pem:/etc/trino/pem/password.pem
+    ports:
+      - 8088:8080
+    networks:
+      - mlcraft_default
+
+  prestodb:
+    image: ahanaio/prestodb-sandbox:0.266
+    ports:
+      - 8088:8080
+    volumes:
+      - ./prestodb/access-control.properties:/opt/presto-server/etc/access-control.properties
+      - ./prestodb/password-authenticator.properties:/opt/presto-server/etc/password-authenticator.properties
+      - ./prestodb/password.db:/opt/presto-server/etc/password.db
+    networks:
+      - mlcraft_default
+
+  # zookeeper:
+  #   image: confluentinc/cp-zookeeper:7.3.0
+  #   hostname: zookeeper
+  #   container_name: zookeeper
+  #   ports:
+  #     - "2181:2181"
+  #   environment:
+  #     ZOOKEEPER_CLIENT_PORT: 2181
+  #     ZOOKEEPER_TICK_TIME: 2000
+  #   networks:
+  #     - mlcraft_default
+
+  # broker:
+  #   image: confluentinc/cp-kafka:7.3.0
+  #   hostname: broker
+  #   container_name: broker
+  #   depends_on:
+  #     - zookeeper
+  #   ports:
+  #     - "29092:29092"
+  #   environment:
+  #     KAFKA_BROKER_ID: 1
+  #     KAFKA_ZOOKEEPER_CONNECT: 'zookeeper:2181'
+  #     KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+  #     KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://broker:9092,PLAINTEXT_HOST://localhost:29092
+  #     KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+  #     KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+  #     KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+  #     KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+  #   networks:
+  #     - mlcraft_default
+
+  # ksqldb-server:
+  #   image: confluentinc/ksqldb-server:0.28.2
+  #   hostname: ksqldb-server
+  #   container_name: ksqldb-server
+  #   depends_on:
+  #     - broker
+  #   ports:
+  #     - "8088:8088"
+  #   environment:
+  #     KSQL_LISTENERS: http://0.0.0.0:8088
+  #     KSQL_BOOTSTRAP_SERVERS: broker:9092
+  #     KSQL_KSQL_LOGGING_PROCESSING_STREAM_AUTO_CREATE: "true"
+  #     KSQL_KSQL_LOGGING_PROCESSING_TOPIC_AUTO_CREATE: "true"
+  #   networks:
+  #     - mlcraft_default
+
+  # ksqldb-cli:
+  #   image: confluentinc/ksqldb-cli:0.28.2
+  #   container_name: ksqldb-cli
+  #   depends_on:
+  #     - broker
+  #     - ksqldb-server
+  #   entrypoint: /bin/sh
+  #   tty: true
+  #   networks:
+  #     - mlcraft_default
+
+  materialized:
+    image: materialize/materialized:latest
+    ports:
+      - 6875:6875
+      - 6876:6876
+    networks:
+      - mlcraft_default
+
+  oracle:
+    image: gvenzl/oracle-xe:latest
+    environment:
+      ORACLE_RANDOM_PASSWORD: 'true'
+      APP_USER: my_user
+      APP_USER_PASSWORD: my_password_which_I_really_should_change
+    ports:
+      - 1521:1521
+    networks:
+      - mlcraft_default
 
 volumes:
   pgstorage-data:
