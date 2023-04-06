@@ -58,6 +58,7 @@ const Routes = () => {
                         <Route path={withAuthPrefix('/explore/:rest*')} component={Explore} />
 
                         <Route path={withAuthPrefix('/sources/new/:dbType?')} component={DataSources} />
+                        <Route path={withAuthPrefix('/sources/sql-interface')} component={DataSources} />
                         <Route path={withAuthPrefix('/sources/upload/:format?')} component={DataSources} />
                         <Route path={withAuthPrefix('/sources/:editId?/upload/:format?')} component={DataSources} />
                         <Route path={withAuthPrefix('/sources/:rowId?')} component={DataSources} />

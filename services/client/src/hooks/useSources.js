@@ -24,6 +24,16 @@ const datasourcesQuery = `
       db_type
       created_at
       updated_at
+      sql_credentials {
+        id
+        username
+        created_at
+        updated_at
+        user {
+          id
+          display_name
+        }
+      }
     }
     datasources_aggregate (where: $where) {
       aggregate {
@@ -98,8 +108,19 @@ const datasourcesSubscription = `
     datasources (offset: $offset, limit: $limit, where: $where, order_by: $order_by) {
       id
       name
-      user_id
-      team_id
+      db_type
+      created_at
+      updated_at
+      sql_credentials {
+        id
+        username
+        created_at
+        updated_at
+        user {
+          id
+          display_name
+        }
+      }
     }
   }
 `;
@@ -181,12 +202,6 @@ export default ({ pauseQueryAll, pagination = {}, params = {}, disableSubscripti
     role,
   });
 
-  const { run: execQueryAll } = useThrottleFn(() => {
-    return doQueryAll();
-  }, {
-    wait: 500,
-  });
-
   const [metaData, execQueryMeta] = useQuery({
     query: datasourceMetaQuery,
     pause: true,
@@ -206,9 +221,9 @@ export default ({ pauseQueryAll, pagination = {}, params = {}, disableSubscripti
 
   useEffect(() => {
     if (!pauseQueryAll) {
-      execQueryAll();
+      doQueryAll();
     }
-  }, [pauseQueryAll, execQueryAll]);
+  }, [pauseQueryAll, doQueryAll]);
 
   useTrackedEffect((changes, prevDeps, currDeps) => {
     const prevTeam = prevDeps?.[0];
@@ -216,9 +231,9 @@ export default ({ pauseQueryAll, pagination = {}, params = {}, disableSubscripti
     const currPause = currDeps?.[1];
 
     if (!currPause && prevTeam && currTeam && prevTeam !== currTeam) {
-      execQueryAll();
+      doQueryAll();
     }
-  }, [currentTeamState.id, pauseQueryAll, execQueryAll]);
+  }, [currentTeamState.id, pauseQueryAll, doQueryAll]);
 
   const all = useMemo(() => allData.data?.datasources || [], [allData.data]);
   const totalCount = useMemo(() => allData.data?.datasources_aggregate.aggregate.count, [allData.data]);
@@ -261,7 +276,7 @@ export default ({ pauseQueryAll, pagination = {}, params = {}, disableSubscripti
     currentMeta,
     queries: {
       allData,
-      execQueryAll,
+      execQueryAll: doQueryAll,
       currentData,
       execQueryCurrent,
       tablesData,

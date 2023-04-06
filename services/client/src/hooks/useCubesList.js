@@ -41,7 +41,7 @@ export default ({ query, availableQueryMembers, categories, openedCubes }) => {
         return {
           ...acc,
           [cube]: values,
-        }
+        };
       };
 
       const newMembers = Object.entries(availableQueryMembers).reduce(reducer, {});

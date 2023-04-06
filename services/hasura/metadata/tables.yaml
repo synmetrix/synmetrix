@@ -441,6 +441,13 @@
           table:
             name: explorations
             schema: public
+    - name: sql_credentials
+      using:
+        foreign_key_constraint_on:
+          column: datasource_id
+          table:
+            name: sql_credentials
+            schema: public
   insert_permissions:
     - role: user
       permission:
@@ -925,6 +932,48 @@
         paused: true
         schedule: 0 0 * * *
         timeout: 60
+- table:
+    name: sql_credentials
+    schema: public
+  object_relationships:
+    - name: datasource
+      using:
+        foreign_key_constraint_on: datasource_id
+    - name: user
+      using:
+        foreign_key_constraint_on: user_id
+  insert_permissions:
+    - role: user
+      permission:
+        check:
+          user_id:
+            _eq: X-Hasura-User-Id
+        set:
+          user_id: x-hasura-user-id
+        columns:
+          - datasource_id
+          - password
+          - username
+  select_permissions:
+    - role: user
+      permission:
+        columns:
+          - created_at
+          - datasource_id
+          - id
+          - updated_at
+          - user_id
+          - username
+        filter:
+          user_id:
+            _eq: X-Hasura-User-Id
+        allow_aggregations: true
+  delete_permissions:
+    - role: user
+      permission:
+        filter:
+          user_id:
+            _eq: X-Hasura-User-Id
 - table:
     name: team_roles
     schema: public
