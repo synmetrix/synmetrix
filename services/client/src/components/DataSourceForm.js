@@ -11,6 +11,7 @@ import postgres from 'assets/images/postgres.svg';
 import redshift from 'assets/images/redshift.svg';
 import mongobi from 'assets/images/mongobi.svg';
 import clickhouse from 'assets/images/clickhouse.svg';
+import materialize from 'assets/images/materialize.svg';
 
 import useFormItems from 'hooks/useFormItems';
 import FormTiles from './FormTiles';
@@ -118,6 +119,35 @@ const connectionFormItems = {
       label: 'SSL PASSPHRASE',
     },
   },
+  materialize: {
+    'db_params.host': {
+      label: 'Host',
+      required: true,
+      placeholder: 'example.com',
+    },
+    'db_params.port': {
+      label: 'Port',
+      required: true,
+      placeholder: '5432',
+    },
+    'db_params.name': {
+      label: 'Database name',
+      placeholder: 'example.com',
+    },
+    'db_params.user': {
+      label: 'Username',
+      placeholder: 'username',
+    },
+    'db_params.pass': {
+      label: 'Password',
+      placeholder: 'password',
+    },
+    'db_params.ssl': {
+      display: 'checkbox',
+      label: 'Use SSL',
+      value: 'yes',
+    },
+  }
 };
 
 const dbTiles = [
@@ -128,7 +158,8 @@ const dbTiles = [
   { title: 'BIGQUERY', imgSrc: bigquery },
   { title: 'REDSHIFT', imgSrc: redshift },
   { title: 'MSSQL', imgSrc: mssql },
-  { title: 'CLICKHOUSE', imgSrc: clickhouse }
+  { title: 'CLICKHOUSE', imgSrc: clickhouse },
+  { title: 'MATERIALIZE', imgSrc: materialize },
 ];
 
 // example of use Antd Form with forwardRef
