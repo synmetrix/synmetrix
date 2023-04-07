@@ -37,13 +37,13 @@ const SelectBranch = ({ onChange, onCreate, onSetDefault, branchStatus, currentB
     if (!loading && branches.length && !branches.find(b => b.status === 'active')) {
       onSetDefault(branches?.[0]?.id);
     }
-  }, 
+  },
   [branches, loading, onSetDefault], {
     wait: 1000,
   });
 
   useEffect(() => {
-    if ((!currentBranchId && branches) || (branches.length && !branches.find(b => b.id === currentBranchId))) {
+    if ((!currentBranchId && branches.length) || (branches.length && !branches.find(b => b.id === currentBranchId))) {
       onChange(branches?.[0]?.id);
     }
   }, [currentBranchId, branches, onChange]);
@@ -55,6 +55,8 @@ const SelectBranch = ({ onChange, onCreate, onSetDefault, branchStatus, currentB
       {item.name}{item.status === 'active' && ' - default'}
     </Option>
   )), [branches]);
+
+  const value = useMemo(() => branches.find(b => b.id === currentBranchId) ? currentBranchId : '', [branches, currentBranchId]);
 
   return (
     <div style={{ padding: '10px', maxWidth: '100%' }}>
@@ -78,7 +80,7 @@ const SelectBranch = ({ onChange, onCreate, onSetDefault, branchStatus, currentB
             open={state.selectOpen}
             loading={loading}
             onSelect={onSelect}
-            defaultValue={currentBranchId}
+            value={value}
             dropdownRender={menu => (
               <div
                 onMouseLeave={() => updateState(prev => ({ ...prev, selectOpen: false }))}
