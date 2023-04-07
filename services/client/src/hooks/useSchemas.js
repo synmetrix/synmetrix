@@ -36,7 +36,7 @@ const allSchemasQuery = `
 
 const delSchemaMutation = `
   mutation ($id: uuid!) {
-    update_branches_by_pk(_set: {status: "arhived"}, pk_columns: {id: $id}) {
+    update_branches_by_pk(_set: {status: "archived"}, pk_columns: {id: $id}) {
       id
     }
   }
