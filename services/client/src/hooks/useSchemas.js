@@ -36,7 +36,7 @@ const allSchemasQuery = `
 
 const delSchemaMutation = `
   mutation ($id: uuid!) {
-    update_branches_by_pk(_set: {status: "archived"}, pk_columns: {id: $id}) {
+    update_branches_by_pk(_set: {status: archived}, pk_columns: {id: $id}) {
       id
     }
   }
@@ -82,11 +82,11 @@ const newVersionMutation = `
 `;
 const setDefaultBranchMutation = `
   mutation ($branch_id: uuid!, $datasource_id: uuid!) {
-    update_branches(_set: {status: "created"}, where: {datasource_id: {_eq: $datasource_id}, status: {_eq: "active"}}) {
+    update_branches(_set: {status: created}, where: {datasource_id: {_eq: $datasource_id}, status: {_eq: active}}) {
       affected_rows
     }
 
-    update_branches_by_pk(_set: {status: "active"}, pk_columns: {id: $branch_id}) {
+    update_branches_by_pk(_set: {status: active}, pk_columns: {id: $branch_id}) {
       id
     }
   }

@@ -33,7 +33,7 @@ const sourcesQuery = `
 
 const allSchemasQuery = `
   query ($order_by: [versions_order_by!], $datasource_id: uuid) {
-    branches(limit: 1, where: {status: {_eq: "active"}, datasource_id: {_eq: $datasource_id}}) {
+    branches(limit: 1, where: {status: {_eq: active}, datasource_id: {_eq: $datasource_id}}) {
       versions(limit: 1, order_by: $order_by) {
         dataschemas {
           id

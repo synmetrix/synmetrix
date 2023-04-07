@@ -88,7 +88,7 @@ const currentUserQuery = `
 
     branches (
       order_by: { created_at: desc },
-      where: {status: { _neq: "archived" }}
+      where: {status: { _neq: archived }}
     ) {
       ${branchesFragment}
     }
@@ -142,7 +142,7 @@ const currentUserWithTeamQuery = `
           team_id: { _eq: $teamId }
         },
         status: {
-          _neq: "archived"
+          _neq: archived
         }
       }
     ) {
