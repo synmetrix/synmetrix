@@ -121,7 +121,7 @@ export const createDataSchema = async (object) => {
   const { authToken, ...version } = object;
 
   let res = await fetchGraphQL(upsertVersionMutation, { object: version }, authToken);
-  res = res?.data?.insert_dataschemas_one;
+  res = res?.data?.insert_versions_one;
 
   return res;
 };

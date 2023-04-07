@@ -109,6 +109,7 @@ export default ({ basePath, setupAuthInfo, cubejs }) => {
         name: file.fileName,
         code: file.content,
         user_id: userId,
+        datasource_id: dataSourceId,
       }));
 
       const commitObject = {
