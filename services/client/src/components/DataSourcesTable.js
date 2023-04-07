@@ -1,10 +1,10 @@
 import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { useSetState , useTrackedEffect } from 'ahooks';
+import { useSetState, useTrackedEffect } from 'ahooks';
 
 
 import { useTranslation } from 'react-i18next';
-import { Row, Col } from 'antd';
+import { Row, Col, Button } from 'antd';
 
 import equals from 'utils/equals';
 import useSources from 'hooks/useSources';
@@ -14,6 +14,8 @@ import useCurrentUserState from 'hooks/useCurrentUserState';
 
 import DataSourceModal from 'components/DataSourceModal';
 import TableList from 'components/TableList';
+import { CUBEJS_MYSQL_API_URL, CUBEJS_PG_API_URL } from '../hooks/useAppSettings';
+import useSQLCredentials from '../hooks/useSQLCredentials';
 
 import formatDistanceToNow from '../utils/formatDistanceToNow';
 
@@ -26,6 +28,13 @@ const DataSourcesTable = ({ editId, onModalClose, onModalOpen }) => {
 
   const [state, setState] = useSetState(initModal(editId));
   const { currentUserState: currentUser } = useCurrentUserState();
+
+  const { 
+    mutations: {
+      deleteMutation: deleteSqlCredential,
+      execDeleteMutation: execDeleteSqlCredential,
+    }
+  } = useSQLCredentials();
 
   useEffect(
     () => setState(initModal(editId)),
@@ -94,7 +103,7 @@ const DataSourcesTable = ({ editId, onModalClose, onModalOpen }) => {
   };
 
   const onSave = (_record, values) => {
-    execUpdateMutation({ 
+    execUpdateMutation({
       pk_columns: { id: state.editId },
       _set: values,
     });
@@ -104,8 +113,12 @@ const DataSourcesTable = ({ editId, onModalClose, onModalOpen }) => {
     onDataSourceClose();
   };
 
-  useCheckResponse(updateMutation, () => {}, {
+  useCheckResponse(updateMutation, () => { }, {
     successMessage: t('Saved')
+  });
+
+  useCheckResponse(deleteSqlCredential, () => { }, {
+    successMessage: t('Deleted')
   });
 
   const columns = [
@@ -135,6 +148,52 @@ const DataSourcesTable = ({ editId, onModalClose, onModalOpen }) => {
       render: (_, record) => {
         const createdAt = formatDistanceToNow(record.created_at);
         return createdAt;
+      },
+    },
+  ];
+
+  const expandedTableColumns = [
+    {
+      title: 'PG Host',
+      dataIndex: 'pg_host',
+      key: 'pg_host',
+      render: () => CUBEJS_MYSQL_API_URL,
+    },
+    {
+      title: 'MySQL Host',
+      dataIndex: 'mysql_host',
+      key: 'mysql_host',
+      render: () => CUBEJS_PG_API_URL,
+    },
+    {
+      title: 'Username',
+      dataIndex: 'username',
+      key: 'username',
+    },
+    {
+      title: 'Created by',
+      dataIndex: 'user_id',
+      key: 'user_id',
+      render: (_, record) => record?.user?.display_name,
+    },
+    {
+      title: 'Created At',
+      dataIndex: 'created_at',
+      key: 'created_at',
+      render: (_, record) => {
+        const createdAt = formatDistanceToNow(record.created_at);
+        return createdAt;
+      },
+    },
+    {
+      title: 'Action',
+      dataIndex: 'action',
+      render: (_, record) => {
+        return (
+          <Button style={{ padding: 0 }} type="link" onClick={() => execDeleteSqlCredential({ id: record.id })}>
+            Delete
+          </Button>
+        );
       },
     },
   ];
@@ -169,6 +228,16 @@ const DataSourcesTable = ({ editId, onModalClose, onModalOpen }) => {
             current: currentPage,
           }}
           onChange={onPageChange}
+          expandedRowRender={record => (
+            <TableList
+              columns={expandedTableColumns}
+              pagination={false}
+              rowKey={row => row.id}
+              dataSource={dataSources?.find(({ id }) => id === record.id)?.sql_credentials || []}
+              locale={{ emptyText: t('No attached SQL interfaces') }}
+              noEmptyImage
+            />
+          )}
         />
       </Col>
     </Row>

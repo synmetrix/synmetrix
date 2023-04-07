@@ -1,29 +1,8 @@
-import inflection from 'inflection';
 import express from 'express';
+import { ScaffoldingTemplate } from '@cubejs-backend/schema-compiler';
 
 import { findDataSchemas, createDataSchema } from '../utils/dataSourceHelpers.js';
 import createMd5Hex from '../utils/md5Hex.js';
-
-const ADAPTERS = {
-  postgres: 'postgres',
-  redshift: 'redshift',
-  mysql: 'mysql',
-  mysqlauroraserverless: 'mysql',
-  mongobi: 'mongobi',
-  mssql: 'mssql',
-  bigquery: 'bigquery',
-  prestodb: 'prestodb',
-  qubole_prestodb: 'qubolePrestodb',
-  athena: 'prestodb',
-  vertica: 'vertica',
-  snowflake: 'snowflake',
-  clickhouse: 'clickhouse',
-  hive: 'hive',
-  oracle: 'oracle',
-  sqlite: 'sqlite',
-  awselasticsearch: 'awselasticsearch',
-  elasticsearch: 'elasticsearch',
-};
 
 const router = express.Router();
 export default ({ basePath, setupAuthInfo, cubejs }) => {
@@ -102,15 +81,10 @@ export default ({ basePath, setupAuthInfo, cubejs }) => {
       const schema = await driver.tablesSchema();
       const { tables = [], overwrite = false, branchId } = (req.body || {});
 
-      const scaffoldingTemplateModule = await import('../schema_compiler/scaffolding/ScaffoldingTemplate.js');
-      const dialectType = ADAPTERS[dbType];
-
-      const dialectModule = await import(`../schema_compiler/scaffolding/dialect/${dialectType}.js`);
-
-      const scaffoldingTemplate = new scaffoldingTemplateModule.default(schema, driver);
+      const scaffoldingTemplate = new ScaffoldingTemplate(schema, driver, 'js');
       const normalizedTables = tables.map(table => table?.name?.replace('/', '.'));
 
-      let files = scaffoldingTemplate.generateFilesByTableNames(normalizedTables, { dbType, dialect: dialectModule });
+      let files = scaffoldingTemplate.generateFilesByTableNames(normalizedTables);
 
       const dataSchemas = await findDataSchemas({
         branchId,
