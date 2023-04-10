@@ -133,5 +133,3 @@ services:
 
 volumes:
   pgstorage-data:
-  nginx-dhparam:
-  nginx-ssl:
