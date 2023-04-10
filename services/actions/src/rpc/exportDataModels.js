@@ -34,8 +34,12 @@ export default async (session, input) => {
 
   try {
     const schemasResp = await fetchGraphQL(fetchSchemasQuery, { branch_id: branchId });
-    const branch = schemasResp?.data?.branches_by_pk || {};
+    const branch = schemasResp?.data?.branches_by_pk;
     const schemas = branch?.versions?.[0]?.dataschemas || [];
+
+    if (!branch) {
+      throw new Error(`Branch ${branchId} not found!`);
+    }
 
     const now = Date.now();
 

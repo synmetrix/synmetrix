@@ -17,7 +17,7 @@ const SelectBranch = ({ onChange, onCreate, onSetDefault, branchStatus, currentB
 
   const [state, updateState] = useState({
     selectOpen: false,
-    newBranchName: 'New branch',
+    newBranchName: t('New branch'),
   });
 
   const onSelect = useCallback((value) => {
