@@ -11,6 +11,7 @@ import postgres from 'assets/images/postgres.svg';
 import redshift from 'assets/images/redshift.svg';
 import mongobi from 'assets/images/mongobi.svg';
 import clickhouse from 'assets/images/clickhouse.svg';
+import druid from 'assets/images/druid.svg';
 
 import useFormItems from 'hooks/useFormItems';
 import FormTiles from './FormTiles';
@@ -118,6 +119,23 @@ const connectionFormItems = {
       label: 'SSL PASSPHRASE',
     },
   },
+  druid: {
+    'db_params.url': {
+      label: 'Url',
+      required: true,
+      placeholder: 'http://broker:8082',
+    },
+    'db_params.user': {
+      label: 'User',
+      required: false,
+      placeholder: 'username',
+    },
+    'db_params.password': {
+      label: 'Password',
+      required: false,
+      placeholder: 'password',
+    },
+  },
 };
 
 const dbTiles = [
@@ -128,7 +146,8 @@ const dbTiles = [
   { title: 'BIGQUERY', imgSrc: bigquery },
   { title: 'REDSHIFT', imgSrc: redshift },
   { title: 'MSSQL', imgSrc: mssql },
-  { title: 'CLICKHOUSE', imgSrc: clickhouse }
+  { title: 'CLICKHOUSE', imgSrc: clickhouse },
+  { title: 'DRUID', imgSrc: druid },
 ];
 
 // example of use Antd Form with forwardRef

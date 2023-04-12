@@ -11,6 +11,7 @@
     "@cubejs-backend/bigquery-driver": "^0.32.4",
     "@cubejs-backend/clickhouse-driver": "^0.32.2",
     "@cubejs-backend/cubestore-driver": "^0.32.4",
+    "@cubejs-backend/druid-driver": "^0.32.25",
     "@cubejs-backend/mongobi-driver": "^0.32.2",
     "@cubejs-backend/mssql-driver": "^0.32.2",
     "@cubejs-backend/mysql-driver": "^0.32.4",

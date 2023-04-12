@@ -182,6 +182,10 @@ const driverFactory = async ({ securityContext }) => {
   try {
     const dbDriver = DriverDependencies[dbType];
     driverModule = await import(dbDriver);
+
+    if (dbType === 'druid') {
+      driverModule = driverModule.default;
+    }
   } catch (err) {
     return driverError(err);
   }
