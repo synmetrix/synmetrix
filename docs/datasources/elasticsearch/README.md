@@ -67,11 +67,11 @@ Password: password
 
 Click on the **Try sample data** link:
 
-![Try sample data screenshot](docs/images/elasticsearch1.png)
+![Try sample data screenshot](/docs/images/elasticsearch1.png)
 
 At the bottom of the page, click **Other sample data sets**:
 
-![Other sample data sets screenshot](docs/images/elasticsearch2.png)
+![Other sample data sets screenshot](/docs/images/elasticsearch2.png)
 
 Choose a dataset and click **Add data**.
 
