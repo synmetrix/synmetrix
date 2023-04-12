@@ -11,6 +11,7 @@ import postgres from 'assets/images/postgres.svg';
 import redshift from 'assets/images/redshift.svg';
 import mongobi from 'assets/images/mongobi.svg';
 import clickhouse from 'assets/images/clickhouse.svg';
+import elasticsearch from 'assets/images/elasticsearch.svg';
 
 import useFormItems from 'hooks/useFormItems';
 import FormTiles from './FormTiles';
@@ -118,6 +119,29 @@ const connectionFormItems = {
       label: 'SSL PASSPHRASE',
     },
   },
+  elasticsearch: {
+    'db_params.url': {
+      label: 'Url',
+      required: true,
+    },
+    'db_params.username': {
+      label: 'User',
+    },
+    'db_params.password': {
+      label: 'Password',
+    },
+    'db_params.apiId': {
+      label: 'API ID',
+    },
+    'db_params.apiKey': {
+      label: 'API KEY',
+    },
+    'db_params.ssl': {
+      display: 'checkbox',
+      label: 'Use SSL',
+      value: 'yes',
+    },
+  },
 };
 
 const dbTiles = [
@@ -128,7 +152,8 @@ const dbTiles = [
   { title: 'BIGQUERY', imgSrc: bigquery },
   { title: 'REDSHIFT', imgSrc: redshift },
   { title: 'MSSQL', imgSrc: mssql },
-  { title: 'CLICKHOUSE', imgSrc: clickhouse }
+  { title: 'CLICKHOUSE', imgSrc: clickhouse },
+  { title: 'ELASTICSEARCH', imgSrc: elasticsearch },
 ];
 
 // example of use Antd Form with forwardRef

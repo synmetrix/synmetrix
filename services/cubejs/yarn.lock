@@ -2509,6 +2509,14 @@
     "@cubejs-backend/shared" "^0.32.2"
     ramda "^0.27.0"
 
+"@cubejs-backend/base-driver@^0.32.23":
+  version "0.32.23"
+  resolved "https://registry.yarnpkg.com/@cubejs-backend/base-driver/-/base-driver-0.32.23.tgz#0c23709bea7124e1047383da28ef21803110a8a8"
+  integrity sha512-Q1P7baMIHR5z05iuH7MOEvLqs4ktDOqRb+bRcB3s6mLQr43v4zgx53ASfGrh3hLrEjwLUTkY4NOBNORFiS1Vsg==
+  dependencies:
+    "@cubejs-backend/shared" "^0.32.23"
+    ramda "^0.27.0"
+
 "@cubejs-backend/bigquery-driver@^0.32.4":
   version "0.32.4"
   resolved "https://registry.yarnpkg.com/@cubejs-backend/bigquery-driver/-/bigquery-driver-0.32.4.tgz#39fd68b7931bb436009459bc136453cef2092af1"
@@ -2612,6 +2620,16 @@
   version "9.0.2"
   resolved "https://registry.yarnpkg.com/@cubejs-backend/dotenv/-/dotenv-9.0.2.tgz#c3679091b702f0fd38de120c5a63943fcdc0dcbf"
   integrity sha512-yC1juhXEjM7K97KfXubDm7WGipd4Lpxe+AT8XeTRE9meRULrKlw0wtE2E8AQkGOfTBn+P1SCkePQ/BzIbOh1VA==
+
+"@cubejs-backend/elasticsearch-driver@^0.32.23":
+  version "0.32.23"
+  resolved "https://registry.yarnpkg.com/@cubejs-backend/elasticsearch-driver/-/elasticsearch-driver-0.32.23.tgz#032dcf0540a9672ecf3874a4b879feed0de4975b"
+  integrity sha512-Xc003QWkqBwyERtL/Sy3YReqmxveBI6aOZccePMzVSfSHklIw5L+cqJ+4zPwkTQZl6zsV0UEXdK0XXE1QAVmMw==
+  dependencies:
+    "@cubejs-backend/base-driver" "^0.32.23"
+    "@cubejs-backend/shared" "^0.32.23"
+    "@elastic/elasticsearch" "7.12.0"
+    sqlstring "^2.3.1"
 
 "@cubejs-backend/mongobi-driver@^0.32.2":
   version "0.32.2"
@@ -2781,6 +2799,26 @@
     throttle-debounce "^3.0.1"
     uuid "^8.3.2"
 
+"@cubejs-backend/shared@^0.32.23":
+  version "0.32.23"
+  resolved "https://registry.yarnpkg.com/@cubejs-backend/shared/-/shared-0.32.23.tgz#fce94e65629fa1e990b3afdb292ffaa175b9793e"
+  integrity sha512-QDPtxYPF1xy76XAikeNuR92un1kmwl+qykIraMOjVfyC8YbDzcR7PZ6IKDGUKKZolgeDlICn9rTdxJUSZewENw==
+  dependencies:
+    "@oclif/color" "^0.1.2"
+    bytes "^3.1.0"
+    cli-progress "^3.9.0"
+    cross-spawn "^7.0.3"
+    decompress "^4.2.1"
+    env-var "^6.3.0"
+    fs-extra "^9.1.0"
+    http-proxy-agent "^4.0.1"
+    moment-range "^4.0.1"
+    moment-timezone "^0.5.33"
+    node-fetch "^2.6.1"
+    shelljs "^0.8.5"
+    throttle-debounce "^3.0.1"
+    uuid "^8.3.2"
+
 "@cubejs-backend/templates@^0.32.2":
   version "0.32.2"
   resolved "https://registry.yarnpkg.com/@cubejs-backend/templates/-/templates-0.32.2.tgz#18bce4d49398e09ab5de62e464c36353ee5e94c1"
@@ -2794,6 +2832,17 @@
     node-fetch "^2.6.1"
     ramda "^0.27.2"
     source-map-support "^0.5.19"
+
+"@elastic/elasticsearch@7.12.0":
+  version "7.12.0"
+  resolved "https://registry.yarnpkg.com/@elastic/elasticsearch/-/elasticsearch-7.12.0.tgz#dbb51a2841f644b670a56d8c15899e860928856f"
+  integrity sha512-GquUEytCijFRPEk3DKkkDdyhspB3qbucVQOwih9uNyz3iz804I+nGBUsFo2LwVvLQmQfEM0IY2+yoYfEz5wMug==
+  dependencies:
+    debug "^4.3.1"
+    hpagent "^0.1.1"
+    ms "^2.1.3"
+    pump "^3.0.0"
+    secure-json-parse "^2.3.1"
 
 "@google-cloud/bigquery@^5.6.0":
   version "5.8.0"
@@ -4832,6 +4881,11 @@ hmac-drbg@^1.0.1:
     minimalistic-assert "^1.0.0"
     minimalistic-crypto-utils "^1.0.1"
 
+hpagent@^0.1.1:
+  version "0.1.2"
+  resolved "https://registry.yarnpkg.com/hpagent/-/hpagent-0.1.2.tgz#cab39c66d4df2d4377dbd212295d878deb9bdaa9"
+  integrity sha512-ePqFXHtSQWAFXYmj+JtOTHr84iNrII4/QRlAAPPE+zqnKy4xJo7Ie1Y4kC7AdB+LxLxSTTzBMASsEcy0q8YyvQ==
+
 http-cache-semantics@^4.0.0:
   version "4.1.0"
   resolved "https://registry.yarnpkg.com/http-cache-semantics/-/http-cache-semantics-4.1.0.tgz#49e91c5cbf36c9b94bcfcd71c23d5249ec74e390"
@@ -5677,7 +5731,7 @@ ms@2.1.2:
   resolved "https://registry.yarnpkg.com/ms/-/ms-2.1.2.tgz#d09d1f357b443f493382a8eb3ccd183872ae6009"
   integrity sha512-sGkPx+VjMtmA6MX27oA4FBFELFCZZ4S4XqeGOXCv68tT+jb3vk/RyaKWP0PTKyWtmLSM0b+adUTEvbs1PEaH2w==
 
-ms@2.1.3, ms@^2.1.1:
+ms@2.1.3, ms@^2.1.1, ms@^2.1.3:
   version "2.1.3"
   resolved "https://registry.yarnpkg.com/ms/-/ms-2.1.3.tgz#574c8138ce1d2b5861f0b44579dbadd60c6615b2"
   integrity sha512-6FlzubTLZG3J2a/NVCAleEhjzq5oxgHyaCU9yYXvcLsvoVaHJq/s5xXI6/XXP6tz7R9xAOtHnSO/tXtF3WRTlA==
@@ -6497,6 +6551,11 @@ sax@>=0.6.0:
   version "1.2.4"
   resolved "https://registry.yarnpkg.com/sax/-/sax-1.2.4.tgz#2816234e2378bddc4e5354fab5caa895df7100d9"
   integrity sha512-NqVDv9TpANUjFm0N8uM5GxL36UgKi9/atZw+x7YFnQ8ckwFGKrl4xX4yWtrey3UJm5nP1kUbnYgLopqWNSRhWw==
+
+secure-json-parse@^2.3.1:
+  version "2.7.0"
+  resolved "https://registry.yarnpkg.com/secure-json-parse/-/secure-json-parse-2.7.0.tgz#5a5f9cd6ae47df23dba3151edd06855d47e09862"
+  integrity sha512-6aU+Rwsezw7VR8/nyvKTx8QpWH9FrcYiXXlqC4z5d5XQBDRqtbfsRjnwGyqbi3gddNtWHuEk9OANUotL26qKUw==
 
 seek-bzip@^1.0.5:
   version "1.0.6"
