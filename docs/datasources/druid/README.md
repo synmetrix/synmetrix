@@ -14,6 +14,8 @@ services:
       - POSTGRES_PASSWORD=FoolishPassword
       - POSTGRES_USER=druid
       - POSTGRES_DB=druid
+    networks:
+      - mlcraft_default
 
   zookeeper:
     container_name: zookeeper
@@ -25,7 +27,7 @@ services:
       - ZOO_MY_ID=1
       - druid_host=zookeeper
     env_file:
-      - environment
+      - .test_env
     networks:
       - mlcraft_default
 
@@ -46,7 +48,7 @@ services:
     environment:
       - druid_host=coordinator
     env_file:
-      - environment
+      - .test_env
     networks:
       - mlcraft_default
 
@@ -67,7 +69,7 @@ services:
     environment:
       - druid_host=broker
     env_file:
-      - environment
+      - .test_env
     networks:
       - mlcraft_default
 
@@ -89,7 +91,7 @@ services:
     environment:
       - druid_host=historical
     env_file:
-      - environment
+      - .test_env
     networks:
       - mlcraft_default
 
@@ -112,7 +114,7 @@ services:
     environment:
       - druid_host=middlemanager
     env_file:
-      - environment
+      - .test_env
     networks:
       - mlcraft_default
 
@@ -133,13 +135,9 @@ services:
     environment:
       - druid_host=router
     env_file:
-      - environment
+      - .test_env
     networks:
       - mlcraft_default
-
-  cubestore:
-    ports:
-      - 3030:3030
 
 volumes:
   # ...previous volumes
@@ -188,7 +186,12 @@ druid_processing_numMergeBuffers=2
 DRUID_LOG4J=<?xml version="1.0" encoding="UTF-8" ?><Configuration status="WARN"><Appenders><Console name="Console" target="SYSTEM_OUT"><PatternLayout pattern="%d{ISO8601} %p [%t] %c - %m%n"/></Console></Appenders><Loggers><Root level="info"><AppenderRef ref="Console"/></Root><Logger name="org.apache.druid.jetty.RequestLog" additivity="false" level="DEBUG"><AppenderRef ref="Console"/></Logger></Loggers></Configuration>
 ```
 
-## Step 3: Run the command `python3 cli.py services up`
+## Step 3: Run the services
+
+Run the command 
+```
+python3 cli.py services up
+```
 
 Wait for the cluster to start and go to http://localhost:8889.
 
@@ -208,16 +211,18 @@ Next, select the "Example data" tile and click "Load example".
 
 ![Load example data](/docs/images/druid3.png)
 
-Click the button with the text "Next: ..." in the bottom right corner until the data starts loading (about 9 times). When the data starts loading, you will be redirected to the Ingestion tab and see the message "Task submitted successfully. Going to task view...".
-After the data has finished loading, the task status will change to SUCCESS.
+Click the button with the text "Next: ..." in the bottom right corner until the data starts loading (about 9 times).
+When the data starts loading, you will be redirected to the Ingestion tab and see the message "Task submitted successfully. Going to task view...".
 
 ![Next button](/docs/images/druid4.png)
+
+After the data has finished loading, the task status will change to SUCCESS.
 
 ## Step 6: Create a new Druid datasource in MLCraft
 
 Fill out the form with the following information:
 
-Name: Druid test datasource
-Url: http://broker:8082
+- Name: Druid test datasource
+- Url: http://broker:8082
 
 Currently, the Test Connection feature is not implemented and always returns "OK". To ensure functionality, generate a schema and request any data in the Explore tab.
