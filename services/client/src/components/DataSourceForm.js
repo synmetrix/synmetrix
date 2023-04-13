@@ -11,6 +11,7 @@ import postgres from 'assets/images/postgres.svg';
 import redshift from 'assets/images/redshift.svg';
 import mongobi from 'assets/images/mongobi.svg';
 import clickhouse from 'assets/images/clickhouse.svg';
+import snowflake from 'assets/images/snowflakes.svg';
 
 import useFormItems from 'hooks/useFormItems';
 import FormTiles from './FormTiles';
@@ -118,6 +119,43 @@ const connectionFormItems = {
       label: 'SSL PASSPHRASE',
     },
   },
+  snowflake: {
+    'db_params.database': {
+      label: 'Database Name',
+      required: true,
+      placeholder: 'SNOWFLAKE',
+    },
+    'db_params.warehouse': {
+      label: 'Warehouse',
+      required: true,
+      placeholder: 'MY_WAREHOUSE',
+    },
+    'db_params.orgId': {
+      label: 'Organization ID',
+      required: true,
+      placeholder: 'ABCDEF',
+    },
+    'db_params.accountId': {
+      label: 'Account ID',
+      required: true,
+      placeholder: 'AB12345',
+    },
+    'db_params.username': {
+      label: 'Username',
+      required: true,
+      placeholder: 'user',
+    },
+    'db_params.password': {
+      label: 'Password',
+      required: true,
+      placeholder: 'pass',
+    },
+    'db_params.role': {
+      label: 'Role',
+      required: true,
+      placeholder: 'PUBLIC',
+    },
+  }
 };
 
 const dbTiles = [
@@ -128,7 +166,8 @@ const dbTiles = [
   { title: 'BIGQUERY', imgSrc: bigquery },
   { title: 'REDSHIFT', imgSrc: redshift },
   { title: 'MSSQL', imgSrc: mssql },
-  { title: 'CLICKHOUSE', imgSrc: clickhouse }
+  { title: 'CLICKHOUSE', imgSrc: clickhouse },
+  { title: 'SNOWFLAKE', imgSrc: snowflake },
 ];
 
 // example of use Antd Form with forwardRef
