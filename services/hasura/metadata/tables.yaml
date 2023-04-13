@@ -239,14 +239,6 @@
     name: branch_statuses
     schema: public
   is_enum: true
-  array_relationships:
-    - name: branches
-      using:
-        foreign_key_constraint_on:
-          column: status
-          table:
-            name: branches
-            schema: public
 - table:
     name: branches
     schema: public
@@ -1060,13 +1052,18 @@
     - role: user
       permission:
         check:
-          user_id:
-            _eq: X-Hasura-User-Id
-        set:
-          user_id: x-hasura-user-id
+          _or:
+            - user_id:
+                _eq: X-Hasura-User-Id
+            - datasource:
+                team:
+                  members:
+                    user_id:
+                      _eq: X-Hasura-User-Id
         columns:
           - datasource_id
           - password
+          - user_id
           - username
   select_permissions:
     - role: user
@@ -1079,15 +1076,27 @@
           - user_id
           - username
         filter:
-          user_id:
-            _eq: X-Hasura-User-Id
+          _or:
+            - user_id:
+                _eq: X-Hasura-User-Id
+            - datasource:
+                team:
+                  members:
+                    user_id:
+                      _eq: X-Hasura-User-Id
         allow_aggregations: true
   delete_permissions:
     - role: user
       permission:
         filter:
-          user_id:
-            _eq: X-Hasura-User-Id
+          _or:
+            - user_id:
+                _eq: X-Hasura-User-Id
+            - datasource:
+                team:
+                  members:
+                    user_id:
+                      _eq: X-Hasura-User-Id
 - table:
     name: team_roles
     schema: public
@@ -1197,19 +1206,19 @@
             name: accounts
             schema: auth
   array_relationships:
-    - name: branches
-      using:
-        foreign_key_constraint_on:
-          column: user_id
-          table:
-            name: branches
-            schema: public
     - name: alerts
       using:
         foreign_key_constraint_on:
           column: user_id
           table:
             name: alerts
+            schema: public
+    - name: branches
+      using:
+        foreign_key_constraint_on:
+          column: user_id
+          table:
+            name: branches
             schema: public
     - name: dataschemas
       using:
@@ -1309,6 +1318,7 @@
           - checksum
           - created_at
           - id
+          - markdown_doc
           - updated_at
           - user_id
         filter:
@@ -1324,3 +1334,21 @@
                       user_id:
                         _eq: X-Hasura-User-Id
         allow_aggregations: true
+  event_triggers:
+    - name: generate_dataschemas_docs
+      definition:
+        enable_manual: true
+        insert:
+          columns: '*'
+      retry_conf:
+        interval_sec: 10
+        num_retries: 0
+        timeout_sec: 60
+      webhook: '{{ACTIONS_URL}}/rpc/gen_schemas_docs'
+      cleanup_config:
+        batch_size: 10000
+        clean_invocation_logs: false
+        clear_older_than: 168
+        paused: true
+        schedule: 0 0 * * *
+        timeout: 60
