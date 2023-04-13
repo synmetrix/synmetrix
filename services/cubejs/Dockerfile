@@ -21,10 +21,7 @@ COPY package.json /app/package.json
 
 RUN yarn --network-timeout 100000
 
-
-WORKDIR /app
 COPY index.js /app/
 COPY src/ /app/
-COPY package.json /app/
 
 CMD ["yarn", "start.dev"]
