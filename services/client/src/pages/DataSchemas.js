@@ -2,9 +2,9 @@ import React, { useMemo, useEffect, useState, useRef } from 'react';
 import PropTypes from 'prop-types';
 
 import equals from 'utils/equals';
-import { useTrackedEffect } from 'ahooks';
+import { useTrackedEffect, useLocalStorageState } from 'ahooks';
 import { useTranslation } from 'react-i18next';
-import { Tabs, message } from 'antd';
+import { Tabs, Divider, message } from 'antd';
 
 import JSZip from 'jszip';
 import { load } from 'js-yaml';
@@ -14,6 +14,7 @@ import { getOr } from 'unchanged';
 
 import withSizes from 'react-sizes';
 import compose from 'utils/compose';
+import calcChecksum from 'utils/dataschemasChecksum';
 
 import useSources from 'hooks/useSources';
 import useSchemas from 'hooks/useSchemas';
@@ -32,28 +33,34 @@ import IdeSchemasList from 'components/IdeSchemasList';
 import SqlRunner from 'components/SqlRunner';
 import GenDataSchemasForm from 'components/GenDataSchemasForm';
 import IdeConsole from 'components/IdeConsole';
-
 import ErrorFound from 'components/ErrorFound';
+import VersionsModal from '../components/VersionsModal';
+
 import s from './DataSchemas.module.css';
+import SelectBranch from '../components/SelectBranch';
 
 const reservedSlugs = ['sqlrunner', 'genschema'];
 
 const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
   const { t } = useTranslation();
-  const { currentUserState: currentUser } = useCurrentUserState();
-  const { currentTeamState: currentTeam } = useCurrentTeamState();
+  // const { currentTeamState: currentTeam } = useCurrentTeamState();
+  const { currentUserState } = useCurrentUserState();
+  const currentUser = currentUserState?.users_by_pk;
+
   const [, setLocation] = useLocation();
   const { withAuthPrefix } = useAppSettings();
 
   const basePath = withAuthPrefix('/schemas');
   const [isConsoleOpen, toggleConsole] = useState(false);
   const [error, setError] = useState(null);
-
+  
   const { params = {} } = match;
-
+  
   const [dataSourceId, slug] = useMemo(() => getOr('', 'rest', params).split('/'),
     [params]
   );
+
+  const [currentBranchId, setCurrentBranchId,] = useLocalStorageState(`${dataSourceId}:currentBranch` , null);
 
   const onModalClose = () => setLocation(`${basePath}/${dataSourceId}`);
   const dataSchemaName = reservedSlugs.indexOf(slug) === -1 && slug || null;
@@ -75,16 +82,16 @@ const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
       execQueryAll,
     },
     mutations: {
-      createMutation,
-      execCreateMutation,
-      updateMutation,
-      execUpdateMutation,
       deleteMutation,
       execDeleteMutation,
       exportMutation,
       execExportMutation,
-      batchMutation,
-      execBatchMutation,
+      createBranchMutation,
+      execCreateBranchMutation,
+      createVersionMutation,
+      execCreateVersionMutation,
+      setDefaultMutation,
+      execSetDefaultMutation,
     },
   } = useSchemas({
     params: {
@@ -115,6 +122,7 @@ const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
   });
 
   const genSchemaModalVisible = slug === 'genschema';
+  const versionsModalVisible = slug === 'versions';
 
   useEffect(() => {
     if (genSchemaModalVisible && dataSourceId) {
@@ -139,28 +147,32 @@ const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
     }
   });
 
-  const schemaIdToCode = useMemo(() => all.reduce((acc, curr) => {
+  const currentBranch = useMemo(() => (all || []).find(branch => branch.id === currentBranchId), [all, currentBranchId]);
+  const currentVersion = useMemo(() => currentBranch?.versions?.[0] || [], [currentBranch]);
+  const dataschemas = useMemo(() => currentVersion?.dataschemas || [], [currentVersion]);
+
+  const schemaIdToCode = useMemo(() => dataschemas.reduce((acc, curr) => {
     acc[curr.id] = { name: curr.name, code: curr.code };
     return acc;
   }, {}),
-  [all]
+  [dataschemas]
   );
 
   const openedSchemas = useMemo(() => Object.keys(openedTabs)
-      .map(id => all.find(schema => schema.id === id))
+      .map(id => dataschemas.find(schema => schema.id === id))
       .filter(Boolean),
-  [all, openedTabs]
+  [dataschemas, openedTabs]
   );
 
   useEffect(() => {
     if (dataSchemaName) {
-      const schemaObj = all.find(schema => schema.name === dataSchemaName);
+      const schemaObj = dataschemas.find(schema => schema.name === dataSchemaName);
 
       if (schemaObj && !Object.keys(openedTabs).includes(schemaObj.id)) {
         openTab(schemaObj);
       }
     }
-  }, [all, dataSchemaName, openTab, openedTabs]);
+  }, [dataschemas, dataSchemaName, openTab, openedTabs]);
 
   useTrackedEffect((changes, previousDeps, currentDeps) => {
     const prevData = previousDeps?.[0];
@@ -176,15 +188,7 @@ const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
     if (dataDiff) {
       execQueryAll({ requestPolicy: 'network-only' });
     }
-  }, [currentUser.dataschemas, execQueryAll]);
-
-  useCheckResponse(createMutation, () => {}, {
-    successMessage: t('Schema created')
-  });
-
-  useCheckResponse(batchMutation, () => {}, {
-    successMessage: t('Schemas created')
-  });
+  }, [currentUserState.dataschemas, execQueryAll]);
 
   useCheckResponse(genSchemaMutation, (res) => {
     if (res) {
@@ -192,6 +196,38 @@ const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
     }
   }, {
     successMessage: t('Schema generated')
+  });
+
+  useCheckResponse(createBranchMutation, (res) => {
+    if (res) {
+      execQueryAll();
+    }
+  }, {
+    successMessage: t('Branch created')
+  });
+
+  useCheckResponse(createVersionMutation, (res) => {
+    if (res) {
+      execQueryAll();
+    }
+  }, {
+    successMessage: t('Version created')
+  });
+
+  useCheckResponse(setDefaultMutation, (res) => {
+    if (res) {
+      execQueryAll();
+    }
+  }, {
+    successMessage: t(`Branch "${currentBranch?.name}" is now default.`)
+  });
+
+  useCheckResponse(deleteMutation, (res) => {
+    if (res) {
+      execQueryAll();
+    }
+  }, {
+    successMessage: t('Branch removed')
   });
 
   const validationError = useMemo(
@@ -220,10 +256,15 @@ const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
     }
   }, [sourceTablesSchema]);
 
+  useEffect(() => {
+    if (!dataSourceId && currentUserState?.datasources?.length) {
+      setLocation(`${basePath}/${currentUserState.datasources[0].id}`);
+    }
+  }, [dataSourceId, currentUserState, basePath, setLocation]);
+
   const exportData = () => {
     execExportMutation({
-      team_id: currentTeam?.id,
-      // branch,
+      branch_id: currentBranchId,
     });
   };
 
@@ -231,6 +272,103 @@ const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
 
   const uploadFile = () => {
     inputFile.current.click();
+  };
+
+  const ideMenu = [
+    {
+      path: `${basePath}/${dataSourceId}/genschema`,
+      title: t('Generate Schema'),
+    },
+    {
+      path: `${basePath}/${dataSourceId}`,
+      title: t('Import data models'),
+      onClick: () => uploadFile(),
+    },
+    {
+      path: `${basePath}/${dataSourceId}`,
+      title: t('Export data models'),
+      onClick: () => exportData(),
+    },
+  ];
+
+  const branchMenu = [
+    {
+      path: `${basePath}/${dataSourceId}/versions`,
+      title: t('Show versions'),
+    },
+    all.length > 1 && {
+      path: `${basePath}/${dataSourceId}`,
+      title: t('Remove branch'),
+      onClick: () => execDeleteMutation({ id: currentBranchId }),
+    },
+  ].filter(Boolean);
+
+  const onGenSubmit = async (values) => {
+    const tables = Object.keys(values).filter(v => values[v]).map(v => ({
+      name: v,
+    }));
+
+    await execGenSchemaMutation({
+      datasource_id: dataSourceId,
+      branch_id: currentBranchId,
+      tables,
+      overwrite: true,
+    });
+
+    onModalClose();
+  };
+
+  const { fallback } = usePermissions({ scope: 'dataschemas' });
+  if (fallback) {
+    return fallback;
+  }
+
+  const fetching = allData.fetching || deleteMutation.fetching || setDefaultMutation.fetching
+    || validateMutation.fetching || genSchemaMutation.fetching || tablesData.fetching || exportMutation.fetching;
+
+  if (error) {
+    return <ErrorFound status={404} />;
+  }
+
+  if (!all.length && !dataSourceId) {
+    return <ErrorFound status={404} />;
+  }
+
+  const createNewVersion = async (checksum, data) => {
+    const preparedDataschemas = data.map((schema) => {
+      const updatedData = {
+        name: schema?.name,
+        code: schema?.code || '',
+        user_id: schema?.user_id || currentUser?.id,
+        datasource_id: schema?.datasource_id || dataSourceId,
+      };
+
+      return updatedData;
+    });
+
+    const versionData = {
+      checksum,
+      user_id: currentUser?.id,
+      branch_id: currentBranchId,
+      dataschemas: {
+        data: preparedDataschemas,
+      },
+    };
+
+    await execCreateVersionMutation({ object: versionData });
+  };
+
+  const onClickCreate = async values => {
+    const newSchemas = [
+      ...dataschemas,
+      {
+        ...values,
+        code: '',
+      }
+    ];
+
+    const checksum = calcChecksum(newSchemas);
+    await createNewVersion(checksum, newSchemas);
   };
 
   const onUploadFile = async ({ target }) => {
@@ -272,95 +410,55 @@ const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
 
       return {
         name,
-        branch: zipMeta?.branch,
         code: content,
-        user_id: currentUser?.id,
-        datasource_id: dataSourceId,
       };
     }));
 
     newSchemas = newSchemas.filter(Boolean);
+    const schemasChecksum = calcChecksum(newSchemas);
 
     if (newSchemas.length) {
-      await execBatchMutation({ objects: newSchemas });
+      await createNewVersion(schemasChecksum, newSchemas);
     }
 
     return newSchemas;
   };
 
-  const routes = [
-    {
-      path: `${basePath}/${dataSourceId}/genschema`,
-      title: t('Generate Schema'),
-    },
-    {
-      path: `${basePath}/${dataSourceId}`,
-      title: t('Import data models'),
-      onClick: () => uploadFile(),
-    },
-    {
-      path: `${basePath}/${dataSourceId}`,
-      title: t('Export data models'),
-      onClick: () => exportData(),
-    },
-  ];
-
-  const onGenSubmit = async (values) => {
-    const tables = Object.keys(values).filter(v => values[v]).map(v => ({
-      name: v,
-    }));
-
-    await execGenSchemaMutation({
-      datasource_id: dataSourceId,
-      tables,
-      overwrite: true,
-    });
-
-    onModalClose();
-  };
-
-  const { fallback } = usePermissions({ scope: 'dataschemas' });
-  if (fallback) {
-    return fallback;
-  }
-
-  const fetching = allData.fetching || deleteMutation.fetching || createMutation.fetching 
-    || validateMutation.fetching || genSchemaMutation.fetching || tablesData.fetching || exportMutation.fetching;
-
-  if (error) {
-    return <ErrorFound status={404} />;
-  }
-
-  if (!all.length && !dataSourceId) {
-    return <ErrorFound status={404} />;
-  }
-
-  const onClickCreate = async values => {
-    const data = {
+  const onClickUpdate = async (editId, values) => {
+    const newDataschemas = [...dataschemas];
+    const editSchemaIndex = newDataschemas.findIndex(schema => schema.id === editId);
+    
+    newDataschemas[editSchemaIndex] = {
+      ...newDataschemas[editSchemaIndex],
       ...values,
-      code: '',
-      datasource_id: dataSourceId,
     };
 
-    await execCreateMutation({ object: data });
-    execQueryAll({ requestPolicy: 'cache-and-network' });
-  };
+    const checksum = calcChecksum(newDataschemas);
 
-  const onClickUpdate = (editId, values) => {
-    execUpdateMutation({
-      pk_columns: { id: editId },
-      _set: values,
-    });
+    if (currentVersion.checksum === checksum) {
+      message.info('There is no changes.');
+      return false;
+    }
+
+    await createNewVersion(checksum, newDataschemas);
+
+    return newDataschemas;
   };
 
   const onClickDelete = async id => {
-    await execDeleteMutation({ id });
-    execQueryAll({ requestPolicy: 'cache-and-network' });
+    const newDataschemas = [...dataschemas];
+    const deleteSchemaIndex = newDataschemas.findIndex(schema => schema.id === id);
+    newDataschemas.splice(deleteSchemaIndex, 1);
+
+    const checksum = calcChecksum(newDataschemas);
+
+    await createNewVersion(checksum, newDataschemas);
   };
 
   const onCodeSave = (id, code) => {
     onClickUpdate(id, { code });
     execValidateMutation({ id: dataSourceId });
+    execQueryAll();
   };
 
   const onRunSQL = (query, limit) => {
@@ -368,6 +466,40 @@ const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
       datasource_id: dataSourceId,
       query,
       limit,
+    });
+  };
+
+  const onCreateBranch = async (name) => {
+    const newSchemas = dataschemas.map(schema => ({
+      name: schema.name,
+      code: schema.code,
+      user_id: currentUser.id,
+      datasource_id: dataSourceId,
+    }));
+
+    const branchData = {
+      name,
+      status: 'created',
+      user_id: currentUser.id,
+      datasource_id: dataSourceId,
+      versions: {
+        data: {
+          user_id: currentUser.id,
+          checksum: currentVersion?.checksum || 'No data',
+          dataschemas: {
+            data: newSchemas,
+          }
+        }
+      }
+    };
+
+    await execCreateBranchMutation({ object: branchData });
+  };
+
+  const onSetDefault = (branchId = null) => {
+    execSetDefaultMutation({
+      branch_id: branchId || currentBranchId,
+      datasource_id: dataSourceId,
     });
   };
 
@@ -386,18 +518,45 @@ const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
       )}
       footer={null}
     />,
+    <ModalView
+      key="versions"
+      title={t('Versions list')}
+      visible={versionsModalVisible}
+      onCancel={onModalClose}
+      loading={fetching}
+      content={(
+        <VersionsModal 
+          versions={currentBranch?.versions}
+          onRestore={createNewVersion}
+        />
+      )}
+      footer={null}
+    />,
     <Loader key="content" spinning={fetching}>
       <div className={s.root}>
         <div className={s.sidebar}>
-          <Loader spinning={updateMutation.fetching}>
+          <Loader spinning={false}>
             <>
+              <SelectBranch
+                branches={all}
+                moreMenu={branchMenu}
+                currentBranchId={currentBranchId}
+                branchStatus={currentBranch?.status}
+                dataSourceId={dataSourceId}
+                onChange={setCurrentBranchId}
+                onCreate={onCreateBranch}
+                onSetDefault={onSetDefault}
+                curVersion={currentVersion?.checksum}
+                loading={fetching}
+              />
+              <Divider style={{ margin: '0' }} />
               <IdeSchemasList
-                schemas={all}
+                schemas={dataschemas}
                 onItemClick={openSchema}
                 onCreate={onClickCreate}
                 onEdit={onClickUpdate}
                 onDelete={onClickDelete}
-                moreMenu={routes}
+                moreMenu={ideMenu}
               />
               <input
                 type='file'
@@ -421,7 +580,7 @@ const DataSchemas = ({ editorWidth, editorHeight, match, ...restProps }) => {
             {openedSchemas.map(schema => (
               <Tabs.TabPane key={getTabId(schema)} tab={schema.name}>
                 <IdeTab
-                  value={schemaIdToCode[getTabId(schema)].code}
+                  value={schemaIdToCode?.[getTabId(schema)]?.code}
                   onSave={(value) => onCodeSave(schema.id, value)}
                   width={editorWidth}
                   height={editorHeight}
