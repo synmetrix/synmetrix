@@ -21,7 +21,7 @@ You can find this information in your Snowflake account.
 ## Step 2: Add a new data source in the MLCraft UI
 
 1. Go to the MLCraft UI and navigate to the "Data Sources" section.
-2. Click on the "Add Data Source" button.
+2. Click on the "+ Connect" button.
 3. Select "Snowflake" from the list of available data sources.
 
 ## Step 3: Fill in the connection details
@@ -39,4 +39,4 @@ Fill in the Snowflake connection details in the form with the following fields:
 
 ## Step 4: Test the connection
 
-Click the "Check connection" button in the MLCraft UI to verify the connection to your Snowflake data source. If the connection is successful, you will see a confirmation message.
+Click the "Test connection" button in the MLCraft UI to verify the connection to your Snowflake data source. If the connection is successful, you will see a confirmation message.
