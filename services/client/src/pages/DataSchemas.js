@@ -23,7 +23,6 @@ import usePermissions from 'hooks/usePermissions';
 import useLocation from 'hooks/useLocation';
 import useCheckResponse from 'hooks/useCheckResponse';
 import useCurrentUserState from 'hooks/useCurrentUserState';
-// import useCurrentTeamState from 'hooks/useCurrentTeamState';
 import useAppSettings from 'hooks/useAppSettings';
 
 import Loader from 'components/Loader';
