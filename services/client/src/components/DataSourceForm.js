@@ -119,35 +119,6 @@ const connectionFormItems = {
       label: 'SSL PASSPHRASE',
     },
   },
-  materialize: {
-    'db_params.host': {
-      label: 'Host',
-      required: true,
-      placeholder: 'example.com',
-    },
-    'db_params.port': {
-      label: 'Port',
-      required: true,
-      placeholder: '5432',
-    },
-    'db_params.name': {
-      label: 'Database name',
-      placeholder: 'example.com',
-    },
-    'db_params.user': {
-      label: 'Username',
-      placeholder: 'username',
-    },
-    'db_params.pass': {
-      label: 'Password',
-      placeholder: 'password',
-    },
-    'db_params.ssl': {
-      display: 'checkbox',
-      label: 'Use SSL',
-      value: 'yes',
-    },
-  }
 };
 
 const dbTiles = [
