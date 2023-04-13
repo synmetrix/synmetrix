@@ -12,49 +12,37 @@ const {
 } = process.env;
 
 const fetchSchemasQuery = `
-  query ($where: dataschemas_bool_exp) {
-    dataschemas(where: $where) {
+  query ($branch_id: uuid!) {
+    branches_by_pk(id: $branch_id) {
+      id
       name
-      code
-      branch
-      checksum
+      versions(limit: 1, order_by: {created_at: desc}) {
+        dataschemas {
+          name
+          code
+          checksum
+        }
+      }
     }
   }
 `;
 
-const getListVariables = (params) => {
-  let res = {
-    where: {
-      user: {
-        id: {
-          _eq: params.userId
-        },
-      },
-      branch: {
-        _eq: params.branch,
-      },
-    },
-  };
-
-  if (params?.teamId) {
-    res = set('where.datasource.team_id._eq', params.teamId, res);
-  }
-
-  return res;
-}
-
 export default async (session, input) => {
-  const branch = input?.branch || 'main';
-  const { team_id: teamId } = input;
+  const { branch_id: branchId } = input;
 
   const userId = session?.['x-hasura-user-id'];
 
   try {
-    const schemasResp = await fetchGraphQL(fetchSchemasQuery, getListVariables({ teamId, userId, branch }));
-    const schemas = schemasResp?.data?.dataschemas || [];
+    const schemasResp = await fetchGraphQL(fetchSchemasQuery, { branch_id: branchId });
+    const branch = schemasResp?.data?.branches_by_pk;
+    const schemas = branch?.versions?.[0]?.dataschemas || [];
+
+    if (!branch) {
+      throw new Error(`Branch ${branchId} not found!`);
+    }
 
     const now = Date.now();
-    
+
     const schemasMeta = schemas.map(schema => ({
       [schema?.name]: {
         checksum: schema?.checksum,
@@ -62,7 +50,7 @@ export default async (session, input) => {
     }));
 
     const yamlObj = {
-      branch,
+      branch: branch.name,
       createdAt: now,
       schemas: schemasMeta,
     }
@@ -89,7 +77,7 @@ export default async (session, input) => {
 
     const yamlMd5Hex = createMd5Hex(yamlResult);
 
-    const filePath = `${teamId || userId}/schemas/${branch}/${yamlMd5Hex}.zip`;
+    const filePath = `${userId}/schemas/${branch.name}/${yamlMd5Hex}.zip`;
 
     const { error: uploadDataError, url } = await putFileToBucket({
       bucketName: AWS_S3_BUCKET_NAME,

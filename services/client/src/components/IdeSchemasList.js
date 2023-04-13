@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useRef } from 'react';
 import PropTypes from 'prop-types';
 
 import { Icon, Input } from 'antd';
@@ -11,11 +11,9 @@ import PopoverButton from 'components/PopoverButton';
 import TextWithAction from 'components/TextWithAction';
 import Highlight from 'components/Highlight';
 import DataSchemaForm from 'components/DataSchemaForm';
-import MenuView from 'components/MenuView';
+import MoreMenu from './MoreMenu';
 
 const IdeSchemasList = ({ schemas, onItemClick, onCreate, onEdit, onDelete, moreMenu }) => {
-  const [moreMenuVisible, setMoreMenuVisible] = useState(false);
-
   const formRef = useRef(null);
   const { t } = useTranslation();
 
@@ -46,11 +44,11 @@ const IdeSchemasList = ({ schemas, onItemClick, onCreate, onEdit, onDelete, more
 
     form.validateFields((err, values) => {
       if (err) {
-        console.log("Error: ", values);
+        console.log('Error: ', values);
         return;
       }
 
-      console.log("Received values of form: ", values);
+      console.log('Received values of form: ', values);
 
       if (!editId) {
         form.resetFields();
@@ -141,21 +139,7 @@ const IdeSchemasList = ({ schemas, onItemClick, onCreate, onEdit, onDelete, more
         trigger="click"
         style={{ marginLeft: 5, marginRight: 2 }}
       />
-      <PopoverButton
-        type="dropdown"
-        iconType="more"
-        visible={moreMenuVisible}
-        onVisibleChange={(vis) => setMoreMenuVisible(vis)}
-        overlay={(
-          <MenuView 
-            mode={null}
-            nodes={moreMenu}
-            selectable={false}
-            onClick={() => setMoreMenuVisible(false)}
-          />
-        )}
-        trigger={['click']}
-      />
+      <MoreMenu menuNodes={moreMenu} />
     </div>,
     !schemas.length && <div key="no_schemas" style={{ padding: 10 }}>No schemas yet...</div>,
     allSchemas.map(mapSchema),
