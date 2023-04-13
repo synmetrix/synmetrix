@@ -236,9 +236,16 @@
         schedule: 0 0 * * *
         timeout: 60
 - table:
+    name: branch_statuses
+    schema: public
+  is_enum: true
+- table:
     name: branches
     schema: public
   object_relationships:
+    - name: branch_status
+      using:
+        foreign_key_constraint_on: status
     - name: datasource
       using:
         foreign_key_constraint_on: datasource_id
