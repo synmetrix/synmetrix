@@ -11,6 +11,7 @@ import postgres from 'assets/images/postgres.svg';
 import redshift from 'assets/images/redshift.svg';
 import mongobi from 'assets/images/mongobi.svg';
 import clickhouse from 'assets/images/clickhouse.svg';
+import materialize from 'assets/images/materialize.svg';
 import snowflake from 'assets/images/snowflakes.svg';
 
 import useFormItems from 'hooks/useFormItems';
@@ -167,6 +168,7 @@ const dbTiles = [
   { title: 'REDSHIFT', imgSrc: redshift },
   { title: 'MSSQL', imgSrc: mssql },
   { title: 'CLICKHOUSE', imgSrc: clickhouse },
+  { title: 'MATERIALIZE', imgSrc: materialize },
   { title: 'SNOWFLAKE', imgSrc: snowflake },
 ];
 
