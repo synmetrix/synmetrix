@@ -2,6 +2,7 @@ import express from 'express';
 import { ScaffoldingTemplate } from '@cubejs-backend/schema-compiler';
 
 import { findDataSchemas, createDataSchema } from '../utils/dataSourceHelpers.js';
+import createMd5Hex from '../utils/md5Hex.js';
 
 const router = express.Router();
 export default ({ basePath, setupAuthInfo, cubejs }) => {
@@ -78,7 +79,7 @@ export default ({ basePath, setupAuthInfo, cubejs }) => {
 
     try {
       const schema = await driver.tablesSchema();
-      const { tables = [], overwrite = false, branch } = (req.body || {});
+      const { tables = [], overwrite = false, branchId } = (req.body || {});
 
       const scaffoldingTemplate = new ScaffoldingTemplate(schema, driver, 'js');
       const normalizedTables = tables.map(table => table?.name?.replace('/', '.'));
@@ -86,8 +87,7 @@ export default ({ basePath, setupAuthInfo, cubejs }) => {
       let files = scaffoldingTemplate.generateFilesByTableNames(normalizedTables);
 
       const dataSchemas = await findDataSchemas({
-        dataSourceId,
-        branch,
+        branchId,
         authToken,
       });
 
@@ -102,16 +102,26 @@ export default ({ basePath, setupAuthInfo, cubejs }) => {
         return [...acc, file];
       }, []);
 
-      const schemaUpdateQueries = filteredFiles.map(file => createDataSchema({
-        datasource_id: dataSourceId,
+      let commitChecksum = filteredFiles.reduce((acc, cur) => acc + cur.code, '');
+      commitChecksum = createMd5Hex(commitChecksum);
+
+      const preparedSchemas = filteredFiles.map(file => ({
         name: file.fileName,
         code: file.content,
         user_id: userId,
-      }, authToken));
+        datasource_id: dataSourceId,
+      }));
 
-      if (schemaUpdateQueries.length) {
-        await Promise.all(schemaUpdateQueries);
-      }
+      const commitObject = {
+        user_id: userId,
+        branch_id: branchId,
+        checksum: commitChecksum,
+        dataschemas: {
+          data: [...preparedSchemas],
+        },
+      };
+
+      await createDataSchema(commitObject);
 
       if (cubejs.compilerCache) {
         cubejs.compilerCache.prune();

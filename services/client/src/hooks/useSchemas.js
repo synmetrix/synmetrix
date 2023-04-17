@@ -7,60 +7,36 @@ import useQuery from './useQuery';
 import useMutation from './useMutation';
 import useCurrentTeamState from './useCurrentTeamState';
 
-const newSchemaMutation = `
-  mutation ($object: dataschemas_insert_input!) {
-    insert_dataschemas_one(object: $object) {
-      id
-      name
-    }
-  }
-`;
-
-const newBatchSchemaMutation = `
-  mutation ($objects: [dataschemas_insert_input!]!) {
-    insert_dataschemas(
-      objects: $objects, 
-      on_conflict: {
-        constraint: dataschemas_datasource_id_branch_name_key, 
-        update_columns: [code]
-      }
-    ) {
-      affected_rows
-    }
-  }
-`;
-
 const allSchemasQuery = `
-  query ($offset: Int, $limit: Int, $where: dataschemas_bool_exp, $order_by: [dataschemas_order_by!]) {
-    dataschemas (offset: $offset, limit: $limit, where: $where, order_by: $order_by) {
+  query ($offset: Int, $limit: Int, $where: branches_bool_exp, $order_by: [branches_order_by!]) {
+    branches (offset: $offset, limit: $limit, where: $where, order_by: $order_by) {
       id
       name
-      code
-      created_at
-      updated_at
-    }
-    dataschemas_aggregate (where: $where) {
-      aggregate {
-        count
+      status
+      versions (order_by: {created_at: desc}) {
+        id
+        checksum
+        created_at
+        updated_at
+        user {
+          display_name
+        }
+        dataschemas  {
+          id
+          name
+          code
+          created_at
+          updated_at
+          datasource_id
+        }
       }
-    }
-  }
-`;
-
-const editSchemaMutation = `
-  mutation (
-    $pk_columns: dataschemas_pk_columns_input!,
-    $_set: dataschemas_set_input!
-  ) {
-    update_dataschemas_by_pk(pk_columns: $pk_columns, _set: $_set) {
-      id
     }
   }
 `;
 
 const delSchemaMutation = `
   mutation ($id: uuid!) {
-    delete_dataschemas_by_pk(id: $id) {
+    update_branches_by_pk(_set: {status: archived}, pk_columns: {id: $id}) {
       id
     }
   }
@@ -82,9 +58,36 @@ const allSchemasSubscription = `
 `;
 
 const exportDataMutation = `
-  mutation ($team_id: String, $branch: String) {
-    export_data_models(team_id: $team_id, branch: $branch) {
+  mutation ($branch_id: String) {
+    export_data_models(branch_id: $branch_id) {
       download_url
+    }
+  }
+`;
+
+const newBranchMutation = `
+  mutation ($object: branches_insert_input!) {
+    insert_branches_one(object: $object) {
+      id
+    }
+  }
+`;
+
+const newVersionMutation = `
+  mutation ($object: versions_insert_input!) {
+    insert_versions_one(object: $object) {
+      id
+    }
+  }
+`;
+const setDefaultBranchMutation = `
+  mutation ($branch_id: uuid!, $datasource_id: uuid!) {
+    update_branches(_set: {status: created}, where: {datasource_id: {_eq: $datasource_id}, status: {_eq: active}}) {
+      affected_rows
+    }
+
+    update_branches_by_pk(_set: {status: active}, pk_columns: {id: $branch_id}) {
+      id
     }
   }
 `;
@@ -110,6 +113,10 @@ const getListVariables = (pagination, params) => {
   if (params?.teamId) {
     res = set('where.datasource.team_id._eq', params.teamId, res);
   }
+
+  if (params?.statuses) {
+    res = set('where.status._in', params.statuses, res);
+  }
   
   return res;
 };
@@ -124,13 +131,14 @@ export default (props = {}) => {
   const reqParams = {
     ...params,
     teamId: currentTeamState?.id,
+    statuses: ['active', 'created'],
   };
 
-  const [createMutation, execCreateMutation] = useMutation(newSchemaMutation, { role });
-  const [updateMutation, execUpdateMutation] = useMutation(editSchemaMutation, { role });
   const [deleteMutation, execDeleteMutation] = useMutation(delSchemaMutation, { role });
   const [exportMutation, execExportMutation] = useMutation(exportDataMutation, { role });
-  const [batchMutation, execBatchMutation] = useMutation(newBatchSchemaMutation, { role });
+  const [createBranchMutation, execCreateBranchMutation] = useMutation(newBranchMutation, { role });
+  const [createVersionMutation, execCreateVersionMutation] = useMutation(newVersionMutation, { role });
+  const [setDefaultMutation, execSetDefaultMutation] = useMutation(setDefaultBranchMutation, { role });
 
   const [allData, execQueryAll] = useQuery({
     query: allSchemasQuery,
@@ -153,8 +161,8 @@ export default (props = {}) => {
     }
   }, [pauseQueryAll, execQueryAll]);
 
-  const all = useMemo(() => allData.data?.dataschemas || [], [allData.data]);
-  const totalCount = useMemo(() => allData.data?.dataschemas_aggregate.aggregate.count, [allData.data]);
+  const all = useMemo(() => allData.data?.branches || [], [allData.data]);
+  // const totalCount = useMemo(() => allData.data?.dataschemas_aggregate.aggregate.count, [allData.data]);
 
   useTrackedEffect((changes, prevDeps, currDeps) => {
     const prevTeam = prevDeps?.[0];
@@ -168,22 +176,22 @@ export default (props = {}) => {
 
   return {
     all,
-    totalCount,
+    // totalCount,
     queries: {
       allData,
       execQueryAll,
     },
     mutations: {
-      createMutation,
-      execCreateMutation,
       deleteMutation,
       execDeleteMutation,
-      updateMutation,
-      execUpdateMutation,
       exportMutation,
       execExportMutation,
-      batchMutation,
-      execBatchMutation,
+      createBranchMutation,
+      execCreateBranchMutation,
+      createVersionMutation,
+      execCreateVersionMutation,
+      setDefaultMutation,
+      execSetDefaultMutation,
     },
     subscription,
     execSubscription,

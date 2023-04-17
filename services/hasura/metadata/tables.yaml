@@ -236,6 +236,88 @@
         schedule: 0 0 * * *
         timeout: 60
 - table:
+    name: branch_statuses
+    schema: public
+  is_enum: true
+- table:
+    name: branches
+    schema: public
+  object_relationships:
+    - name: branch_status
+      using:
+        foreign_key_constraint_on: status
+    - name: datasource
+      using:
+        foreign_key_constraint_on: datasource_id
+    - name: user
+      using:
+        foreign_key_constraint_on: user_id
+  array_relationships:
+    - name: versions
+      using:
+        foreign_key_constraint_on:
+          column: branch_id
+          table:
+            name: versions
+            schema: public
+  insert_permissions:
+    - role: user
+      permission:
+        check:
+          _or:
+            - datasource:
+                user_id:
+                  _eq: X-Hasura-User-Id
+            - datasource:
+                team:
+                  members:
+                    user_id:
+                      _eq: X-Hasura-User-Id
+        columns:
+          - datasource_id
+          - name
+          - status
+          - user_id
+  select_permissions:
+    - role: user
+      permission:
+        columns:
+          - name
+          - status
+          - created_at
+          - updated_at
+          - datasource_id
+          - id
+          - user_id
+        filter:
+          _or:
+            - datasource:
+                user_id:
+                  _eq: X-Hasura-User-Id
+            - datasource:
+                team:
+                  members:
+                    user_id:
+                      _eq: X-Hasura-User-Id
+        allow_aggregations: true
+  update_permissions:
+    - role: user
+      permission:
+        columns:
+          - name
+          - status
+        filter:
+          _or:
+            - datasource:
+                user_id:
+                  _eq: X-Hasura-User-Id
+            - datasource:
+                team:
+                  members:
+                    user_id:
+                      _eq: X-Hasura-User-Id
+        check: null
+- table:
     name: dashboards
     schema: public
   object_relationships:
@@ -329,35 +411,36 @@
     - name: user
       using:
         foreign_key_constraint_on: user_id
+    - name: version
+      using:
+        foreign_key_constraint_on: version_id
   insert_permissions:
     - role: user
       permission:
         check:
           _or:
-            - datasource:
-                user_id:
-                  _eq: X-Hasura-User-Id
-            - datasource:
-                team:
-                  members:
+            - version:
+                branch:
+                  datasource:
                     user_id:
                       _eq: X-Hasura-User-Id
-        set:
-          user_id: x-hasura-user-id
+            - version:
+                branch:
+                  datasource:
+                    team:
+                      members:
+                        user_id:
+                          _eq: X-Hasura-User-Id
         columns:
-          - branch
           - code
-          - created_at
           - datasource_id
-          - id
           - name
-          - updated_at
           - user_id
+          - version_id
   select_permissions:
     - role: user
       permission:
         columns:
-          - branch
           - checksum
           - code
           - created_at
@@ -366,16 +449,21 @@
           - name
           - updated_at
           - user_id
+          - version_id
         filter:
           _or:
-            - datasource:
-                user_id:
-                  _eq: X-Hasura-User-Id
-            - datasource:
-                team:
-                  members:
+            - version:
+                branch:
+                  datasource:
                     user_id:
                       _eq: X-Hasura-User-Id
+            - version:
+                branch:
+                  datasource:
+                    team:
+                      members:
+                        user_id:
+                          _eq: X-Hasura-User-Id
         allow_aggregations: true
   update_permissions:
     - role: user
@@ -385,37 +473,32 @@
           - name
         filter:
           _or:
-            - datasource:
-                user_id:
-                  _eq: X-Hasura-User-Id
-            - datasource:
-                team:
-                  members:
+            - version:
+                branch:
+                  datasource:
                     user_id:
                       _eq: X-Hasura-User-Id
+            - version:
+                branch:
+                  datasource:
+                    team:
+                      members:
+                        user_id:
+                          _eq: X-Hasura-User-Id
         check:
           _or:
-            - datasource:
-                user_id:
-                  _eq: X-Hasura-User-Id
-            - datasource:
-                team:
-                  members:
+            - version:
+                branch:
+                  datasource:
                     user_id:
                       _eq: X-Hasura-User-Id
-  delete_permissions:
-    - role: user
-      permission:
-        filter:
-          _or:
-            - datasource:
-                user_id:
-                  _eq: X-Hasura-User-Id
-            - datasource:
-                team:
-                  members:
-                    user_id:
-                      _eq: X-Hasura-User-Id
+            - version:
+                branch:
+                  datasource:
+                    team:
+                      members:
+                        user_id:
+                          _eq: X-Hasura-User-Id
 - table:
     name: datasources
     schema: public
@@ -427,6 +510,13 @@
       using:
         foreign_key_constraint_on: user_id
   array_relationships:
+    - name: branches
+      using:
+        foreign_key_constraint_on:
+          column: datasource_id
+          table:
+            name: branches
+            schema: public
     - name: dataschemas
       using:
         foreign_key_constraint_on:
@@ -522,6 +612,22 @@
                 members:
                   user_id:
                     _eq: X-Hasura-User-Id
+  event_triggers:
+    - name: recalculate_dataschemas
+      definition:
+        enable_manual: true
+      retry_conf:
+        interval_sec: 10
+        num_retries: 0
+        timeout_sec: 60
+      webhook: '{{ACTIONS_URL}}/rpc/recalculate_dataschemas'
+      cleanup_config:
+        batch_size: 10000
+        clean_invocation_logs: false
+        clear_older_than: 168
+        paused: true
+        schedule: 0 0 * * *
+        timeout: 60
 - table:
     name: events
     schema: public
@@ -946,13 +1052,18 @@
     - role: user
       permission:
         check:
-          user_id:
-            _eq: X-Hasura-User-Id
-        set:
-          user_id: x-hasura-user-id
+          _or:
+            - user_id:
+                _eq: X-Hasura-User-Id
+            - datasource:
+                team:
+                  members:
+                    user_id:
+                      _eq: X-Hasura-User-Id
         columns:
           - datasource_id
           - password
+          - user_id
           - username
   select_permissions:
     - role: user
@@ -965,15 +1076,27 @@
           - user_id
           - username
         filter:
-          user_id:
-            _eq: X-Hasura-User-Id
+          _or:
+            - user_id:
+                _eq: X-Hasura-User-Id
+            - datasource:
+                team:
+                  members:
+                    user_id:
+                      _eq: X-Hasura-User-Id
         allow_aggregations: true
   delete_permissions:
     - role: user
       permission:
         filter:
-          user_id:
-            _eq: X-Hasura-User-Id
+          _or:
+            - user_id:
+                _eq: X-Hasura-User-Id
+            - datasource:
+                team:
+                  members:
+                    user_id:
+                      _eq: X-Hasura-User-Id
 - table:
     name: team_roles
     schema: public
@@ -1090,6 +1213,13 @@
           table:
             name: alerts
             schema: public
+    - name: branches
+      using:
+        foreign_key_constraint_on:
+          column: user_id
+          table:
+            name: branches
+            schema: public
     - name: dataschemas
       using:
         foreign_key_constraint_on:
@@ -1118,6 +1248,13 @@
           table:
             name: reports
             schema: public
+    - name: versions
+      using:
+        foreign_key_constraint_on:
+          column: user_id
+          table:
+            name: versions
+            schema: public
   select_permissions:
     - role: user
       permission:
@@ -1136,3 +1273,82 @@
                   members:
                     user_id:
                       _eq: X-Hasura-User-Id
+- table:
+    name: versions
+    schema: public
+  object_relationships:
+    - name: branch
+      using:
+        foreign_key_constraint_on: branch_id
+    - name: user
+      using:
+        foreign_key_constraint_on: user_id
+  array_relationships:
+    - name: dataschemas
+      using:
+        foreign_key_constraint_on:
+          column: version_id
+          table:
+            name: dataschemas
+            schema: public
+  insert_permissions:
+    - role: user
+      permission:
+        check:
+          _or:
+            - branch:
+                datasource:
+                  user_id:
+                    _eq: X-Hasura-User-Id
+            - branch:
+                datasource:
+                  team:
+                    members:
+                      user_id:
+                        _eq: X-Hasura-User-Id
+        columns:
+          - branch_id
+          - checksum
+          - user_id
+  select_permissions:
+    - role: user
+      permission:
+        columns:
+          - branch_id
+          - checksum
+          - created_at
+          - id
+          - markdown_doc
+          - updated_at
+          - user_id
+        filter:
+          _or:
+            - branch:
+                datasource:
+                  user_id:
+                    _eq: X-Hasura-User-Id
+            - branch:
+                datasource:
+                  team:
+                    members:
+                      user_id:
+                        _eq: X-Hasura-User-Id
+        allow_aggregations: true
+  event_triggers:
+    - name: generate_dataschemas_docs
+      definition:
+        enable_manual: true
+        insert:
+          columns: '*'
+      retry_conf:
+        interval_sec: 10
+        num_retries: 0
+        timeout_sec: 60
+      webhook: '{{ACTIONS_URL}}/rpc/gen_schemas_docs'
+      cleanup_config:
+        batch_size: 10000
+        clean_invocation_logs: false
+        clear_older_than: 168
+        paused: true
+        schedule: 0 0 * * *
+        timeout: 60

@@ -4,7 +4,7 @@ const createMd5Hex = (data) => {
   let source = data;
   
   if (typeof(data) === 'object') {
-    source = JSON.stringify(obj);
+    source = JSON.stringify(data);
   }
 
   const hex = crypto.createHash('md5').update(source).digest("hex");

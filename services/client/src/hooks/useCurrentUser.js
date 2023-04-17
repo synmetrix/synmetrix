@@ -36,13 +36,21 @@ const sourcesFragment = `
   team_id
 `;
 
-const schemasFragment = `
+const branchesFragment = `
   id
-  user_id
   name
-  checksum
+  status
   datasource {
     team_id
+  }
+  versions {
+    checksum
+    dataschemas {
+      id
+      user_id
+      name
+      checksum
+    }
   }
 `;
 
@@ -78,10 +86,11 @@ const currentUserQuery = `
       ${reportFragment}
     }
 
-    dataschemas (
-      order_by: { created_at: desc }
+    branches (
+      order_by: { created_at: desc },
+      where: {status: { _neq: archived }}
     ) {
-      ${schemasFragment}
+      ${branchesFragment}
     }
 
     dashboards (
@@ -126,13 +135,18 @@ const currentUserWithTeamQuery = `
       ${alertFragment}
     }
 
-    dataschemas (
+    branches (
       order_by: { created_at: desc },
-      where: { datasource: {
-        team_id: { _eq: $teamId }
-      } }
+      where: { 
+        datasource: {
+          team_id: { _eq: $teamId }
+        },
+        status: {
+          _neq: archived
+        }
+      }
     ) {
-      ${schemasFragment}
+      ${branchesFragment}
     }
 
     dashboards (

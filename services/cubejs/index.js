@@ -193,6 +193,14 @@ const driverFactory = async ({ securityContext }) => {
           },
         };
       }
+    case 'snowflake':
+      const account = [dbConfig.orgId, dbConfig.accountId].join('-');
+
+      dbConfig = {
+        ...dbConfig,
+        account,
+      };
+      break;
     default:
       break;
   }
