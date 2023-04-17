@@ -122,10 +122,15 @@ const connectionFormItems = {
     },
   },
   druid: {
-    'db_params.url': {
-      label: 'Url',
+    'db_params.host': {
+      label: 'Host',
       required: true,
-      placeholder: 'http://example.com:8082',
+      placeholder: 'example.com',
+    },
+    'db_params.port': {
+      label: 'Port',
+      required: true,
+      placeholder: '8082',
     },
     'db_params.user': {
       label: 'User',

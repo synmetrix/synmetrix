@@ -1,197 +1,28 @@
 # Druid Setup Guide
 
-## Step 1: Add the Druid cluster configuration to `docker-compose.dev`
+## Step 1: Navigate to the Druid example directory
 
-```
-services:
-  # ...previous services
-  postgres_test:
-    container_name: postgres_test
-    image: postgres:latest
-    volumes:
-      - metadata_data:/var/lib/postgresql/data
-    environment:
-      - POSTGRES_PASSWORD=FoolishPassword
-      - POSTGRES_USER=druid
-      - POSTGRES_DB=druid
-    networks:
-      - mlcraft_default
+Navigate to the Druid example directory located at `/docs/examples/druid` in the root of the MLCraft project. You can also download this directory from the GitHub repository. To navigate to the directory, run the following command:
 
-  zookeeper:
-    container_name: zookeeper
-    hostname: zookeeper
-    image: zookeeper:3.5
-    ports:
-      - "2181:2181"
-    environment:
-      - ZOO_MY_ID=1
-      - druid_host=zookeeper
-    env_file:
-      - .test_env
-    networks:
-      - mlcraft_default
-
-  coordinator:
-    image: apache/druid:25.0.0
-    container_name: coordinator
-    hostname: coordinator
-    volumes:
-      - druid_shared:/opt/shared
-      - coordinator_var:/opt/druid/var
-    depends_on: 
-      - zookeeper
-      - postgres_test
-    ports:
-      - "8084:8081"
-    command:
-      - coordinator
-    environment:
-      - druid_host=coordinator
-    env_file:
-      - .test_env
-    networks:
-      - mlcraft_default
-
-  broker:
-    image: apache/druid:25.0.0
-    container_name: broker
-    hostname: broker
-    volumes:
-      - broker_var:/opt/druid/var
-    depends_on: 
-      - zookeeper
-      - postgres_test
-      - coordinator
-    ports:
-      - "8082:8082"
-    command:
-      - broker
-    environment:
-      - druid_host=broker
-    env_file:
-      - .test_env
-    networks:
-      - mlcraft_default
-
-  historical:
-    image: apache/druid:25.0.0
-    container_name: historical
-    hostname: historical
-    volumes:
-      - druid_shared:/opt/shared
-      - historical_var:/opt/druid/var
-    depends_on: 
-      - zookeeper
-      - postgres_test
-      - coordinator
-    ports:
-      - "8083:8083"
-    command:
-      - historical
-    environment:
-      - druid_host=historical
-    env_file:
-      - .test_env
-    networks:
-      - mlcraft_default
-
-  middlemanager:
-    image: apache/druid:25.0.0
-    container_name: middlemanager
-    hostname: middlemanager
-    volumes:
-      - druid_shared:/opt/shared
-      - middle_var:/opt/druid/var
-    depends_on: 
-      - zookeeper
-      - postgres_test
-      - coordinator
-    ports:
-      - "8091:8091"
-      - "8100-8105:8100-8105"
-    command:
-      - middleManager
-    environment:
-      - druid_host=middlemanager
-    env_file:
-      - .test_env
-    networks:
-      - mlcraft_default
-
-  router:
-    image: apache/druid:25.0.0
-    container_name: router
-    hostname: router
-    volumes:
-      - router_var:/opt/druid/var
-    depends_on:
-      - zookeeper
-      - postgres_test
-      - coordinator
-    ports:
-      - "8889:8888"
-    command:
-      - router
-    environment:
-      - druid_host=router
-    env_file:
-      - .test_env
-    networks:
-      - mlcraft_default
-
-volumes:
-  # ...previous volumes
-  metadata_data: {}
-  middle_var: {}
-  historical_var: {}
-  broker_var: {}
-  coordinator_var: {}
-  router_var: {}
-  druid_shared: {}
-  grafana_data: {}
-  kafka_data: {}
-  zookeeper_data_kafka: {}
+```bash
+cd ./docs/examples/druid
 ```
 
-## Step 2: Add the `.test_env` file to the project root with the following content:
+## Step 2: Run the Druid services using the script
 
-```
-DRUID_SINGLE_NODE_CONF=micro-quickstart
+In the Druid example directory, there is a script called `run_druid.sh`. Make sure the script is executable by running:
 
-druid_emitter_logging_logLevel=debug
-
-druid_extensions_loadList=["druid-histogram", "druid-datasketches", "druid-lookups-cached-global", "postgresql-metadata-storage", "druid-multi-stage-query"]
-
-druid_zk_service_host=zookeeper
-
-druid_metadata_storage_host=
-druid_metadata_storage_type=postgresql
-druid_metadata_storage_connector_connectURI=jdbc:postgresql://postgres_test:5432/druid
-druid_metadata_storage_connector_user=druid
-druid_metadata_storage_connector_password=FoolishPassword
-
-druid_coordinator_balancer_strategy=cachingCost
-
-druid_indexer_runner_javaOptsArray=["-server", "-Xmx1g", "-Xms1g", "-XX:MaxDirectMemorySize=3g", "-Duser.timezone=UTC", "-Dfile.encoding=UTF-8", "-Djava.util.logging.manager=org.apache.logging.log4j.jul.LogManager"]
-druid_indexer_fork_property_druid_processing_buffer_sizeBytes=256MiB
-
-druid_storage_type=local
-druid_storage_storageDirectory=/opt/shared/segments
-druid_indexer_logs_type=file
-druid_indexer_logs_directory=/opt/shared/indexing-logs
-
-druid_processing_numThreads=2
-druid_processing_numMergeBuffers=2
-
-DRUID_LOG4J=<?xml version="1.0" encoding="UTF-8" ?><Configuration status="WARN"><Appenders><Console name="Console" target="SYSTEM_OUT"><PatternLayout pattern="%d{ISO8601} %p [%t] %c - %m%n"/></Console></Appenders><Loggers><Root level="info"><AppenderRef ref="Console"/></Root><Logger name="org.apache.druid.jetty.RequestLog" additivity="false" level="DEBUG"><AppenderRef ref="Console"/></Logger></Loggers></Configuration>
+```bash
+chmod +x run_druid.sh
 ```
 
-## Step 3: Run the services
+Then, start the Druid services by running the script:
 
-Run the command 
+```bash
+./run_druid.sh
 ```
-python3 cli.py services up
-```
+
+After the script has finished running, it will return the host IP address of your machine. Take note of this IP address for the next step.
 
 Wait for the cluster to start and go to http://localhost:8889.
 
