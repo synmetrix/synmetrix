@@ -173,6 +173,14 @@ const driverFactory = async ({ securityContext }) => {
         region: dbConfig.awsRegion,
       };
       break;
+    case 'snowflake':
+      const account = [dbConfig.orgId, dbConfig.accountId].join('-');
+
+      dbConfig = {
+        ...dbConfig,
+        account,
+      };
+      break;
     default:
       break;
   }
