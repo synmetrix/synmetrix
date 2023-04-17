@@ -26,13 +26,13 @@ After the script has finished running, it will return the host IP address of you
 
 Wait for the cluster to start and go to http://localhost:8889.
 
-## Step 4: Check the services
+## Step 3: Check the services
 
 Go to the Services tab and make sure all services are online, as shown in the screenshot below.
 
 ![All services online](/docs/images/druid1.png)
 
-## Step 5: Load example data
+## Step 4: Load example data
 
 Select the "Load data" tab, then choose "Batch - classic" from the dropdown menu.
 
@@ -49,7 +49,7 @@ When the data starts loading, you will be redirected to the Ingestion tab and se
 
 After the data has finished loading, the task status will change to SUCCESS.
 
-## Step 6: Create a new Druid datasource in MLCraft
+## Step 5: Create a new Druid datasource in MLCraft
 
 Fill out the form with the following information:
 
