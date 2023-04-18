@@ -1,62 +1,43 @@
-## Elasticsearch Setup Guide
+# Elasticsearch
 
-### Step 1: Add Elasticsearch service to docker-compose.dev
+## Step 1: Navigate to the Elasticsearch example directory
 
-<pre>
-elasticsearch:
-  image: docker.elastic.co/elasticsearch/elasticsearch:8.7.0
-  ports:
-    - 9200:9200
-    - 9300:9300
-  environment:
-    - xpack.security.enabled=true
-    - discovery.type=single-node
-    - ELASTIC_PASSWORD=password
-  networks:
-    - mlcraft_default
-</pre>
+Navigate to the Elasticsearch example directory located at `/docs/examples/elasticsearch` in the root of the MLCraft project. You can also download this directory from the GitHub repository. To navigate to the directory, run the following command:
 
-### Step 2: Start the Elasticsearch service
+```bash
+cd ./docs/examples/elasticsearch
+```
 
-<pre>
-python3 cli.py services up
-</pre>
+## Step 2: Run the Elasticsearch service using the script
 
-### Step 3: Create a new user
+In the Elasticsearch example directory, there is a script called `run_elasticsearch.sh`. Make sure the script is executable by running:
 
-<pre>
+```bash
+chmod +x run_elasticsearch.sh
+```
+
+Then, start the Elasticsearch service by running the script:
+
+```bash
+./run_elasticsearch.sh
+```
+
+After the script has finished running, it will return the host IP address of your machine. Take note of this IP address for the next step.
+
+## Step 3: Wait for the service to be ready and add user
+
+Wait for the Elasticsearch service to be ready to accept requests. Then run:
+
+```
 curl -X POST -u elastic:password "http://localhost:9200/_security/user/user" -H 'Content-Type: application/json' -d'
 {
   "password": "password",
   "roles": ["kibana","kibana_system"],
   "full_name": "Test user"
 }'
-</pre>
+```
 
-### Step 4: Add Kibana service to docker-compose.dev
-
-<pre>
-kibana:
-  image: docker.elastic.co/kibana/kibana:8.7.0
-  ports:
-    - 5601:5601
-  environment:
-    - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
-    - ELASTICSEARCH_USERNAME=user
-    - ELASTICSEARCH_PASSWORD=password
-  networks:
-    - mlcraft_default
-  depends_on:
-    - elasticsearch
-</pre>
-
-### Step 5: Start the Kibana service
-
-<pre>
-python3 cli.py services up
-</pre>
-
-### Step 6: Access Kibana and add sample data
+## Step 4: Access Kibana and add sample data
 
 Wait for the Kibana service to start, then go to http://localhost:5601 and log in with the credentials of the user you created:
 
@@ -75,13 +56,13 @@ At the bottom of the page, click **Other sample data sets**:
 
 Choose a dataset and click **Add data**.
 
-### Step 7: Create a datasource in MLCraft
+## Step 5: Create a datasource in MLCraft
 
 Now you can create a datasource in MLCraft using the following information:
 
 <pre>
 Name: Elasticsearch test datasource
-Url: http://elasticsearch:9200
+Url: http://<host_ip>:9200
 User: user
 Password: password
 </pre>

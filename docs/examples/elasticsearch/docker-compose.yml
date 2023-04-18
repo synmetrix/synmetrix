@@ -10,8 +10,6 @@ services:
       - xpack.security.enabled=true
       - discovery.type=single-node
       - ELASTIC_PASSWORD=password
-    networks:
-      - mlcraft_default
 
   kibana:
     image: docker.elastic.co/kibana/kibana:8.7.0
@@ -21,11 +19,5 @@ services:
       - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
       - ELASTICSEARCH_USERNAME=user
       - ELASTICSEARCH_PASSWORD=password
-    networks:
-      - mlcraft_default
     depends_on:
       - elasticsearch
-
-networks:
-  mlcraft_default:
-    name: mlcraft_default

@@ -7,10 +7,17 @@ while [ "$(docker inspect -f '{{.State.Running}}' elasticsearch_elasticsearch_1)
   sleep 1
 done
 
-# Step 3: Create a new user
-curl -X POST -u elastic:password "http://localhost:9200/_security/user/user" -H 'Content-Type: application/json' -d'
-{
-  "password": "password",
-  "roles": ["kibana","kibana_system"],
-  "full_name": "Test user"
-}'
+if [[ "$OSTYPE" == "linux-gnu"* ]]; then
+  host_ip=$(ip addr | grep 'inet ' | grep -v '127.0.0.1' | awk '{print $2}' | cut -d/ -f1 | head -n 1)
+elif [[ "$OSTYPE" == "darwin"* ]]; then
+  host_ip=$(ifconfig | grep "inet " | grep -Fv 127.0.0.1 | awk '{print $2}')
+elif [[ "$OSTYPE" == "cygwin" ]] || [[ "$OSTYPE" == "msys" ]] || [[ "$OSTYPE" == "win32" ]]; then
+  echo "for /f \"tokens=1-2 delims=:\" %%a in ('ipconfig ^| find \"IPv4\"') do echo %%b" > get_host_ip.bat
+  host_ip=$(cmd.exe /c get_host_ip.bat)
+  rm get_host_ip.bat
+else
+  echo "Unknown OS. Unable to obtain the host IP address."
+  exit 1
+fi
+
+echo "Host IP address: $host_ip"
