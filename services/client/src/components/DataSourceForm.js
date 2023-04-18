@@ -70,12 +70,12 @@ const prestoTrinoItems = {
   },
   'db_params.schema': {
     label: 'Schema',
-    required: true,
-    placeholder: 'schema_name',
+    require: false,
+    placeholder: 'schema',
   },
   'db_params.user': {
     label: 'User',
-    required: true,
+    required: false,
     placeholder: 'db_username',
   },
   'db_params.pass': {
@@ -214,7 +214,7 @@ const dbTiles = [
   { title: 'REDSHIFT', imgSrc: redshift },
   { title: 'MSSQL', imgSrc: mssql },
   { title: 'CLICKHOUSE', imgSrc: clickhouse },
-  { title: 'PRESTO', imgSrc: presto },
+  { title: 'PRESTODB', imgSrc: presto },
   { title: 'TRINO', imgSrc: trino },
   { title: 'MATERIALIZE', imgSrc: materialize },
   { title: 'SNOWFLAKE', imgSrc: snowflake },
