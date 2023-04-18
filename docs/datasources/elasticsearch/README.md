@@ -61,7 +61,7 @@ python3 cli.py services up
 Wait for the Kibana service to start, then go to http://localhost:5601 and log in with the credentials of the user you created:
 
 <pre>
-User: user
+User: elastic
 Password: password
 </pre>
 
