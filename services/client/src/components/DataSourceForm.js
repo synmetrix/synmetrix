@@ -13,6 +13,7 @@ import mongobi from 'assets/images/mongobi.svg';
 import clickhouse from 'assets/images/clickhouse.svg';
 import materialize from 'assets/images/materialize.svg';
 import snowflake from 'assets/images/snowflakes.svg';
+import questdb from 'assets/images/questdb.svg';
 
 import useFormItems from 'hooks/useFormItems';
 import FormTiles from './FormTiles';
@@ -49,6 +50,10 @@ const defaultFormItems = {
     value: 'yes',
   },
 };
+
+const questdbItems = { ...defaultFormItems };
+questdbItems['db_params.user'].required = false;
+questdbItems['db_params.database'].required = false;
 
 // TODO: test all connections https://github.com/cube-js/cube.js/blob/master/docs/Cube.js-Backend/Connecting-to-the-Database.md
 const connectionFormItems = {
@@ -156,7 +161,8 @@ const connectionFormItems = {
       required: true,
       placeholder: 'PUBLIC',
     },
-  }
+  },
+  questdbItems,
 };
 
 const dbTiles = [
@@ -170,6 +176,7 @@ const dbTiles = [
   { title: 'CLICKHOUSE', imgSrc: clickhouse },
   { title: 'MATERIALIZE', imgSrc: materialize },
   { title: 'SNOWFLAKE', imgSrc: snowflake },
+  { title: 'QUESTDB', imgSrc: questdb },
 ];
 
 // example of use Antd Form with forwardRef
