@@ -32,21 +32,24 @@ const sourcesQuery = `
 `;
 
 const allSchemasQuery = `
-  query ($offset: Int, $limit: Int, $where: dataschemas_bool_exp, $order_by: [dataschemas_order_by!]) {
-    dataschemas (offset: $offset, limit: $limit, where: $where, order_by: $order_by) {
-      id
-      name
-      code
+  query ($order_by: [versions_order_by!], $datasource_id: uuid) {
+    branches(limit: 1, where: {status: {_eq: active}, datasource_id: {_eq: $datasource_id}}) {
+      versions(limit: 1, order_by: $order_by) {
+        dataschemas {
+          id
+          name
+          code
+        }
+      }
     }
   }
 `;
 
 
-const upsertSchemaMutation = `
-  mutation ($object: dataschemas_insert_input!) {
-    insert_dataschemas_one(
-      object: $object,
-      on_conflict: {constraint: dataschemas_datasource_id_branch_name_key, update_columns: code}
+const upsertVersionMutation = `
+  mutation ($object: versions_insert_input!) {
+    insert_versions_one(
+      object: $object
     ) {
       id
     }
@@ -115,10 +118,10 @@ export const buildSecurityContext = (dataSource) => {
 };
 
 export const createDataSchema = async (object) => {
-  const { authToken, ...newObject } = object;
+  const { authToken, ...version } = object;
 
-  let res = await fetchGraphQL(upsertSchemaMutation, { object: newObject }, authToken);
-  res = res?.data?.insert_dataschemas_one;
+  let res = await fetchGraphQL(upsertVersionMutation, { object: version }, authToken);
+  res = res?.data?.insert_versions_one;
 
   return res;
 };
@@ -126,20 +129,13 @@ export const createDataSchema = async (object) => {
 export const findDataSchemas = async (args) => {
   let vars = {
     order_by: {
-      created_at: 'asc',
+      created_at: 'desc',
     },
+    datasource_id: args?.dataSourceId,
   };
 
-  if (args.dataSourceId) {
-    vars = set('where.datasource_id._eq', args.dataSourceId, vars);
-  }
-
-  if (args.branch) {
-    vars = set('where.branch._eq', args.branch, vars);
-  }
-
   let dataSchemas = await fetchGraphQL(allSchemasQuery, vars, args.authToken);
-  dataSchemas = dataSchemas?.data?.dataschemas;
+  dataSchemas = dataSchemas?.data?.branches?.[0]?.versions?.[0]?.dataschemas || [];
 
   return dataSchemas;
 };

@@ -13,6 +13,8 @@ import mongobi from 'assets/images/mongobi.svg';
 import clickhouse from 'assets/images/clickhouse.svg';
 import presto from 'assets/images/presto.svg';
 import trino from 'assets/images/trino.svg';
+import materialize from 'assets/images/materialize.svg';
+import snowflake from 'assets/images/snowflakes.svg';
 
 import useFormItems from 'hooks/useFormItems';
 import FormTiles from './FormTiles';
@@ -164,6 +166,43 @@ const connectionFormItems = {
   trino: {
     ...prestoTrinoItems,
   },
+  snowflake: {
+    'db_params.database': {
+      label: 'Database Name',
+      required: true,
+      placeholder: 'SNOWFLAKE',
+    },
+    'db_params.warehouse': {
+      label: 'Warehouse',
+      required: true,
+      placeholder: 'MY_WAREHOUSE',
+    },
+    'db_params.orgId': {
+      label: 'Organization ID',
+      required: true,
+      placeholder: 'ABCDEF',
+    },
+    'db_params.accountId': {
+      label: 'Account ID',
+      required: true,
+      placeholder: 'AB12345',
+    },
+    'db_params.username': {
+      label: 'Username',
+      required: true,
+      placeholder: 'user',
+    },
+    'db_params.password': {
+      label: 'Password',
+      required: true,
+      placeholder: 'pass',
+    },
+    'db_params.role': {
+      label: 'Role',
+      required: true,
+      placeholder: 'PUBLIC',
+    },
+  }
 };
 
 const dbTiles = [
@@ -177,6 +216,8 @@ const dbTiles = [
   { title: 'CLICKHOUSE', imgSrc: clickhouse },
   { title: 'PRESTO', imgSrc: presto },
   { title: 'TRINO', imgSrc: trino },
+  { title: 'MATERIALIZE', imgSrc: materialize },
+  { title: 'SNOWFLAKE', imgSrc: snowflake },
 ];
 
 // example of use Antd Form with forwardRef
