@@ -54,6 +54,7 @@ After the data has finished loading, the task status will change to SUCCESS.
 Fill out the form with the following information:
 
 - Name: Druid test datasource
-- Url: http://broker:8082
+- Host: Host IP (obtained from the script in Step 2)
+- Port: 8082
 
 Currently, the Test Connection feature is not implemented and always returns "OK". To ensure functionality, generate a schema and request any data in the Explore tab.
