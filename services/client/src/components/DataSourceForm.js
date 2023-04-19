@@ -11,6 +11,7 @@ import postgres from 'assets/images/postgres.svg';
 import redshift from 'assets/images/redshift.svg';
 import mongobi from 'assets/images/mongobi.svg';
 import clickhouse from 'assets/images/clickhouse.svg';
+import druid from 'assets/images/druid.svg';
 import presto from 'assets/images/presto.svg';
 import trino from 'assets/images/trino.svg';
 import materialize from 'assets/images/materialize.svg';
@@ -160,6 +161,28 @@ const connectionFormItems = {
       label: 'SSL PASSPHRASE',
     },
   },
+  druid: {
+    'db_params.host': {
+      label: 'Host',
+      required: true,
+      placeholder: 'example.com',
+    },
+    'db_params.port': {
+      label: 'Port',
+      required: true,
+      placeholder: '8082',
+    },
+    'db_params.user': {
+      label: 'User',
+      required: false,
+      placeholder: 'username',
+    },
+    'db_params.password': {
+      label: 'Password',
+      required: false,
+      placeholder: 'password',
+    },
+  },
   prestodb: {
     ...prestoTrinoItems,
   },
@@ -214,6 +237,7 @@ const dbTiles = [
   { title: 'REDSHIFT', imgSrc: redshift },
   { title: 'MSSQL', imgSrc: mssql },
   { title: 'CLICKHOUSE', imgSrc: clickhouse },
+  { title: 'DRUID', imgSrc: druid },
   { title: 'PRESTODB', imgSrc: presto },
   { title: 'TRINO', imgSrc: trino },
   { title: 'MATERIALIZE', imgSrc: materialize },

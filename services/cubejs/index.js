@@ -34,6 +34,13 @@ const pushError = (req, error) => {
   return null;
 };
 
+const addHttpPrefix = (host) => {
+  if (!host.startsWith("http://") && !host.startsWith("https://")) {
+    return "http://" + host;
+  }
+  return host;
+};
+
 const setupAuthInfo = async (req, auth) => {
   const { 
     authorization: cubejsAuthToken,
@@ -181,6 +188,15 @@ const driverFactory = async ({ securityContext }) => {
         account,
       };
       break;
+    case 'druid':
+      dbConfig.host = addHttpPrefix(dbConfig.host);
+      const url = [dbConfig.host, dbConfig.port].join(':');
+
+      dbConfig = {
+        ...dbConfig,
+        url,
+      };
+      break;
     default:
       break;
   }
@@ -190,6 +206,10 @@ const driverFactory = async ({ securityContext }) => {
   try {
     const dbDriver = DriverDependencies[dbType];
     driverModule = await import(dbDriver);
+
+    if (dbType === 'druid') {
+      driverModule = driverModule.default;
+    }
   } catch (err) {
     return driverError(err);
   }
