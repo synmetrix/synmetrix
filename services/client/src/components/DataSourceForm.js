@@ -12,6 +12,8 @@ import redshift from 'assets/images/redshift.svg';
 import mongobi from 'assets/images/mongobi.svg';
 import clickhouse from 'assets/images/clickhouse.svg';
 import druid from 'assets/images/druid.svg';
+import presto from 'assets/images/presto.svg';
+import trino from 'assets/images/trino.svg';
 import materialize from 'assets/images/materialize.svg';
 import snowflake from 'assets/images/snowflakes.svg';
 
@@ -40,6 +42,44 @@ const defaultFormItems = {
     placeholder: 'db_username',
   },
   'db_params.password': {
+    label: 'Password',
+    required: false,
+    placeholder: 'db_password',
+  },
+  'db_params.ssl': {
+    display: 'checkbox',
+    label: 'Use SSL',
+    value: 'yes',
+  },
+};
+
+const prestoTrinoItems = {
+  'db_params.host': {
+    label: 'Host',
+    required: true,
+    placeholder: 'example.com',
+  },
+  'db_params.port': {
+    label: 'Port',
+    required: true,
+    placeholder: '8080',
+  },
+  'db_params.catalog': {
+    label: 'Catalog',
+    required: true,
+    placeholder: 'catalog_name',
+  },
+  'db_params.schema': {
+    label: 'Schema',
+    require: false,
+    placeholder: 'schema',
+  },
+  'db_params.user': {
+    label: 'User',
+    required: false,
+    placeholder: 'db_username',
+  },
+  'db_params.pass': {
     label: 'Password',
     required: false,
     placeholder: 'db_password',
@@ -143,6 +183,12 @@ const connectionFormItems = {
       placeholder: 'password',
     },
   },
+  prestodb: {
+    ...prestoTrinoItems,
+  },
+  trino: {
+    ...prestoTrinoItems,
+  },
   snowflake: {
     'db_params.database': {
       label: 'Database Name',
@@ -192,6 +238,8 @@ const dbTiles = [
   { title: 'MSSQL', imgSrc: mssql },
   { title: 'CLICKHOUSE', imgSrc: clickhouse },
   { title: 'DRUID', imgSrc: druid },
+  { title: 'PRESTODB', imgSrc: presto },
+  { title: 'TRINO', imgSrc: trino },
   { title: 'MATERIALIZE', imgSrc: materialize },
   { title: 'SNOWFLAKE', imgSrc: snowflake },
 ];
