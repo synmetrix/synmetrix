@@ -1,3 +1,5 @@
+/* eslint-disable jsx-a11y/no-static-element-interactions */
+/* eslint-disable jsx-a11y/click-events-have-key-events */
 import React from 'react';
 import PropTypes from 'prop-types';
 
@@ -44,6 +46,8 @@ const CategoryItem = props => {
     }
   };
 
+  const isFilterVisible = !member.granularity && category !== 'segments';
+
   return (
     <div 
       key={member.name}
@@ -78,7 +82,7 @@ const CategoryItem = props => {
               {member.shortTitle}
             </a>
           </Col>
-          {category !== 'segments' && (
+          {isFilterVisible && (
             <Col xs={8} style={{ textAlign: 'right' }}>
               <Button 
                 size="small"

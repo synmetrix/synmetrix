@@ -13,6 +13,7 @@ import { SHOWN_CATEGORIES } from 'components/ExploreCubes';
 import ExploreCubesSubSection from 'components/ExploreCubesSubSection';
 import ExploreCubesCategoryItem from 'components/ExploreCubesCategoryItem';
 import useAnalyticsQueryMembers from '../hooks/useAnalyticsQueryMembers';
+import { granularities } from '../hooks/useDataSourceMeta';
 
 import s from './ExploreCubes.module.css';
 
@@ -23,6 +24,42 @@ const toFilter = member => ({
   operator: member.operator,
   values: member.values,
 });
+
+const granulateMember = (member) => {
+  const newMembers = [];
+
+  granularities.forEach(granularity => {
+    let newName = member.name;
+    let newTitle = member.title;
+    let newShortTitle = member.shortTitle; 
+    let granularityName = null;
+
+    if (granularity.name) {
+      granularityName = granularity.name;
+      newName += `+${granularity.name}`;
+      newTitle = `by ${granularity.title}`;
+      newShortTitle = `by ${granularity.name}`;
+    } else {
+      newTitle = 'w/o grouping';
+      newShortTitle = 'w/o grouping';
+    };
+
+    const newMember = {
+      ...member,
+      name: newName,
+      title: newTitle,
+      shortTitle: newShortTitle,
+      granularity: granularityName,
+      meta: {
+        subSection: member.shortTitle,
+      },
+    };
+
+    newMembers.push(newMember);
+  });
+
+  return newMembers;
+};
 
 const getSubSections = (catMembers, membersIndex) => {
   const subSections = {};
@@ -90,6 +127,11 @@ const Cube = ({ members, selectedMembers, onMemberSelect }) => {
 
       setState(prev => set(['lastClickedMember'], memberMeta, prev));
 
+      let searchCategory = nextCategory;
+      if (member.type === 'time') {
+        searchCategory = 'timeDimensions';
+      }
+
       // select more than one members if shift pressed
       if (shiftPress) {
         const {
@@ -131,9 +173,9 @@ const Cube = ({ members, selectedMembers, onMemberSelect }) => {
       }
 
       if (selectedIndex === -1) {
-        onMemberSelect(nextCategory).add(member);
+        onMemberSelect(searchCategory).add(member);
       } else {
-        onMemberSelect(nextCategory).remove({ ...member, index: selectedIndex });
+        onMemberSelect(searchCategory).remove({ ...member, index: selectedIndex });
       }
 
       return;
@@ -171,10 +213,25 @@ const Cube = ({ members, selectedMembers, onMemberSelect }) => {
   };
 
   const getCategory = (category) => {
-    const catMembers = getMembersCategory(category);
+    let catMembers = getMembersCategory(category);
+
     if (!catMembers.length) {
       return null;
     }
+
+    catMembers = catMembers.reduce((acc, member) => {
+      let newMembers = acc;
+
+      if (member.type === 'time') {
+        const granMembers = granulateMember(member);
+        newMembers = newMembers.concat(granMembers);
+
+      } else {
+        newMembers.push(member);
+      }
+
+      return newMembers;
+    }, []);
 
     const {
       subSections,
@@ -187,6 +244,9 @@ const Cube = ({ members, selectedMembers, onMemberSelect }) => {
     return (
       <div key={category} className={s.categorySection}>
         <Text className={s.categoryTitle}>{category}</Text>
+        <div className={s.freeMembers}>
+          {freeMembers.map((member, index) => getItem(category, member, index, categorySelectedMembers, selectedFilters))}
+        </div>
         {Object.keys(subSections).map(subSectionKey => (
           <ExploreCubesSubSection
             name={subSectionKey}
@@ -196,9 +256,6 @@ const Cube = ({ members, selectedMembers, onMemberSelect }) => {
           </ExploreCubesSubSection>
         )
         )}
-        <div className={s.freeMembers}>
-          {freeMembers.map((member, index) => getItem(category, member, index, categorySelectedMembers, selectedFilters))}
-        </div>
       </div>
     );
   };

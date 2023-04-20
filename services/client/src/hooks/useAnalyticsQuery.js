@@ -15,12 +15,23 @@ const defaultFilterValues = {
 };
 
 const reducer = (state, action) => {
-  if (action.type === 'add') {
+  const { memberType } = action;
+  
+  if (action.type === 'add') {    
     let { value } = action;
-    const elementsCount = getOr([], action.memberType, state).length;
+    const elementsCount = getOr([], memberType, state).length;
 
     if (action.memberType !== 'filters') {
-      const notUniq = state[action.memberType].find(member => member === value);
+      const [memberName, granularity = null] = action?.value?.split(/\+/);
+
+      if (memberType === 'timeDimensions') {
+        value = {
+          dimension: memberName,
+          granularity,
+        };
+      }
+
+      const notUniq = state[memberType].find(member => member === memberName);
 
       if (notUniq) {
         return state;
@@ -32,7 +43,7 @@ const reducer = (state, action) => {
       };
     }
 
-    return set([action.memberType, elementsCount], value, state);
+    return set([memberType, elementsCount], value, state);
   }
 
   if (action.type === 'update') {

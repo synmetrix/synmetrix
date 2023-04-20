@@ -288,14 +288,14 @@ const TableView = (props) => {
         {defaultCellRenderer(args)}
       </span>
     );
-  }
+  };
 
   const loadingTip = loadingProgress.timeElapsed ? `${loadingProgress.stage} ${(parseFloat(loadingProgress.timeElapsed) / 1000).toFixed(2)} secs...` : loadingProgress.stage;
 
   return (
     <Loader spinning={loading} tip={loadingTip}>
       <>
-        {messages.map((message, i) => <ErrorMessage key={i} {...message} />)}
+        {messages.map((msg, i) => <ErrorMessage key={i} {...msg} />)}
         <div style={{ width, height, overflow: 'auto' }}>
           <Table
             id={tableId}

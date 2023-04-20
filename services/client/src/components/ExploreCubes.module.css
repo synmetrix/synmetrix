@@ -25,7 +25,7 @@
 .panel :global(.anticon) {
   left: 13px !important;
   overflow-x: hidden;
-  overflow-y: auto;
+  overflow-y: hidden;
 }
 
 .panel :global(.ant-collapse-item) {
