@@ -2,7 +2,7 @@ import produce from 'immer';
 
 import apiError from '../utils/apiError';
 import { fetchGraphQL } from '../utils/graphql';
-import { header, unorderedList } from '../utils/markdownHelpers';
+import { header, unorderedList, divider, text } from '../utils/markdownHelpers';
 
 const versionQuery = `
   query ($id: uuid!) {
@@ -53,45 +53,73 @@ const setMarkdownDocMutation = `
   }
 `;
 
+const generateMemberDoc = member => {
+  let memberWithMeta = { ...member, ...member.meta };
+
+  let result = header(member.shortTitle, { size: 5, bold: true, indent: 8 });
+  result += text(member.description || 'No description provided', { indent: 8 });
+  result += text('Parameters:', { bold: true, indent: 8 });
+
+  const parameters = [
+    { name: 'Name' },
+    { title: 'Title' },
+    { type: 'Type' },
+    { aggType: 'Aggregation Type' },
+    { format: 'Format' },
+    { drillMembers: 'Drill Members' },
+    { sql: 'SQL' },
+    ...Object.entries(member.meta || {}).map(metaEntry => ({ [metaEntry[0]]: metaEntry[0] })),
+  ];
+
+  const fields = parameters.map(param => {
+    const entry = Object.entries(param)[0];
+
+    if (!entry) {
+      return null;
+    }
+
+    const [key, title] = entry;
+
+    if (!memberWithMeta[key]) {
+      return null;
+    }
+
+    if (Array.isArray(memberWithMeta[key])) {
+      return `${text(title, { bold: true, indent: 2, postNewLine: false })}: \`${memberWithMeta[key].join(', ')}\``;
+    }
+
+    return `${text(title, { bold: true, indent: 2, postNewLine: false })}: \`${memberWithMeta[key]}\``;
+  }).filter(Boolean);
+
+  result += unorderedList(fields);
+
+  return result;
+};
+
 const generateDataschemaDoc = (dataschema) => {
   let doc = `<details>\n`;
   doc += `<summary>${dataschema.name}</summary>\n\n`;
-  
+
+  console.log(dataschema);
+
   if (dataschema?.measures?.length > 0) {
-    doc += header('Measures', { size: 4 });
+    doc += header('Measures', { size: 4, indent: 4 });
 
-    doc += dataschema.measures.map(measure => {
-      const title = `**Title**: \`${measure.shortTitle}\``;
-      const type = `**Type**: \`${measure.type}\``;
-      const aggType = `**Aggregation Type**: \`${measure.aggType}\``;
-
-      return `${header(measure.name, { size: 5 })} \n ${unorderedList([title, type, aggType])}`;
-    }).join('\n');
+    doc += dataschema.measures.map(generateMemberDoc).join('\n');
     doc += `\n`;
   }
 
   if (dataschema?.dimensions?.length > 0) {
-    doc += header('Dimensions', { size: 4 });
-    doc += dataschema.dimensions.map(dimension => {
-      const title = `**Title**: \`${dimension.shortTitle}\``;
-      const type = `**Type**: \`${dimension.type}\``;
-  
-      return `${header(dimension.name, { size: 5 })} \n ${unorderedList([title, type])}`;
-    }).join('\n');
+    doc += header('Dimensions', { size: 4, indent: 4 });
+    doc += dataschema.dimensions.map(generateMemberDoc).join('\n');
     doc += `\n`;
   }
 
   if (dataschema?.segments?.length > 0) {
-    doc += header('Segments', { size: 4 });
-    doc += dataschema?.segments?.map(segment => {
-      const name = `**Name**: ${segment.name}`;
-  
-      return header(name, { size: 5 });
-    }).join('\n');
+    doc += header('Segments', { size: 4, indent: 4 });
+    doc += dataschema?.segments?.map(generateMemberDoc).join('\n');
     doc += `\n`;
   }
-
-  // add meta after update
 
   doc += `</details>\n`;
 
@@ -106,12 +134,12 @@ const generateVersionDoc = async ({ version }) => {
 
   const metaResp = await fetchGraphQL(datasourceMetaQuery, { datasourceId });
 
+  console.log('metaResp', metaResp);
+
   let doc = header('Documentation', { size: 1 });
 
-  doc += `This documentation covers branch "${branchName}" and the latest version of dataschemas.\n`;
-  doc += '\n';
-  doc += '---';
-  doc += '\n';
+  doc += `This documentation covers branch "${branchName}" and the latest version of dataschemas.\n\n`;
+  doc += divider;
   doc += header('List of cubes:', { size: 4 });
 
   const dataschemasDocs = dataschemas.map(dataschema => {
@@ -121,10 +149,8 @@ const generateVersionDoc = async ({ version }) => {
     return dataschemaDoc;
   });
 
-  doc += dataschemasDocs.join('\n');
-  doc += '\n';
-  doc += '---';
-  doc += '\n';
+  doc += `${dataschemasDocs.join('\n')}\n`;
+  doc += divider;
 
   doc += header(`Version author: ${versionAuthorName}`, { size: 4 });
 
