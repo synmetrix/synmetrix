@@ -82,14 +82,6 @@ class Meta {
     return member;
   }
 
-  // defaultTimeDimensionNameFor(memberName) {
-  //   const findMember = () => this.getCubeMembers(memberName, 'dimensions');
-  
-  //   return Object.keys(findMember()).find(
-  //     d => findMember()[d].type === 'time'
-  //   );
-  // }
-
   filterOperatorsForMember(memberName, memberType) {
     const member = this.resolveMember(memberName, memberType);
     return operators[member.type] || operators.string;
