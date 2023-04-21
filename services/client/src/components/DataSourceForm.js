@@ -16,6 +16,7 @@ import presto from 'assets/images/presto.svg';
 import trino from 'assets/images/trino.svg';
 import materialize from 'assets/images/materialize.svg';
 import snowflake from 'assets/images/snowflakes.svg';
+import questdb from 'assets/images/questdb.svg';
 
 import useFormItems from 'hooks/useFormItems';
 import FormTiles from './FormTiles';
@@ -52,6 +53,10 @@ const defaultFormItems = {
     value: 'yes',
   },
 };
+
+const questdbItems = { ...defaultFormItems };
+questdbItems['db_params.user'].required = false;
+questdbItems['db_params.database'].required = false;
 
 const prestoTrinoItems = {
   'db_params.host': {
@@ -225,7 +230,8 @@ const connectionFormItems = {
       required: true,
       placeholder: 'PUBLIC',
     },
-  }
+  },
+  questdbItems,
 };
 
 const dbTiles = [
@@ -242,6 +248,7 @@ const dbTiles = [
   { title: 'TRINO', imgSrc: trino },
   { title: 'MATERIALIZE', imgSrc: materialize },
   { title: 'SNOWFLAKE', imgSrc: snowflake },
+  { title: 'QUESTDB', imgSrc: questdb },
 ];
 
 // example of use Antd Form with forwardRef

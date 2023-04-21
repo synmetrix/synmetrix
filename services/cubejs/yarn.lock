@@ -3476,9 +3476,17 @@
     ramda "^0.27.0"
 
 "@cubejs-backend/base-driver@^0.32.25":
-  version "0.32.25"
-  resolved "https://registry.yarnpkg.com/@cubejs-backend/base-driver/-/base-driver-0.32.25.tgz#e5fd69992ba7b2f9525bcbd5922b46b677d0e127"
-  integrity sha512-y++ov3GsQ38n/joI5hT3wBtelN1hnIPcMq+IZTAv7sPnXVzb9SyO0Mnum7v+hoEk2VUJMRj5zYHrcHKdV0jZog==
+  version "0.32.28"
+  resolved "https://registry.yarnpkg.com/@cubejs-backend/base-driver/-/base-driver-0.32.28.tgz#9f6cfbe151d332c078126cfe585ddf2ca4051ccb"
+  integrity sha512-bEZILg5COhSBMJkHtyySHs/Hdx5CKrzTFTN2eUO06LLhqxRSlhW50KogT7TzzuJDqrQEU3ac3ZtUT8Ov7TUUxg==
+  dependencies:
+    "@cubejs-backend/shared" "^0.32.28"
+    ramda "^0.27.0"
+
+"@cubejs-backend/base-driver@^0.32.26":
+  version "0.32.26"
+  resolved "https://registry.yarnpkg.com/@cubejs-backend/base-driver/-/base-driver-0.32.26.tgz#f960dd4abfc43379e9d242e81662b2c6f2f19720"
+  integrity sha512-OVplhEEdSGHYxgGbNEmN9IXieZbaEjfLgi8mBmlr9OTC1b3cecFHrV8tvRRqi6Emi8ZLtsMjmQx4LOcv7fVn/A==
   dependencies:
     "@cubejs-backend/shared" "^0.32.25"
     ramda "^0.27.0"
@@ -3724,10 +3732,51 @@
     ramda "^0.27.2"
     redis "^3.0.2"
 
-"@cubejs-backend/schema-compiler@^0.32.20":
+"@cubejs-backend/questdb-driver@^0.32.27":
   version "0.32.27"
-  resolved "https://registry.yarnpkg.com/@cubejs-backend/schema-compiler/-/schema-compiler-0.32.27.tgz#bad4964a7d260f2aaa69028ea81b8f91e9b80407"
-  integrity sha512-klV7r6uR6+7HJaINBHBdKaxlMGc/Hz10VMhFG8acYSz2zvFpQ+vDbcvnNbi0dBLpjQfCoWeJfpbxjrVL5XXvsQ==
+  resolved "https://registry.yarnpkg.com/@cubejs-backend/questdb-driver/-/questdb-driver-0.32.27.tgz#4a7792549a1ed4a97142ca7d08257da4a4566eb7"
+  integrity sha512-RpoZ+mxmx4VblLiHonfsecCFF1g+x1ouBqcYPcRAsHQAF0m8j24r/5A/xBhS4qmgDOJlikHmm9hFcS9pGssRSw==
+  dependencies:
+    "@cubejs-backend/base-driver" "^0.32.26"
+    "@cubejs-backend/schema-compiler" "^0.32.27"
+    "@cubejs-backend/shared" "^0.32.25"
+    "@types/pg" "^8.6.0"
+    moment "^2.24.0"
+    pg "^8.7.0"
+    ramda "^0.27.1"
+
+"@cubejs-backend/schema-compiler@^0.32.20":
+  version "0.32.28"
+  resolved "https://registry.yarnpkg.com/@cubejs-backend/schema-compiler/-/schema-compiler-0.32.28.tgz#38d39269abc0c0465c2f73c4daf9c10537107bb0"
+  integrity sha512-K2fRunKXfvDVk4kAHZHPrbyVGiUJwIYOsmAfA+9dXV3805dulTzDALS73XKkrrAaMy9R8eVoW6qSksTq7Nbmhw==
+  dependencies:
+    "@babel/code-frame" "^7.12.11"
+    "@babel/core" "^7.12.10"
+    "@babel/generator" "^7.12.10"
+    "@babel/parser" "^7.12.10"
+    "@babel/preset-env" "^7.12.10"
+    "@babel/standalone" "^7.12.10"
+    "@babel/traverse" "^7.12.10"
+    "@babel/types" "^7.12.12"
+    "@cubejs-backend/shared" "^0.32.28"
+    antlr4ts "0.5.0-alpha.4"
+    camelcase "^6.2.0"
+    cron-parser "^3.5.0"
+    humps "^2.0.1"
+    inflection "^1.12.0"
+    joi "^17.8.3"
+    js-yaml "^4.1.0"
+    lru-cache "^5.1.1"
+    moment-range "^4.0.1"
+    moment-timezone "^0.5.33"
+    node-dijkstra "^2.5.0"
+    ramda "^0.27.2"
+    syntax-error "^1.3.0"
+
+"@cubejs-backend/schema-compiler@^0.32.25":
+  version "0.32.25"
+  resolved "https://registry.yarnpkg.com/@cubejs-backend/schema-compiler/-/schema-compiler-0.32.25.tgz#6931e9acb68762431a1af837042138b6ca68a711"
+  integrity sha512-aUw1945yxP5+zaLYIQAQwqttTP09Hvq+nUffnJ+SCQNwx+2qT671KmAnqgNoSI//E8uxn0iK2xJlPgzMIH0YAw==
   dependencies:
     "@babel/code-frame" "^7.12.11"
     "@babel/core" "^7.12.10"
@@ -3752,10 +3801,10 @@
     ramda "^0.27.2"
     syntax-error "^1.3.0"
 
-"@cubejs-backend/schema-compiler@^0.32.25":
-  version "0.32.25"
-  resolved "https://registry.yarnpkg.com/@cubejs-backend/schema-compiler/-/schema-compiler-0.32.25.tgz#6931e9acb68762431a1af837042138b6ca68a711"
-  integrity sha512-aUw1945yxP5+zaLYIQAQwqttTP09Hvq+nUffnJ+SCQNwx+2qT671KmAnqgNoSI//E8uxn0iK2xJlPgzMIH0YAw==
+"@cubejs-backend/schema-compiler@^0.32.27":
+  version "0.32.27"
+  resolved "https://registry.yarnpkg.com/@cubejs-backend/schema-compiler/-/schema-compiler-0.32.27.tgz#bad4964a7d260f2aaa69028ea81b8f91e9b80407"
+  integrity sha512-klV7r6uR6+7HJaINBHBdKaxlMGc/Hz10VMhFG8acYSz2zvFpQ+vDbcvnNbi0dBLpjQfCoWeJfpbxjrVL5XXvsQ==
   dependencies:
     "@babel/code-frame" "^7.12.11"
     "@babel/core" "^7.12.10"
@@ -3883,6 +3932,26 @@
   version "0.32.25"
   resolved "https://registry.yarnpkg.com/@cubejs-backend/shared/-/shared-0.32.25.tgz#e176aa33d8ad689ad8d477309c35c03d264db20b"
   integrity sha512-C7FJYHf3COPVRa/EUAkw3csqndUOrhg7AEBbqBmZvW3RNFfV/I7IJhpd4GXJqe/hlWt5Af0KzNu+oN4qttEXKQ==
+  dependencies:
+    "@oclif/color" "^0.1.2"
+    bytes "^3.1.0"
+    cli-progress "^3.9.0"
+    cross-spawn "^7.0.3"
+    decompress "^4.2.1"
+    env-var "^6.3.0"
+    fs-extra "^9.1.0"
+    http-proxy-agent "^4.0.1"
+    moment-range "^4.0.1"
+    moment-timezone "^0.5.33"
+    node-fetch "^2.6.1"
+    shelljs "^0.8.5"
+    throttle-debounce "^3.0.1"
+    uuid "^8.3.2"
+
+"@cubejs-backend/shared@^0.32.28":
+  version "0.32.28"
+  resolved "https://registry.yarnpkg.com/@cubejs-backend/shared/-/shared-0.32.28.tgz#b3ebf3f59d626bcff927d9667af4996de61262c0"
+  integrity sha512-oK5OjwWk27RBB9k1lH1lcw0Cnm0YfRQ9BaUp7DCIxYlGSbeKpwvw+kUd88Km995JwsB8KY9/S+ejLShsjUlUpQ==
   dependencies:
     "@oclif/color" "^0.1.2"
     bytes "^3.1.0"
@@ -7882,10 +7951,20 @@ pg-pool@^3.4.1:
   resolved "https://registry.yarnpkg.com/pg-pool/-/pg-pool-3.4.1.tgz#0e71ce2c67b442a5e862a9c182172c37eda71e9c"
   integrity sha512-TVHxR/gf3MeJRvchgNHxsYsTCHQ+4wm3VIHSS19z8NC0+gioEhq1okDY1sm/TYbfoP6JLFx01s0ShvZ3puP/iQ==
 
+pg-pool@^3.6.0:
+  version "3.6.0"
+  resolved "https://registry.yarnpkg.com/pg-pool/-/pg-pool-3.6.0.tgz#3190df3e4747a0d23e5e9e8045bcd99bda0a712e"
+  integrity sha512-clFRf2ksqd+F497kWFyM21tMjeikn60oGDmqMT8UBrynEwVEX/5R5xd2sdvdo1cZCFlguORNpVuqxIj+aK4cfQ==
+
 pg-protocol@*, pg-protocol@^1.5.0:
   version "1.5.0"
   resolved "https://registry.yarnpkg.com/pg-protocol/-/pg-protocol-1.5.0.tgz#b5dd452257314565e2d54ab3c132adc46565a6a0"
   integrity sha512-muRttij7H8TqRNu/DxrAJQITO4Ac7RmX3Klyr/9mJEOBeIpgnF8f9jAfRz5d3XwQZl5qBjF9gLsUtMPJE0vezQ==
+
+pg-protocol@^1.6.0:
+  version "1.6.0"
+  resolved "https://registry.yarnpkg.com/pg-protocol/-/pg-protocol-1.6.0.tgz#4c91613c0315349363af2084608db843502f8833"
+  integrity sha512-M+PDm637OY5WM307051+bsDia5Xej6d9IR4GwJse1qA1DIhiKlksvrneZOYQq42OM+spubpcNYEo2FcKQrDk+Q==
 
 pg-query-stream@^4.1.0:
   version "4.2.1"
@@ -7915,6 +7994,19 @@ pg@^8.6.0, pg@^8.7.1:
     pg-connection-string "^2.5.0"
     pg-pool "^3.4.1"
     pg-protocol "^1.5.0"
+    pg-types "^2.1.0"
+    pgpass "1.x"
+
+pg@^8.7.0:
+  version "8.10.0"
+  resolved "https://registry.yarnpkg.com/pg/-/pg-8.10.0.tgz#5b8379c9b4a36451d110fc8cd98fc325fe62ad24"
+  integrity sha512-ke7o7qSTMb47iwzOSaZMfeR7xToFdkE71ifIipOAAaLIM0DYzfOAXlgFFmYUIE2BcJtvnVlGCID84ZzCegE8CQ==
+  dependencies:
+    buffer-writer "2.0.0"
+    packet-reader "1.0.0"
+    pg-connection-string "^2.5.0"
+    pg-pool "^3.6.0"
+    pg-protocol "^1.6.0"
     pg-types "^2.1.0"
     pgpass "1.x"
 
@@ -8131,7 +8223,7 @@ queue-microtask@^1.2.2:
   resolved "https://registry.yarnpkg.com/queue-microtask/-/queue-microtask-1.2.3.tgz#4929228bbc724dfac43e0efb058caf7b6cfb6243"
   integrity sha512-NuaNSa6flKT5JaSYQzJok04JzTL1CA6aGhv5rfLW3PgqA+M2ChpZQnAC8h8i4ZFkBS8X5RqkDBHA7r4hej3K9A==
 
-ramda@0.27.2, ramda@^0.27.2:
+ramda@0.27.2, ramda@^0.27.1, ramda@^0.27.2:
   version "0.27.2"
   resolved "https://registry.yarnpkg.com/ramda/-/ramda-0.27.2.tgz#84463226f7f36dc33592f6f4ed6374c48306c3f1"
   integrity sha512-SbiLPU40JuJniHexQSAgad32hfwd+DRUdwF2PlVuI5RZD0/vahUco7R8vD86J/tcEKKF9vZrUVwgtmGCqlCKyA==
