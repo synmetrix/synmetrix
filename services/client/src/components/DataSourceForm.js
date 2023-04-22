@@ -17,6 +17,7 @@ import trino from 'assets/images/trino.svg';
 import materialize from 'assets/images/materialize.svg';
 import snowflake from 'assets/images/snowflakes.svg';
 import questdb from 'assets/images/questdb.svg';
+import crate from 'assets/images/crate.svg';
 
 import useFormItems from 'hooks/useFormItems';
 import FormTiles from './FormTiles';
@@ -249,6 +250,7 @@ const dbTiles = [
   { title: 'MATERIALIZE', imgSrc: materialize },
   { title: 'SNOWFLAKE', imgSrc: snowflake },
   { title: 'QUESTDB', imgSrc: questdb },
+  { title: 'CRATE', imgSrc: crate },
 ];
 
 // example of use Antd Form with forwardRef
