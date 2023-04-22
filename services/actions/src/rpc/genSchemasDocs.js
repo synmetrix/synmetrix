@@ -7,6 +7,7 @@ import { header, unorderedList, divider, text } from '../utils/markdownHelpers';
 const versionQuery = `
   query ($id: uuid!) {
     versions_by_pk(id: $id) {
+      id
       dataschemas {
         name
         user {
@@ -53,8 +54,28 @@ const setMarkdownDocMutation = `
   }
 `;
 
+const getMemberFieldsMapper = source => param => {
+  const entry = Object.entries(param)[0];
+
+  if (!entry) {
+    return null;
+  }
+
+  const [key, title] = entry;
+
+  if (!source[key]) {
+    return null;
+  }
+
+  if (Array.isArray(source[key])) {
+    return `${text(title, { bold: true, indent: 2, postNewLine: false })}: \`${source[key].join(', ')}\``;
+  }
+
+  return `${text(title, { bold: true, indent: 2, postNewLine: false })}: \`${source[key]}\``;
+};
+
 const generateMemberDoc = member => {
-  let memberWithMeta = { ...member, ...member.meta };
+  const { meta } = member;
 
   let result = header(member.shortTitle, { size: 5, bold: true, indent: 8 });
   result += text(member.description || 'No description provided', { indent: 8 });
@@ -68,30 +89,19 @@ const generateMemberDoc = member => {
     { format: 'Format' },
     { drillMembers: 'Drill Members' },
     { sql: 'SQL' },
-    ...Object.entries(member.meta || {}).map(metaEntry => ({ [metaEntry[0]]: metaEntry[0] })),
   ];
 
-  const fields = parameters.map(param => {
-    const entry = Object.entries(param)[0];
-
-    if (!entry) {
-      return null;
-    }
-
-    const [key, title] = entry;
-
-    if (!memberWithMeta[key]) {
-      return null;
-    }
-
-    if (Array.isArray(memberWithMeta[key])) {
-      return `${text(title, { bold: true, indent: 2, postNewLine: false })}: \`${memberWithMeta[key].join(', ')}\``;
-    }
-
-    return `${text(title, { bold: true, indent: 2, postNewLine: false })}: \`${memberWithMeta[key]}\``;
-  }).filter(Boolean);
+  const fields = parameters.map(getMemberFieldsMapper(member)).filter(Boolean);
 
   result += unorderedList(fields);
+
+  if (meta) {
+    const metaParameters = Object.entries(meta).map(([key]) => ({ [key]: key }));
+    const metaFields = metaParameters.map(getMemberFieldsMapper(meta)).filter(Boolean);
+
+    result += text('Metadata:', { bold: true, indent: 8 });
+    result += unorderedList(metaFields);
+  }
 
   return result;
 };
@@ -99,8 +109,6 @@ const generateMemberDoc = member => {
 const generateDataschemaDoc = (dataschema) => {
   let doc = `<details>\n`;
   doc += `<summary>${dataschema.name}</summary>\n\n`;
-
-  console.log(dataschema);
 
   if (dataschema?.measures?.length > 0) {
     doc += header('Measures', { size: 4, indent: 4 });
@@ -127,18 +135,16 @@ const generateDataschemaDoc = (dataschema) => {
 };
 
 const generateVersionDoc = async ({ version }) => {
-  const { user, dataschemas, branch } = version;
+  const { id: versionId, user, dataschemas, branch } = version;
   const { display_name: versionAuthorName } = user;
   const { name: branchName, datasource_id: datasourceId } = branch;
   const dataschemasCollaborators = dataschemas.map(ds => ds.user.display_name);
 
   const metaResp = await fetchGraphQL(datasourceMetaQuery, { datasourceId });
 
-  console.log('metaResp', metaResp);
-
   let doc = header('Documentation', { size: 1 });
 
-  doc += `This documentation covers branch "${branchName}" and the latest version of dataschemas.\n\n`;
+  doc += `This documentation covers version ${versionId} from branch "${branchName}".\n\n`;
   doc += divider;
   doc += header('List of cubes:', { size: 4 });
 

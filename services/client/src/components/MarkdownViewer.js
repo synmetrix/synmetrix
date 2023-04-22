@@ -3,19 +3,12 @@ import React, { useMemo } from 'react';
 import { marked } from 'marked';
 import PropTypes from 'prop-types';
 
-import Loader from 'components/Loader';
-import useVersionDocs from '../hooks/useVersionDocs';
-
 import s from './MarkdownViewer.module.css';
 
 const defaultContent = '# Documentation has not been generated yet';
 
-const MarkdownViewer = ({ versionId }) => {
-  const [docData] = useVersionDocs({ versionId });
-
-  const doc = useMemo(() => {
-    const markdown = docData?.data?.versions_by_pk?.markdown_doc || defaultContent;
-
+const MarkdownViewer = ({ markdown = defaultContent }) => {
+  const docs = useMemo(() => {
     try {
       return marked.parse(markdown);
     } catch (error) {
@@ -23,21 +16,17 @@ const MarkdownViewer = ({ versionId }) => {
       console.error(error);
       return null;
     }
-  }, [docData]);
-
-  if (docData.loading) {
-    return <Loader spinning />;
-  }
+  }, [markdown]);
 
   return (
     <div className={s.container}>
-      <div dangerouslySetInnerHTML={{ __html: doc }} />
+      <div dangerouslySetInnerHTML={{ __html: docs }} />
     </div>
   );
 };
 
 MarkdownViewer.propTypes = {
-  versionId: PropTypes.string.isRequired
+  markdown: PropTypes.string.isRequired
 };
 
 export default MarkdownViewer;
