@@ -42,6 +42,11 @@ const checkAndTriggerAlert = async (alert) => {
     delivery_type: deliveryType,
     delivery_config: deliveryConfig,
   } = alert;
+
+  if (!exploration) {
+    return apiError('Exploration not found');
+  }
+
   const { playground_state: playgroundState, user_id: userId } = exploration;
 
   const { value: lockValue, ttl } = await getLockData(alert);

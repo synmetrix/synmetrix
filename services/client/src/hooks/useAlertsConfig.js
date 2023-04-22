@@ -4,6 +4,7 @@ import produce from 'immer';
 
 import useQuery from 'hooks/useQuery';
 import useSources, { datasourceMetaQuery } from 'hooks/useSources';
+import { granularities } from 'hooks/useDataSourceMeta';
 
 const commonFormItems = {
   exploration_divider: {
@@ -21,6 +22,11 @@ const commonFormItems = {
   },
   measure: {
     label: 'Measure',
+    required: true,
+    span: 12
+  },
+  timeDimension: {
+    label: 'Time Dimension',
     required: true,
     span: 12
   },
@@ -165,7 +171,7 @@ export default ({ form, initialValues, entity = 'alert' }) => {
       const cubeSelectorValues = cubesMeta?.map(cube => ({ [cube.title]: cube.name })) || [];
   
       const measureSelectorValues = selectedCube?.measures.map(measure => ({ [measure.title]: measure.name })) || [];
-      const granularitySelectorValues = selectedCube?.dimensions
+      const timeDimensionSelectorValues = selectedCube?.dimensions
           ?.filter(dimension => dimension.type === 'time')
           ?.map(dimension => ({ [dimension.shortTitle]: dimension.name })) || [];
 
@@ -223,7 +229,10 @@ export default ({ form, initialValues, entity = 'alert' }) => {
         draft.measure.values = measureSelectorValues;
         draft.measure.display = selectedCube ? 'select' : 'none';
 
-        draft.granularity.values = granularitySelectorValues;
+        draft.timeDimension.values = timeDimensionSelectorValues;
+        draft.timeDimension.display = selectedCube ? 'select' : 'none';
+
+        draft.granularity.values = granularities.map(g => ({ [g.title]: g.name }));
         draft.granularity.display = selectedCube ? 'select' : 'none';
 
         draft.since.values = form.getFieldValue('since') ?? initialSince;
