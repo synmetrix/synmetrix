@@ -3604,6 +3604,18 @@
   resolved "https://registry.yarnpkg.com/@cubejs-backend/dotenv/-/dotenv-9.0.2.tgz#c3679091b702f0fd38de120c5a63943fcdc0dcbf"
   integrity sha512-yC1juhXEjM7K97KfXubDm7WGipd4Lpxe+AT8XeTRE9meRULrKlw0wtE2E8AQkGOfTBn+P1SCkePQ/BzIbOh1VA==
 
+"@cubejs-backend/dremio-driver@^0.32.28":
+  version "0.32.28"
+  resolved "https://registry.yarnpkg.com/@cubejs-backend/dremio-driver/-/dremio-driver-0.32.28.tgz#197eca97f41cd39f9145b9bf19657180f17f615d"
+  integrity sha512-TF/z6hsBAEgr0gtCVcFMAprS+nMl1yi3hkinnQs8IDLIj/ivdxiMehChfVwmsc1RUkfPWyqujplCIqJK/KzIxA==
+  dependencies:
+    "@cubejs-backend/base-driver" "^0.32.28"
+    "@cubejs-backend/schema-compiler" "^0.32.28"
+    "@cubejs-backend/shared" "^0.32.28"
+    axios "^0.21.1"
+    moment-timezone "^0.5.31"
+    sqlstring "^2.3.1"
+
 "@cubejs-backend/druid-driver@^0.32.25":
   version "0.32.25"
   resolved "https://registry.yarnpkg.com/@cubejs-backend/druid-driver/-/druid-driver-0.32.25.tgz#43e6282a6791ac8f5808b460102fcaeb0ed39e0b"
@@ -3767,7 +3779,7 @@
     pg "^8.7.0"
     ramda "^0.27.1"
 
-"@cubejs-backend/schema-compiler@^0.32.20":
+"@cubejs-backend/schema-compiler@^0.32.20", "@cubejs-backend/schema-compiler@^0.32.28":
   version "0.32.28"
   resolved "https://registry.yarnpkg.com/@cubejs-backend/schema-compiler/-/schema-compiler-0.32.28.tgz#38d39269abc0c0465c2f73c4daf9c10537107bb0"
   integrity sha512-K2fRunKXfvDVk4kAHZHPrbyVGiUJwIYOsmAfA+9dXV3805dulTzDALS73XKkrrAaMy9R8eVoW6qSksTq7Nbmhw==
