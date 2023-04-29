@@ -15,25 +15,25 @@ const defaultFilterValues = {
 };
 
 const reducer = (state, action) => {
-  const { memberType } = action;
+  let { memberType } = action;
   
   if (action.type === 'add') {    
     let { value } = action;
-    const elementsCount = getOr([], memberType, state).length;
 
-    if (action.memberType !== 'filters') {
+    if (memberType !== 'filters') {
       const [memberName, granularity = null] = action?.value?.split(/\+/);
 
-      if (memberType === 'timeDimensions') {
+      if (granularity) {
+        memberType = 'timeDimensions';
         value = {
           dimension: memberName,
           granularity,
         };
       }
 
-      const notUniq = state[memberType].find(member => member === memberName);
+      const isMemberExists = !!state[memberType].find(member => member.dimension === memberName && member.granularity === granularity);
 
-      if (notUniq) {
+      if (isMemberExists) {
         return state;
       }
     } else {
@@ -42,6 +42,8 @@ const reducer = (state, action) => {
         ...defaultFilterValues[action.operatorType]
       };
     }
+
+    const elementsCount = getOr([], memberType, state).length;
 
     return set([memberType, elementsCount], value, state);
   }
@@ -69,11 +71,47 @@ const reducer = (state, action) => {
     };
   }
   if (action.type === 'setOrder') {
-    return set('order', action.value, state);
+    const { value } = action;
+
+    const sortValue = value.map(sortMember => {
+      const { id, desc } = sortMember;
+      const [cube, field, granularity] = id.split('.');
+
+      if (granularity) {
+        const memberId = `${cube}.${field}`;
+
+        const isMemberExists = !!state.order.find(orderMember => orderMember.id === memberId);
+        if (isMemberExists) {
+          return null;
+        }
+
+        return {
+          id: memberId,
+          desc
+        };
+      }
+
+      return sortMember;
+    }).filter(Boolean);
+
+    return set('order', sortValue, state);
   }
 
   if (action.type === 'remove') {
-    return remove([action.memberType, action.index], state);
+    let { index } = action;
+    const { value } = action;
+
+    if (memberType !== 'filters') {
+
+      const [memberName, granularity = null] = value?.split(/\+/);
+
+      if (granularity) {
+        memberType = 'timeDimensions';
+        index = state[memberType].findIndex(member => member.dimension === memberName && member.granularity === granularity);
+      }
+    }
+
+    return remove([memberType, index], state);
   }
 
   if (action.type === 'reset') {
@@ -114,7 +152,7 @@ const useAnalyticsQuery = () => {
   const updateMember = useCallback(
     (memberType, toQuery = getName) => ({
       add: member => dispatch({ type: 'add', memberType, value: toQuery(member), operatorType: getOperatorType(member) }),
-      remove: member => dispatch({ type: 'remove', memberType, index: member.index }),
+      remove: member => dispatch({ type: 'remove', memberType, value: toQuery(member), index: member.index }),
       update: (member, newValue) =>
         dispatch({ type: 'update', memberType, index: member.index, newValue: toQuery(newValue) }),
     }),

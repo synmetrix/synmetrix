@@ -53,10 +53,20 @@ const ExploreCubes = ({ t, availableQueryMembers, onMemberSelect, selectedQueryM
         return null;
       }
 
-      const cubeSelectedCount = Object.values(selectedQueryMembers || {})
-        .flat()
-        .filter(m => (m.name || '').split('.')[0].toLowerCase() === cube.toLowerCase())
-        .length;
+      const cubeSelectedItems = Object.values(selectedQueryMembers || {})
+          .flat()
+          .filter(m => (m.name || '').split('.')[0].toLowerCase() === cube.toLowerCase());
+
+      const cubeSelectedCount = cubeSelectedItems.reduce((acc, item) => {
+        const isMemberExists = !!acc.find(accItem => accItem.dimension === item.dimension && accItem.granularity == item.granularity);
+
+        if (isMemberExists) {
+          return acc;
+        }
+
+        acc.push(item);
+        return acc;
+      }, []).length;
 
       return (
         <Panel

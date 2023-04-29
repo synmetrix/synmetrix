@@ -20,6 +20,7 @@
   padding-top: 0 !important;
   padding-bottom: 0 !important;
   padding-left: 35px !important;
+  height: 24px;
 }
 
 .panel :global(.anticon) {

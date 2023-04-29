@@ -40,8 +40,8 @@ const granulateMember = (member) => {
       newTitle = `by ${granularity.title}`;
       newShortTitle = `by ${granularity.name}`;
     } else {
-      newTitle = 'w/o grouping';
-      newShortTitle = 'w/o grouping';
+      newTitle = 'Raw';
+      newShortTitle = 'Raw';
     };
 
     const newMember = {
@@ -52,6 +52,7 @@ const granulateMember = (member) => {
       granularity: granularityName,
       meta: {
         subSection: member.shortTitle,
+        subSectionType: member.type
       },
     };
 
@@ -67,6 +68,7 @@ const getSubSections = (catMembers, membersIndex) => {
 
   catMembers.forEach(member => {
     const subSection = getOr(false, 'meta.subSection', member);
+    const subSectionType = getOr('string', 'meta.subSectionType', member);
 
     if (!subSection) {
       freeMembers.push(member);
@@ -77,6 +79,7 @@ const getSubSections = (catMembers, membersIndex) => {
       subSections[subSection] = {
         members: [],
         haveSelected: false,
+        subSectionType
       };
     }
 
@@ -127,11 +130,6 @@ const Cube = ({ members, selectedMembers, onMemberSelect }) => {
 
       setState(prev => set(['lastClickedMember'], memberMeta, prev));
 
-      let searchCategory = nextCategory;
-      if (member.type === 'time') {
-        searchCategory = 'timeDimensions';
-      }
-
       // select more than one members if shift pressed
       if (shiftPress) {
         const {
@@ -173,9 +171,9 @@ const Cube = ({ members, selectedMembers, onMemberSelect }) => {
       }
 
       if (selectedIndex === -1) {
-        onMemberSelect(searchCategory).add(member);
+        onMemberSelect(nextCategory).add(member);
       } else {
-        onMemberSelect(searchCategory).remove({ ...member, index: selectedIndex });
+        onMemberSelect(nextCategory).remove({ ...member, index: selectedIndex });
       }
 
       return;
@@ -250,7 +248,9 @@ const Cube = ({ members, selectedMembers, onMemberSelect }) => {
         {Object.keys(subSections).map(subSectionKey => (
           <ExploreCubesSubSection
             name={subSectionKey}
-            haveSelected={subSections[subSectionKey].haveSelected}
+            subSection={subSections[subSectionKey]}
+            onFilterUpdate={onMemberSelect('filters', toFilter)}
+            selectedFilters={selectedFilters}
           >
             {subSections[subSectionKey].members.map((member, index) => getItem(category, member, index, categorySelectedMembers, selectedFilters))}
           </ExploreCubesSubSection>

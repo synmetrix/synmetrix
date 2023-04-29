@@ -5,7 +5,9 @@ import PropTypes from 'prop-types';
 
 import cx from 'classnames';
 
-import { Row, Col, Button, Typography, Icon } from 'antd';
+import { Row, Col, Typography } from 'antd';
+
+import CategoryItemFilter from './ExploreCubesCategoryItemFilter';
 
 import s from './ExploreCubesCategoryItem.module.css';
 
@@ -22,31 +24,7 @@ const CategoryItem = props => {
     hoverState,
   } = props;
 
-  const filterMember = { dimension: member };
-
-  const addFilter = e => {
-    onFilterUpdate.add(filterMember);
-
-    if (e) {
-      e.preventDefault();
-      e.stopPropagation();
-    }
-  };
-
-  const toggleFilter = e => {
-    if (selectedFilterIndex === -1) {
-      onFilterUpdate.add(filterMember);
-    }
-    
-    onFilterUpdate.remove({ ...filterMember, index: selectedFilterIndex });
-
-    if (e) {
-      e.preventDefault();
-      e.stopPropagation();
-    }
-  };
-
-  const isFilterVisible = !member.granularity && category !== 'segments';
+  const isFilterVisible = member.type !== 'time' && category !== 'segments';
 
   return (
     <div 
@@ -82,29 +60,12 @@ const CategoryItem = props => {
               {member.shortTitle}
             </a>
           </Col>
-          {isFilterVisible && (
-            <Col xs={8} style={{ textAlign: 'right' }}>
-              <Button 
-                size="small"
-                className={cx(s.filter, { active: selectedFilterIndex > -1 })}
-                onClick={toggleFilter}
-                onMouseDown={e => e.preventDefault()}
-              >
-                Filter
-              </Button>
-              {selectedFilterIndex > -1 && (
-                <Button 
-                  size="small"
-                  className={cx(s.filter)}
-                  style={{ marginLeft: 5 }}
-                  onClick={addFilter}
-                  onMouseDown={e => e.preventDefault()}
-                >
-                  <Icon type="plus" />
-                </Button>
-              )}
-            </Col>
-          )}
+          <CategoryItemFilter
+            isVisible={isFilterVisible}
+            onFilterUpdate={onFilterUpdate}
+            selectedFilterIndex={selectedFilterIndex}
+            member={member}
+          />
         </Row>
       </Paragraph>
     </div>

@@ -34,7 +34,7 @@ const operators = {
 };
 
 export const granularities = [
-  { name: undefined, title: 'w/o grouping' },
+  { name: undefined, title: 'Raw' },
   { name: 'second', title: 'Second' },
   { name: 'minute', title: 'Minute' },
   { name: 'hour', title: 'Hour' },
@@ -64,7 +64,7 @@ class Meta {
 
   resolveMember(memberName, memberType) {
     const [cube] = memberName.split('.');
-    
+
     if (!this.cubesMap[cube]) {
       return { title: memberName, error: `Cube not found ${cube} for path '${memberName}'` };
     }
@@ -111,7 +111,7 @@ const enrichPlaygroundMembers = (cubesMetaCls, playgroundState) => {
 
   const enrichedMembers = {
     measures: resolveWithIndex('measures'),
-    dimensions: resolveWithIndex('dimensions').filter(m => m.type !== 'time').concat(timeDimensions),
+    dimensions: resolveWithIndex('dimensions').filter(m => m.type !== 'time' || (m.type === 'time' && !m.granularity)).concat(timeDimensions),
     segments: resolveWithIndex('segments'),
     timeDimensions,
     filters,

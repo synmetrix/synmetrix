@@ -270,7 +270,7 @@ const TableView = (props) => {
     );
   };
 
-  const cellRenderer = (args) => {
+  const internalCellRenderer = (args) => {
     const {
       cellData,
     } = args;
@@ -335,7 +335,7 @@ const TableView = (props) => {
                   width={COL_WIDTH}
                   headerRenderer={headerRenderer}
                   cellDataGetter={cellDataGetter}
-                  cellRenderer={cellRenderer}
+                  cellRenderer={internalCellRenderer}
                   columnData={{
                     columnId: col.id,
                     onSortChange,
