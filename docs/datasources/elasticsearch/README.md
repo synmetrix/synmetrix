@@ -39,7 +39,7 @@ curl -X POST -u elastic:password "http://localhost:9200/_security/user/user" -H 
 
 ## Step 4: Access Kibana and add sample data
 
-Wait for the Kibana service to start, then go to http://localhost:5601 and log in with the credentials of the user you created:
+Wait for the Kibana service to start, then go to http://localhost:5601 and log in with the credentials:
 
 <pre>
 User: elastic

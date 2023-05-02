@@ -78,10 +78,8 @@ export default ({ basePath, setupAuthInfo, cubejs }) => {
     const driver = await cubejs.options.driverFactory({ securityContext });
 
     try {
-      const schema = await driver.tablesSchema();
+      let schema = await driver.tablesSchema();
       const { tables = [], overwrite = false, branchId } = (req.body || {});
-
-      const scaffoldingTemplate = new ScaffoldingTemplate(schema, driver, 'js');
 
       let normalizedTables = tables.map(table => table?.name?.replace('/', '.'));
 
@@ -89,6 +87,12 @@ export default ({ basePath, setupAuthInfo, cubejs }) => {
         normalizedTables = tables.map(table => (['', table?.name?.replace('/', '')]));
       }
 
+      if (dbType === 'elasticsearch') {
+        schema = { '': schema.main };
+        normalizedTables = normalizedTables.map(table => ['', table?.replace('main.', '')]);
+      }
+
+      const scaffoldingTemplate = new ScaffoldingTemplate(schema, driver, 'js');
       let files = scaffoldingTemplate.generateFilesByTableNames(normalizedTables);
 
       const dataSchemas = await findDataSchemas({

@@ -3491,6 +3491,14 @@
     "@cubejs-backend/shared" "^0.32.25"
     ramda "^0.27.0"
 
+"@cubejs-backend/base-driver@^0.32.30":
+  version "0.32.30"
+  resolved "https://registry.yarnpkg.com/@cubejs-backend/base-driver/-/base-driver-0.32.30.tgz#4b129b1498c47529666ab755a7f14c492c425f0d"
+  integrity sha512-pVNGoTCwKvgWu32ecknUzzwf0dSKCpjsuceIgKn2BSh7x4Oh89tbD5w6UaQ0qZbihmvOOglcsW3to9c0Hg0rqw==
+  dependencies:
+    "@cubejs-backend/shared" "^0.32.30"
+    ramda "^0.27.0"
+
 "@cubejs-backend/bigquery-driver@^0.32.4":
   version "0.32.4"
   resolved "https://registry.yarnpkg.com/@cubejs-backend/bigquery-driver/-/bigquery-driver-0.32.4.tgz#39fd68b7931bb436009459bc136453cef2092af1"
@@ -3604,16 +3612,6 @@
   resolved "https://registry.yarnpkg.com/@cubejs-backend/dotenv/-/dotenv-9.0.2.tgz#c3679091b702f0fd38de120c5a63943fcdc0dcbf"
   integrity sha512-yC1juhXEjM7K97KfXubDm7WGipd4Lpxe+AT8XeTRE9meRULrKlw0wtE2E8AQkGOfTBn+P1SCkePQ/BzIbOh1VA==
 
-"@cubejs-backend/elasticsearch-driver@^0.32.23":
-  version "0.32.23"
-  resolved "https://registry.yarnpkg.com/@cubejs-backend/elasticsearch-driver/-/elasticsearch-driver-0.32.23.tgz#032dcf0540a9672ecf3874a4b879feed0de4975b"
-  integrity sha512-Xc003QWkqBwyERtL/Sy3YReqmxveBI6aOZccePMzVSfSHklIw5L+cqJ+4zPwkTQZl6zsV0UEXdK0XXE1QAVmMw==
-  dependencies:
-    "@cubejs-backend/base-driver" "^0.32.23"
-    "@cubejs-backend/shared" "^0.32.23"
-    "@elastic/elasticsearch" "7.12.0"
-    sqlstring "^2.3.1"
-
 "@cubejs-backend/druid-driver@^0.32.25":
   version "0.32.25"
   resolved "https://registry.yarnpkg.com/@cubejs-backend/druid-driver/-/druid-driver-0.32.25.tgz#43e6282a6791ac8f5808b460102fcaeb0ed39e0b"
@@ -3624,6 +3622,16 @@
     "@cubejs-backend/shared" "^0.32.25"
     axios "^0.21.1"
     moment-timezone "^0.5.31"
+
+"@cubejs-backend/elasticsearch-driver@^0.32.23":
+  version "0.32.30"
+  resolved "https://registry.yarnpkg.com/@cubejs-backend/elasticsearch-driver/-/elasticsearch-driver-0.32.30.tgz#4f2c232c48aba196998402416fd124411ca33e88"
+  integrity sha512-jk5wjnddoFdjmiKltbNAW5NLj6OZflhdxey5t3ThHjLEvMsmVfXm406TyVrUhi677xoE6E7Cvyhg7M9Iqo20iQ==
+  dependencies:
+    "@cubejs-backend/base-driver" "^0.32.30"
+    "@cubejs-backend/shared" "^0.32.30"
+    "@elastic/elasticsearch" "7.12.0"
+    sqlstring "^2.3.1"
 
 "@cubejs-backend/materialize-driver@^0.32.20":
   version "0.32.20"
@@ -3984,6 +3992,26 @@
   version "0.32.28"
   resolved "https://registry.yarnpkg.com/@cubejs-backend/shared/-/shared-0.32.28.tgz#b3ebf3f59d626bcff927d9667af4996de61262c0"
   integrity sha512-oK5OjwWk27RBB9k1lH1lcw0Cnm0YfRQ9BaUp7DCIxYlGSbeKpwvw+kUd88Km995JwsB8KY9/S+ejLShsjUlUpQ==
+  dependencies:
+    "@oclif/color" "^0.1.2"
+    bytes "^3.1.0"
+    cli-progress "^3.9.0"
+    cross-spawn "^7.0.3"
+    decompress "^4.2.1"
+    env-var "^6.3.0"
+    fs-extra "^9.1.0"
+    http-proxy-agent "^4.0.1"
+    moment-range "^4.0.1"
+    moment-timezone "^0.5.33"
+    node-fetch "^2.6.1"
+    shelljs "^0.8.5"
+    throttle-debounce "^3.0.1"
+    uuid "^8.3.2"
+
+"@cubejs-backend/shared@^0.32.30":
+  version "0.32.30"
+  resolved "https://registry.yarnpkg.com/@cubejs-backend/shared/-/shared-0.32.30.tgz#6a0f24024bfa3af1d3bafcd5d332be7134f2b989"
+  integrity sha512-491ePbWjdrkmiuirInciM2++WIFwNirSBGshX/xi8qKvPMNqOp5rkeAUPoKk8yCJF7rqDn38hCzln9HbsRWBRQ==
   dependencies:
     "@oclif/color" "^0.1.2"
     bytes "^3.1.0"
