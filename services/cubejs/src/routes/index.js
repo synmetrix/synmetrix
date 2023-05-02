@@ -82,7 +82,12 @@ export default ({ basePath, setupAuthInfo, cubejs }) => {
       const { tables = [], overwrite = false, branchId } = (req.body || {});
 
       const scaffoldingTemplate = new ScaffoldingTemplate(schema, driver, 'js');
-      const normalizedTables = tables.map(table => table?.name?.replace('/', '.'));
+
+      let normalizedTables = tables.map(table => table?.name?.replace('/', '.'));
+
+      if (dbType === 'questdb') {
+        normalizedTables = tables.map(table => (['', table?.name?.replace('/', '')]));
+      }
 
       let files = scaffoldingTemplate.generateFilesByTableNames(normalizedTables);
 

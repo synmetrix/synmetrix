@@ -3475,12 +3475,20 @@
     "@cubejs-backend/shared" "^0.32.2"
     ramda "^0.27.0"
 
-"@cubejs-backend/base-driver@^0.32.23":
-  version "0.32.23"
-  resolved "https://registry.yarnpkg.com/@cubejs-backend/base-driver/-/base-driver-0.32.23.tgz#0c23709bea7124e1047383da28ef21803110a8a8"
-  integrity sha512-Q1P7baMIHR5z05iuH7MOEvLqs4ktDOqRb+bRcB3s6mLQr43v4zgx53ASfGrh3hLrEjwLUTkY4NOBNORFiS1Vsg==
+"@cubejs-backend/base-driver@^0.32.25", "@cubejs-backend/base-driver@^0.32.28":
+  version "0.32.28"
+  resolved "https://registry.yarnpkg.com/@cubejs-backend/base-driver/-/base-driver-0.32.28.tgz#9f6cfbe151d332c078126cfe585ddf2ca4051ccb"
+  integrity sha512-bEZILg5COhSBMJkHtyySHs/Hdx5CKrzTFTN2eUO06LLhqxRSlhW50KogT7TzzuJDqrQEU3ac3ZtUT8Ov7TUUxg==
   dependencies:
-    "@cubejs-backend/shared" "^0.32.23"
+    "@cubejs-backend/shared" "^0.32.28"
+    ramda "^0.27.0"
+
+"@cubejs-backend/base-driver@^0.32.26":
+  version "0.32.26"
+  resolved "https://registry.yarnpkg.com/@cubejs-backend/base-driver/-/base-driver-0.32.26.tgz#f960dd4abfc43379e9d242e81662b2c6f2f19720"
+  integrity sha512-OVplhEEdSGHYxgGbNEmN9IXieZbaEjfLgi8mBmlr9OTC1b3cecFHrV8tvRRqi6Emi8ZLtsMjmQx4LOcv7fVn/A==
+  dependencies:
+    "@cubejs-backend/shared" "^0.32.25"
     ramda "^0.27.0"
 
 "@cubejs-backend/bigquery-driver@^0.32.4":
@@ -3520,6 +3528,15 @@
     jsonwebtoken "^8.5.1"
     request "^2.88.2"
     request-promise "^4.2.5"
+
+"@cubejs-backend/crate-driver@^0.32.28":
+  version "0.32.28"
+  resolved "https://registry.yarnpkg.com/@cubejs-backend/crate-driver/-/crate-driver-0.32.28.tgz#2fa7d9f52045379efa45dff0c02ede04c11a2ae6"
+  integrity sha512-llIgGqsofejAP6K4QL+P6z/hZimnw8ynM7P0GEWTgk4vC7l3o4zsV6hTGwcZ7Cl3KnuVzMVwNxGbrtJD8RZaCA==
+  dependencies:
+    "@cubejs-backend/postgres-driver" "^0.32.28"
+    "@cubejs-backend/shared" "^0.32.28"
+    pg "^8.7.1"
 
 "@cubejs-backend/cubesql@^0.32.1":
   version "0.32.1"
@@ -3597,6 +3614,17 @@
     "@elastic/elasticsearch" "7.12.0"
     sqlstring "^2.3.1"
 
+"@cubejs-backend/druid-driver@^0.32.25":
+  version "0.32.25"
+  resolved "https://registry.yarnpkg.com/@cubejs-backend/druid-driver/-/druid-driver-0.32.25.tgz#43e6282a6791ac8f5808b460102fcaeb0ed39e0b"
+  integrity sha512-8skM+pK+WHcmPL8RPfcVTMjwNiAi8w7dOnDSsABjFNIur0EsyRy8ArR87mFDzQkqfGX8aFHj9oIp5xGMBRfOnA==
+  dependencies:
+    "@cubejs-backend/base-driver" "^0.32.25"
+    "@cubejs-backend/schema-compiler" "^0.32.25"
+    "@cubejs-backend/shared" "^0.32.25"
+    axios "^0.21.1"
+    moment-timezone "^0.5.31"
+
 "@cubejs-backend/materialize-driver@^0.32.20":
   version "0.32.20"
   resolved "https://registry.yarnpkg.com/@cubejs-backend/materialize-driver/-/materialize-driver-0.32.20.tgz#d641d3e57e1e4bd1cf34bb09ac29be846d6ad802"
@@ -3663,6 +3691,19 @@
     pg "^8.6.0"
     pg-query-stream "^4.1.0"
 
+"@cubejs-backend/postgres-driver@^0.32.28":
+  version "0.32.28"
+  resolved "https://registry.yarnpkg.com/@cubejs-backend/postgres-driver/-/postgres-driver-0.32.28.tgz#bdd78ad7131cd43812ec46d7a507cc260c309216"
+  integrity sha512-wN5AVhIxaW2EEwOty14RhuR3XpoRvWPDTEsBNEkes5c6S5bPFV7x4rFQetNWtBofC4FnRWj3xHB8Re4NmWMX8g==
+  dependencies:
+    "@cubejs-backend/base-driver" "^0.32.28"
+    "@cubejs-backend/shared" "^0.32.28"
+    "@types/pg" "^8.6.0"
+    "@types/pg-query-stream" "^1.0.3"
+    moment "^2.24.0"
+    pg "^8.6.0"
+    pg-query-stream "^4.1.0"
+
 "@cubejs-backend/postgres-driver@^0.32.4":
   version "0.32.4"
   resolved "https://registry.yarnpkg.com/@cubejs-backend/postgres-driver/-/postgres-driver-0.32.4.tgz#6528cb5dee47a7cee38b6352ce2935b5d3b3c114"
@@ -3675,6 +3716,17 @@
     moment "^2.24.0"
     pg "^8.6.0"
     pg-query-stream "^4.1.0"
+
+"@cubejs-backend/prestodb-driver@^0.32.17":
+  version "0.32.17"
+  resolved "https://registry.yarnpkg.com/@cubejs-backend/prestodb-driver/-/prestodb-driver-0.32.17.tgz#f928151a584e87b10c6b2d56a68c4a32459f9428"
+  integrity sha512-9MttdWa3G25YFAdPX/So5PRcgAyw/VFobsXrsXLv9xjnL2OMMluY6WKJQ8Ec/xUkmn7yhKCWc4WZ0qu7pYKCmg==
+  dependencies:
+    "@cubejs-backend/base-driver" "^0.32.17"
+    "@cubejs-backend/shared" "^0.32.17"
+    presto-client "^0.12.2"
+    ramda "^0.27.0"
+    sqlstring "^2.3.1"
 
 "@cubejs-backend/query-orchestrator@^0.32.4":
   version "0.32.4"
@@ -3711,6 +3763,103 @@
     moment-timezone "^0.5.33"
     ramda "^0.27.2"
     redis "^3.0.2"
+
+"@cubejs-backend/questdb-driver@^0.32.27":
+  version "0.32.27"
+  resolved "https://registry.yarnpkg.com/@cubejs-backend/questdb-driver/-/questdb-driver-0.32.27.tgz#4a7792549a1ed4a97142ca7d08257da4a4566eb7"
+  integrity sha512-RpoZ+mxmx4VblLiHonfsecCFF1g+x1ouBqcYPcRAsHQAF0m8j24r/5A/xBhS4qmgDOJlikHmm9hFcS9pGssRSw==
+  dependencies:
+    "@cubejs-backend/base-driver" "^0.32.26"
+    "@cubejs-backend/schema-compiler" "^0.32.27"
+    "@cubejs-backend/shared" "^0.32.25"
+    "@types/pg" "^8.6.0"
+    moment "^2.24.0"
+    pg "^8.7.0"
+    ramda "^0.27.1"
+
+"@cubejs-backend/schema-compiler@^0.32.20":
+  version "0.32.28"
+  resolved "https://registry.yarnpkg.com/@cubejs-backend/schema-compiler/-/schema-compiler-0.32.28.tgz#38d39269abc0c0465c2f73c4daf9c10537107bb0"
+  integrity sha512-K2fRunKXfvDVk4kAHZHPrbyVGiUJwIYOsmAfA+9dXV3805dulTzDALS73XKkrrAaMy9R8eVoW6qSksTq7Nbmhw==
+  dependencies:
+    "@babel/code-frame" "^7.12.11"
+    "@babel/core" "^7.12.10"
+    "@babel/generator" "^7.12.10"
+    "@babel/parser" "^7.12.10"
+    "@babel/preset-env" "^7.12.10"
+    "@babel/standalone" "^7.12.10"
+    "@babel/traverse" "^7.12.10"
+    "@babel/types" "^7.12.12"
+    "@cubejs-backend/shared" "^0.32.28"
+    antlr4ts "0.5.0-alpha.4"
+    camelcase "^6.2.0"
+    cron-parser "^3.5.0"
+    humps "^2.0.1"
+    inflection "^1.12.0"
+    joi "^17.8.3"
+    js-yaml "^4.1.0"
+    lru-cache "^5.1.1"
+    moment-range "^4.0.1"
+    moment-timezone "^0.5.33"
+    node-dijkstra "^2.5.0"
+    ramda "^0.27.2"
+    syntax-error "^1.3.0"
+
+"@cubejs-backend/schema-compiler@^0.32.25":
+  version "0.32.25"
+  resolved "https://registry.yarnpkg.com/@cubejs-backend/schema-compiler/-/schema-compiler-0.32.25.tgz#6931e9acb68762431a1af837042138b6ca68a711"
+  integrity sha512-aUw1945yxP5+zaLYIQAQwqttTP09Hvq+nUffnJ+SCQNwx+2qT671KmAnqgNoSI//E8uxn0iK2xJlPgzMIH0YAw==
+  dependencies:
+    "@babel/code-frame" "^7.12.11"
+    "@babel/core" "^7.12.10"
+    "@babel/generator" "^7.12.10"
+    "@babel/parser" "^7.12.10"
+    "@babel/preset-env" "^7.12.10"
+    "@babel/standalone" "^7.12.10"
+    "@babel/traverse" "^7.12.10"
+    "@babel/types" "^7.12.12"
+    "@cubejs-backend/shared" "^0.32.25"
+    antlr4ts "0.5.0-alpha.4"
+    camelcase "^6.2.0"
+    cron-parser "^3.5.0"
+    humps "^2.0.1"
+    inflection "^1.12.0"
+    joi "^17.8.3"
+    js-yaml "^4.1.0"
+    lru-cache "^5.1.1"
+    moment-range "^4.0.1"
+    moment-timezone "^0.5.33"
+    node-dijkstra "^2.5.0"
+    ramda "^0.27.2"
+    syntax-error "^1.3.0"
+
+"@cubejs-backend/schema-compiler@^0.32.27":
+  version "0.32.27"
+  resolved "https://registry.yarnpkg.com/@cubejs-backend/schema-compiler/-/schema-compiler-0.32.27.tgz#bad4964a7d260f2aaa69028ea81b8f91e9b80407"
+  integrity sha512-klV7r6uR6+7HJaINBHBdKaxlMGc/Hz10VMhFG8acYSz2zvFpQ+vDbcvnNbi0dBLpjQfCoWeJfpbxjrVL5XXvsQ==
+  dependencies:
+    "@babel/code-frame" "^7.12.11"
+    "@babel/core" "^7.12.10"
+    "@babel/generator" "^7.12.10"
+    "@babel/parser" "^7.12.10"
+    "@babel/preset-env" "^7.12.10"
+    "@babel/standalone" "^7.12.10"
+    "@babel/traverse" "^7.12.10"
+    "@babel/types" "^7.12.12"
+    "@cubejs-backend/shared" "^0.32.25"
+    antlr4ts "0.5.0-alpha.4"
+    camelcase "^6.2.0"
+    cron-parser "^3.5.0"
+    humps "^2.0.1"
+    inflection "^1.12.0"
+    joi "^17.8.3"
+    js-yaml "^4.1.0"
+    lru-cache "^5.1.1"
+    moment-range "^4.0.1"
+    moment-timezone "^0.5.33"
+    node-dijkstra "^2.5.0"
+    ramda "^0.27.2"
+    syntax-error "^1.3.0"
 
 "@cubejs-backend/schema-compiler@^0.32.5":
   version "0.32.5"
@@ -3811,10 +3960,30 @@
     throttle-debounce "^3.0.1"
     uuid "^8.3.2"
 
-"@cubejs-backend/shared@^0.32.23":
-  version "0.32.23"
-  resolved "https://registry.yarnpkg.com/@cubejs-backend/shared/-/shared-0.32.23.tgz#fce94e65629fa1e990b3afdb292ffaa175b9793e"
-  integrity sha512-QDPtxYPF1xy76XAikeNuR92un1kmwl+qykIraMOjVfyC8YbDzcR7PZ6IKDGUKKZolgeDlICn9rTdxJUSZewENw==
+"@cubejs-backend/shared@^0.32.25":
+  version "0.32.25"
+  resolved "https://registry.yarnpkg.com/@cubejs-backend/shared/-/shared-0.32.25.tgz#e176aa33d8ad689ad8d477309c35c03d264db20b"
+  integrity sha512-C7FJYHf3COPVRa/EUAkw3csqndUOrhg7AEBbqBmZvW3RNFfV/I7IJhpd4GXJqe/hlWt5Af0KzNu+oN4qttEXKQ==
+  dependencies:
+    "@oclif/color" "^0.1.2"
+    bytes "^3.1.0"
+    cli-progress "^3.9.0"
+    cross-spawn "^7.0.3"
+    decompress "^4.2.1"
+    env-var "^6.3.0"
+    fs-extra "^9.1.0"
+    http-proxy-agent "^4.0.1"
+    moment-range "^4.0.1"
+    moment-timezone "^0.5.33"
+    node-fetch "^2.6.1"
+    shelljs "^0.8.5"
+    throttle-debounce "^3.0.1"
+    uuid "^8.3.2"
+
+"@cubejs-backend/shared@^0.32.28":
+  version "0.32.28"
+  resolved "https://registry.yarnpkg.com/@cubejs-backend/shared/-/shared-0.32.28.tgz#b3ebf3f59d626bcff927d9667af4996de61262c0"
+  integrity sha512-oK5OjwWk27RBB9k1lH1lcw0Cnm0YfRQ9BaUp7DCIxYlGSbeKpwvw+kUd88Km995JwsB8KY9/S+ejLShsjUlUpQ==
   dependencies:
     "@oclif/color" "^0.1.2"
     bytes "^3.1.0"
@@ -3857,6 +4026,19 @@
     node-fetch "^2.6.1"
     ramda "^0.27.2"
     source-map-support "^0.5.19"
+
+"@cubejs-backend/trino-driver@^0.32.20":
+  version "0.32.20"
+  resolved "https://registry.yarnpkg.com/@cubejs-backend/trino-driver/-/trino-driver-0.32.20.tgz#b996b6cc1ba8b5c853548d8fdde82d88f4f916ea"
+  integrity sha512-jtRw2kF4iD73AT2UenuEMs//H+d0FYaX+9ZP128MlXjsnxp/hHwKcjXilAqqFA2CbOH1TGrEFufr10QjD8SyuA==
+  dependencies:
+    "@cubejs-backend/base-driver" "^0.32.17"
+    "@cubejs-backend/prestodb-driver" "^0.32.17"
+    "@cubejs-backend/schema-compiler" "^0.32.20"
+    "@cubejs-backend/shared" "^0.32.17"
+    presto-client "^0.12.2"
+    ramda "^0.27.0"
+    sqlstring "^2.3.1"
 
 "@dabh/diagnostics@^2.0.2":
   version "2.0.3"
@@ -7817,10 +7999,20 @@ pg-pool@^3.4.1:
   resolved "https://registry.yarnpkg.com/pg-pool/-/pg-pool-3.4.1.tgz#0e71ce2c67b442a5e862a9c182172c37eda71e9c"
   integrity sha512-TVHxR/gf3MeJRvchgNHxsYsTCHQ+4wm3VIHSS19z8NC0+gioEhq1okDY1sm/TYbfoP6JLFx01s0ShvZ3puP/iQ==
 
+pg-pool@^3.6.0:
+  version "3.6.0"
+  resolved "https://registry.yarnpkg.com/pg-pool/-/pg-pool-3.6.0.tgz#3190df3e4747a0d23e5e9e8045bcd99bda0a712e"
+  integrity sha512-clFRf2ksqd+F497kWFyM21tMjeikn60oGDmqMT8UBrynEwVEX/5R5xd2sdvdo1cZCFlguORNpVuqxIj+aK4cfQ==
+
 pg-protocol@*, pg-protocol@^1.5.0:
   version "1.5.0"
   resolved "https://registry.yarnpkg.com/pg-protocol/-/pg-protocol-1.5.0.tgz#b5dd452257314565e2d54ab3c132adc46565a6a0"
   integrity sha512-muRttij7H8TqRNu/DxrAJQITO4Ac7RmX3Klyr/9mJEOBeIpgnF8f9jAfRz5d3XwQZl5qBjF9gLsUtMPJE0vezQ==
+
+pg-protocol@^1.6.0:
+  version "1.6.0"
+  resolved "https://registry.yarnpkg.com/pg-protocol/-/pg-protocol-1.6.0.tgz#4c91613c0315349363af2084608db843502f8833"
+  integrity sha512-M+PDm637OY5WM307051+bsDia5Xej6d9IR4GwJse1qA1DIhiKlksvrneZOYQq42OM+spubpcNYEo2FcKQrDk+Q==
 
 pg-query-stream@^4.1.0:
   version "4.2.1"
@@ -7850,6 +8042,19 @@ pg@^8.6.0, pg@^8.7.1:
     pg-connection-string "^2.5.0"
     pg-pool "^3.4.1"
     pg-protocol "^1.5.0"
+    pg-types "^2.1.0"
+    pgpass "1.x"
+
+pg@^8.7.0:
+  version "8.10.0"
+  resolved "https://registry.yarnpkg.com/pg/-/pg-8.10.0.tgz#5b8379c9b4a36451d110fc8cd98fc325fe62ad24"
+  integrity sha512-ke7o7qSTMb47iwzOSaZMfeR7xToFdkE71ifIipOAAaLIM0DYzfOAXlgFFmYUIE2BcJtvnVlGCID84ZzCegE8CQ==
+  dependencies:
+    buffer-writer "2.0.0"
+    packet-reader "1.0.0"
+    pg-connection-string "^2.5.0"
+    pg-pool "^3.6.0"
+    pg-protocol "^1.6.0"
     pg-types "^2.1.0"
     pgpass "1.x"
 
@@ -7923,6 +8128,11 @@ prepend-http@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/prepend-http/-/prepend-http-2.0.0.tgz#e92434bfa5ea8c19f41cdfd401d741a3c819d897"
   integrity sha1-6SQ0v6XqjBn0HN/UAddBo8gZ2Jc=
+
+presto-client@^0.12.2:
+  version "0.12.2"
+  resolved "https://registry.yarnpkg.com/presto-client/-/presto-client-0.12.2.tgz#9719064bed0bd98166ae4bf2ac2c08c0f6996544"
+  integrity sha512-rmoBoxM5mSQZ06SxwEHzMM8nn8W0XQJ2YmmxU9xMOM4r7Hs9Nec72VsM+M1FIYdteU9UIi40550weGs1uiTBNA==
 
 process-nextick-args@~2.0.0:
   version "2.0.1"
@@ -8061,7 +8271,7 @@ queue-microtask@^1.2.2:
   resolved "https://registry.yarnpkg.com/queue-microtask/-/queue-microtask-1.2.3.tgz#4929228bbc724dfac43e0efb058caf7b6cfb6243"
   integrity sha512-NuaNSa6flKT5JaSYQzJok04JzTL1CA6aGhv5rfLW3PgqA+M2ChpZQnAC8h8i4ZFkBS8X5RqkDBHA7r4hej3K9A==
 
-ramda@0.27.2, ramda@^0.27.2:
+ramda@0.27.2, ramda@^0.27.1, ramda@^0.27.2:
   version "0.27.2"
   resolved "https://registry.yarnpkg.com/ramda/-/ramda-0.27.2.tgz#84463226f7f36dc33592f6f4ed6374c48306c3f1"
   integrity sha512-SbiLPU40JuJniHexQSAgad32hfwd+DRUdwF2PlVuI5RZD0/vahUco7R8vD86J/tcEKKF9vZrUVwgtmGCqlCKyA==
