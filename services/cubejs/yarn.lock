@@ -3491,6 +3491,14 @@
     "@cubejs-backend/shared" "^0.32.25"
     ramda "^0.27.0"
 
+"@cubejs-backend/base-driver@^0.32.30":
+  version "0.32.30"
+  resolved "https://registry.yarnpkg.com/@cubejs-backend/base-driver/-/base-driver-0.32.30.tgz#4b129b1498c47529666ab755a7f14c492c425f0d"
+  integrity sha512-pVNGoTCwKvgWu32ecknUzzwf0dSKCpjsuceIgKn2BSh7x4Oh89tbD5w6UaQ0qZbihmvOOglcsW3to9c0Hg0rqw==
+  dependencies:
+    "@cubejs-backend/shared" "^0.32.30"
+    ramda "^0.27.0"
+
 "@cubejs-backend/bigquery-driver@^0.32.4":
   version "0.32.4"
   resolved "https://registry.yarnpkg.com/@cubejs-backend/bigquery-driver/-/bigquery-driver-0.32.4.tgz#39fd68b7931bb436009459bc136453cef2092af1"
@@ -3626,6 +3634,16 @@
     "@cubejs-backend/shared" "^0.32.25"
     axios "^0.21.1"
     moment-timezone "^0.5.31"
+
+"@cubejs-backend/elasticsearch-driver@^0.32.23":
+  version "0.32.30"
+  resolved "https://registry.yarnpkg.com/@cubejs-backend/elasticsearch-driver/-/elasticsearch-driver-0.32.30.tgz#4f2c232c48aba196998402416fd124411ca33e88"
+  integrity sha512-jk5wjnddoFdjmiKltbNAW5NLj6OZflhdxey5t3ThHjLEvMsmVfXm406TyVrUhi677xoE6E7Cvyhg7M9Iqo20iQ==
+  dependencies:
+    "@cubejs-backend/base-driver" "^0.32.30"
+    "@cubejs-backend/shared" "^0.32.30"
+    "@elastic/elasticsearch" "7.12.0"
+    sqlstring "^2.3.1"
 
 "@cubejs-backend/materialize-driver@^0.32.20":
   version "0.32.20"
@@ -4002,6 +4020,26 @@
     throttle-debounce "^3.0.1"
     uuid "^8.3.2"
 
+"@cubejs-backend/shared@^0.32.30":
+  version "0.32.30"
+  resolved "https://registry.yarnpkg.com/@cubejs-backend/shared/-/shared-0.32.30.tgz#6a0f24024bfa3af1d3bafcd5d332be7134f2b989"
+  integrity sha512-491ePbWjdrkmiuirInciM2++WIFwNirSBGshX/xi8qKvPMNqOp5rkeAUPoKk8yCJF7rqDn38hCzln9HbsRWBRQ==
+  dependencies:
+    "@oclif/color" "^0.1.2"
+    bytes "^3.1.0"
+    cli-progress "^3.9.0"
+    cross-spawn "^7.0.3"
+    decompress "^4.2.1"
+    env-var "^6.3.0"
+    fs-extra "^9.1.0"
+    http-proxy-agent "^4.0.1"
+    moment-range "^4.0.1"
+    moment-timezone "^0.5.33"
+    node-fetch "^2.6.1"
+    shelljs "^0.8.5"
+    throttle-debounce "^3.0.1"
+    uuid "^8.3.2"
+
 "@cubejs-backend/snowflake-driver@^0.32.17":
   version "0.32.17"
   resolved "https://registry.yarnpkg.com/@cubejs-backend/snowflake-driver/-/snowflake-driver-0.32.17.tgz#a5ddf5a71e5fdb3ef925de5ceaf7e1f334ca173f"
@@ -4050,6 +4088,17 @@
     colorspace "1.1.x"
     enabled "2.0.x"
     kuler "^2.0.0"
+
+"@elastic/elasticsearch@7.12.0":
+  version "7.12.0"
+  resolved "https://registry.yarnpkg.com/@elastic/elasticsearch/-/elasticsearch-7.12.0.tgz#dbb51a2841f644b670a56d8c15899e860928856f"
+  integrity sha512-GquUEytCijFRPEk3DKkkDdyhspB3qbucVQOwih9uNyz3iz804I+nGBUsFo2LwVvLQmQfEM0IY2+yoYfEz5wMug==
+  dependencies:
+    debug "^4.3.1"
+    hpagent "^0.1.1"
+    ms "^2.1.3"
+    pump "^3.0.0"
+    secure-json-parse "^2.3.1"
 
 "@google-cloud/bigquery@^5.6.0":
   version "5.8.0"
@@ -6538,6 +6587,11 @@ homedir-polyfill@^1.0.1:
   dependencies:
     parse-passwd "^1.0.0"
 
+hpagent@^0.1.1:
+  version "0.1.2"
+  resolved "https://registry.yarnpkg.com/hpagent/-/hpagent-0.1.2.tgz#cab39c66d4df2d4377dbd212295d878deb9bdaa9"
+  integrity sha512-ePqFXHtSQWAFXYmj+JtOTHr84iNrII4/QRlAAPPE+zqnKy4xJo7Ie1Y4kC7AdB+LxLxSTTzBMASsEcy0q8YyvQ==
+
 http-cache-semantics@^4.0.0:
   version "4.1.0"
   resolved "https://registry.yarnpkg.com/http-cache-semantics/-/http-cache-semantics-4.1.0.tgz#49e91c5cbf36c9b94bcfcd71c23d5249ec74e390"
@@ -7557,7 +7611,7 @@ ms@2.1.2:
   resolved "https://registry.yarnpkg.com/ms/-/ms-2.1.2.tgz#d09d1f357b443f493382a8eb3ccd183872ae6009"
   integrity sha512-sGkPx+VjMtmA6MX27oA4FBFELFCZZ4S4XqeGOXCv68tT+jb3vk/RyaKWP0PTKyWtmLSM0b+adUTEvbs1PEaH2w==
 
-ms@2.1.3, ms@^2.0.0, ms@^2.1.1:
+ms@2.1.3, ms@^2.0.0, ms@^2.1.1, ms@^2.1.3:
   version "2.1.3"
   resolved "https://registry.yarnpkg.com/ms/-/ms-2.1.3.tgz#574c8138ce1d2b5861f0b44579dbadd60c6615b2"
   integrity sha512-6FlzubTLZG3J2a/NVCAleEhjzq5oxgHyaCU9yYXvcLsvoVaHJq/s5xXI6/XXP6tz7R9xAOtHnSO/tXtF3WRTlA==
@@ -8592,6 +8646,11 @@ sax@>=0.6.0:
   version "1.2.4"
   resolved "https://registry.yarnpkg.com/sax/-/sax-1.2.4.tgz#2816234e2378bddc4e5354fab5caa895df7100d9"
   integrity sha512-NqVDv9TpANUjFm0N8uM5GxL36UgKi9/atZw+x7YFnQ8ckwFGKrl4xX4yWtrey3UJm5nP1kUbnYgLopqWNSRhWw==
+
+secure-json-parse@^2.3.1:
+  version "2.7.0"
+  resolved "https://registry.yarnpkg.com/secure-json-parse/-/secure-json-parse-2.7.0.tgz#5a5f9cd6ae47df23dba3151edd06855d47e09862"
+  integrity sha512-6aU+Rwsezw7VR8/nyvKTx8QpWH9FrcYiXXlqC4z5d5XQBDRqtbfsRjnwGyqbi3gddNtWHuEk9OANUotL26qKUw==
 
 seek-bzip@^1.0.5:
   version "1.0.6"

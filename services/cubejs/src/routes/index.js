@@ -78,15 +78,18 @@ export default ({ basePath, setupAuthInfo, cubejs }) => {
     const driver = await cubejs.options.driverFactory({ securityContext });
 
     try {
-      const schema = await driver.tablesSchema();
+      let schema = await driver.tablesSchema();
       const { tables = [], overwrite = false, branchId } = (req.body || {});
-
-      const scaffoldingTemplate = new ScaffoldingTemplate(schema, driver, 'js');
 
       let normalizedTables = tables.map(table => table?.name?.replace('/', '.'));
 
       if (dbType === 'questdb') {
         normalizedTables = tables.map(table => (['', table?.name?.replace('/', '')]));
+      }
+
+      if (dbType === 'elasticsearch') {
+        schema = { '': schema.main };
+        normalizedTables = normalizedTables.map(table => ['', table?.replace('main.', '')]);
       }
 
       if (dbType === 'dremio') {
@@ -95,7 +98,8 @@ export default ({ basePath, setupAuthInfo, cubejs }) => {
           return [parts.slice(0, -1).join('.'), parts[parts.length - 1]];
         });
       }
-
+      
+      const scaffoldingTemplate = new ScaffoldingTemplate(schema, driver, 'js');
       let files = scaffoldingTemplate.generateFilesByTableNames(normalizedTables);
 
       const dataSchemas = await findDataSchemas({

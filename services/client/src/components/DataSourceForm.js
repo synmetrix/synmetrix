@@ -11,6 +11,7 @@ import postgres from 'assets/images/postgres.svg';
 import redshift from 'assets/images/redshift.svg';
 import mongobi from 'assets/images/mongobi.svg';
 import clickhouse from 'assets/images/clickhouse.svg';
+import elasticsearch from 'assets/images/elasticsearch.svg';
 import druid from 'assets/images/druid.svg';
 import presto from 'assets/images/presto.svg';
 import trino from 'assets/images/trino.svg';
@@ -168,6 +169,29 @@ const connectionFormItems = {
       label: 'SSL PASSPHRASE',
     },
   },
+  elasticsearch: {
+    'db_params.url': {
+      label: 'Url',
+      required: true,
+    },
+    'db_params.username': {
+      label: 'User',
+    },
+    'db_params.password': {
+      label: 'Password',
+    },
+    'db_params.apiId': {
+      label: 'API ID',
+    },
+    'db_params.apiKey': {
+      label: 'API KEY',
+    },
+    'db_params.ssl': {
+      display: 'checkbox',
+      label: 'Use SSL',
+      value: 'yes',
+    },
+  },
   druid: {
     'db_params.host': {
       label: 'Host',
@@ -245,6 +269,7 @@ const dbTiles = [
   { title: 'REDSHIFT', imgSrc: redshift },
   { title: 'MSSQL', imgSrc: mssql },
   { title: 'CLICKHOUSE', imgSrc: clickhouse },
+  { title: 'ELASTICSEARCH', imgSrc: elasticsearch },
   { title: 'DRUID', imgSrc: druid },
   { title: 'PRESTODB', imgSrc: presto },
   { title: 'TRINO', imgSrc: trino },
