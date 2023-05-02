@@ -89,6 +89,13 @@ export default ({ basePath, setupAuthInfo, cubejs }) => {
         normalizedTables = tables.map(table => (['', table?.name?.replace('/', '')]));
       }
 
+      if (dbType === 'dremio') {
+        normalizedTables = tables.map(table => {
+          const parts = table?.name?.split('.');
+          return [parts.slice(0, -1).join('.'), parts[parts.length - 1]];
+        });
+      }
+
       let files = scaffoldingTemplate.generateFilesByTableNames(normalizedTables);
 
       const dataSchemas = await findDataSchemas({
