@@ -258,9 +258,27 @@ const connectionFormItems = {
     },
   },
   questdbItems,
+  ksql: {
+    'db_params.url': {
+      label: 'URL',
+      required: true,
+      placeholder: 'example.com',
+    },
+    'db_params.username': {
+      label: 'Username',
+      required: false,
+      placeholder: 'user',
+    },
+    'db_params.password': {
+      label: 'Password',
+      required: false,
+      placeholder: 'pass',
+    },
+  },
 };
 
 const dbTiles = [
+  { title: 'KSQL', imgSrc: postgres },
   { title: 'POSTGRES', imgSrc: postgres },
   { title: 'MYSQL', imgSrc: mysql },
   { title: 'MONGOBI', imgSrc: mongobi },
