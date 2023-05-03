@@ -20,6 +20,7 @@ import snowflake from 'assets/images/snowflakes.svg';
 import questdb from 'assets/images/questdb.svg';
 import crate from 'assets/images/crate.svg';
 import dremio from 'assets/images/dremio.svg';
+import firebolt from 'assets/images/firebolt.svg';
 
 import useFormItems from 'hooks/useFormItems';
 import FormTiles from './FormTiles';
@@ -258,6 +259,32 @@ const connectionFormItems = {
     },
   },
   questdbItems,
+  firebolt: {
+    'db_params.database': {
+      label: 'Database Name',
+      required: true,
+      placeholder: 'SNOWFLAKE',
+    },
+    'db_params.username': {
+      label: 'Username',
+      required: false,
+      placeholder: 'user',
+    },
+    'db_params.password': {
+      label: 'Password',
+      required: false,
+      placeholder: 'pass',
+    },
+    'db_params.engineEndpoint': {
+      label: 'Engine Endpoint',
+      required: false,
+    },
+    'db_params.apiEndpoint': {
+      label: 'API Endpoint',
+      required: false,
+      placeholder: 'api.dev.firebolt.io, api.app.firebolt.io',
+    },
+  },
 };
 
 const dbTiles = [
@@ -278,6 +305,7 @@ const dbTiles = [
   { title: 'QUESTDB', imgSrc: questdb },
   { title: 'CRATE', imgSrc: crate },
   { title: 'DREMIO', imgSrc: dremio },
+  { title: 'FIREBOLT', imgSrc: firebolt },
 ];
 
 // example of use Antd Form with forwardRef
