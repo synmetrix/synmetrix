@@ -230,6 +230,10 @@ const driverFactory = async ({ securityContext }) => {
     if (dbType === 'druid') {
       driverModule = driverModule.default;
     }
+
+    if (dbType === 'databricks-jdbc') {
+      return new driverModule.DatabricksDriver(dbConfig);
+    }
   } catch (err) {
     return driverError(err);
   }

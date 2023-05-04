@@ -20,6 +20,7 @@ import snowflake from 'assets/images/snowflakes.svg';
 import questdb from 'assets/images/questdb.svg';
 import crate from 'assets/images/crate.svg';
 import dremio from 'assets/images/dremio.svg';
+import databricks from 'assets/images/databricks.svg';
 
 import useFormItems from 'hooks/useFormItems';
 import FormTiles from './FormTiles';
@@ -258,6 +259,20 @@ const connectionFormItems = {
     },
   },
   questdbItems,
+  'databricks-jdbc': {
+    'db_params.token': {
+      label: 'Access Token',
+      required: true,
+    },
+    'db_params.url': {
+      label: 'Databricks JDBC URL',
+      required: true,
+    },
+    'db_params.database': {
+      label: 'Database Name',
+      required: true,
+    },
+  },
 };
 
 const dbTiles = [
@@ -278,6 +293,7 @@ const dbTiles = [
   { title: 'QUESTDB', imgSrc: questdb },
   { title: 'CRATE', imgSrc: crate },
   { title: 'DREMIO', imgSrc: dremio },
+  { title: 'DATABRICKS-JDBC', imgSrc: databricks },
 ];
 
 // example of use Antd Form with forwardRef

@@ -12,6 +12,7 @@
     "@cubejs-backend/clickhouse-driver": "^0.32.2",
     "@cubejs-backend/crate-driver": "^0.32.28",
     "@cubejs-backend/cubestore-driver": "^0.32.4",
+    "@cubejs-backend/databricks-jdbc-driver": "^0.33.0",
     "@cubejs-backend/dremio-driver": "^0.32.28",
     "@cubejs-backend/druid-driver": "^0.32.25",
     "@cubejs-backend/elasticsearch-driver": "^0.32.23",
