@@ -20,6 +20,7 @@ import snowflake from 'assets/images/snowflakes.svg';
 import questdb from 'assets/images/questdb.svg';
 import crate from 'assets/images/crate.svg';
 import dremio from 'assets/images/dremio.svg';
+import ksql from 'assets/images/ksql.svg';
 
 import useFormItems from 'hooks/useFormItems';
 import FormTiles from './FormTiles';
@@ -283,7 +284,6 @@ const connectionFormItems = {
 };
 
 const dbTiles = [
-  { title: 'KSQL', imgSrc: postgres },
   { title: 'POSTGRES', imgSrc: postgres },
   { title: 'MYSQL', imgSrc: mysql },
   { title: 'MONGOBI', imgSrc: mongobi },
@@ -301,6 +301,7 @@ const dbTiles = [
   { title: 'QUESTDB', imgSrc: questdb },
   { title: 'CRATE', imgSrc: crate },
   { title: 'DREMIO', imgSrc: dremio },
+  { title: 'KSQL', imgSrc: ksql },
 ];
 
 // example of use Antd Form with forwardRef
