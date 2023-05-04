@@ -259,10 +259,15 @@ const connectionFormItems = {
   },
   questdbItems,
   ksql: {
-    'db_params.url': {
-      label: 'URL',
+    'db_params.host': {
+      label: 'Host',
       required: true,
       placeholder: 'example.com',
+    },
+    'db_params.port': {
+      label: 'Port',
+      required: true,
+      placeholder: '8088',
     },
     'db_params.username': {
       label: 'Username',

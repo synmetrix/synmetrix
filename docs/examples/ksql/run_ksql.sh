@@ -2,10 +2,6 @@
 
 docker-compose up -d
 
-while [ "$(docker inspect -f '{{.State.Running}}' ksql_ksql_1)" != "true" ]; do
-  sleep 1
-done
-
 if [[ "$OSTYPE" == "linux-gnu"* ]]; then
   host_ip=$(ip addr | grep 'inet ' | grep -v '127.0.0.1' | awk '{print $2}' | cut -d/ -f1 | head -n 1)
 elif [[ "$OSTYPE" == "darwin"* ]]; then
