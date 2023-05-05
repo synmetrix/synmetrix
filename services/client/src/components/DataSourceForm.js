@@ -21,6 +21,7 @@ import questdb from 'assets/images/questdb.svg';
 import crate from 'assets/images/crate.svg';
 import dremio from 'assets/images/dremio.svg';
 import databricks from 'assets/images/databricks.svg';
+import ksql from 'assets/images/ksql.svg';
 
 import useFormItems from 'hooks/useFormItems';
 import FormTiles from './FormTiles';
@@ -273,6 +274,28 @@ const connectionFormItems = {
       required: true,
     },
   },
+  ksql: {
+    'db_params.host': {
+      label: 'Host',
+      required: true,
+      placeholder: 'example.com',
+    },
+    'db_params.port': {
+      label: 'Port',
+      required: true,
+      placeholder: '8088',
+    },
+    'db_params.username': {
+      label: 'Username',
+      required: false,
+      placeholder: 'user',
+    },
+    'db_params.password': {
+      label: 'Password',
+      required: false,
+      placeholder: 'pass',
+    },
+  },
 };
 
 const dbTiles = [
@@ -294,6 +317,7 @@ const dbTiles = [
   { title: 'CRATE', imgSrc: crate },
   { title: 'DREMIO', imgSrc: dremio },
   { title: 'DATABRICKS-JDBC', imgSrc: databricks },
+  { title: 'KSQL', imgSrc: ksql },
 ];
 
 // example of use Antd Form with forwardRef
