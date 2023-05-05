@@ -120,10 +120,18 @@ const driverFactory = async ({ securityContext }) => {
 
   let parsedDbParams = {};
 
-  try {
-    parsedDbParams = JSON.parse(dbParams);
-  } catch (err) {
-    return driverError(err);
+  if (typeof dbParams === 'string') {
+    try {
+      parsedDbParams = JSON.parse(dbParams);
+    } catch (err) {
+      return driverError(err);
+    }
+  } else if (typeof dbParams === 'object') {
+    parsedDbParams = dbParams;
+  } else {
+    return driverError({
+      message: 'Invalid dbParams type: expected a string or an object',
+    });
   }
 
   // clean empty/false keys because of sideeffects
@@ -233,6 +241,10 @@ const driverFactory = async ({ securityContext }) => {
 
     if (dbType === 'druid') {
       driverModule = driverModule.default;
+    }
+
+    if (dbType === 'databricks-jdbc') {
+      return new driverModule.DatabricksDriver(dbConfig);
     }
   } catch (err) {
     return driverError(err);
