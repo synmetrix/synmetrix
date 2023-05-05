@@ -98,6 +98,10 @@ export default ({ basePath, setupAuthInfo, cubejs }) => {
           return [parts.slice(0, -1).join('.'), parts[parts.length - 1]];
         });
       }
+
+      if (dbType === 'ksql') {
+        normalizedTables = tables.map(table => (['', table?.name?.replace('.', '')]));
+      }
       
       const scaffoldingTemplate = new ScaffoldingTemplate(schema, driver, 'js');
       let files = scaffoldingTemplate.generateFilesByTableNames(normalizedTables);
