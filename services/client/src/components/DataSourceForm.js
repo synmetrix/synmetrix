@@ -21,6 +21,8 @@ import questdb from 'assets/images/questdb.svg';
 import crate from 'assets/images/crate.svg';
 import dremio from 'assets/images/dremio.svg';
 import firebolt from 'assets/images/firebolt.svg';
+import databricks from 'assets/images/databricks.svg';
+import ksql from 'assets/images/ksql.svg';
 
 import useFormItems from 'hooks/useFormItems';
 import FormTiles from './FormTiles';
@@ -265,6 +267,41 @@ const connectionFormItems = {
       required: true,
       placeholder: 'SNOWFLAKE',
     },
+    'db_params.engineEndpoint': {
+      label: 'Engine Endpoint',
+      required: false,
+    },
+    'db_params.apiEndpoint': {
+      label: 'API Endpoint',
+      required: false,
+      placeholder: 'api.dev.firebolt.io, api.app.firebolt.io',
+    },
+  },
+  'databricks-jdbc': {
+    'db_params.token': {
+      label: 'Access Token',
+      required: true,
+    },
+    'db_params.url': {
+      label: 'Databricks JDBC URL',
+      required: true,
+    },
+    'db_params.database': {
+      label: 'Database Name',
+      required: true,
+    },
+  },
+  ksql: {
+    'db_params.host': {
+      label: 'Host',
+      required: true,
+      placeholder: 'example.com',
+    },
+    'db_params.port': {
+      label: 'Port',
+      required: true,
+      placeholder: '8088',
+    },
     'db_params.username': {
       label: 'Username',
       required: false,
@@ -274,15 +311,6 @@ const connectionFormItems = {
       label: 'Password',
       required: false,
       placeholder: 'pass',
-    },
-    'db_params.engineEndpoint': {
-      label: 'Engine Endpoint',
-      required: false,
-    },
-    'db_params.apiEndpoint': {
-      label: 'API Endpoint',
-      required: false,
-      placeholder: 'api.dev.firebolt.io, api.app.firebolt.io',
     },
   },
 };
@@ -306,6 +334,8 @@ const dbTiles = [
   { title: 'CRATE', imgSrc: crate },
   { title: 'DREMIO', imgSrc: dremio },
   { title: 'FIREBOLT', imgSrc: firebolt },
+  { title: 'DATABRICKS-JDBC', imgSrc: databricks },
+  { title: 'KSQL', imgSrc: ksql },
 ];
 
 // example of use Antd Form with forwardRef

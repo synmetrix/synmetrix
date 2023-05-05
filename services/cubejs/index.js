@@ -41,6 +41,13 @@ const addHttpPrefix = (host) => {
   return host;
 };
 
+const makeUrl = (raw_host, port) => {
+  const host = addHttpPrefix(raw_host);
+  const url = [host, port].join(':');
+
+  return url;
+};
+
 const setupAuthInfo = async (req, auth) => {
   const { 
     authorization: cubejsAuthToken,
@@ -113,10 +120,18 @@ const driverFactory = async ({ securityContext }) => {
 
   let parsedDbParams = {};
 
-  try {
-    parsedDbParams = JSON.parse(dbParams);
-  } catch (err) {
-    return driverError(err);
+  if (typeof dbParams === 'string') {
+    try {
+      parsedDbParams = JSON.parse(dbParams);
+    } catch (err) {
+      return driverError(err);
+    }
+  } else if (typeof dbParams === 'object') {
+    parsedDbParams = dbParams;
+  } else {
+    return driverError({
+      message: 'Invalid dbParams type: expected a string or an object',
+    });
   }
 
   // clean empty/false keys because of sideeffects
@@ -209,13 +224,10 @@ const driverFactory = async ({ securityContext }) => {
       };
       break;
     case 'druid':
-      dbConfig.host = addHttpPrefix(dbConfig.host);
-      const url = [dbConfig.host, dbConfig.port].join(':');
-
-      dbConfig = {
-        ...dbConfig,
-        url,
-      };
+      dbConfig.url = makeUrl(dbConfig.host, dbConfig.port);
+      break;
+    case 'ksql':
+      dbConfig.url = makeUrl(dbConfig.host, dbConfig.port);
       break;
     default:
       break;
@@ -229,6 +241,10 @@ const driverFactory = async ({ securityContext }) => {
 
     if (dbType === 'druid') {
       driverModule = driverModule.default;
+    }
+
+    if (dbType === 'databricks-jdbc') {
+      return new driverModule.DatabricksDriver(dbConfig);
     }
   } catch (err) {
     return driverError(err);
