@@ -265,10 +265,20 @@ const connectionFormItems = {
     'db_params.database': {
       label: 'Database Name',
       required: true,
-      placeholder: 'SNOWFLAKE',
+      placeholder: 'db_name',
     },
-    'db_params.engineEndpoint': {
-      label: 'Engine Endpoint',
+    'db_params.username': {
+      label: 'Username',
+      required: false,
+      placeholder: 'user',
+    },
+    'db_params.password': {
+      label: 'Password',
+      required: false,
+      placeholder: 'pass',
+    },
+    'db_params.engineName': {
+      label: 'Engine Name',
       required: false,
     },
     'db_params.apiEndpoint': {
