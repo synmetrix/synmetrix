@@ -229,6 +229,14 @@ const driverFactory = async ({ securityContext }) => {
     case 'ksql':
       dbConfig.url = makeUrl(dbConfig.host, dbConfig.port);
       break;
+    case 'firebolt':
+      dbConfig.connection = {
+        database: dbConfig?.database,
+        username: dbConfig?.username,
+        password: dbConfig?.password,
+        engineName: dbConfig?.engineName,
+      };
+      break;
     default:
       break;
   }

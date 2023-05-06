@@ -20,6 +20,7 @@ import snowflake from 'assets/images/snowflakes.svg';
 import questdb from 'assets/images/questdb.svg';
 import crate from 'assets/images/crate.svg';
 import dremio from 'assets/images/dremio.svg';
+import firebolt from 'assets/images/firebolt.svg';
 import databricks from 'assets/images/databricks.svg';
 import ksql from 'assets/images/ksql.svg';
 
@@ -260,6 +261,32 @@ const connectionFormItems = {
     },
   },
   questdbItems,
+  firebolt: {
+    'db_params.database': {
+      label: 'Database Name',
+      required: true,
+      placeholder: 'db_name',
+    },
+    'db_params.username': {
+      label: 'Username',
+      required: false,
+      placeholder: 'user',
+    },
+    'db_params.password': {
+      label: 'Password',
+      required: false,
+      placeholder: 'pass',
+    },
+    'db_params.engineName': {
+      label: 'Engine Name',
+      required: false,
+    },
+    'db_params.apiEndpoint': {
+      label: 'API Endpoint',
+      required: false,
+      placeholder: 'api.dev.firebolt.io, api.app.firebolt.io',
+    },
+  },
   'databricks-jdbc': {
     'db_params.token': {
       label: 'Access Token',
@@ -316,6 +343,7 @@ const dbTiles = [
   { title: 'QUESTDB', imgSrc: questdb },
   { title: 'CRATE', imgSrc: crate },
   { title: 'DREMIO', imgSrc: dremio },
+  { title: 'FIREBOLT', imgSrc: firebolt },
   { title: 'DATABRICKS-JDBC', imgSrc: databricks },
   { title: 'KSQL', imgSrc: ksql },
 ];
