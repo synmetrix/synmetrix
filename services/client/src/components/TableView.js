@@ -321,10 +321,14 @@ const TableView = (props) => {
               />
             )}
             {flatHeaders.map(col => {
+              const [cube, field] = col.id.split('.');
+              const columnMemberId = `${cube}.${field}`;
+
               const value = col.render('Header');
 
-              const sortDirection = col.isSorted && (
-                (col.isSortedDesc && SortDirection.DESC) || SortDirection.ASC
+              const colSortConfig = sortBy.find(sortItem => sortItem.id === columnMemberId);
+              const sortDirection = !!colSortConfig && (
+                (colSortConfig.desc && SortDirection.DESC) || SortDirection.ASC
               );
 
               return (
@@ -337,7 +341,7 @@ const TableView = (props) => {
                   cellDataGetter={cellDataGetter}
                   cellRenderer={internalCellRenderer}
                   columnData={{
-                    columnId: col.id,
+                    columnId: columnMemberId,
                     onSortChange,
                     sortDirection,
                   }}

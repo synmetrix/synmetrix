@@ -73,28 +73,7 @@ const reducer = (state, action) => {
   if (action.type === 'setOrder') {
     const { value } = action;
 
-    const sortValue = value.map(sortMember => {
-      const { id, desc } = sortMember;
-      const [cube, field, granularity] = id.split('.');
-
-      if (granularity) {
-        const memberId = `${cube}.${field}`;
-
-        const isMemberExists = !!state.order.find(orderMember => orderMember.id === memberId);
-        if (isMemberExists) {
-          return null;
-        }
-
-        return {
-          id: memberId,
-          desc
-        };
-      }
-
-      return sortMember;
-    }).filter(Boolean);
-
-    return set('order', sortValue, state);
+    return set('order', value, state);
   }
 
   if (action.type === 'remove') {
