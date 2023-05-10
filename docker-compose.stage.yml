@@ -17,22 +17,47 @@ services:
     networks:
       - mlcraft_default
 
-  nginx:
-    image: mesudip/nginx-proxy:latest
+  traefik:
+    image: traefik:v2.5.5
     deploy:
       placement:
         constraints: [node.role == manager]
+      labels:
+        - traefik.enable=true
+        - traefik.http.routers.traefik.rule=Host(`lb.${DOMAIN}`) && (PathPrefix(`/api`) || PathPrefix(`/dashboard`))
+        - traefik.http.routers.traefik.entrypoints=websecure
+        - traefik.http.routers.traefik.service=api@internal
+        - traefik.http.routers.traefik.tls=true
+        - traefik.http.routers.traefik.tls.certresolver=le
+        - traefik.http.routers.traefik.middlewares=admin
+        - traefik.http.middlewares.admin.basicauth.users=$BASIC_ADMIN_AUTH
+        - traefik.http.services.traefik.loadbalancer.server.port=8888
+    command:
+      - --entrypoints.web.address=:80
+      - --entrypoints.websecure.address=:443
+      - --entrypoints.web.http.redirections.entryPoint.to=websecure
+      - --entrypoints.web.http.redirections.entryPoint.scheme=https
+      - --entrypoints.web.http.redirections.entrypoint.permanent=true
+      - --entrypoints.web.http.redirections.entrypoint.priority=1000
+      - --providers.docker=true
+      - --providers.docker.swarmMode=true
+      - --providers.docker.exposedByDefault=false
+      - --api=true
+      - --api.dashboard=true
+      - --accesslog=true
+      - --certificatesresolvers.le.acme.httpchallenge=true
+      - --certificatesresolvers.le.acme.httpchallenge.entrypoint=web
+      - --certificatesresolvers.le.acme.email=$LETSENCRYPT_EMAIL
+      - --certificatesresolvers.le.acme.storage=/acme.json
+      # - --log.level=DEBUG
     ports:
       - 80:80
       - 443:443
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-      - nginx-dhparam:/etc/nginx/dhparam
-      - nginx-ssl:/etc/ssl
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./etc/acme.json:/acme.json
     networks:
       - mlcraft_default
-    environment:
-      CLIENT_MAX_BODY_SIZE: 5m
 
   cubejs:
     image: ${REGISTRY_HOST}/mlcraft/cubejs:latest
@@ -46,12 +71,20 @@ services:
     deploy:
       placement:
         constraints: [node.role == manager]
+      labels:
+        - traefik.enable=true
+        - traefik.http.routers.client.rule=Host(`app.${DOMAIN}`)
+        - traefik.http.routers.client.entrypoints=websecure
+        - traefik.http.routers.client.tls=true
+        - traefik.http.routers.client.tls.certresolver=le
+        - traefik.http.services.client.loadbalancer.server.port=80
+        - traefik.http.middlewares.client_compress.compress=true
+        - traefik.http.routers.client.middlewares=client_compress
     build:
       context: ./services/client/
       args:
         NODE_ENV: test
     environment:
-      VIRTUAL_HOST: ${PROTOCOL:-http}://app.${DOMAIN} -> :80
       GRAPHQL_SERVER_URL: ${PROTOCOL:-http}://api.${DOMAIN}/v1/graphql
       GRAPHQL_WS_URL: ${WS_PROTOCOL:-ws}://api.${DOMAIN}/v1/graphql
       GRAPHQL_PLUS_SERVER_URL: ${PROTOCOL:-http}://api-plus.${DOMAIN}
@@ -60,21 +93,34 @@ services:
 
   hasura:
     image: ${REGISTRY_HOST}/mlcraft/hasura:latest
+    deploy:
+      labels:
+        - traefik.enable=true
+        - traefik.http.routers.hasura.rule=Host(`api.${DOMAIN}`)
+        - traefik.http.routers.hasura.entrypoints=websecure
+        - traefik.http.routers.hasura.tls=true
+        - traefik.http.routers.hasura.tls.certresolver=le
+        - traefik.http.services.hasura.loadbalancer.server.port=8080
     env_file:
       - .env
       - .stage.env
     environment:
-      VIRTUAL_HOST1: ${PROTOCOL:-http}://api.${DOMAIN} -> :8080
-      VIRTUAL_HOST2: ${WS_PROTOCOL:-ws}://api.${DOMAIN} -> :8080
-      HASURA_GRAPHQL_ENABLE_CONSOLE: "true" 
+      HASURA_GRAPHQL_ENABLE_CONSOLE: "true"
 
   hasura_plus:
     image: ${REGISTRY_HOST}/mlcraft/hasura-plus:latest
+    deploy:
+      labels:
+        - traefik.enable=true
+        - traefik.http.routers.hasura_plus.rule=Host(`api-plus.${DOMAIN}`)
+        - traefik.http.routers.hasura_plus.entrypoints=websecure
+        - traefik.http.routers.hasura_plus.tls=true
+        - traefik.http.routers.hasura_plus.tls.certresolver=le
+        - traefik.http.services.hasura_plus.loadbalancer.server.port=3000
     env_file:
       - .env
       - .stage.env
     environment:
-      VIRTUAL_HOST: ${PROTOCOL:-http}://api-plus.${DOMAIN} -> :3000; client_max_body_size 5m;
       SERVER_URL: ${PROTOCOL:-http}://api-plus.${DOMAIN}
       REDIRECT_URL_SUCCESS: ${PROTOCOL:-http}://app.${DOMAIN}/callback
       REDIRECT_URL_ERROR: ${PROTOCOL:-http}://app.${DOMAIN}/callback
@@ -87,5 +133,3 @@ services:
 
 volumes:
   pgstorage-data:
-  nginx-dhparam:
-  nginx-ssl:

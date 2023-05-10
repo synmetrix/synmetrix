@@ -149,15 +149,21 @@ const TableView = (props) => {
       sortDirection,
       onSortChange,
       columnId,
+      granularity
     } = columnData;
+    let humanLabel = label;
+
+    if (granularity) {
+      humanLabel = `${label} (by ${granularity})`;
+    }
 
     const children = [
       <span
         className={s.headerColumn}
         key="label"
-        title={typeof label === 'string' ? label : null}
+        title={typeof humanLabel === 'string' ? humanLabel : null}
       >
-        {label}
+        {humanLabel}
       </span>,
     ];
 
@@ -270,7 +276,7 @@ const TableView = (props) => {
     );
   };
 
-  const cellRenderer = (args) => {
+  const internalCellRenderer = (args) => {
     const {
       cellData,
     } = args;
@@ -288,14 +294,14 @@ const TableView = (props) => {
         {defaultCellRenderer(args)}
       </span>
     );
-  }
+  };
 
   const loadingTip = loadingProgress.timeElapsed ? `${loadingProgress.stage} ${(parseFloat(loadingProgress.timeElapsed) / 1000).toFixed(2)} secs...` : loadingProgress.stage;
 
   return (
     <Loader spinning={loading} tip={loadingTip}>
       <>
-        {messages.map((message, i) => <ErrorMessage key={i} {...message} />)}
+        {messages.map((msg, i) => <ErrorMessage key={i} {...msg} />)}
         <div style={{ width, height, overflow: 'auto' }}>
           <Table
             id={tableId}
@@ -321,10 +327,14 @@ const TableView = (props) => {
               />
             )}
             {flatHeaders.map(col => {
+              const [cube, field, granularity] = col.id.split('.');
+              const columnMemberId = `${cube}.${field}`;
+
               const value = col.render('Header');
 
-              const sortDirection = col.isSorted && (
-                (col.isSortedDesc && SortDirection.DESC) || SortDirection.ASC
+              const colSortConfig = sortBy.find(sortItem => sortItem.id === columnMemberId);
+              const sortDirection = !!colSortConfig && (
+                (colSortConfig.desc && SortDirection.DESC) || SortDirection.ASC
               );
 
               return (
@@ -335,11 +345,12 @@ const TableView = (props) => {
                   width={COL_WIDTH}
                   headerRenderer={headerRenderer}
                   cellDataGetter={cellDataGetter}
-                  cellRenderer={cellRenderer}
+                  cellRenderer={internalCellRenderer}
                   columnData={{
-                    columnId: col.id,
+                    columnId: columnMemberId,
                     onSortChange,
                     sortDirection,
+                    granularity
                   }}
                 />
               );

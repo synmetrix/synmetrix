@@ -20,12 +20,13 @@
   padding-top: 0 !important;
   padding-bottom: 0 !important;
   padding-left: 35px !important;
+  height: 24px;
 }
 
 .panel :global(.anticon) {
   left: 13px !important;
   overflow-x: hidden;
-  overflow-y: auto;
+  overflow-y: hidden;
 }
 
 .panel :global(.ant-collapse-item) {

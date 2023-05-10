@@ -4,7 +4,7 @@ import { getTitle } from './usePlayground';
 const useAnalyticsQueryMembers = ({ selectedQueryMembers, settings = {} }) => {
   const baseMembers = useMemo(
     () => {
-      const { measures = [], dimensions = [] } = selectedQueryMembers || {};
+      const { measures = [], dimensions = [], timeDimensions = [] } = selectedQueryMembers || {};
       const members = dimensions.concat(measures);
 
       // selectedQueryMembers contains arrays in sections, but we use Object.values just because safer
@@ -16,7 +16,11 @@ const useAnalyticsQueryMembers = ({ selectedQueryMembers, settings = {} }) => {
         [getTitle(settings, obj)]: obj.name,
       }));
 
-      const allMembers = measuresValues.concat(dimensionsValues);
+      const timeDimensionsValues = Object.values(timeDimensions).map(obj => ({
+        [getTitle(settings, obj)]: obj.name,
+      }));
+
+      const allMembers = measuresValues.concat(dimensionsValues).concat(timeDimensionsValues);
 
       const index = members.reduce((acc, curr) => ({
         ...acc,
@@ -27,7 +31,7 @@ const useAnalyticsQueryMembers = ({ selectedQueryMembers, settings = {} }) => {
         index,
         allMembers,
         measures: measuresValues,
-        dimensions: dimensionsValues,
+        dimensions: dimensionsValues.concat(timeDimensionsValues),
       };
     },
     [selectedQueryMembers, settings]

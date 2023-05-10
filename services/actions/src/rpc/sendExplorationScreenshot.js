@@ -26,7 +26,7 @@ const TIMEZONE = 'UTC';
 const mailerOptions = {
   host: SMTP_HOST,
   port: SMTP_PORT,
-  secure: SMTP_SECURE ?? false,
+  secure: SMTP_SECURE === 'true',
 };
 
 if (SMTP_USER && SMTP_PASS) {

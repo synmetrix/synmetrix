@@ -33,6 +33,10 @@ export default async (session, input) => {
     delivery_config: deliveryConfig,
   } = report;
 
+  if (!exploration) {
+    return apiError('Exploration not found');
+  }
+
   const { error } = await sendExplorationScreenshot({
     deliveryType,
     deliveryConfig,

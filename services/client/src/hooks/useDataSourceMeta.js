@@ -33,12 +33,15 @@ const operators = {
   ],
 };
 
-const granularities = [
-  { name: undefined, title: 'w/o grouping' },
+export const granularities = [
+  { name: undefined, title: 'Raw' },
+  { name: 'second', title: 'Second' },
+  { name: 'minute', title: 'Minute' },
   { name: 'hour', title: 'Hour' },
   { name: 'day', title: 'Day' },
   { name: 'week', title: 'Week' },
   { name: 'month', title: 'Month' },
+  { name: 'quarter', title: 'Quarter' },
   { name: 'year', title: 'Year' },
 ];
 
@@ -65,7 +68,7 @@ class Meta {
     if (!this.cubesMap[cube]) {
       return { title: memberName, error: `Cube not found ${cube} for path '${memberName}'` };
     }
-
+    
     const memberTypes = Array.isArray(memberType) ? memberType : [memberType];
 
     const member = memberTypes
@@ -79,20 +82,11 @@ class Meta {
     return member;
   }
 
-  // defaultTimeDimensionNameFor(memberName) {
-  //   const findMember = () => this.getCubeMembers(memberName, 'dimensions');
-  //
-  //   return Object.keys(findMember()).find(
-  //     d => findMember()[d].type === 'time'
-  //   );
-  // }
-
   filterOperatorsForMember(memberName, memberType) {
     const member = this.resolveMember(memberName, memberType);
     return operators[member.type] || operators.string;
   }
 };
-
 
 const enrichPlaygroundMembers = (cubesMetaCls, playgroundState) => {
   const resolveWithIndex = key =>
@@ -103,7 +97,8 @@ const enrichPlaygroundMembers = (cubesMetaCls, playgroundState) => {
 
   const timeDimensions = getOr([], 'timeDimensions', playgroundState).map((m, index) => ({
     ...m,
-    dimension: { ...cubesMetaCls.resolveMember(m.dimension, 'dimensions'), granularities },
+    ...cubesMetaCls.resolveMember(m.dimension, 'dimensions'),
+    name: m.granularity ? `${m.dimension}+${m.granularity}` : m.dimension,
     index,
   }));
 
@@ -116,7 +111,7 @@ const enrichPlaygroundMembers = (cubesMetaCls, playgroundState) => {
 
   const enrichedMembers = {
     measures: resolveWithIndex('measures'),
-    dimensions: resolveWithIndex('dimensions'),
+    dimensions: resolveWithIndex('dimensions').filter(m => m.type !== 'time' || (m.type === 'time' && !m.granularity)).concat(timeDimensions),
     segments: resolveWithIndex('segments'),
     timeDimensions,
     filters,
@@ -127,6 +122,7 @@ const enrichPlaygroundMembers = (cubesMetaCls, playgroundState) => {
 
 const updatePlaygroundState = (playgroundState, cubesMeta) => {
   const keys = ['dimensions', 'measures', 'segments', 'filters'];
+
   const updatedPlaygroundState = Object.keys(playgroundState).reduce((acc, curKey) => {
     if (keys.find(key => key === curKey)) {
       const filteredArray = playgroundState[curKey].filter(m => {
@@ -164,12 +160,15 @@ export default ({ meta = [], playgroundState }) => {
       if (!meta) {
         return {};
       }
-
       const cubesPairs = (meta || []).map(c => [
         c.name,
-        { measures: memberMap(c.measures), dimensions: memberMap(c.dimensions), segments: memberMap(c.segments) }
+        { 
+          measures: memberMap(c.measures),
+          dimensions: memberMap(c.dimensions),
+          segments: memberMap(c.segments),
+          timeDimensions: memberMap(c.dimensions.filter(d => d.type === 'time')),
+        }
       ]);
-
       const cubesMap = fromPairs(cubesPairs);
 
       const cubesMeta = new Meta(cubesMap);

@@ -11,11 +11,18 @@ import postgres from 'assets/images/postgres.svg';
 import redshift from 'assets/images/redshift.svg';
 import mongobi from 'assets/images/mongobi.svg';
 import clickhouse from 'assets/images/clickhouse.svg';
+import elasticsearch from 'assets/images/elasticsearch.svg';
 import druid from 'assets/images/druid.svg';
 import presto from 'assets/images/presto.svg';
 import trino from 'assets/images/trino.svg';
 import materialize from 'assets/images/materialize.svg';
 import snowflake from 'assets/images/snowflakes.svg';
+import questdb from 'assets/images/questdb.svg';
+import crate from 'assets/images/crate.svg';
+import dremio from 'assets/images/dremio.svg';
+import firebolt from 'assets/images/firebolt.svg';
+import databricks from 'assets/images/databricks.svg';
+import ksql from 'assets/images/ksql.svg';
 
 import useFormItems from 'hooks/useFormItems';
 import FormTiles from './FormTiles';
@@ -52,6 +59,10 @@ const defaultFormItems = {
     value: 'yes',
   },
 };
+
+const questdbItems = { ...defaultFormItems };
+questdbItems['db_params.user'].required = false;
+questdbItems['db_params.database'].required = false;
 
 const prestoTrinoItems = {
   'db_params.host': {
@@ -161,6 +172,29 @@ const connectionFormItems = {
       label: 'SSL PASSPHRASE',
     },
   },
+  elasticsearch: {
+    'db_params.url': {
+      label: 'Url',
+      required: true,
+    },
+    'db_params.username': {
+      label: 'User',
+    },
+    'db_params.password': {
+      label: 'Password',
+    },
+    'db_params.apiId': {
+      label: 'API ID',
+    },
+    'db_params.apiKey': {
+      label: 'API KEY',
+    },
+    'db_params.ssl': {
+      display: 'checkbox',
+      label: 'Use SSL',
+      value: 'yes',
+    },
+  },
   druid: {
     'db_params.host': {
       label: 'Host',
@@ -225,7 +259,70 @@ const connectionFormItems = {
       required: true,
       placeholder: 'PUBLIC',
     },
-  }
+  },
+  questdbItems,
+  firebolt: {
+    'db_params.database': {
+      label: 'Database Name',
+      required: true,
+      placeholder: 'db_name',
+    },
+    'db_params.username': {
+      label: 'Username',
+      required: false,
+      placeholder: 'user',
+    },
+    'db_params.password': {
+      label: 'Password',
+      required: false,
+      placeholder: 'pass',
+    },
+    'db_params.engineName': {
+      label: 'Engine Name',
+      required: false,
+    },
+    'db_params.apiEndpoint': {
+      label: 'API Endpoint',
+      required: false,
+      placeholder: 'api.dev.firebolt.io, api.app.firebolt.io',
+    },
+  },
+  'databricks-jdbc': {
+    'db_params.token': {
+      label: 'Access Token',
+      required: true,
+    },
+    'db_params.url': {
+      label: 'Databricks JDBC URL',
+      required: true,
+    },
+    'db_params.database': {
+      label: 'Database Name',
+      required: true,
+    },
+  },
+  ksql: {
+    'db_params.host': {
+      label: 'Host',
+      required: true,
+      placeholder: 'example.com',
+    },
+    'db_params.port': {
+      label: 'Port',
+      required: true,
+      placeholder: '8088',
+    },
+    'db_params.username': {
+      label: 'Username',
+      required: false,
+      placeholder: 'user',
+    },
+    'db_params.password': {
+      label: 'Password',
+      required: false,
+      placeholder: 'pass',
+    },
+  },
 };
 
 const dbTiles = [
@@ -237,11 +334,18 @@ const dbTiles = [
   { title: 'REDSHIFT', imgSrc: redshift },
   { title: 'MSSQL', imgSrc: mssql },
   { title: 'CLICKHOUSE', imgSrc: clickhouse },
+  { title: 'ELASTICSEARCH', imgSrc: elasticsearch },
   { title: 'DRUID', imgSrc: druid },
   { title: 'PRESTODB', imgSrc: presto },
   { title: 'TRINO', imgSrc: trino },
   { title: 'MATERIALIZE', imgSrc: materialize },
   { title: 'SNOWFLAKE', imgSrc: snowflake },
+  { title: 'QUESTDB', imgSrc: questdb },
+  { title: 'CRATE', imgSrc: crate },
+  { title: 'DREMIO', imgSrc: dremio },
+  { title: 'FIREBOLT', imgSrc: firebolt },
+  { title: 'DATABRICKS-JDBC', imgSrc: databricks },
+  { title: 'KSQL', imgSrc: ksql },
 ];
 
 // example of use Antd Form with forwardRef

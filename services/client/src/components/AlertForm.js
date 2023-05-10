@@ -39,7 +39,8 @@ const AlertForm = React.forwardRef((props, ref) => {
     datasource_id: datasourceId,
     cube: playgroundState?.measures?.[0]?.split('.')?.[0],
     measure: playgroundState?.measures?.[0],
-    granularity: playgroundState?.dimensions?.[0],
+    timeDimension: playgroundState?.timeDimensions?.[0]?.dimension,
+    granularity: playgroundState?.timeDimensions?.[0]?.granularity,
     since: playgroundState?.filters?.[0]?.values ?? DEFAULT_SINCE_VALUE,
     limit: playgroundState?.limit ?? DEFAULT_LIMIT_VALUE,
   }), [datasourceId, playgroundState, alertInitialValues]);

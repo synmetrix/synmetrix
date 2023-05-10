@@ -15,14 +15,25 @@ const defaultFilterValues = {
 };
 
 const reducer = (state, action) => {
-  if (action.type === 'add') {
+  let { memberType } = action;
+  
+  if (action.type === 'add') {    
     let { value } = action;
-    const elementsCount = getOr([], action.memberType, state).length;
 
-    if (action.memberType !== 'filters') {
-      const notUniq = state[action.memberType].find(member => member === value);
+    if (memberType !== 'filters') {
+      const [memberName, granularity = null] = action?.value?.split(/\+/);
 
-      if (notUniq) {
+      if (granularity) {
+        memberType = 'timeDimensions';
+        value = {
+          dimension: memberName,
+          granularity,
+        };
+      }
+
+      const isMemberExists = !!state[memberType].find(member => member.dimension === memberName && member.granularity === granularity);
+
+      if (isMemberExists) {
         return state;
       }
     } else {
@@ -32,7 +43,9 @@ const reducer = (state, action) => {
       };
     }
 
-    return set([action.memberType, elementsCount], value, state);
+    const elementsCount = getOr([], memberType, state).length;
+
+    return set([memberType, elementsCount], value, state);
   }
 
   if (action.type === 'update') {
@@ -58,11 +71,26 @@ const reducer = (state, action) => {
     };
   }
   if (action.type === 'setOrder') {
-    return set('order', action.value, state);
+    const { value } = action;
+
+    return set('order', value, state);
   }
 
   if (action.type === 'remove') {
-    return remove([action.memberType, action.index], state);
+    let { index } = action;
+    const { value } = action;
+
+    if (memberType !== 'filters') {
+
+      const [memberName, granularity = null] = value?.split(/\+/);
+
+      if (granularity) {
+        memberType = 'timeDimensions';
+        index = state[memberType].findIndex(member => member.dimension === memberName && member.granularity === granularity);
+      }
+    }
+
+    return remove([memberType, index], state);
   }
 
   if (action.type === 'reset') {
@@ -103,7 +131,7 @@ const useAnalyticsQuery = () => {
   const updateMember = useCallback(
     (memberType, toQuery = getName) => ({
       add: member => dispatch({ type: 'add', memberType, value: toQuery(member), operatorType: getOperatorType(member) }),
-      remove: member => dispatch({ type: 'remove', memberType, index: member.index }),
+      remove: member => dispatch({ type: 'remove', memberType, value: toQuery(member), index: member.index }),
       update: (member, newValue) =>
         dispatch({ type: 'update', memberType, index: member.index, newValue: toQuery(newValue) }),
     }),

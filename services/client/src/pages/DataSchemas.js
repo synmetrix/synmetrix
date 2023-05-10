@@ -41,6 +41,26 @@ import SelectBranch from '../components/SelectBranch';
 
 const reservedSlugs = ['sqlrunner', 'genschema', 'docs'];
 
+const getTables = (obj, prefix = '') => {
+  return Object.entries(obj).reduce((acc, [key, value]) => {
+    let result = acc;
+    const newPath = prefix ? `${prefix}.${key}` : key;
+
+    if (value === true) {
+      const lastSlashIndex = newPath.lastIndexOf('/');
+      const formattedPath = `${newPath.slice(0, lastSlashIndex)}.${newPath.slice(lastSlashIndex + 1)}`;
+      result.push({ name: formattedPath });
+    }
+
+    if (typeof value === 'object') {
+      const childResults = getTables(value, newPath);
+      result = acc.concat(childResults);
+    }
+
+    return result;
+  }, []);
+};
+
 const DataSchemas = ({ editorWidth, editorHeight, match }) => {
   const { t } = useTranslation();
   // const { currentTeamState: currentTeam } = useCurrentTeamState();
@@ -304,9 +324,7 @@ const DataSchemas = ({ editorWidth, editorHeight, match }) => {
   ].filter(Boolean);
 
   const onGenSubmit = async (values) => {
-    const tables = Object.keys(values).filter(v => values[v]).map(v => ({
-      name: v,
-    }));
+    const tables = getTables(values);
 
     await execGenSchemaMutation({
       datasource_id: dataSourceId,

@@ -120,6 +120,9 @@ jobs:
           export SECRETS_SMTP_USER=${{ secrets.SMTP_USER }}
           export SECRETS_SMTP_PASS=${{ secrets.SMTP_PASS }}
           export SECRETS_SMTP_SENDER=${{ secrets.SMTP_SENDER }}
+          
+          export SECRETS_BASIC_ADMIN_AUTH=${{ secrets.BASIC_ADMIN_AUTH }}
+          export SECRETS_LETSENCRYPT_EMAIL=${{ secrets.LETSENCRYPT_EMAIL }}
 
           export PROTOCOL=https
           export WS_PROTOCOL=wss

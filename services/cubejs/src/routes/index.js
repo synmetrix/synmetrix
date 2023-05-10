@@ -78,12 +78,32 @@ export default ({ basePath, setupAuthInfo, cubejs }) => {
     const driver = await cubejs.options.driverFactory({ securityContext });
 
     try {
-      const schema = await driver.tablesSchema();
+      let schema = await driver.tablesSchema();
       const { tables = [], overwrite = false, branchId } = (req.body || {});
 
-      const scaffoldingTemplate = new ScaffoldingTemplate(schema, driver, 'js');
-      const normalizedTables = tables.map(table => table?.name?.replace('/', '.'));
+      let normalizedTables = tables.map(table => table?.name?.replace('/', '.'));
 
+      if (dbType === 'questdb') {
+        normalizedTables = tables.map(table => (['', table?.name?.replace('/', '')]));
+      }
+
+      if (dbType === 'elasticsearch') {
+        schema = { '': schema.main };
+        normalizedTables = normalizedTables.map(table => ['', table?.replace('main.', '')]);
+      }
+
+      if (dbType === 'dremio') {
+        normalizedTables = tables.map(table => {
+          const parts = table?.name?.split('.');
+          return [parts.slice(0, -1).join('.'), parts[parts.length - 1]];
+        });
+      }
+
+      if (dbType === 'ksql') {
+        normalizedTables = tables.map(table => (['', table?.name?.replace('.', '')]));
+      }
+      
+      const scaffoldingTemplate = new ScaffoldingTemplate(schema, driver, 'js');
       let files = scaffoldingTemplate.generateFilesByTableNames(normalizedTables);
 
       const dataSchemas = await findDataSchemas({
