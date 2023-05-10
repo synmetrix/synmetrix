@@ -65,20 +65,23 @@ const ReportModal = (props) => {
         page: 0,
         limit: values.limit,
         order: [{
-          id: values.granularity,
+          id: values.timeDimension,
           desc: true
         }],
         offset: 0,
         filters: [{
           values: values.since,
           operator: 'afterDate',
-          dimension: values.granularity
+          dimension: values.timeDimension
         }],
         segments: [],
         timezone: 'UTC',
         measures: [values.measure],
-        dimensions: [values.granularity],
-        timeDimensions: []
+        dimensions: [],
+        timeDimensions: [{
+          dimension: values.timeDimension,
+          granularity: values.granularity
+        }]
       };
 
       const newExplorationWithReport = {

@@ -1,6 +1,5 @@
 .subSection {
   padding-bottom: 5px !important;
-  padding-right: 5px !important;
   font-size: 12px !important;
   background-color: transparent !important;
 }
@@ -10,6 +9,11 @@ body .subSection :global(.ant-collapse-header) {
   padding-left: 20px !important;
   color: rgba(0, 0, 0, 0.65) !important;
   background-color: transparent;
+  height: 24px;
+}
+
+body .active :global(.ant-collapse-header) {
+  background-color: #fff !important;
 }
 
 .subSection :global(.ant-collapse-arrow) {
