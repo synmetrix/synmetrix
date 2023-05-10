@@ -149,15 +149,21 @@ const TableView = (props) => {
       sortDirection,
       onSortChange,
       columnId,
+      granularity
     } = columnData;
+    let humanLabel = label;
+
+    if (granularity) {
+      humanLabel = `${label} (by ${granularity})`;
+    }
 
     const children = [
       <span
         className={s.headerColumn}
         key="label"
-        title={typeof label === 'string' ? label : null}
+        title={typeof humanLabel === 'string' ? humanLabel : null}
       >
-        {label}
+        {humanLabel}
       </span>,
     ];
 
@@ -321,7 +327,7 @@ const TableView = (props) => {
               />
             )}
             {flatHeaders.map(col => {
-              const [cube, field] = col.id.split('.');
+              const [cube, field, granularity] = col.id.split('.');
               const columnMemberId = `${cube}.${field}`;
 
               const value = col.render('Header');
@@ -344,6 +350,7 @@ const TableView = (props) => {
                     columnId: columnMemberId,
                     onSortChange,
                     sortDirection,
+                    granularity
                   }}
                 />
               );
