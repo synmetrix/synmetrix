@@ -79,7 +79,7 @@ export default ({ basePath, setupAuthInfo, cubejs }) => {
 
     try {
       let schema = await driver.tablesSchema();
-      const { tables = [], overwrite = false, branchId, format } = (req.body || {});
+      const { tables = [], overwrite = false, branchId = 'main', format = 'yaml' } = (req.body || {});
 
       let normalizedTables = tables.map(table => table?.name?.replace('/', '.'));
 
