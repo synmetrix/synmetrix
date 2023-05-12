@@ -79,7 +79,7 @@ export default ({ basePath, setupAuthInfo, cubejs }) => {
 
     try {
       let schema = await driver.tablesSchema();
-      const { tables = [], overwrite = false, branchId } = (req.body || {});
+      const { tables = [], overwrite = false, branchId = 'main', format = 'yaml' } = (req.body || {});
 
       let normalizedTables = tables.map(table => table?.name?.replace('/', '.'));
 
@@ -103,7 +103,7 @@ export default ({ basePath, setupAuthInfo, cubejs }) => {
         normalizedTables = tables.map(table => (['', table?.name?.replace('.', '')]));
       }
       
-      const scaffoldingTemplate = new ScaffoldingTemplate(schema, driver, 'js');
+      const scaffoldingTemplate = new ScaffoldingTemplate(schema, driver, { format });
       let files = scaffoldingTemplate.generateFilesByTableNames(normalizedTables);
 
       const dataSchemas = await findDataSchemas({

@@ -48,6 +48,7 @@ type Mutation {
     branch_id: uuid!
     tables: [SourceTable!]!
     overwrite: Boolean
+    format: String
   ): GenSourceSchemaOutput
 }
 
