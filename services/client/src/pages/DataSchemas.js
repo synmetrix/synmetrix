@@ -323,13 +323,14 @@ const DataSchemas = ({ editorWidth, editorHeight, match }) => {
     },
   ].filter(Boolean);
 
-  const onGenSubmit = async (values) => {
+  const onGenSubmit = async (format, values) => {
     const tables = getTables(values);
 
     await execGenSchemaMutation({
       datasource_id: dataSourceId,
       branch_id: currentBranchId,
       tables,
+      format,
       overwrite: true,
     });
 

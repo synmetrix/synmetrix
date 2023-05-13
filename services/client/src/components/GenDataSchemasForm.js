@@ -1,8 +1,8 @@
-import React, { useImperativeHandle } from 'react';
+import React, { useState, useImperativeHandle } from 'react';
 import PropTypes from 'prop-types';
 
 import { useTranslation } from 'react-i18next';
-import { Alert, Form, Button, Checkbox, Collapse } from 'antd';
+import { Alert, Form, Button, Checkbox, Collapse, Radio } from 'antd';
 
 import { normalizeExt } from 'utils/validation';
 
@@ -10,6 +10,7 @@ const { Panel } = Collapse;
 
 const GenDataSchemasForm = React.forwardRef((props, ref) => {
   const { t } = useTranslation();
+  const [format, setFormat] = useState('yaml');
 
   const { 
     form, onSubmit, schemas,
@@ -37,7 +38,7 @@ const GenDataSchemasForm = React.forwardRef((props, ref) => {
       console.log('Received values of form: ', values);
 
       form.resetFields();
-      onSubmit(values);
+      onSubmit(format, values);
     });
   };
 
@@ -47,6 +48,12 @@ const GenDataSchemasForm = React.forwardRef((props, ref) => {
   return (
     <Form onSubmit={onFormSubmit}>
       <Alert message={infoText} type="info" style={{ marginBottom: 15 }} />
+
+      <span>{t('Format')}: </span>
+      <Radio.Group style={{ marginBottom: 15 }} value={format} onChange={(e) => setFormat(e.target.value)}>
+        <Radio.Button value="yaml">YAML</Radio.Button>
+        <Radio.Button value="js">Javascript</Radio.Button>
+      </Radio.Group>
 
       <Collapse defaultActiveKey={[schemaKeys[0]]}>
         {Object.entries(schemas).map(([schemaName, schemaTables]) => (
@@ -59,7 +66,7 @@ const GenDataSchemasForm = React.forwardRef((props, ref) => {
                     valuePropName: 'checked',
                   })(
                     <Checkbox>
-                      <b style={{ fontWeight: 500 }}>{tableName} -> {normalizeExt(tableName, '.js')}</b>
+                      <b style={{ fontWeight: 500 }}>{tableName} -> {normalizeExt(tableName, `.${format}`)}</b>
                       &nbsp;({tableColumns.length}) columns
                     </Checkbox>)}
                 </Form.Item>

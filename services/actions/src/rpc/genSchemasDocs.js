@@ -149,7 +149,7 @@ const generateVersionDoc = async ({ version }) => {
   doc += header('List of cubes:', { size: 4 });
 
   const dataschemasDocs = dataschemas.map(dataschema => {
-    const meta = metaResp?.data?.fetch_meta?.cubes?.find(cube => cube.name === dataschema.name.replace('.js', '')) || {};
+    const meta = metaResp?.data?.fetch_meta?.cubes?.find(cube => cube.name === dataschema.name.replace(/(.js|.yml)$/i, '')) || {};
     const dataschemaDoc = generateDataschemaDoc({ ...dataschema, ...meta });
 
     return dataschemaDoc;
