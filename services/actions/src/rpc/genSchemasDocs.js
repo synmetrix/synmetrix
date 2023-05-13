@@ -107,8 +107,15 @@ const generateMemberDoc = member => {
 };
 
 const generateDataschemaDoc = (dataschema) => {
-  let doc = `<details>\n`;
+  let doc = `<details open>\n`;
   doc += `<summary>${dataschema.name}</summary>\n\n`;
+
+  if (dataschema.title && dataschema.title !== dataschema.name) {
+    doc += header(dataschema.title, { size: 4, indent: 4 });
+  }
+  if (dataschema.description) {
+    doc += text(dataschema.description, { indent: 4 });
+  }
 
   if (dataschema?.measures?.length > 0) {
     doc += header('Measures', { size: 4, indent: 4 });

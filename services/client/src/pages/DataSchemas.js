@@ -34,7 +34,6 @@ import GenDataSchemasForm from 'components/GenDataSchemasForm';
 import IdeConsole from 'components/IdeConsole';
 import ErrorFound from 'components/ErrorFound';
 import VersionsModal from '../components/VersionsModal';
-import DocsTab from '../components/DocsTab';
 
 import s from './DataSchemas.module.css';
 import SelectBranch from '../components/SelectBranch';
@@ -565,7 +564,7 @@ const DataSchemas = ({ editorWidth, editorHeight, match }) => {
                 onChange={setCurrentBranchId}
                 onCreate={onCreateBranch}
                 onSetDefault={onSetDefault}
-                curVersion={currentVersion?.checksum}
+                currentVersion={currentVersion}
                 loading={fetching}
               />
               <Divider style={{ margin: '0' }} />
@@ -606,9 +605,6 @@ const DataSchemas = ({ editorWidth, editorHeight, match }) => {
                 />
               </Tabs.TabPane>
             ))}
-            <Tabs.TabPane tab="Docs" key="docs" closable={false}>
-              <DocsTab toolbar versionId={currentVersion?.id} />
-            </Tabs.TabPane>
             <Tabs.TabPane tab="SQL Runner" key="sqlrunner" closable={false}>
               <SqlRunner
                 data={sqlResult}

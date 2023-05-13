@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import ErrorFound from 'components/ErrorFound';
-import DocsTab from 'components/DocsTab';
+import DocsSection from 'components/DocsSection';
 import Container from 'components/Container';
 
 const Docs = ({ match }) => {
@@ -16,7 +16,7 @@ const Docs = ({ match }) => {
   return (
     <Container>
       <div style={{ padding: 40 }}>
-        <DocsTab versionId={versionId} />
+        <DocsSection toolbar versionId={versionId} />
       </div>
     </Container>
   );

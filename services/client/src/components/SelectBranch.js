@@ -3,15 +3,16 @@ import PropTypes from 'prop-types';
 
 import { useThrottleEffect } from 'ahooks';
 import { useTranslation } from 'react-i18next';
-import { Icon, Select, Input, Divider, Button, Typography } from 'antd';
+import { Icon, Select, Input, Divider, Button, Tag, message } from 'antd';
 
 import MoreMenu from './MoreMenu';
 
 const { Option } = Select;
-const { Paragraph } = Typography;
 
-const SelectBranch = ({ onChange, onCreate, onSetDefault, branchStatus, currentBranchId, curVersion, moreMenu, branches, loading }) => {
+const SelectBranch = ({ onChange, onCreate, onSetDefault, branchStatus, currentBranchId, currentVersion, moreMenu, branches, loading }) => {
   const { t } = useTranslation();
+
+  const { checksum, id } = currentVersion;
 
   const isDefaultBranch = useMemo(() => branchStatus === 'active', [branchStatus]);
 
@@ -61,7 +62,7 @@ const SelectBranch = ({ onChange, onCreate, onSetDefault, branchStatus, currentB
   return (
     <div style={{ padding: '10px', maxWidth: '100%' }}>
       <div style={{ paddingBottom: '10px' }}>
-        {t('Branch')}
+        {t('Branch')}:
       </div>
       <div
         style={{
@@ -70,9 +71,12 @@ const SelectBranch = ({ onChange, onCreate, onSetDefault, branchStatus, currentB
           gap: '5px',
         }}
       >
-        <div 
+        <div
           style={{ flex: 1 }}
           onClick={() => updateState(prev => ({ ...prev, selectOpen: !state.selectOpen }))}
+          onKeyPress={() => updateState(prev => ({ ...prev, selectOpen: !state.selectOpen }))}
+          role='button'
+          tabIndex={0}
         >
           <Select
             style={{ width: '100%', cursor: 'pointer' }}
@@ -113,9 +117,21 @@ const SelectBranch = ({ onChange, onCreate, onSetDefault, branchStatus, currentB
         </div>
         <MoreMenu menuNodes={moreMenu} />
       </div>
-      {curVersion && (
-        <div style={{ paddingTop: '5px' }}>
-          <Paragraph ellipsis>{t('Version')}: {curVersion}</Paragraph>
+      {checksum && (
+        <div style={{ paddingTop: '12px' }}>
+          {t('Version')}:
+          <Tag
+            style={{ margin: '6px 0', cursor: 'pointer' }}
+            onClick={() => {
+              navigator.clipboard.writeText(checksum);
+              message.success('Copied to clipboard');
+            }}
+          >
+            {checksum}
+          </Tag>
+          <Button size="small" onClick={() => { window.open(`/~/docs/${id}`, '_blank').focus() }}>
+            {t('Open docs')}
+          </Button>
         </div>
       )}
       {!isDefaultBranch && (
@@ -137,7 +153,7 @@ SelectBranch.propTypes = {
   loading: PropTypes.bool,
   branches: PropTypes.array,
   currentBranchId: PropTypes.string,
-  curVersion: PropTypes.string,
+  currentVersion: PropTypes.string,
 };
 
 SelectBranch.defaultProps = {
@@ -149,7 +165,7 @@ SelectBranch.defaultProps = {
   loading: false,
   branches: [],
   currentBranchId: null,
-  curVersion: null,
+  currentVersion: null,
 };
 
 export default SelectBranch;

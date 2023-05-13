@@ -11,9 +11,9 @@ import useVersionDocs from '../hooks/useVersionDocs';
 
 import downloadBlob from '../utils/downloadBlob';
 
-import s from './DocsTab.module.css';
+import s from './DocsSection.module.css';
 
-const DocsTab = ({ versionId, toolbar = false }) => {
+const DocsSection = ({ versionId, toolbar = false }) => {
   const { t } = useTranslation();
 
   const [docData] = useVersionDocs({ versionId });
@@ -35,10 +35,6 @@ const DocsTab = ({ versionId, toolbar = false }) => {
           <Button className={s.button} type="primary" onClick={downloadDoc}>
             {t('Download markdown')}
           </Button>
-
-          <Button className={s.button} onClick={() => { window.open(`/~/docs/${versionId}`, '_blank').focus() }}>
-            {t('Open in new tab')}
-          </Button>
         </div>
       )}
       <div style={{ display: 'block', marginLeft: 10 }}>
@@ -48,13 +44,13 @@ const DocsTab = ({ versionId, toolbar = false }) => {
   );
 };
 
-DocsTab.propTypes = {
+DocsSection.propTypes = {
   versionId: PropTypes.number.isRequired,
   toolbar: PropTypes.bool
 };
 
-DocsTab.defaultProps = {
+DocsSection.defaultProps = {
   toolbar: false
 };
 
-export default DocsTab;
+export default DocsSection;
