@@ -1,11 +1,11 @@
-version: '3.8'
+version: "3.8"
 
 services:
   postgres:
     image: postgres:12.2
     deploy:
       placement:
-        constraints: [ node.role == manager ]
+        constraints: [node.role == manager]
     ports:
       - 5435:5432
     volumes:
@@ -21,7 +21,7 @@ services:
     image: traefik:v2.5.5
     deploy:
       placement:
-        constraints: [ node.role == manager ]
+        constraints: [node.role == manager]
       labels:
         - traefik.enable=true
         - traefik.http.routers.traefik.rule=Host(`lb.${DOMAIN}`) && (PathPrefix(`/api`) || PathPrefix(`/dashboard`))
@@ -70,7 +70,7 @@ services:
     image: ${REGISTRY_HOST}/mlcraft/app-client:latest
     deploy:
       placement:
-        constraints: [ node.role == manager ]
+        constraints: [node.role == manager]
       labels:
         - traefik.enable=true
         - traefik.http.routers.client.rule=Host(`app.${DOMAIN}`)
