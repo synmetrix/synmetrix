@@ -31,6 +31,7 @@ import Profile from './pages/Profile';
 import Charts from './pages/Charts';
 import Reports from './pages/Reports';
 import Alerts from './pages/Alerts';
+import Docs from './pages/Docs';
 import ErrorFound from './components/ErrorFound';
 
 const Routes = () => {
@@ -76,6 +77,7 @@ const Routes = () => {
                         <Route path={withAuthPrefix('/alerts/:editId')} component={Alerts} />
                         <Route path={withAuthPrefix('/alerts')} component={Alerts} />
 
+                        <Route path={withAuthPrefix('/docs/:versionId')} component={Docs} />
                         <Route path={withAuthPrefix('/profile')} component={Profile} />
                         <Route path={withAuthPrefix('/schemas/:rest*')} component={DataSchemas} />
                         <Route path={withAuthPrefix('/dashboards/:rowId?')} component={Dashboards} />

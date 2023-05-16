@@ -3,15 +3,16 @@ import PropTypes from 'prop-types';
 
 import { useThrottleEffect } from 'ahooks';
 import { useTranslation } from 'react-i18next';
-import { Icon, Select, Input, Divider, Button, Typography } from 'antd';
+import { Icon, Select, Input, Divider, Button, Tag, message, Space } from 'antd';
 
 import MoreMenu from './MoreMenu';
 
 const { Option } = Select;
-const { Paragraph } = Typography;
 
-const SelectBranch = ({ onChange, onCreate, onSetDefault, branchStatus, currentBranchId, curVersion, moreMenu, branches, loading }) => {
+const SelectBranch = ({ onChange, onCreate, onSetDefault, branchStatus, currentBranchId, currentVersion, moreMenu, branches, loading }) => {
   const { t } = useTranslation();
+
+  const { checksum, id } = currentVersion;
 
   const isDefaultBranch = useMemo(() => branchStatus === 'active', [branchStatus]);
 
@@ -38,7 +39,7 @@ const SelectBranch = ({ onChange, onCreate, onSetDefault, branchStatus, currentB
       onSetDefault(branches?.[0]?.id);
     }
   },
-  [branches, loading, onSetDefault], {
+    [branches, loading, onSetDefault], {
     wait: 1000,
   });
 
@@ -49,7 +50,7 @@ const SelectBranch = ({ onChange, onCreate, onSetDefault, branchStatus, currentB
   }, [currentBranchId, branches, onChange]);
 
   const options = useMemo(() => branches?.map((item) => (
-    <Option 
+    <Option
       key={item.id}
     >
       {item.name}{item.status === 'active' && ' - default'}
@@ -61,7 +62,7 @@ const SelectBranch = ({ onChange, onCreate, onSetDefault, branchStatus, currentB
   return (
     <div style={{ padding: '10px', maxWidth: '100%' }}>
       <div style={{ paddingBottom: '10px' }}>
-        {t('Branch')}
+        {t('Branch')}:
       </div>
       <div
         style={{
@@ -70,9 +71,12 @@ const SelectBranch = ({ onChange, onCreate, onSetDefault, branchStatus, currentB
           gap: '5px',
         }}
       >
-        <div 
+        <div
           style={{ flex: 1 }}
           onClick={() => updateState(prev => ({ ...prev, selectOpen: !state.selectOpen }))}
+          onKeyPress={() => updateState(prev => ({ ...prev, selectOpen: !state.selectOpen }))}
+          role='button'
+          tabIndex={0}
         >
           <Select
             style={{ width: '100%', cursor: 'pointer' }}
@@ -84,7 +88,7 @@ const SelectBranch = ({ onChange, onCreate, onSetDefault, branchStatus, currentB
             dropdownRender={menu => (
               <div
                 onMouseLeave={() => updateState(prev => ({ ...prev, selectOpen: false }))}
-                style={{  marginTop: '-50px', paddingTop: '50px', cursor: 'pointer'  }}
+                style={{ marginTop: '-50px', paddingTop: '50px', cursor: 'pointer' }}
               >
                 {menu}
                 <Divider style={{ margin: '0' }} />
@@ -113,9 +117,25 @@ const SelectBranch = ({ onChange, onCreate, onSetDefault, branchStatus, currentB
         </div>
         <MoreMenu menuNodes={moreMenu} />
       </div>
-      {curVersion && (
-        <div style={{ paddingTop: '5px' }}>
-          <Paragraph ellipsis>{t('Version')}: {curVersion}</Paragraph>
+      {checksum && (
+        <div style={{ paddingTop: '12px' }}>
+          <>
+            <span>
+              {t('Version')}:
+            </span>
+            <Button type="link" size="small" onClick={() => { window.open(`/~/docs/${id}`, '_blank').focus() }}>
+              {t('Open docs')}
+            </Button>
+          </>
+          <Tag
+            style={{ margin: '6px 0', cursor: 'pointer', background: 'transparent', border: 'none', paddingLeft: 2, fontWeight: 'bold' }}
+            onClick={() => {
+              navigator.clipboard.writeText(checksum);
+              message.success('Copied to clipboard');
+            }}
+          >
+            {checksum}
+          </Tag>
         </div>
       )}
       {!isDefaultBranch && (
@@ -137,19 +157,19 @@ SelectBranch.propTypes = {
   loading: PropTypes.bool,
   branches: PropTypes.array,
   currentBranchId: PropTypes.string,
-  curVersion: PropTypes.string,
+  currentVersion: PropTypes.object,
 };
 
 SelectBranch.defaultProps = {
-  onChange: () => {},
-  onCreate: () => {},
-  onSetDefault: () => {},
+  onChange: () => { },
+  onCreate: () => { },
+  onSetDefault: () => { },
   branchStatus: null,
   moreMenu: [],
   loading: false,
   branches: [],
   currentBranchId: null,
-  curVersion: null,
+  currentVersion: {},
 };
 
 export default SelectBranch;

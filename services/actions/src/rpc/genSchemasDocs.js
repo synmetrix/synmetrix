@@ -2,11 +2,12 @@ import produce from 'immer';
 
 import apiError from '../utils/apiError';
 import { fetchGraphQL } from '../utils/graphql';
-import { header, unorderedList } from '../utils/markdownHelpers';
+import { header, unorderedList, divider, text } from '../utils/markdownHelpers';
 
 const versionQuery = `
   query ($id: uuid!) {
     versions_by_pk(id: $id) {
+      id
       dataschemas {
         name
         user {
@@ -53,45 +54,87 @@ const setMarkdownDocMutation = `
   }
 `;
 
+const getMemberFieldsMapper = source => param => {
+  const entry = Object.entries(param)[0];
+
+  if (!entry) {
+    return null;
+  }
+
+  const [key, title] = entry;
+
+  if (!source[key]) {
+    return null;
+  }
+
+  if (Array.isArray(source[key])) {
+    return `${text(title, { bold: true, indent: 2, postNewLine: false })}: \`${source[key].join(', ')}\``;
+  }
+
+  return `${text(title, { bold: true, indent: 2, postNewLine: false })}: \`${source[key]}\``;
+};
+
+const generateMemberDoc = member => {
+  const { meta } = member;
+
+  let result = header(member.shortTitle, { size: 5, bold: true, indent: 8 });
+  result += text(member.description || 'No description provided', { indent: 8 });
+  result += text('Parameters:', { bold: true, indent: 8 });
+
+  const parameters = [
+    { name: 'Name' },
+    { title: 'Title' },
+    { type: 'Type' },
+    { aggType: 'Aggregation Type' },
+    { format: 'Format' },
+    { drillMembers: 'Drill Members' },
+    { sql: 'SQL' },
+  ];
+
+  const fields = parameters.map(getMemberFieldsMapper(member)).filter(Boolean);
+
+  result += unorderedList(fields);
+
+  if (meta) {
+    const metaParameters = Object.entries(meta).map(([key]) => ({ [key]: key }));
+    const metaFields = metaParameters.map(getMemberFieldsMapper(meta)).filter(Boolean);
+
+    result += text('Metadata:', { bold: true, indent: 8 });
+    result += unorderedList(metaFields);
+  }
+
+  return result;
+};
+
 const generateDataschemaDoc = (dataschema) => {
-  let doc = `<details>\n`;
+  let doc = `<details open>\n`;
   doc += `<summary>${dataschema.name}</summary>\n\n`;
-  
+
+  if (dataschema.title && dataschema.title !== dataschema.name) {
+    doc += header(dataschema.title, { size: 4, indent: 4 });
+  }
+  if (dataschema.description) {
+    doc += text(dataschema.description, { indent: 4 });
+  }
+
   if (dataschema?.measures?.length > 0) {
-    doc += header('Measures', { size: 4 });
+    doc += header('Measures', { size: 4, indent: 4 });
 
-    doc += dataschema.measures.map(measure => {
-      const title = `**Title**: \`${measure.shortTitle}\``;
-      const type = `**Type**: \`${measure.type}\``;
-      const aggType = `**Aggregation Type**: \`${measure.aggType}\``;
-
-      return `${header(measure.name, { size: 5 })} \n ${unorderedList([title, type, aggType])}`;
-    }).join('\n');
+    doc += dataschema.measures.map(generateMemberDoc).join('\n');
     doc += `\n`;
   }
 
   if (dataschema?.dimensions?.length > 0) {
-    doc += header('Dimensions', { size: 4 });
-    doc += dataschema.dimensions.map(dimension => {
-      const title = `**Title**: \`${dimension.shortTitle}\``;
-      const type = `**Type**: \`${dimension.type}\``;
-  
-      return `${header(dimension.name, { size: 5 })} \n ${unorderedList([title, type])}`;
-    }).join('\n');
+    doc += header('Dimensions', { size: 4, indent: 4 });
+    doc += dataschema.dimensions.map(generateMemberDoc).join('\n');
     doc += `\n`;
   }
 
   if (dataschema?.segments?.length > 0) {
-    doc += header('Segments', { size: 4 });
-    doc += dataschema?.segments?.map(segment => {
-      const name = `**Name**: ${segment.name}`;
-  
-      return header(name, { size: 5 });
-    }).join('\n');
+    doc += header('Segments', { size: 4, indent: 4 });
+    doc += dataschema?.segments?.map(generateMemberDoc).join('\n');
     doc += `\n`;
   }
-
-  // add meta after update
 
   doc += `</details>\n`;
 
@@ -99,7 +142,7 @@ const generateDataschemaDoc = (dataschema) => {
 };
 
 const generateVersionDoc = async ({ version }) => {
-  const { user, dataschemas, branch } = version;
+  const { id: versionId, user, dataschemas, branch } = version;
   const { display_name: versionAuthorName } = user;
   const { name: branchName, datasource_id: datasourceId } = branch;
   const dataschemasCollaborators = dataschemas.map(ds => ds.user.display_name);
@@ -108,10 +151,8 @@ const generateVersionDoc = async ({ version }) => {
 
   let doc = header('Documentation', { size: 1 });
 
-  doc += `This documentation covers branch "${branchName}" and the latest version of dataschemas.\n`;
-  doc += '\n';
-  doc += '---';
-  doc += '\n';
+  doc += `This documentation covers version ${versionId} from branch "${branchName}".\n\n`;
+  doc += divider;
   doc += header('List of cubes:', { size: 4 });
 
   const dataschemasDocs = dataschemas.map(dataschema => {
@@ -121,10 +162,8 @@ const generateVersionDoc = async ({ version }) => {
     return dataschemaDoc;
   });
 
-  doc += dataschemasDocs.join('\n');
-  doc += '\n';
-  doc += '---';
-  doc += '\n';
+  doc += `${dataschemasDocs.join('\n')}\n`;
+  doc += divider;
 
   doc += header(`Version author: ${versionAuthorName}`, { size: 4 });
 
