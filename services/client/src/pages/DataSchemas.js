@@ -72,14 +72,14 @@ const DataSchemas = ({ editorWidth, editorHeight, match }) => {
   const basePath = withAuthPrefix('/schemas');
   const [isConsoleOpen, toggleConsole] = useState(false);
   const [error, setError] = useState(null);
-  
+
   const { params = {} } = match;
-  
+
   const [dataSourceId, slug] = useMemo(() => getOr('', 'rest', params).split('/'),
     [params]
   );
 
-  const [currentBranchId, setCurrentBranchId,] = useLocalStorageState(`${dataSourceId}:currentBranch` , null);
+  const [currentBranchId, setCurrentBranchId,] = useLocalStorageState(`${dataSourceId}:currentBranch`, null);
 
   const onModalClose = () => setLocation(`${basePath}/${dataSourceId}`);
   const dataSchemaName = reservedSlugs.indexOf(slug) === -1 && slug || null;
@@ -167,20 +167,20 @@ const DataSchemas = ({ editorWidth, editorHeight, match }) => {
   });
 
   const currentBranch = useMemo(() => (all || []).find(branch => branch.id === currentBranchId), [all, currentBranchId]);
-  const currentVersion = useMemo(() => currentBranch?.versions?.[0] || [], [currentBranch]);
+  const currentVersion = useMemo(() => currentBranch?.versions?.[0] || {}, [currentBranch]);
   const dataschemas = useMemo(() => currentVersion?.dataschemas || [], [currentVersion]);
 
   const schemaIdToCode = useMemo(() => dataschemas.reduce((acc, curr) => {
     acc[curr.id] = { name: curr.name, code: curr.code };
     return acc;
   }, {}),
-  [dataschemas]
+    [dataschemas]
   );
 
   const openedSchemas = useMemo(() => Object.keys(openedTabs)
-      .map(id => dataschemas.find(schema => schema.id === id))
-      .filter(Boolean),
-  [dataschemas, openedTabs]
+    .map(id => dataschemas.find(schema => schema.id === id))
+    .filter(Boolean),
+    [dataschemas, openedTabs]
   );
 
   useEffect(() => {
@@ -398,7 +398,7 @@ const DataSchemas = ({ editorWidth, editorHeight, match }) => {
     }
 
     const zip = new JSZip();
-    
+
     try {
       await zip.loadAsync(file);
     } catch (err) {
@@ -445,7 +445,7 @@ const DataSchemas = ({ editorWidth, editorHeight, match }) => {
   const onClickUpdate = async (editId, values) => {
     const newDataschemas = [...dataschemas];
     const editSchemaIndex = newDataschemas.findIndex(schema => schema.id === editId);
-    
+
     newDataschemas[editSchemaIndex] = {
       ...newDataschemas[editSchemaIndex],
       ...values,
@@ -543,7 +543,7 @@ const DataSchemas = ({ editorWidth, editorHeight, match }) => {
       onCancel={onModalClose}
       loading={fetching}
       content={(
-        <VersionsModal 
+        <VersionsModal
           versions={currentBranch?.versions}
           onRestore={createNewVersion}
         />
