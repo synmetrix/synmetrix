@@ -2,7 +2,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "start": "node --max-old-space-size=4096 --max-http-header-size=32768 index",
+    "start": "node index.js",
     "start.dev": "nodemon --inspect=0.0.0.0  --max-old-space-size=8096 --max-http-header-size=32768 --watch src --watch index.js"
   },
   "dependencies": {

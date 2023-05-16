@@ -31,7 +31,7 @@ COPY package.json /app/package.json
 RUN yarn --network-timeout 100000
 
 COPY index.js /app/
-COPY src/ /app/
+COPY src/ /app/src/
 
 RUN apt-get update && apt-get install -y wget unzip && \
     wget -qO /tmp/DatabricksJDBC.zip "${DATABRICKS_JDBC_URL}" && \
