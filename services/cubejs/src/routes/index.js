@@ -4,6 +4,14 @@ import { ScaffoldingTemplate } from '@cubejs-backend/schema-compiler';
 import { findDataSchemas, createDataSchema } from '../utils/dataSourceHelpers.js';
 import createMd5Hex from '../utils/md5Hex.js';
 
+const filterFiles = (mainFiles, addFiles) => {
+  const fileNames = mainFiles.map(f => f.fileName);
+  return [
+    ...mainFiles,
+    ...addFiles.filter((f) => !fileNames.includes(f.fileName)),
+  ];
+}
+
 const router = express.Router();
 export default ({ basePath, setupAuthInfo, cubejs }) => {
   router.use(async (req, res, next) => {
@@ -104,28 +112,31 @@ export default ({ basePath, setupAuthInfo, cubejs }) => {
       }
       
       const scaffoldingTemplate = new ScaffoldingTemplate(schema, driver, { format });
-      let files = scaffoldingTemplate.generateFilesByTableNames(normalizedTables);
+      const newFiles = scaffoldingTemplate.generateFilesByTableNames(normalizedTables);
+
+      if (!newFiles.length) {
+        return res.status(400).json({
+          code: 'generate_schema_no_new_files',
+          message: 'No new files created',
+        });
+      }
 
       const dataSchemas = await findDataSchemas({
         branchId,
         authToken,
       });
 
-      const existedFiles = dataSchemas.map(row => row.name);
+      const existedFiles = dataSchemas.map(row => ({ fileName: row.name, content: row.code }));
 
-      const filteredFiles = files.reduce((acc, file) => {
-        // if we don't want to overwrite existed schemas
-        if (!overwrite && existedFiles.includes(file.fileName)) {
-          return acc;
-        }
+      let files = filterFiles(newFiles, existedFiles);
+      if (overwrite) {
+        files = filterFiles(existedFiles, newFiles);
+      }
 
-        return [...acc, file];
-      }, []);
-
-      let commitChecksum = filteredFiles.reduce((acc, cur) => acc + cur.code, '');
+      let commitChecksum = files.reduce((acc, cur) => acc + cur.code, '');
       commitChecksum = createMd5Hex(commitChecksum);
 
-      const preparedSchemas = filteredFiles.map(file => ({
+      const preparedSchemas = files.map(file => ({
         name: file.fileName,
         code: file.content,
         user_id: userId,
@@ -145,13 +156,6 @@ export default ({ basePath, setupAuthInfo, cubejs }) => {
 
       if (cubejs.compilerCache) {
         cubejs.compilerCache.prune();
-      }
-
-      if (!files.length) {
-        return res.status(400).json({
-          code: 'generate_schema_no_new_files',
-          message: 'No new files created',
-        });
       }
 
       res.json({ code: 'ok', message: 'Generation finished' });
