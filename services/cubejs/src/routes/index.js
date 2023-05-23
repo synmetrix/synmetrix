@@ -128,8 +128,10 @@ export default ({ basePath, setupAuthInfo, cubejs }) => {
 
       const existedFiles = dataSchemas.map(row => ({ fileName: row.name, content: row.code }));
 
-      let files = filterFiles(newFiles, existedFiles);
+      let files;
       if (overwrite) {
+        files = filterFiles(newFiles, existedFiles);
+      } else {
         files = filterFiles(existedFiles, newFiles);
       }
 

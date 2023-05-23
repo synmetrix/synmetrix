@@ -330,6 +330,7 @@ const DataSchemas = ({ editorWidth, editorHeight, match }) => {
       branch_id: currentBranchId,
       tables,
       format,
+      overwrite: true,
     });
 
     onModalClose();
