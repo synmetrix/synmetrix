@@ -27,7 +27,7 @@ const SelectBranch = ({ onChange, onCreate, onSetDefault, branchStatus, currentB
   }, [updateState, onChange]);
 
   const onChangeInput = (e) => {
-    updateState({ newBranchName: e.target.value });
+    updateState(prev => ({ ...prev, newBranchName: e.target.value }));
   };
 
   const onCreateBranch = () => {
@@ -74,7 +74,7 @@ const SelectBranch = ({ onChange, onCreate, onSetDefault, branchStatus, currentB
         <div
           style={{ flex: 1 }}
           onClick={() => updateState(prev => ({ ...prev, selectOpen: !state.selectOpen }))}
-          onKeyPress={() => updateState(prev => ({ ...prev, selectOpen: !state.selectOpen }))}
+          onKeyPress={() => { }}
           role='button'
           tabIndex={0}
         >
