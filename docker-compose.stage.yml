@@ -1,4 +1,4 @@
-version: '3.8'
+version: "3.8"
 
 services:
   postgres:
@@ -7,7 +7,7 @@ services:
       placement:
         constraints: [node.role == manager]
     ports:
-       - 5435:5432
+      - 5435:5432
     volumes:
       - pgstorage-data:/var/lib/postgresql/data
       - ./etc/postgres.conf:/var/lib/postgresql/data/postgresql.conf
@@ -131,5 +131,15 @@ services:
       - .env
       - .stage.env
 
+  cubestore:
+    image: cubejs/cubestore:${CUBESTORE_VERSION:-v0.32.4}
+    environment:
+      - CUBESTORE_REMOTE_DIR=/cube/data
+    volumes:
+      - cubestore:/cube/data
+    networks:
+      - mlcraft_default
+
 volumes:
   pgstorage-data:
+  cubestore:

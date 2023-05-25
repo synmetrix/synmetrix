@@ -142,8 +142,15 @@ services:
       - mlcraft_default
 
   cubestore:
+    image: cubejs/cubestore:${CUBESTORE_VERSION:-v0.32.4}
     ports:
       - 3030:3030
+    environment:
+      - CUBESTORE_REMOTE_DIR=/cube/data
+    volumes:
+      - .cubestore:/cube/data
+    networks:
+      - mlcraft_default
 
   redis:
     image: redis:7.0.0

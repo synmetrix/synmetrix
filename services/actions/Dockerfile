@@ -19,7 +19,7 @@ RUN yarn --network-timeout 100000
 WORKDIR /app
 COPY package.json /app
 COPY index.js /app/
-COPY src/ /app/
+COPY src/ /app/src/
 RUN ln -s $NODE_PATH ./node_modules
 
 CMD ["yarn", "start.dev"]
