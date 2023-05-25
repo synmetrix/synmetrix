@@ -31,10 +31,10 @@ const sourcesQuery = `
   }
 `;
 
-const allSchemasQuery = `
-  query ($order_by: [versions_order_by!], $datasource_id: uuid) {
-    branches(limit: 1, where: {status: {_eq: active}, datasource_id: {_eq: $datasource_id}}) {
-      versions(limit: 1, order_by: $order_by) {
+const branchSchemasQuery = `
+  query ($order_by: [versions_order_by!], $id: uuid!) {
+    branches_by_pk (id: $id) {
+      versions (limit: 1, order_by: $order_by) {
         dataschemas {
           id
           name
@@ -131,11 +131,11 @@ export const findDataSchemas = async (args) => {
     order_by: {
       created_at: 'desc',
     },
-    datasource_id: args?.dataSourceId,
+    id: args?.branchId,
   };
 
-  let dataSchemas = await fetchGraphQL(allSchemasQuery, vars, args.authToken);
-  dataSchemas = dataSchemas?.data?.branches?.[0]?.versions?.[0]?.dataschemas || [];
+  let dataSchemas = await fetchGraphQL(branchSchemasQuery, vars, args.authToken);
+  dataSchemas = dataSchemas?.data?.branches_by_pk?.versions?.[0]?.dataschemas || [];
 
   return dataSchemas;
 };
