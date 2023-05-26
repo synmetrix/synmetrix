@@ -44,6 +44,9 @@ const allLogsQuery = `
   query ($offset: Int, $limit: Int, $where: request_logs_bool_exp, $order_by: [request_logs_order_by!]) {
     request_logs (offset: $offset, limit: $limit, where: $where, order_by: $order_by) {
       ${defaultFields}
+      event_logs(order_by: {timestamp: desc}) {
+        path
+      }
       event_logs_aggregate {
         aggregate {
           count

@@ -56,8 +56,8 @@ export default async () => {
     if (!requests?.[curRequestId]) {
       requests[curRequestId] = {
         request_id: curRequestId,
-        start_time: event.time,
-        end_time: event.time,
+        start_time: timestamp,
+        end_time: timestamp,
       }
     }
 

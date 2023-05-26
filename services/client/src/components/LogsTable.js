@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react';
 import PropTypes from 'prop-types';
+import moment from 'moment';
 
 import { Row, Col } from 'antd';
 
@@ -38,11 +39,13 @@ const LogsTable = ({ logs, pagination, loading, onClickRow, onPageChange }) => {
       title: 'Start time',
       dataIndex: 'start_time',
       key: 'start_time',
+      render: (value) => moment(value).format('DD.MM.YY, hh:mm:ss.SSS'),
     },
     {
       title: 'End time',
       dataIndex: 'end_time',
       key: 'end_time',
+      render: (value) => moment(value).format('DD.MM.YY, hh:mm:ss.SSS'),
     },
     {
       title: 'Created At',

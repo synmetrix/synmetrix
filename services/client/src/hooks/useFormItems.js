@@ -163,6 +163,7 @@ export default ({ ref, form, initialValues, config, size = DEFAULT_INPUT_SIZE, i
         <DatePicker
           values={value.values}
           onChange={value.onChange}
+          showTime={value.showTime}
           allowClear={value.allowClear}
         />
       );

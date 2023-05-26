@@ -9,12 +9,14 @@ const LogsFilterForm = ({ onChange, initialValues }) => {
       label: 'From',
       display: 'date',
       span: 4,
+      showTime: true,
       allowClear: false,
     },
     to: {
       label: 'To',
       display: 'date',
       span: 4,
+      showTime: true,
       allowClear: false,
     },
     sort: {
