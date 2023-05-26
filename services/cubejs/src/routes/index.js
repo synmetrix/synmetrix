@@ -122,6 +122,7 @@ export default ({ basePath, setupAuthInfo, cubejs }) => {
       }
 
       const dataSchemas = await findDataSchemas({
+        dataSourceId,
         branchId,
         authToken,
       });
