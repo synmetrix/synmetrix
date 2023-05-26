@@ -6,27 +6,7 @@ import { Row, Col } from 'antd';
 import TableList from 'components/TableList';
 import formatDistanceToNow from '../utils/formatDistanceToNow';
 
-const LogsTable = ({ logs, sort, pagination, loading, onClickRow, onPageChange }) => {
-  const datasource = useMemo(() => {
-    const data = (logs || []).map(request => {
-      const path = request.event_logs?.find(e => e.path)?.path;
-
-      const sortedLogs = request?.event_logs?.sort((a, b) => a.timestamp > b.timestamp);
-      const firstTimestamp = sortedLogs?.[0]?.timestamp;
-      const lastTimestamp = sortedLogs?.[sortedLogs.length - 1]?.timestamp;
-
-      const duration = new Date(lastTimestamp) - new Date(firstTimestamp);
-
-      return {
-        ...request,
-        path,
-        duration,
-      };
-    });
-
-    return data.sort((a, b) => sort === 'asc' ? a.duration > b.duration : a.duration < b.duration);
-  }, [logs, sort]);
-
+const LogsTable = ({ logs, pagination, loading, onClickRow, onPageChange }) => {
   const columns = [
     {
       title: 'Datasource',
@@ -37,11 +17,7 @@ const LogsTable = ({ logs, sort, pagination, loading, onClickRow, onPageChange }
       title: 'Path',
       dataIndex: 'path',
       key: 'path',
-    },
-    {
-      title: 'Duration',
-      dataIndex: 'duration',
-      key: 'duration',
+      render: (_, record) => record.event_logs?.find(e => e.path)?.path,
     },
     {
       title: 'Events',
@@ -52,6 +28,21 @@ const LogsTable = ({ logs, sort, pagination, loading, onClickRow, onPageChange }
       title: 'Creator',
       dataIndex: ['user', 'display_name'],
       key: 'display_name',
+    },
+    {
+      title: 'Duration',
+      dataIndex: 'duration',
+      key: 'duration',
+    },
+    {
+      title: 'Start time',
+      dataIndex: 'start_time',
+      key: 'start_time',
+    },
+    {
+      title: 'End time',
+      dataIndex: 'end_time',
+      key: 'end_time',
     },
     {
       title: 'Created At',
@@ -71,7 +62,7 @@ const LogsTable = ({ logs, sort, pagination, loading, onClickRow, onPageChange }
           loading={loading}
           rowKey={row => row.id}
           columns={columns}
-          dataSource={datasource}
+          dataSource={logs}
           pagination={pagination}
           onChange={onPageChange}
           onRow={(record) => ({ onClick: () => onClickRow(record.id) })}
@@ -83,7 +74,6 @@ const LogsTable = ({ logs, sort, pagination, loading, onClickRow, onPageChange }
 
 LogsTable.propTypes = {
   data: PropTypes.array,
-  sort: PropTypes.string,
   pagination: PropTypes.object,
   loading: PropTypes.bool,
   onClickRow: PropTypes.func,
@@ -92,7 +82,6 @@ LogsTable.propTypes = {
 
 LogsTable.defaultProps = {
   data: [],
-  sort: 'asc',
   pagination: {},
   loading: false,
   onClickRow: () => {},

@@ -49,18 +49,11 @@ export default async () => {
   }
 
   const input = data.reduce((acc, event) => {
-    const curRequestId = event.requestId;
     let { requests, events } = acc;
-    
-    let timestamp = new Date(event.time);
+    const curRequestId = event.requestId;    
+    const timestamp = new Date(event.timestamp);
 
-    if (timestamp) {
-      if (typeof (event.time) === 'number') {
-        timestamp = new Date(event.time).toISOString();
-      }
-    }
-
-    if (!requests?.[curRequestId] && event?.userId) {
+    if (!requests?.[curRequestId]) {
       requests[curRequestId] = {
         request_id: curRequestId,
         start_time: event.time,
@@ -70,19 +63,20 @@ export default async () => {
 
     if (event?.userId && event?.dataSourceId) {
       requests[curRequestId] = {
+        ...requests[curRequestId],
         user_id: event.userId,
         datasource_id: event.dataSourceId,
       }
     }
 
-    const startTime = new Date(requests?.[curRequestId]?.start_time);
+    let startTime = new Date(requests[curRequestId].start_time);
     if (timestamp < startTime) {
-      startTime = timestamp;
+      requests[curRequestId].start_time = timestamp;
     }
 
-    const endTime = new Date(requests?.[curRequestId]?.end_time);
+    let endTime = new Date(requests[curRequestId].end_time);
     if (timestamp > endTime) {
-      endTime = timestamp;
+      requests[curRequestId].end_time = timestamp;
     }
 
     let query;

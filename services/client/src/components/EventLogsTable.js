@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import moment from 'moment';
 
 import TableList from 'components/TableList';
 
@@ -32,6 +33,7 @@ const EventLogsTable = ({ events }) => {
       title: 'Timestamp',
       dataIndex: 'timestamp',
       key: 'timestamp',
+      render: (value) => moment(value).format('DD.MM.YY, hh:mm:ss.SSS'),
     },
   ];
 

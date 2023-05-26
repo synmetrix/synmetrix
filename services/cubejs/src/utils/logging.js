@@ -18,9 +18,7 @@ export const logging = async (message, event) => {
     data.path = data.path?.split('?')?.[0];
   }
 
-  if (!data.time) {
-    data.time = new Date().toISOString();
-  }
+  data.timestamp = new Date().toISOString();
 
   if (data?.securityContext) {
     data.userId = data.securityContext.userId;

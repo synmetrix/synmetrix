@@ -91,7 +91,6 @@ const Logs = ({ match }) => {
           <Divider />
           <LogsTable
             logs={allLogs}
-            sort={filter?.sort}
             loading={allLogsData?.fetching}
             totalCount={totalCount}
             onClickRow={onClickRow}

@@ -8,24 +8,14 @@ const defaultFields = `
   created_at
   updated_at
   request_id
+  start_time
+  end_time
+  duration
   user {
     display_name
   }
   datasource {
     name
-  }
-  event_logs(order_by: {timestamp: asc}) {
-    id
-    duration
-    event
-    path
-    query
-    query_key
-    query_sql
-    query_key_md5
-    queue_prefix
-    time_in_queue
-    timestamp
   }
 `;
 
@@ -33,13 +23,26 @@ const currentLogQuery = `
   query ($id: uuid!) {
     request_logs_by_pk (id: $id) {
       ${defaultFields}
+      event_logs(order_by: {timestamp: desc}) {
+        id
+        duration
+        event
+        path
+        query
+        query_key
+        query_sql
+        query_key_md5
+        queue_prefix
+        time_in_queue
+        timestamp
+      }
     }
   }
 `;
 
 const allLogsQuery = `
-  query ($offset: Int, $limit: Int, $where: request_logs_bool_exp) {
-    request_logs (offset: $offset, limit: $limit, where: $where) {
+  query ($offset: Int, $limit: Int, $where: request_logs_bool_exp, $order_by: [request_logs_order_by!]) {
+    request_logs (offset: $offset, limit: $limit, where: $where, order_by: $order_by) {
       ${defaultFields}
       event_logs_aggregate {
         aggregate {
@@ -71,6 +74,10 @@ const getListVariables = (pagination, params) => {
 
   if (params?.to) {
     res = set('where.created_at._lte', params.to.toISOString(), res);
+  }
+
+  if (params?.sort) {
+    res = set('order_by.duration', params.sort, res);
   }
   
   return res;
