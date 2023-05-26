@@ -18,11 +18,11 @@ const LogsTable = ({ logs, pagination, loading, onClickRow, onPageChange }) => {
       title: 'Path',
       dataIndex: 'path',
       key: 'path',
-      render: (_, record) => record.event_logs?.find(e => e.path)?.path,
+      render: (_, record) => record.request_event_logs?.find(e => e.path)?.path,
     },
     {
       title: 'Events',
-      dataIndex: ['event_logs_aggregate', 'aggregate', 'count'],
+      dataIndex: ['request_event_logs_aggregate', 'aggregate', 'count'],
       key: 'events_count',
     },
     {

@@ -23,7 +23,7 @@ const LogsFilterForm = ({ onChange, initialValues }) => {
       label: 'Sort by duration',
       display: 'select',
       span: 4,
-      allowClear: false,
+      allowClear: true,
       values: [
         { Asc: 'asc' },
         { Desc: 'desc' },

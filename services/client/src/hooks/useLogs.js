@@ -23,7 +23,7 @@ const currentLogQuery = `
   query ($id: uuid!) {
     request_logs_by_pk (id: $id) {
       ${defaultFields}
-      event_logs(order_by: {timestamp: desc}) {
+      request_event_logs(order_by: {timestamp: desc}) {
         id
         duration
         event
@@ -44,16 +44,16 @@ const allLogsQuery = `
   query ($offset: Int, $limit: Int, $where: request_logs_bool_exp, $order_by: [request_logs_order_by!]) {
     request_logs (offset: $offset, limit: $limit, where: $where, order_by: $order_by) {
       ${defaultFields}
-      event_logs(order_by: {timestamp: desc}) {
+      request_event_logs(order_by: {timestamp: desc}) {
         path
       }
-      event_logs_aggregate {
+      request_event_logs_aggregate {
         aggregate {
           count
         }
       }
     }
-    request_logs_aggregate (where: $where) {
+    request_logs_aggregate (where: $where, order_by: $order_by) {
       aggregate {
         count
       }
@@ -81,6 +81,8 @@ const getListVariables = (pagination, params) => {
 
   if (params?.sort) {
     res = set('order_by.duration', params.sort, res);
+  } else {
+    res = set('order_by.created_at', 'desc', res);
   }
   
   return res;

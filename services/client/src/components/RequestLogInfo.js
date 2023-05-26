@@ -16,10 +16,10 @@ const { Paragraph } = Typography;
 const RequestLogInfo = ({ request, loading }) => {
   const { t } = useTranslation();
 
-  const events = useMemo(() => request?.event_logs || [], [request]);
+  const events = useMemo(() => request?.request_event_logs || [], [request]);
   const querySql = useMemo(() => events?.find(e => e?.query_sql)?.query_sql, [events]);
-  const queryKey = useMemo(() => request.event_logs?.find(e => e.query_key)?.query_key, [request]);
-  const queryKeyMd5 = useMemo(() => request.event_logs?.find(e => e.query_key_md5)?.query_key_md5, [request]);
+  const queryKey = useMemo(() => request.request_event_logs?.find(e => e.query_key)?.query_key, [request]);
+  const queryKeyMd5 = useMemo(() => request.request_event_logs?.find(e => e.query_key_md5)?.query_key_md5, [request]);
 
   const query = useMemo(() => {
     const rawQuery = events?.find(e => e?.query)?.query;

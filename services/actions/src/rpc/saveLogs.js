@@ -4,7 +4,7 @@ import redisClient from "../utils/redis";
 import createMd5Hex from '../utils/md5Hex';
 
 const createEventLogsMutation = `
-  mutation ($requests: [request_logs_insert_input!]!, $events: [event_logs_insert_input!]!){
+  mutation ($requests: [request_logs_insert_input!]!, $events: [request_event_logs_insert_input!]!){
     insert_request_logs(objects: $requests, on_conflict: {
       constraint: request_logs_request_id_key,
       update_columns: [end_time]
@@ -12,8 +12,8 @@ const createEventLogsMutation = `
       affected_rows
     }
     
-    insert_event_logs(objects: $events, on_conflict: {
-      constraint: event_logs_request_id_event_key,
+    insert_request_event_logs(objects: $events, on_conflict: {
+      constraint: request_event_logs_pkey,
       update_columns: []
     }) {
       affected_rows
