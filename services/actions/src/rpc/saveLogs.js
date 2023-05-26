@@ -7,7 +7,7 @@ const createEventLogsMutation = `
   mutation ($requests: [request_logs_insert_input!]!, $events: [event_logs_insert_input!]!){
     insert_request_logs(objects: $requests, on_conflict: {
       constraint: request_logs_request_id_key,
-      update_columns: []
+      update_columns: [end_time]
     }) {
       affected_rows
     }
@@ -51,13 +51,38 @@ export default async () => {
   const input = data.reduce((acc, event) => {
     const curRequestId = event.requestId;
     let { requests, events } = acc;
+    
+    let timestamp = new Date(event.time);
 
-    if (!requests?.[curRequestId] && event.userId) {
+    if (timestamp) {
+      if (typeof (event.time) === 'number') {
+        timestamp = new Date(event.time).toISOString();
+      }
+    }
+
+    if (!requests?.[curRequestId] && event?.userId) {
       requests[curRequestId] = {
         request_id: curRequestId,
+        start_time: event.time,
+        end_time: event.time,
+      }
+    }
+
+    if (event?.userId && event?.dataSourceId) {
+      requests[curRequestId] = {
         user_id: event.userId,
         datasource_id: event.dataSourceId,
       }
+    }
+
+    const startTime = new Date(requests?.[curRequestId]?.start_time);
+    if (timestamp < startTime) {
+      startTime = timestamp;
+    }
+
+    const endTime = new Date(requests?.[curRequestId]?.end_time);
+    if (timestamp > endTime) {
+      endTime = timestamp;
     }
 
     let query;
@@ -74,13 +99,6 @@ export default async () => {
 
     const queryKey = event?.queryKey ? JSON.stringify(event?.queryKey) : null;
     const queryKeyMd5 = queryKey ? createMd5Hex(queryKey) : null;
-    let timestamp = event.time;
-
-    if (timestamp) {
-      if (typeof (event.time) === 'number') {
-        timestamp = new Date(event.time).toISOString();
-      }
-    }
 
     events.push({
       request_id: curRequestId,

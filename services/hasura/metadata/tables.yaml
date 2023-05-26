@@ -1093,16 +1093,26 @@
           table:
             name: event_logs
             schema: public
+  computed_fields:
+    - name: duration
+      definition:
+        function:
+          name: duration
+          schema: public
   select_permissions:
     - role: user
       permission:
         columns:
-          - request_id
           - created_at
-          - updated_at
           - datasource_id
+          - end_time
           - id
+          - request_id
+          - start_time
+          - updated_at
           - user_id
+        computed_fields:
+          - duration
         filter:
           user_id:
             _eq: X-Hasura-User-Id
