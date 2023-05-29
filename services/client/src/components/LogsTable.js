@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
 
@@ -18,7 +18,6 @@ const LogsTable = ({ logs, pagination, loading, onClickRow, onPageChange }) => {
       title: 'Path',
       dataIndex: 'path',
       key: 'path',
-      render: (_, record) => record.request_event_logs?.find(e => e.path)?.path,
     },
     {
       title: 'Events',
@@ -39,13 +38,13 @@ const LogsTable = ({ logs, pagination, loading, onClickRow, onPageChange }) => {
       title: 'Start time',
       dataIndex: 'start_time',
       key: 'start_time',
-      render: (value) => moment(value).format('DD.MM.YY, hh:mm:ss.SSS'),
+      render: value => moment(value).format('DD.MM.YY, hh:mm:ss.SSS'),
     },
     {
       title: 'End time',
       dataIndex: 'end_time',
       key: 'end_time',
-      render: (value) => moment(value).format('DD.MM.YY, hh:mm:ss.SSS'),
+      render: value => moment(value).format('DD.MM.YY, hh:mm:ss.SSS'),
     },
     {
       title: 'Created At',
@@ -68,10 +67,10 @@ const LogsTable = ({ logs, pagination, loading, onClickRow, onPageChange }) => {
           dataSource={logs}
           pagination={pagination}
           onChange={onPageChange}
-          onRow={(record) => ({ onClick: () => onClickRow(record.id) })}
+          onRow={record => ({ onClick: () => onClickRow(record.id) })}
         />
       </Col>
-    </Row>
+    </Row>,
   ];
 };
 

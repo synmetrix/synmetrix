@@ -48,7 +48,7 @@ const Logs = ({ match }) => {
     queries: {
       allLogsData,
       currentData,
-    }
+    },
   } = useLogs({
     rowId,
     pagination: paginationVars,
@@ -66,7 +66,7 @@ const Logs = ({ match }) => {
     params?.rowId && { path: `${basePath}/${params?.rowId}`, title: params?.rowId },
   ].filter(v => !!v);
 
-  const onFilterChange = (data) => {
+  const onFilterChange = data => {
     setFilter(data);
   };
 
@@ -76,13 +76,13 @@ const Logs = ({ match }) => {
         <>
           <PageInfo
             title={t('Logs')}
-            description={(
+            description={
               <>
                 <ul>
                   <li>List cubejs logs</li>
                 </ul>
               </>
-            )}
+            }
           />
           <Divider />
           <div style={{ marginLeft: 20 }}>

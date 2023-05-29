@@ -11,6 +11,7 @@ const defaultFields = `
   start_time
   end_time
   duration
+  path
   user {
     display_name
   }
@@ -84,28 +85,34 @@ const getListVariables = (pagination, params) => {
   } else {
     res = set('order_by.created_at', 'desc', res);
   }
-  
+
   return res;
 };
 
 const role = 'user';
 export default ({ rowId, pagination = {}, params = {} }) => {
-  const [allLogsData, execQueryAll] = useQuery({
-    query: allLogsQuery,
-    variables: getListVariables(pagination, params),
-    pause: true,
-  }, {
-    requestPolicy: 'cache-and-network',
-    role,
-  });
+  const [allLogsData, execQueryAll] = useQuery(
+    {
+      query: allLogsQuery,
+      variables: getListVariables(pagination, params),
+      pause: true,
+    },
+    {
+      requestPolicy: 'cache-and-network',
+      role,
+    }
+  );
 
-  const [currentData, execQueryCurrent] = useQuery({
-    query: currentLogQuery,
-    variables: { id: rowId },
-  }, {
-    requestPolicy: 'cache-and-network',
-    role,
-  });
+  const [currentData, execQueryCurrent] = useQuery(
+    {
+      query: currentLogQuery,
+      variables: { id: rowId },
+    },
+    {
+      requestPolicy: 'cache-and-network',
+      role,
+    }
+  );
 
   const allLogs = useMemo(() => allLogsData.data?.request_logs || [], [allLogsData.data]);
   const totalCount = useMemo(() => allLogsData.data?.request_logs_aggregate?.aggregate?.count || 0, [allLogsData.data]);
@@ -126,7 +133,7 @@ export default ({ rowId, pagination = {}, params = {} }) => {
   useEffect(() => {
     if (rowId) {
       execQueryCurrent();
-    } 
+    }
   }, [rowId, execQueryCurrent]);
 
   return {

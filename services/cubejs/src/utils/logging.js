@@ -1,4 +1,4 @@
-import redisClient from "./redis.js";
+import redisClient from './redis.js';
 
 export const logging = async (message, event) => {
   const requestId = event?.requestId;
@@ -27,5 +27,10 @@ export const logging = async (message, event) => {
     delete data.securityContext;
   }
 
-  await redisClient.xadd('streams:cubejs-logs-stream', '*', 'data', JSON.stringify(data));
+  await redisClient.xadd(
+    'streams:cubejs-logs-stream',
+    '*',
+    'data',
+    JSON.stringify(data)
+  );
 };

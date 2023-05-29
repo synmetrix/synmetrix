@@ -24,26 +24,16 @@ const LogsFilterForm = ({ onChange, initialValues }) => {
       display: 'select',
       span: 4,
       allowClear: true,
-      values: [
-        { Asc: 'asc' },
-        { Desc: 'desc' },
-      ],
+      values: [{ Asc: 'asc' }, { Desc: 'desc' }],
     },
   };
 
-  return (
-    <SimpleForm
-      config={formConfig}
-      onSubmit={onChange}
-      initialValues={initialValues}
-      autoSubmit
-    />
-  );
+  return <SimpleForm config={formConfig} onSubmit={onChange} initialValues={initialValues} autoSubmit />;
 };
 
 LogsFilterForm.propTypes = {
   initialValues: PropTypes.object.isRequired,
-  onChange: PropTypes.func.isRequired
+  onChange: PropTypes.func.isRequired,
 };
 
 export default LogsFilterForm;

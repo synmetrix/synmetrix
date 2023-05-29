@@ -16,10 +16,25 @@ const { Paragraph } = Typography;
 const RequestLogInfo = ({ request, loading }) => {
   const { t } = useTranslation();
 
-  const events = useMemo(() => request?.request_event_logs || [], [request]);
-  const querySql = useMemo(() => events?.find(e => e?.query_sql)?.query_sql, [events]);
-  const queryKey = useMemo(() => request.request_event_logs?.find(e => e.query_key)?.query_key, [request]);
-  const queryKeyMd5 = useMemo(() => request.request_event_logs?.find(e => e.query_key_md5)?.query_key_md5, [request]);
+  const { events, querySql, queryKey, queryKeyMd5 } = useMemo(() => {
+    let eventLogs = request?.request_event_logs || [];
+    eventLogs = eventLogs.map((e, i) => {
+      const curTimestamp = eventLogs?.[i]?.timestamp;
+      const prevTimestamp = eventLogs?.[i + 1]?.timestamp || curTimestamp;
+
+      return {
+        ...e,
+        duration: new Date(curTimestamp) - new Date(prevTimestamp),
+      };
+    });
+
+    return {
+      events: eventLogs,
+      querySql: eventLogs?.find(e => e?.query_sql)?.query_sql,
+      queryKey: request.request_event_logs?.find(e => e.query_key)?.query_key,
+      queryKeyMd5: request.request_event_logs?.find(e => e.query_key_md5)?.query_key_md5,
+    };
+  }, [request.request_event_logs]);
 
   const query = useMemo(() => {
     const rawQuery = events?.find(e => e?.query)?.query;
@@ -33,10 +48,16 @@ const RequestLogInfo = ({ request, loading }) => {
 
   return (
     <Loader spinning={loading}>
-      <b>{t('Request ID')}:</b> {request?.request_id}<br />
-      <b>{t('Duration')}:</b> {request?.duration}<br />
-      <b>{t('Start time')}:</b> {moment(request?.start_time).format('DD.MM.YY, hh:mm:ss.SSS')}<br />
-      <b>{t('End time')}:</b> {moment(request?.end_time).format('DD.MM.YY, hh:mm:ss.SSS')}<br />
+      <b>{t('Request ID')}:</b> {request?.request_id}
+      <br />
+      <b>{t('Path')}:</b> {request?.path}
+      <br />
+      <b>{t('Duration')}:</b> {request?.duration}
+      <br />
+      <b>{t('Start time')}:</b> {moment(request?.start_time).format('DD.MM.YY, hh:mm:ss.SSS')}
+      <br />
+      <b>{t('End time')}:</b> {moment(request?.end_time).format('DD.MM.YY, hh:mm:ss.SSS')}
+      <br />
       {queryKey && (
         <Paragraph ellipsis={{ rows: 1, expandable: true, symbol: 'show' }}>
           <b>{t('Query key')}:</b> {queryKey}
@@ -52,10 +73,7 @@ const RequestLogInfo = ({ request, loading }) => {
         <Row>
           <Col xs={24} md={24}>
             {t('SQL')}
-            <PrismCode
-              lang="sql"
-              code={querySql || ''}
-            />
+            <PrismCode lang="sql" code={querySql || ''} />
           </Col>
           <Col xs={24} md={24}>
             {t('Query')}
