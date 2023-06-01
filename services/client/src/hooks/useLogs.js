@@ -71,9 +71,7 @@ const allLogsCountSubscription = `
 `;
 
 const getListVariables = (pagination, params = {}) => {
-  let res = {
-    limit: 1000,
-  };
+  let res = {};
 
   if (pagination) {
     res = {
