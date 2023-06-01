@@ -10,14 +10,14 @@ const LogsFilterForm = ({ onChange, initialValues }) => {
       display: 'date',
       span: 4,
       showTime: true,
-      allowClear: false,
+      allowClear: true,
     },
     to: {
       label: 'To',
       display: 'date',
       span: 4,
       showTime: true,
-      allowClear: false,
+      allowClear: true,
     },
     sort: {
       label: 'Sort by duration',

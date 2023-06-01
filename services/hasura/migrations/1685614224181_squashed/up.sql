@@ -1,5 +1,6 @@
 
 
+
 CREATE TABLE "public"."request_logs" ("id" uuid NOT NULL DEFAULT gen_random_uuid(), "created_at" timestamptz NOT NULL DEFAULT now(), "updated_at" timestamptz NOT NULL DEFAULT now(), "request_id" text NOT NULL, "user_id" uuid NOT NULL, "datasource_id" uuid NOT NULL, "start_time" timestamptz NOT NULL, "end_time" timestamptz NOT NULL, PRIMARY KEY ("id") , FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON UPDATE cascade ON DELETE cascade, FOREIGN KEY ("datasource_id") REFERENCES "public"."datasources"("id") ON UPDATE cascade ON DELETE cascade, UNIQUE ("request_id"));
 CREATE OR REPLACE FUNCTION "public"."set_current_timestamp_updated_at"()
 RETURNS TRIGGER AS $$
@@ -47,4 +48,7 @@ IS 'trigger to set value of column "updated_at" to current timestamp on row upda
 CREATE EXTENSION IF NOT EXISTS pgcrypto;
 
 alter table "public"."request_logs" add column "path" text
+ null;
+
+alter table "public"."request_event_logs" add column "error" text
  null;

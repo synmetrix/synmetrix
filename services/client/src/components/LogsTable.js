@@ -1,13 +1,32 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import PropTypes from 'prop-types';
-import moment from 'moment';
+import cx from 'classnames';
 
 import { Row, Col } from 'antd';
 
 import TableList from 'components/TableList';
+import formatTime from 'utils/formatTime';
 import formatDistanceToNow from '../utils/formatDistanceToNow';
 
+import s from './LogsTable.module.css';
+
 const LogsTable = ({ logs, pagination, loading, onClickRow, onPageChange }) => {
+  const datasource = useMemo(() => logs.map(l => {
+    const startTime = formatTime(l.start_time);
+    const endTime = formatTime(l.end_time);
+    const createdAt = formatDistanceToNow(l.created_at);
+
+    const hasError = l?.request_event_logs?.find(e => e?.error)?.error;
+
+    return {
+      ...l,
+      startTime,
+      endTime,
+      createdAt,
+      hasError,
+    };
+  }), [logs]);
+
   const columns = [
     {
       title: 'Datasource',
@@ -30,7 +49,7 @@ const LogsTable = ({ logs, pagination, loading, onClickRow, onPageChange }) => {
       key: 'display_name',
     },
     {
-      title: 'Duration',
+      title: 'Duration (ms)',
       dataIndex: 'duration',
       key: 'duration',
     },
@@ -38,22 +57,16 @@ const LogsTable = ({ logs, pagination, loading, onClickRow, onPageChange }) => {
       title: 'Start time',
       dataIndex: 'start_time',
       key: 'start_time',
-      render: value => moment(value).format('DD.MM.YY, hh:mm:ss.SSS'),
     },
     {
       title: 'End time',
       dataIndex: 'end_time',
       key: 'end_time',
-      render: value => moment(value).format('DD.MM.YY, hh:mm:ss.SSS'),
     },
     {
       title: 'Created At',
       dataIndex: 'created_at',
       key: 'created_at',
-      render: (_, record) => {
-        const createdAt = formatDistanceToNow(record.created_at);
-        return createdAt;
-      },
     },
   ];
 
@@ -64,9 +77,10 @@ const LogsTable = ({ logs, pagination, loading, onClickRow, onPageChange }) => {
           loading={loading}
           rowKey={row => row.id}
           columns={columns}
-          dataSource={logs}
+          dataSource={datasource}
           pagination={pagination}
           onChange={onPageChange}
+          rowClassName={(record) => cx(s.row, record?.hasError && s.rowWithError)}
           onRow={record => ({ onClick: () => onClickRow(record.id) })}
         />
       </Col>

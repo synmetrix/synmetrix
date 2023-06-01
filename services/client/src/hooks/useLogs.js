@@ -1,6 +1,7 @@
 import { useEffect, useMemo } from 'react';
 import { set } from 'unchanged';
 
+import { useSubscription } from 'urql';
 import useQuery from './useQuery';
 
 const defaultFields = `
@@ -36,17 +37,19 @@ const currentLogQuery = `
         queue_prefix
         time_in_queue
         timestamp
+        error
       }
     }
   }
 `;
 
-const allLogsQuery = `
-  query ($offset: Int, $limit: Int, $where: request_logs_bool_exp, $order_by: [request_logs_order_by!]) {
+const allLogsSubscription = `
+  subscription ($offset: Int, $limit: Int, $where: request_logs_bool_exp, $order_by: [request_logs_order_by!]) {
     request_logs (offset: $offset, limit: $limit, where: $where, order_by: $order_by) {
       ${defaultFields}
       request_event_logs(order_by: {timestamp: desc}) {
         path
+        error
       }
       request_event_logs_aggregate {
         aggregate {
@@ -54,7 +57,12 @@ const allLogsQuery = `
         }
       }
     }
-    request_logs_aggregate (where: $where, order_by: $order_by) {
+  }
+`;
+
+const allLogsCountSubscription = `
+  subscription ($where: request_logs_bool_exp) {
+    request_logs_aggregate (where: $where) {
       aggregate {
         count
       }
@@ -62,8 +70,10 @@ const allLogsQuery = `
   }
 `;
 
-const getListVariables = (pagination, params) => {
-  let res = {};
+const getListVariables = (pagination, params = {}) => {
+  let res = {
+    limit: 1000,
+  };
 
   if (pagination) {
     res = {
@@ -82,26 +92,30 @@ const getListVariables = (pagination, params) => {
 
   if (params?.sort) {
     res = set('order_by.duration', params.sort, res);
-  } else {
+  }
+
+  if (pagination && !params.sort) {
     res = set('order_by.created_at', 'desc', res);
   }
 
   return res;
 };
 
+const handleSubscription = (_, response) => response;
+
 const role = 'user';
 export default ({ rowId, pagination = {}, params = {} }) => {
-  const [allLogsData, execQueryAll] = useQuery(
-    {
-      query: allLogsQuery,
-      variables: getListVariables(pagination, params),
-      pause: true,
-    },
-    {
-      requestPolicy: 'cache-and-network',
-      role,
-    }
-  );
+  const [logsSubscription, execLogsSubscription] = useSubscription({
+    query: allLogsSubscription,
+    variables: getListVariables(pagination, params),
+    pause: false,
+  }, handleSubscription);
+
+  const [countSubscription, execCountSubscription] = useSubscription({
+    query: allLogsCountSubscription,
+    variables: getListVariables(null, params),
+    pause: false,
+  }, handleSubscription);
 
   const [currentData, execQueryCurrent] = useQuery(
     {
@@ -114,21 +128,9 @@ export default ({ rowId, pagination = {}, params = {} }) => {
     }
   );
 
-  const allLogs = useMemo(() => allLogsData.data?.request_logs || [], [allLogsData.data]);
-  const totalCount = useMemo(() => allLogsData.data?.request_logs_aggregate?.aggregate?.count || 0, [allLogsData.data]);
+  const allLogs = useMemo(() => logsSubscription.data?.request_logs || [], [logsSubscription.data]);
+  const totalCount = useMemo(() => countSubscription.data?.request_logs_aggregate?.aggregate?.count || 0, [countSubscription.data]);
   const current = useMemo(() => currentData.data?.request_logs_by_pk, [currentData]);
-
-  useEffect(() => {
-    if (!allLogsData.data) {
-      execQueryAll();
-    }
-  }, [allLogsData.data, params.from, params.to, execQueryAll]);
-
-  useEffect(() => {
-    if (params?.from && params?.to) {
-      execQueryAll();
-    }
-  }, [params.from, params.to, execQueryAll]);
 
   useEffect(() => {
     if (rowId) {
@@ -141,10 +143,12 @@ export default ({ rowId, pagination = {}, params = {} }) => {
     current,
     totalCount,
     queries: {
-      allLogsData,
-      execQueryAll,
       currentData,
       execQueryCurrent,
     },
+    subscriptions: {
+      logsSubscription, execLogsSubscription,
+      countSubscription, execCountSubscription,
+    }
   };
 };

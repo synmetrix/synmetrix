@@ -19,8 +19,8 @@ import LogsFilterForm from 'components/LogsFilterForm';
 
 const defaultFilterState = {
   from: moment().subtract(1, 'days'),
-  to: moment(),
-  sort: 'desc',
+  to: null,
+  sort: null,
 };
 
 const Logs = ({ match }) => {
@@ -46,9 +46,11 @@ const Logs = ({ match }) => {
     current,
     totalCount,
     queries: {
-      allLogsData,
       currentData,
     },
+    subscriptions: {
+      logsSubscription,
+    }
   } = useLogs({
     rowId,
     pagination: paginationVars,
@@ -77,11 +79,9 @@ const Logs = ({ match }) => {
           <PageInfo
             title={t('Logs')}
             description={
-              <>
-                <ul>
-                  <li>List cubejs logs</li>
-                </ul>
-              </>
+              <ul>
+                <li>List cubejs logs</li>
+              </ul>
             }
           />
           <Divider />
@@ -91,7 +91,7 @@ const Logs = ({ match }) => {
           <Divider />
           <LogsTable
             logs={allLogs}
-            loading={allLogsData?.fetching}
+            loading={logsSubscription?.fetching}
             totalCount={totalCount}
             onClickRow={onClickRow}
             onPageChange={onPageChange}

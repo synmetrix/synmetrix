@@ -1056,20 +1056,21 @@
     - role: user
       permission:
         columns:
-          - query
-          - query_key
-          - duration
-          - time_in_queue
-          - event
-          - path
-          - query_key_md5
-          - query_sql
-          - queue_prefix
-          - request_id
-          - created_at
-          - timestamp
-          - updated_at
           - id
+          - created_at
+          - updated_at
+          - request_id
+          - event
+          - duration
+          - queue_prefix
+          - time_in_queue
+          - path
+          - query_key
+          - query_key_md5
+          - query
+          - query_sql
+          - timestamp
+          - error
         filter:
           _or:
             - request_log:

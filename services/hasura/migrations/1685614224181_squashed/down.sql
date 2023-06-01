@@ -1,6 +1,12 @@
 
 -- Could not auto-generate a down migration.
 -- Please write an appropriate down migration for the SQL below:
+-- alter table "public"."request_event_logs" add column "error" text
+--  null;
+
+
+-- Could not auto-generate a down migration.
+-- Please write an appropriate down migration for the SQL below:
 -- alter table "public"."request_logs" add column "path" text
 --  null;
 

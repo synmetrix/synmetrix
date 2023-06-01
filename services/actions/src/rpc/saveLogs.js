@@ -29,7 +29,7 @@ export default async () => {
   try {
     streamData = await redisClient.xread('STREAMS', streamName, 0);
   } catch (e) {
-    console.log(e);
+    console.error(e);
   }
 
   let data = streamData?.[0]?.[1];
@@ -40,7 +40,11 @@ export default async () => {
   let lastId = data.pop()?.[0];
   lastId = parseInt(lastId) + 1;
 
-  await redisClient.xtrim(streamName, 'MINID', lastId);
+  try {
+    await redisClient.xtrim(streamName, 'MINID', lastId);
+  } catch (e) {
+    console.error(e);
+  }
 
   try {
     data = data
@@ -113,6 +117,7 @@ export default async () => {
         time_in_queue: event?.timeInQueue,
         path: event?.path,
         timestamp,
+        error: event?.error,
       });
 
       return {
