@@ -1,0 +1,39 @@
+{
+  "name": "auth-service",
+  "version": "0.1.0",
+  "description": "",
+  "main": "main.ts",
+  "type": "module",
+  "scripts": {
+    "dev": "export NODE_ENV=development && npx nodemon",
+    "start": "export NODE_ENV=production npm run build && node build/main",
+    "build": "rimraf ./build && npx tsc",
+    "lint": "npx eslint ./src",
+    "format": "npx eslint ./src --fix",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "console": "hasura console --envfile .env.development --log-level DEBUG"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "@types/node": "^18.15.5",
+    "@typescript-eslint/eslint-plugin": "^5.56.0",
+    "@typescript-eslint/parser": "^5.56.0",
+    "eslint": "^8.36.0",
+    "nodemon": "^2.0.22",
+    "prettier": "^2.8.7",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.0.2"
+  },
+  "dependencies": {
+    "@fastify/cors": "^8.2.1",
+    "@fastify/env": "^4.2.0",
+    "@fastify/formbody": "^7.4.0",
+    "fastify": "^4.15.0",
+    "fastify-plugin": "^4.5.0",
+    "graphql": "^16.6.0",
+    "graphql-request": "^6.0.0",
+    "supertokens-node": "^14.1.0"
+  }
+}

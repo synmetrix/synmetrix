@@ -1,5 +1,5 @@
 # build environment
-FROM node:14.16.1-slim as build
+FROM node:16.0.0-slim as build
 
 # define args if you want to build client with built in it process.env vars
 ARG GRAPHQL_SERVER_URL

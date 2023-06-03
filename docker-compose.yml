@@ -30,20 +30,18 @@ services:
     networks:
       - mlcraft_default
 
-  hasura_plus:
-    build:
-      context: ./scripts/containers/hasura-backend-plus
-    volumes:
-      - ./scripts/containers/hasura-backend-plus/storage-rules/rules.yaml:/app/custom/storage-rules/rules.yaml
-    networks:
-      - mlcraft_default
-
   cubestore:
     image: cubejs/cubestore:${CUBESTORE_VERSION:-v0.32.4}
     environment:
       - CUBESTORE_REMOTE_DIR=/cube/data
     volumes:
       - .cubestore:/cube/data
+    networks:
+      - mlcraft_default
+
+  auth:
+    build:
+      context: ./services/actions/
     networks:
       - mlcraft_default
 

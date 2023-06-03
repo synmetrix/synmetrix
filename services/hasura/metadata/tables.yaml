@@ -1,104 +1,10 @@
 - table:
-    name: account_providers
-    schema: auth
-  object_relationships:
-    - name: account
-      using:
-        foreign_key_constraint_on: account_id
-    - name: provider
-      using:
-        foreign_key_constraint_on: auth_provider
-- table:
-    name: account_roles
-    schema: auth
-  object_relationships:
-    - name: account
-      using:
-        foreign_key_constraint_on: account_id
-    - name: roleByRole
-      using:
-        foreign_key_constraint_on: role
-- table:
     name: accounts
-    schema: auth
+    schema: public
   object_relationships:
-    - name: role
-      using:
-        foreign_key_constraint_on: default_role
     - name: user
       using:
         foreign_key_constraint_on: user_id
-  array_relationships:
-    - name: account_providers
-      using:
-        foreign_key_constraint_on:
-          column: account_id
-          table:
-            name: account_providers
-            schema: auth
-    - name: account_roles
-      using:
-        foreign_key_constraint_on:
-          column: account_id
-          table:
-            name: account_roles
-            schema: auth
-    - name: refresh_tokens
-      using:
-        foreign_key_constraint_on:
-          column: account_id
-          table:
-            name: refresh_tokens
-            schema: auth
-  select_permissions:
-    - role: user
-      permission:
-        columns:
-          - email
-          - mfa_enabled
-        filter:
-          user:
-            id:
-              _eq: X-Hasura-User-Id
-- table:
-    name: migrations
-    schema: auth
-- table:
-    name: providers
-    schema: auth
-  array_relationships:
-    - name: account_providers
-      using:
-        foreign_key_constraint_on:
-          column: auth_provider
-          table:
-            name: account_providers
-            schema: auth
-- table:
-    name: refresh_tokens
-    schema: auth
-  object_relationships:
-    - name: account
-      using:
-        foreign_key_constraint_on: account_id
-- table:
-    name: roles
-    schema: auth
-  array_relationships:
-    - name: account_roles
-      using:
-        foreign_key_constraint_on:
-          column: role
-          table:
-            name: account_roles
-            schema: auth
-    - name: accounts
-      using:
-        foreign_key_constraint_on:
-          column: default_role
-          table:
-            name: accounts
-            schema: auth
 - table:
     name: alerts
     schema: public
@@ -1198,17 +1104,14 @@
 - table:
     name: users
     schema: public
-  object_relationships:
-    - name: account
-      using:
-        manual_configuration:
-          column_mapping:
-            id: user_id
-          insertion_order: null
-          remote_table:
-            name: accounts
-            schema: auth
   array_relationships:
+    - name: accounts
+      using:
+        foreign_key_constraint_on:
+          column: user_id
+          table:
+            name: accounts
+            schema: public
     - name: alerts
       using:
         foreign_key_constraint_on:
@@ -1366,6 +1269,17 @@
           table:
             name: userid_mapping
             schema: supertokens
+  event_triggers:
+    - name: add_account
+      definition:
+        enable_manual: true
+        insert:
+          columns: '*'
+      retry_conf:
+        interval_sec: 10
+        num_retries: 0
+        timeout_sec: 60
+      webhook: '{{AUTH_SERVICE_URL}}/webhooks/addAccount'
 - table:
     name: dashboard_user_sessions
     schema: supertokens

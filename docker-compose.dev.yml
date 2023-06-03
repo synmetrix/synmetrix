@@ -86,12 +86,15 @@ services:
       - postgres
       - redis
 
-  hasura_plus:
+  auth:
     restart: always
     build:
-      context: ./scripts/containers/hasura-backend-plus
+      dockerfile: Dockerfile.dev
+      context: ./services/auth/
+    volumes:
+      - ./services/auth/src:/app/src
     ports:
-      - 8081:3000
+      - 4444:4000
     env_file:
       - .env
       - .dev.env

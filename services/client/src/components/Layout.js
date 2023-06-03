@@ -7,6 +7,8 @@ import { Layout, Avatar } from 'antd';
 
 import cx from 'classnames';
 
+import { signOut } from 'supertokens-auth-react/recipe/thirdpartyemailpassword';
+
 import logoImage from 'assets/images/logo.svg';
 import logoBlackImage from 'assets/images/logo-black.svg';
 
@@ -26,8 +28,12 @@ import s from './Layout.module.css';
 
 const { Header, Content, Footer, Sider } = Layout;
 
+const doLogout = async () => {
+  await signOut();
+  window.location.href = '/auth';
+};
+
 const UserMenu = ({ mode, anyTeam, restrictScopes = [] }) => {
-  const { doLogout } = useAuthToken();
   const { t } = useTranslation();
   const { withAuthPrefix } = useAppSettings();
 
@@ -219,11 +225,11 @@ const MainLayout = (props) => {
   const [location] = useLocation();
   const { authToken } = useAuthToken();
 
-  useEffect(() =>{
-    if (!authToken) {
-      window.location.href = '/login';
-    }
-  }, [authToken, location.pathname]);
+  // useEffect(() =>{
+  //   if (!authToken) {
+  //     window.location.href = '/login';
+  //   }
+  // }, [authToken, location.pathname]);
 
   const { restrictScopes } = usePermissions({});
 

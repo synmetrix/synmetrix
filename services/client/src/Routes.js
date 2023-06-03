@@ -5,12 +5,10 @@ import {
   Provider as URQLProvider,
 } from 'urql';
 
-import {
-  BrowserRouter as Router,
-  Switch,
-  Route,
-  Redirect,
-} from 'react-router-dom';
+import * as reactRouterDom from 'react-router-dom';
+
+import { getSuperTokensRoutesForReactRouterDom } from 'supertokens-auth-react/ui';
+import { ThirdPartyEmailPasswordPreBuiltUI } from 'supertokens-auth-react/recipe/thirdpartyemailpassword/prebuiltui';
 
 import useGraphQLClient from './hooks/useGraphQLClient';
 import useAppSettings from './hooks/useAppSettings';
@@ -34,6 +32,13 @@ import Alerts from './pages/Alerts';
 import Docs from './pages/Docs';
 import ErrorFound from './components/ErrorFound';
 
+const {
+  BrowserRouter: Router,
+  Switch,
+  Route,
+  Redirect,
+} = reactRouterDom;
+
 const Routes = () => {
   const client = useGraphQLClient();
   const { withAuthPrefix } = useAppSettings();
@@ -42,11 +47,13 @@ const Routes = () => {
     <URQLProvider value={client}>
       <Router>
         <Switch>
-          <Route path="/callback" component={Callback} />
-          <Route path="/link_login" component={MagicLinkLogin} />
-          <Route path="/login" component={Login} />
-          <Route path="/signup" component={SignUp} />
-          <Route path="/404" component={ErrorFound} />
+          <Route path='/callback' component={Callback} />
+          <Route path='/link_login' component={MagicLinkLogin} />
+          <Route path='/login' component={Login} />
+          <Route path='/signup' component={SignUp} />
+          <Route path='/404' component={ErrorFound} />
+
+          { getSuperTokensRoutesForReactRouterDom(reactRouterDom, [ThirdPartyEmailPasswordPreBuiltUI]) }
 
           <Route
             path={withAuthPrefix('/:rest*')}
@@ -83,7 +90,7 @@ const Routes = () => {
                         <Route path={withAuthPrefix('/dashboards/:rowId?')} component={Dashboards} />
                         <Route path={withAuthPrefix('/charts/:rowId?')} component={Charts} />
 
-                        <Route path="/403" component={() => <ErrorFound status={403} />} />
+                        <Route path='/403' component={() => <ErrorFound status={403} />} />
                       </Switch>
                     </Layout>
                   </Router>
@@ -91,7 +98,7 @@ const Routes = () => {
               );
             }}
           />
-          <Redirect to="/login" />
+          <Redirect to='/auth' />
         </Switch>
       </Router>
     </URQLProvider>
