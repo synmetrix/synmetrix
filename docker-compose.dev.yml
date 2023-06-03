@@ -13,6 +13,11 @@ services:
       - .dev.env
     networks:
       - mlcraft_default
+    healthcheck:
+      test: ['CMD', 'pg_isready']
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   actions:
     restart: always
@@ -20,6 +25,9 @@ services:
     volumes:
       - ./services/actions/src:/app/src
       - ./services/actions/index.js:/app/index.js
+    depends_on:
+      supertokens:
+        condition: service_healthy
     ports:
       - 3001:3000
     env_file:
@@ -149,6 +157,23 @@ services:
       - CUBESTORE_REMOTE_DIR=/cube/data
     volumes:
       - .cubestore:/cube/data
+    networks:
+      - mlcraft_default
+
+  supertokens:
+    image: registry.supertokens.io/supertokens/supertokens-postgresql:5.0
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: >
+        bash -c 'exec 3<>/dev/tcp/127.0.0.1/3567 && echo -e "GET /hello HTTP/1.1\r\nhost: 127.0.0.1:3567\r\nConnection: close\r\n\r\n" >&3 && cat <&3 | grep "Hello"'
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    env_file:
+      - .env
+      - .dev.env
     networks:
       - mlcraft_default
 

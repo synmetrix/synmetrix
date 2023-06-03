@@ -61,6 +61,9 @@
             id:
               _eq: X-Hasura-User-Id
 - table:
+    name: migrations
+    schema: auth
+- table:
     name: providers
     schema: auth
   array_relationships:
@@ -1352,3 +1355,169 @@
         paused: true
         schedule: 0 0 * * *
         timeout: 60
+- table:
+    name: all_auth_recipe_users
+    schema: supertokens
+  object_relationships:
+    - name: userid_mapping
+      using:
+        foreign_key_constraint_on:
+          column: supertokens_user_id
+          table:
+            name: userid_mapping
+            schema: supertokens
+- table:
+    name: dashboard_user_sessions
+    schema: supertokens
+  object_relationships:
+    - name: dashboard_user
+      using:
+        foreign_key_constraint_on: user_id
+- table:
+    name: dashboard_users
+    schema: supertokens
+  array_relationships:
+    - name: dashboard_user_sessions
+      using:
+        foreign_key_constraint_on:
+          column: user_id
+          table:
+            name: dashboard_user_sessions
+            schema: supertokens
+- table:
+    name: emailpassword_pswd_reset_tokens
+    schema: supertokens
+  object_relationships:
+    - name: emailpassword_user
+      using:
+        foreign_key_constraint_on: user_id
+- table:
+    name: emailpassword_users
+    schema: supertokens
+  array_relationships:
+    - name: emailpassword_pswd_reset_tokens
+      using:
+        foreign_key_constraint_on:
+          column: user_id
+          table:
+            name: emailpassword_pswd_reset_tokens
+            schema: supertokens
+- table:
+    name: emailverification_tokens
+    schema: supertokens
+- table:
+    name: emailverification_verified_emails
+    schema: supertokens
+- table:
+    name: jwt_signing_keys
+    schema: supertokens
+- table:
+    name: key_value
+    schema: supertokens
+- table:
+    name: passwordless_codes
+    schema: supertokens
+  object_relationships:
+    - name: passwordless_device
+      using:
+        foreign_key_constraint_on: device_id_hash
+- table:
+    name: passwordless_devices
+    schema: supertokens
+  array_relationships:
+    - name: passwordless_codes
+      using:
+        foreign_key_constraint_on:
+          column: device_id_hash
+          table:
+            name: passwordless_codes
+            schema: supertokens
+- table:
+    name: passwordless_users
+    schema: supertokens
+- table:
+    name: role_permissions
+    schema: supertokens
+  object_relationships:
+    - name: roleByRole
+      using:
+        foreign_key_constraint_on: role
+- table:
+    name: roles
+    schema: supertokens
+  array_relationships:
+    - name: role_permissions
+      using:
+        foreign_key_constraint_on:
+          column: role
+          table:
+            name: role_permissions
+            schema: supertokens
+    - name: user_roles
+      using:
+        foreign_key_constraint_on:
+          column: role
+          table:
+            name: user_roles
+            schema: supertokens
+- table:
+    name: session_access_token_signing_keys
+    schema: supertokens
+- table:
+    name: session_info
+    schema: supertokens
+- table:
+    name: thirdparty_users
+    schema: supertokens
+- table:
+    name: totp_used_codes
+    schema: supertokens
+  object_relationships:
+    - name: totp_user
+      using:
+        foreign_key_constraint_on: user_id
+- table:
+    name: totp_user_devices
+    schema: supertokens
+  object_relationships:
+    - name: totp_user
+      using:
+        foreign_key_constraint_on: user_id
+- table:
+    name: totp_users
+    schema: supertokens
+  array_relationships:
+    - name: totp_used_codes
+      using:
+        foreign_key_constraint_on:
+          column: user_id
+          table:
+            name: totp_used_codes
+            schema: supertokens
+    - name: totp_user_devices
+      using:
+        foreign_key_constraint_on:
+          column: user_id
+          table:
+            name: totp_user_devices
+            schema: supertokens
+- table:
+    name: user_last_active
+    schema: supertokens
+- table:
+    name: user_metadata
+    schema: supertokens
+- table:
+    name: user_roles
+    schema: supertokens
+  object_relationships:
+    - name: roleByRole
+      using:
+        foreign_key_constraint_on: role
+- table:
+    name: userid_mapping
+    schema: supertokens
+  object_relationships:
+    - name: all_auth_recipe_user
+      using:
+        foreign_key_constraint_on: supertokens_user_id

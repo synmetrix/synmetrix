@@ -32,6 +32,7 @@
     "request-received": "^0.0.3",
     "response-time": "^2.3.2",
     "signale": "^1.4.0",
+    "supertokens-node": "^14.1.1",
     "timeout-signal": "^1.1.0",
     "unchanged": "^2.2.1"
   }
