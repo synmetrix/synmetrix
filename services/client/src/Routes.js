@@ -32,6 +32,7 @@ import Charts from './pages/Charts';
 import Reports from './pages/Reports';
 import Alerts from './pages/Alerts';
 import Docs from './pages/Docs';
+import Roles from './pages/Roles';
 import ErrorFound from './components/ErrorFound';
 
 const Routes = () => {
@@ -82,6 +83,10 @@ const Routes = () => {
                         <Route path={withAuthPrefix('/schemas/:rest*')} component={DataSchemas} />
                         <Route path={withAuthPrefix('/dashboards/:rowId?')} component={Dashboards} />
                         <Route path={withAuthPrefix('/charts/:rowId?')} component={Charts} />
+
+                        <Route path={withAuthPrefix('/roles/new')} component={Roles} />
+                        <Route path={withAuthPrefix('/roles/:editId?')} component={Roles} />
+                        <Route path={withAuthPrefix('/roles')} component={Roles} />
 
                         <Route path="/403" component={() => <ErrorFound status={403} />} />
                       </Switch>

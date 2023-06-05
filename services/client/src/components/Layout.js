@@ -170,6 +170,11 @@ const MainMenu = (props) => {
       children: dataSourceItems,
       scope: 'dataschemas'
     },
+    {
+      path: withAuthPrefix('/roles'),
+      title: t('Roles'),
+      scope: 'roles'
+    },
   ];
 
   if (dashboardsCount) {
