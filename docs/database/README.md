@@ -1,6 +1,6 @@
 # Database Documentation
 
-This file contains the documentation for the database used in the project. It provides detailed information about the database schema, tables, and relationships between them, which is available on the website.
+This folder contains the documentation for the database used in the project. It provides detailed information about the database schema, tables, and relationships between them, which is available on the website.
 
 Please refer to the database documentation [here](https://dbdocs.io/gorland1314/mlcraft?view=relationships).
 
