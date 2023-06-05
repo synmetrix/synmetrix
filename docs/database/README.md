@@ -8,6 +8,6 @@ Below is a screenshot of the table relationships schema:
 
 Table Relationships Schema
 
-![Table Relationships Schema](/docs/images/schema.png)
+![Table Relationships Schema](/docs/images/dbschema.png)
 
 The detailed description of the database in DBLM language can be found in the file `mlcraft.dblm`. Please consult this file for a comprehensive understanding of the database structure.
