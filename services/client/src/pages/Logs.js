@@ -43,13 +43,9 @@ const Logs = ({ match }) => {
 
   const {
     allLogs,
-    current,
     totalCount,
     queries: {
-      currentData,
-    },
-    subscriptions: {
-      logsSubscription,
+      allData,
     }
   } = useLogs({
     rowId,
@@ -91,7 +87,7 @@ const Logs = ({ match }) => {
           <Divider />
           <LogsTable
             logs={allLogs}
-            loading={logsSubscription?.fetching}
+            loading={allData?.fetching}
             totalCount={totalCount}
             onClickRow={onClickRow}
             onPageChange={onPageChange}
@@ -109,7 +105,7 @@ const Logs = ({ match }) => {
           <div style={{ marginBottom: 10 }}>
             <Breadcrumbs breadcrumbs={breadcrumbs} />
           </div>
-          <RequestLogInfo request={current} loading={currentData?.fetching} />
+          <RequestLogInfo requestId={rowId} />
         </div>
       )}
     </Container>

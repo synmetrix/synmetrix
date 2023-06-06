@@ -1,9 +1,11 @@
 import React, { useMemo } from 'react';
 import PropTypes from 'prop-types';
 
-import { Input, Divider, Alert } from 'antd';
+import { Input, Divider, Alert, Empty } from 'antd';
 
 import { useTranslation } from 'react-i18next';
+
+import useLogs from 'hooks/useLogs';
 
 import PrismCode from 'components/PrismCode';
 import Loader from 'components/Loader';
@@ -12,11 +14,21 @@ import formatTime from 'utils/formatTime';
 
 const { TextArea } = Input;
 
-const RequestLogInfo = ({ request, loading }) => {
+const RequestLogInfo = ({ requestId }) => {
   const { t } = useTranslation();
 
+  const {
+    current,
+    queries: {
+      currentData,
+    },
+  } = useLogs({
+    pauseQueryAll: true,
+    rowId: requestId,
+  });
+
   const { events, querySql, queryKey, queryKeyMd5, error } = useMemo(() => {
-    let eventLogs = request?.request_event_logs || [];
+    let eventLogs = current?.request_event_logs || [];
     eventLogs = eventLogs.map((e, i) => {
       let duration = e?.duration;
 
@@ -33,7 +45,7 @@ const RequestLogInfo = ({ request, loading }) => {
       };
     });
 
-    let key = request.request_event_logs?.find(e => e.query_key)?.query_key;
+    let key = current?.request_event_logs?.find(e => e.query_key)?.query_key;
 
     if (key) {
       try {
@@ -48,9 +60,9 @@ const RequestLogInfo = ({ request, loading }) => {
       error: eventLogs?.find(e => e?.error)?.error,
       querySql: eventLogs?.find(e => e?.query_sql)?.query_sql,
       queryKey: key,
-      queryKeyMd5: request.request_event_logs?.find(e => e.query_key_md5)?.query_key_md5,
+      queryKeyMd5: current?.request_event_logs?.find(e => e.query_key_md5)?.query_key_md5,
     };
-  }, [request.request_event_logs]);
+  }, [current.request_event_logs]);
 
   const query = useMemo(() => {
     const rawQuery = events?.find(e => e?.query)?.query;
@@ -62,20 +74,28 @@ const RequestLogInfo = ({ request, loading }) => {
     }
   }, [events]);
 
+  if (!current?.request_id) {
+    return (
+      <Loader spinning={currentData?.fetching}>
+        <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
+      </Loader>
+    );
+  }
+
   return (
-    <Loader spinning={loading}>
+    <Loader spinning={currentData?.fetching}>
       {error && (
         <Alert message={error} type="error" />
       )}
-      <b>{t('Request ID')}:</b> {request?.request_id}
+      <b>{t('Request ID')}:</b> {current?.request_id}
       <br />
-      <b>{t('Path')}:</b> {request?.path}
+      <b>{t('Path')}:</b> {current?.path}
       <br />
-      <b>{t('Duration')}:</b> {request?.duration}
+      <b>{t('Duration')}:</b> {current?.duration}
       <br />
-      <b>{t('Start time')}:</b> {formatTime(request?.start_time)}
+      <b>{t('Start time')}:</b> {formatTime(current?.start_time)}
       <br />
-      <b>{t('End time')}:</b> {formatTime(request?.end_time)}
+      <b>{t('End time')}:</b> {formatTime(current?.end_time)}
       <br />
       {queryKeyMd5 && (
         <div>
@@ -117,13 +137,11 @@ const RequestLogInfo = ({ request, loading }) => {
 };
 
 RequestLogInfo.propTypes = {
-  request: PropTypes.object,
-  loading: PropTypes.bool,
+  requestId: PropTypes.string,
 };
 
 RequestLogInfo.defaultProps = {
-  request: {},
-  loading: false,
+  requestId: null,
 };
 
 export default RequestLogInfo;
