@@ -59,3 +59,30 @@ The Reports page allows you to send a screenshot of the Explore page with predef
 6. Once you have completed the settings, click the "Create Report" button to generate the report and send it to the selected destination.
 
 ![Reports Page](/docs/images/reports.png)
+
+## Logs Page
+
+The Logs page is designed to provide control over the internal workings of the Cube.js service. It allows you to review the requests and the events that occur during the processing of these events. You can access information such as the execution time, start and end time, the actual query, and additional technical details. This enables you to monitor and analyze the performance and behavior of the Cube.js service. Follow the instructions below to utilize the Logs page:
+
+1. Access the Logs page within the project interface.
+2. Review the list of logs, which includes details such as the request information, execution time, start and end timestamps, and the actual query being processed.
+3. Click on a log entry to expand it and access additional technical information, if available.
+4. Use the logs as a resource for troubleshooting, performance optimization, and gaining insights into the inner workings of the Cube.js service.
+
+![Logs Page](/docs/images/logs.png)
+
+## Team Page
+
+The Team page is used for creating and managing the team within the project. It allows you to invite new users and assign roles and access levels to team members. To access the Team page, follow these steps:
+
+1. Hover over your account in the top-right corner of the page.
+2. From the dropdown menu, select "Team".
+
+On the Team page, you can perform the following actions:
+
+1. Invite new users to join the team by providing their email addresses.
+2. Assign roles and access levels to team members. Roles may vary depending on the access management system.
+3. Manage access to specific features and project resources for each team member.
+4. View and manage the list of team members, including information about their roles.
+
+![Team Page](/docs/images/team.png)
