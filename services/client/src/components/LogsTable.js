@@ -55,18 +55,18 @@ const LogsTable = ({ logs, pagination, loading, onClickRow, onPageChange }) => {
     },
     {
       title: 'Start time',
-      dataIndex: 'start_time',
-      key: 'start_time',
+      dataIndex: 'startTime',
+      key: 'startTime',
     },
     {
       title: 'End time',
-      dataIndex: 'end_time',
-      key: 'end_time',
+      dataIndex: 'endTime',
+      key: 'endTime',
     },
     {
       title: 'Created At',
-      dataIndex: 'created_at',
-      key: 'created_at',
+      dataIndex: 'createdAt',
+      key: 'createdAt',
     },
   ];
 
