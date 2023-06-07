@@ -4,7 +4,8 @@ The Datasources page provides a user-friendly interface for adding various datas
 
 ## How to
 
-1. Click on the "Connect" button, located in the top right corner of the page.
+1. Click on the "Connect" button.
+
 ![Datasource Connect button](/docs/images/datasources1.png)
 
 2. A list of available datasource types will be displayed. Select the desired type from the options presented.
