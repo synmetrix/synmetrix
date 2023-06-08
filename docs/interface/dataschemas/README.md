@@ -1,6 +1,8 @@
 # Dataschemas Page
 
-The Dataschemas page is a powerful tool for generating and managing dataschemas in your project. It allows you to define the structure and relationships of your data, ensuring consistency and integrity. Additionally, the page provides features for version controlling your schemas and executing SQL queries on the associated data sources. Here's how you can make the most of this page:
+The Dataschemas page is a powerful tool for generating and managing dataschemas in your project. It allows you to define the structure and relationships of your data, ensuring consistency and integrity. 
+The dataschemas are generated using Cube.js, a powerful open-source analytical API platform. You can refer to the [Cube.js documentation](https://cube.dev/docs/schema/getting-started) for more details. 
+Additionally, the page provides features for version controlling your schemas and executing SQL queries on the associated data sources. Here's how you can make the most of this page:
 
 ## How to
 
