@@ -30,14 +30,10 @@ const RequestLogInfo = ({ requestId }) => {
   const { events, querySql, queryKey, queryKeyMd5, error } = useMemo(() => {
     let eventLogs = current?.request_event_logs || [];
     eventLogs = eventLogs.map((e, i) => {
-      let duration = e?.duration;
+      const curTimestamp = eventLogs?.[i]?.timestamp;
+      const prevTimestamp = eventLogs?.[i + 1]?.timestamp || curTimestamp;
 
-      if (!duration) {
-        const curTimestamp = eventLogs?.[i]?.timestamp;
-        const prevTimestamp = eventLogs?.[i + 1]?.timestamp || curTimestamp;
-
-        duration = new Date(curTimestamp) - new Date(prevTimestamp);
-      }
+      const duration = new Date(curTimestamp) - new Date(prevTimestamp);
 
       return {
         ...e,
