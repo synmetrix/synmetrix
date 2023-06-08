@@ -131,7 +131,7 @@ services:
       context: ./services/client/
       args:
         NODE_ENV:
-        ENABLE_MINIO_PROXY: true
+        ENABLE_MINIO_PROXY: 'true'
     environment:
       GRAPHQL_SERVER_URL: http://hasura:8080/v1/graphql
       GRAPHQL_WS_URL: ws://hasura:8080/v1/graphql

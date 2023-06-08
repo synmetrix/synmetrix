@@ -33,26 +33,26 @@
     "quotes": ["error", "single"],
     "semi": ["error", "always", { "omitLastInOneLineBlock": true}],
     "indent": [
-        "error", 2,  # Google use 2-space indents
-        # Google uses +4 space indents for line continuations.
-        {
-            "SwitchCase": 1,
-            "MemberExpression": 2,
-            "ObjectExpression": 1,
-            "FunctionDeclaration": {
-                "body": 1,
-                "parameters": 2
-            },
-            "FunctionExpression": {
-                "body": 1,
-                "parameters": 2
-            },
-            "CallExpression": {
-                "arguments": 1
-            },
-            # Ignore default rules for ternary expressions.
-            "ignoredNodes": ["ConditionalExpression"]
-        }
-    ],
-  },
+      "error", 2, // Google use 2-space indents
+      // Google uses +4 space indents for line continuations.
+      {
+        "SwitchCase": 1,
+        "MemberExpression": 2,
+        "ObjectExpression": 1,
+        "FunctionDeclaration": {
+            "body": 1,
+            "parameters": 2
+        },
+        "FunctionExpression": {
+            "body": 1,
+            "parameters": 2
+        },
+        "CallExpression": {
+            "arguments": 1
+        },
+        // Ignore default rules for ternary expressions.
+        "ignoredNodes": ["ConditionalExpression"]
+      }
+    ]
+  }
 }
