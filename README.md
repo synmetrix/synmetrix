@@ -1,6 +1,6 @@
 <p align="center"><a href="https://mlcraft.io"><img src="https://i.imgur.com/lVUNQtT.png" alt="Cube.js" width="300px"></a></p>
 
-[Website](https://mlcraft.io) • [Docs](./docs/README.md) • [Cube.js Schema docs](https://cube.dev/docs/getting-started-cubejs-schema) • [Docker Hub](https://hub.docker.com/u/mlcraft) • [Slack community](https://join.slack.com/t/mlcraft/shared_invite/zt-vg2tk8dh-sKA_W67BBcLLGXEKX78~dQ)
+[Website](https://mlcraft.io) • [Docs](./docs/README.md) • [Cube.js Schema docs](https://cube.dev/docs/getting-started-cubejs-schema) • [Docker Hub](https://hub.docker.com/u/mlcraft) • [Slack community](https://mlcraft.slack.com/)
 
 
 __MLCraft is a low-code metrics layer and a modern open-source alternative to Looker.__ 
@@ -159,7 +159,7 @@ It's necessary to test such features as scheduled reports and alerts locally.
 
 For general help using MLCraft, please refer to the official MLCraft documentation. For additional help, you can use one of these channels to ask a question:
 
-* [Slack](https://join.slack.com/t/mlcraft/shared_invite/zt-vg2tk8dh-sKA_W67BBcLLGXEKX78~dQ) \(For live discussion with the Community and MLCraft team\)
+* [Slack](https://mlcraft.slack.com/) \(For live discussion with the Community and MLCraft team\)
 * [GitHub](https://github.com/mlcraft-io/mlcraft) \(Bug reports, Contributions\)
 * [Twitter](https://twitter.com/mlcraft_io) \(Get the news fast\)
 
