@@ -49,6 +49,9 @@ const JWT_KEY = process.env.JWT_KEY || 'jhyu89jiuhyg7678hoijhuytf7ghjiasodibagsd
 const JWT_CLAIMS_NAMESPACE = process.env.JWT_CLAIMS_NAMESPACE || 'hasura';
 const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || 10800;
 
+// Redis
+const REDIS_ADDR = process.env.REDIS_ADDR || 'redis://redis:6379';
+
 module.exports = {
   apps : [
     {
@@ -136,7 +139,8 @@ module.exports = {
         JWT_EXPIRES_IN,
         JWT_ALGORITHM,
         JWT_CLAIMS_NAMESPACE,
-        JWT_KEY
+        JWT_KEY,
+        REDIS_ADDR,
       }
     },
     {
@@ -150,6 +154,7 @@ module.exports = {
         CUBEJS_CUBESTORE_PORT,
         CUBEJS_SQL_PORT,
         CUBEJS_PG_SQL_PORT,
+        REDIS_ADDR,
       }
     },
     {

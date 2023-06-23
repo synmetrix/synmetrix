@@ -1,6 +1,11 @@
 version: '3.8'
 
 services:
+  redis:
+    image: redis:7.0.0
+    ports:
+      - 6379:6379
+
   postgres:
     image: postgres:12
     volumes:
