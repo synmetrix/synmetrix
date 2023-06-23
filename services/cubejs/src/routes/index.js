@@ -203,5 +203,131 @@ export default ({ basePath, setupAuthInfo, cubejs }) => {
     }
   });
 
+  router.post(`${basePath}/v1/pre-aggregation-history`, async (req, res) => {
+    const apiGateway = cubejs.apiGateway();
+
+    const context = {
+      securityContext: {
+        ...req.securityContext,
+      },
+    };
+
+    let previews;
+    try {
+      const query = {
+        preAggregationId,
+        timezone: 'UTC',
+        versionEntry: {
+          table_name: "pre_aggregations_0881abd4d6f522840d1da7b76532caa8dd536e2d8c8771070b16d3ddef62fa9c.animals_animals_rollup",
+        },
+      };
+
+      await apiGateway.getPreAggregationPreview({ query, context, res: (result) => { previews = result; } });
+
+      previews = previews?.preview?.data;
+    } catch (e) {
+      console.log(e);
+    }
+
+    res.json({ previews });
+  });
+
+  router.post(`${basePath}/v1/pre-aggregation-preview`, async (req, res) => {
+    const { preAggregationId } = (req.body || {});
+    const apiGateway = cubejs.apiGateway();
+
+    const context = {
+      securityContext: {
+        ...req.securityContext,
+      },
+    };
+
+    let previews;
+    try {
+      const query = {
+        preAggregationId,
+        timezone: 'UTC',
+        versionEntry: {
+          table_name: "pre_aggregations_0881abd4d6f522840d1da7b76532caa8dd536e2d8c8771070b16d3ddef62fa9c.animals_animals_rollup",
+        },
+      };
+
+      await apiGateway.getPreAggregationPreview({ query, context, res: (result) => { previews = result; } });
+
+      previews = previews?.preview?.data;
+    } catch (e) {
+      console.log(e);
+    }
+
+    res.json({ previews });
+  });
+
+  router.get(`${basePath}/v1/pre-aggregations`, async (req, res) => {
+    const apiGateway = cubejs.apiGateway();
+
+    const context = {
+      securityContext: {
+        ...req.securityContext,
+      },
+    };
+
+    let preAggregations;
+    await apiGateway.getPreAggregations({ cacheOnly: false, context, res: (result) => { preAggregations = result; } });
+
+    if (preAggregations.error) {
+      res.json(preAggregations);
+      return;
+    }
+
+    let partitions;
+    try {
+      const preAggregationIds = (preAggregations?.preAggregations || []).map(p => ({
+        id: p.id,
+      }));
+
+      const query = {
+        preAggregations: preAggregationIds,
+      };
+
+      await apiGateway.getPreAggregationPartitions({ query, context, res: (result) => { partitions = result; } });
+
+      partitions = partitions.preAggregationPartitions;
+    } catch (e) {
+      console.log(e);
+    }
+
+    // let previews;
+    // try {
+    //   const query = {
+    //     preAggregationId: preAggregations[0].id,
+    //     timezone: 'UTC',
+    //     versionEntry: {
+    //       table_name: "pre_aggregations_0881abd4d6f522840d1da7b76532caa8dd536e2d8c8771070b16d3ddef62fa9c.animals_orders_rollup",
+    //     },
+    //   };
+
+    //   await apiGateway.getPreAggregationPreview({ query, context, res: (result) => { previews = result; } });
+
+    //   previews.preview.data = previews.preview.data.slice(0, 5);
+    // } catch (e) {
+    //   console.log(e);
+    // }
+
+    // try {
+    //   await apiGateway.buildPreAggregations({ query: {}, context, res: () => { } });
+    // } catch (e) {
+    //   console.log(e);
+    // }
+
+    // try {
+    //   const tokens = [];
+    //   await apiGateway.preAggregationsJobsGET({ context, tokens });
+    // } catch (e) {
+    //   console.log(e);
+    // }
+
+    res.json({ partitions });
+  });
+
   return router;
 };

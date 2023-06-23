@@ -71,6 +71,19 @@ actions:
       forward_client_headers: true
     permissions:
       - role: user
+  - name: pre_aggregation_preview
+    definition:
+      kind: ""
+      handler: '{{ACTIONS_URL}}/rpc/pre_aggregation_preview'
+      forward_client_headers: true
+    permissions:
+      - role: user
+  - name: pre_aggregations
+    definition:
+      kind: ""
+      handler: '{{ACTIONS_URL}}/rpc/pre_aggregations'
+    permissions:
+      - role: user
   - name: run_query
     definition:
       kind: synchronous
@@ -106,4 +119,7 @@ custom_types:
     - name: GenSQLOutput
     - name: events_create_mutation_response
     - name: ExportDataModelsOutput
+    - name: PreAggregationsOutput
+    - name: preAggregationsOutput
+    - name: PreAggregationPreviewOutput
   scalars: []

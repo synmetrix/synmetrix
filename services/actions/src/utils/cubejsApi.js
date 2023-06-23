@@ -184,6 +184,12 @@ const cubejsApi = ({ dataSourceId, userId, authToken }) => {
       return fetchCubeJS({ route: '/runSql', method: 'post', params: { query: `SELECT * FROM (${rawSQL}) as q LIMIT ${limit}` } });
     },
     validateCode: params => fetchCubeJS({ route: '/validate-code', method: 'post', params }),
+    getPreAggregation: () => {
+      return fetchCubeJS({ route: '/pre-aggregations' });
+    },
+    getPreAggregationPreview: params => {
+      return fetchCubeJS({ route: '/pre-aggregation-preview', method: 'post', params });
+    },
   };
 };
 

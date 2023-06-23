@@ -65,6 +65,19 @@ type Mutation {
   ): InviteTeamMemberOutput
 }
 
+type Query {
+  pre_aggregation_preview(
+    datasource_id: String!
+    pre_aggregation_id: String!
+  ): PreAggregationPreviewOutput
+}
+
+type Query {
+  pre_aggregations(
+    datasource_id: String!
+  ): PreAggregationsOutput
+}
+
 type Mutation {
   run_query(
     datasource_id: uuid!
@@ -166,5 +179,17 @@ type events_create_mutation_response {
 
 type ExportDataModelsOutput {
   download_url: String!
+}
+
+type PreAggregationsOutput {
+  data: json!
+}
+
+type preAggregationsOutput {
+  preAggregationPartitions: json
+}
+
+type PreAggregationPreviewOutput {
+  data: json!
 }
 

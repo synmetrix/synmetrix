@@ -78,7 +78,10 @@ const Routes = () => {
                         <Route path={withAuthPrefix('/alerts/:editId')} component={Alerts} />
                         <Route path={withAuthPrefix('/alerts')} component={Alerts} />
 
-                        <Route path={withAuthPrefix('/logs/:rowId')} component={Logs} />
+                        <Route path={withAuthPrefix('/logs/preaggregations/:rowId?')} component={Logs} />
+                        <Route path={withAuthPrefix('/logs/preaggregations')} component={Logs} />
+                        <Route path={withAuthPrefix('/logs/requests/:rowId')} component={Logs} />
+                        <Route path={withAuthPrefix('/logs/requests')} component={Logs} />
                         <Route path={withAuthPrefix('/logs')} component={Logs} />
 
                         <Route path={withAuthPrefix('/docs/:versionId')} component={Docs} />
