@@ -37,15 +37,19 @@ export default async (session, input) => {
     return apiError('Exploration not found');
   }
 
-  const { error } = await sendExplorationScreenshot({
-    deliveryType,
-    deliveryConfig,
-    exploration,
-    name: `Report ${name}`
-  });
+  try {
+    const { error } = await sendExplorationScreenshot({
+      deliveryType,
+      deliveryConfig,
+      exploration,
+      name: `Report ${name}`
+    });
 
-  if (error) {
-    return apiError(error);
+    if (error) {
+      return apiError(error);
+    }
+  } catch (e) {
+    return apiError(e);
   }
 
   return { error: false, result: { fired: true } };
