@@ -69,6 +69,7 @@ type Query {
   pre_aggregation_preview(
     datasource_id: String!
     pre_aggregation_id: String!
+    table_name: String!
   ): PreAggregationPreviewOutput
 }
 

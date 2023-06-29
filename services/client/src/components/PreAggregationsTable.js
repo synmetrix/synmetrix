@@ -6,7 +6,6 @@ import { Row, Col } from 'antd';
 import TableList from 'components/TableList';
 
 const PreAggregationsTable = ({ datasource, loading, onClickRow }) => {
-
   const columns = [
     {
       title: 'Name',
@@ -17,16 +16,6 @@ const PreAggregationsTable = ({ datasource, loading, onClickRow }) => {
       title: 'Last started at',
       dataIndex: 'last_time',
       key: 'last_time',
-    },
-    {
-      title: 'Duration',
-      dataIndex: 'duration',
-      key: 'duration',
-    },
-    {
-      title: 'Partition size',
-      dataIndex: 'partition_size',
-      key: 'partition_size',
     },
     {
       title: 'Partitions',

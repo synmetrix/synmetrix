@@ -1,4 +1,4 @@
-import React, { useMemo, useEffect, useState } from 'react';
+import React, { useMemo, useEffect } from 'react';
 import PropTypes from 'prop-types';
 
 import { Tabs } from 'antd';
@@ -44,7 +44,7 @@ const Logs = ({ match }) => {
           <LogsTab params={params} />
         </TabPane>
         <TabPane tab="Pre-Aggregations" key="preaggregations">
-          <PreAggregationsTab />
+          <PreAggregationsTab params={params} />
         </TabPane>
       </Tabs>
     </Container>

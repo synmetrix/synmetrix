@@ -1,12 +1,17 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { useTranslation } from 'react-i18next';
 
-import { Row, Col } from 'antd';
+import { Row, Col, Input } from 'antd';
 
+import PrismCode from 'components/PrismCode';
 import TableList from 'components/TableList';
 import formatDistanceToNow from '../utils/formatDistanceToNow';
 
+const { TextArea } = Input;
+
 const PartitionsTable = ({ partitions }) => {
+  const { t } = useTranslation();
 
   const columns = [
     {
@@ -18,17 +23,15 @@ const PartitionsTable = ({ partitions }) => {
       title: 'Last started',
       dataIndex: 'last_time',
       key: 'last_time',
-      render: (_, record) => formatDistanceToNow(record?.versionEntries?.[0]?.last_updated_at),
-    },
-    {
-      title: 'Duration',
-      dataIndex: 'duration',
-      key: 'duration',
-    },
-    {
-      title: 'Partition size',
-      dataIndex: 'partition_size',
-      key: 'partition_size',
+      render: (_, record) => {
+        const lastTime = record?.versionEntries?.[0]?.last_updated_at;
+        
+        if (lastTime) {
+          return formatDistanceToNow(lastTime);
+        }
+
+        return '-';
+      },
     },
   ];
 
@@ -40,7 +43,28 @@ const PartitionsTable = ({ partitions }) => {
           rowKey={row => row.id}
           columns={columns}
           dataSource={partitions}
-          // onRow={record => ({ onClick: () => onClickRow(record.id) })}
+          expandRowByClick
+          expandedRowRender={(partition) => {
+            const sql = partition?.sql?.[0];
+            const vars = partition?.sql?.[1];
+
+            return (
+              <div>
+                <div>
+                  <b>{t('SQL')}:</b>
+                  <PrismCode lang="sql" code={sql || ''} />
+                  {vars?.length > 0 && (
+                    <TextArea
+                      disabled
+                      rows={5}
+                      value={vars.map((v, i) => `$${i + 1} = "${v}"`).join('\n')}
+                      style={{ color: 'rgba(0, 0, 0, 0.65)', backgroundColor: 'white' }}
+                    />
+                  )}
+                </div>
+              </div>
+            );
+          }}
         />
       </Col>
     </Row>,

@@ -11,12 +11,12 @@ export default async (session, input, headers) => {
       userId,
       authToken: headers?.authorization,
     }).getPreAggregation();
-    console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!', result);
+
     return {
       data: result,
     };
   } catch (err) {
-    console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@', err);
+
     return apiError(err);
   }
 };

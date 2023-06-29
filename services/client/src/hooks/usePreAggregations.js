@@ -11,15 +11,15 @@ const preAggregationsQuery = `
 `;
 
 const preAggregationPreviewQuery = `
-  query ($datasource_id: String!, $pre_aggregation_id: String!) {
-    pre_aggregation_preview(pre_aggregation_id: $pre_aggregation_id, datasource_id: $datasource_id){
+  query ($datasource_id: String!, $pre_aggregation_id: String!, $table_name: String!) {
+    pre_aggregation_preview(pre_aggregation_id: $pre_aggregation_id, datasource_id: $datasource_id, table_name: $table_name){
       data
     }
   }
 `;
 
 const role = 'user';
-export default ({ datasourceId = null, preAggregationId = null, }) => {
+export default ({ datasourceId = null, preAggregationId = null, tableName = null }) => {
   const [preAggregationsData, execQueryPreAggregations] = useQuery({
     query: preAggregationsQuery,
     variables: { datasource_id: datasourceId },
@@ -34,6 +34,7 @@ export default ({ datasourceId = null, preAggregationId = null, }) => {
     variables: {
       datasource_id: datasourceId,
       pre_aggregation_id: preAggregationId,
+      table_name: tableName,
     },
     pause: true,
   }, {
@@ -54,11 +55,11 @@ export default ({ datasourceId = null, preAggregationId = null, }) => {
   }, [preAggregationId, execQueryPreAggregationPreview]);
 
   const preAggregations = useMemo(() => preAggregationsData?.data?.pre_aggregations?.data || [], [preAggregationsData]);
-  const preview = useMemo(() => preAggregationPreviewData?.data?.pre_aggregation_preview?.data || {}, [preAggregationPreviewData]);
+  const previews = useMemo(() => preAggregationPreviewData?.data?.pre_aggregation_preview?.data?.previews, [preAggregationPreviewData]);
 
   return {
     preAggregations,
-    preview,
+    previews,
     queries: {
       preAggregationsData,
       execQueryPreAggregations,

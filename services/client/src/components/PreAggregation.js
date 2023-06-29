@@ -12,7 +12,6 @@ const { TextArea } = Input;
 
 const PreAggregation = ({ data, datasourceId }) => {
   const { t } = useTranslation();
-  console.log(data);
 
   const refresh = useMemo(() => {
     return Object.entries(data?.preAggregation?.refreshKey || {}).reduce((acc, [key, val]) => {
@@ -55,13 +54,7 @@ const PreAggregation = ({ data, datasourceId }) => {
           />
         </TabPane>
         <TabPane tab="Preview" key="3">
-          <PreAggregationPreview datasourceId={datasourceId} preAggregationId={data?.preAggregation?.id} />
-        </TabPane>
-        <TabPane tab="Used By" key="4">
-          qwe
-        </TabPane>
-        <TabPane tab="Indexes" key="5">
-          qwe
+          <PreAggregationPreview datasourceId={datasourceId} preAggregation={data?.preAggregation} />
         </TabPane>
       </Tabs>
     </div>

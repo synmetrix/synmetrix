@@ -203,37 +203,8 @@ export default ({ basePath, setupAuthInfo, cubejs }) => {
     }
   });
 
-  router.post(`${basePath}/v1/pre-aggregation-history`, async (req, res) => {
-    const apiGateway = cubejs.apiGateway();
-
-    const context = {
-      securityContext: {
-        ...req.securityContext,
-      },
-    };
-
-    let previews;
-    try {
-      const query = {
-        preAggregationId,
-        timezone: 'UTC',
-        versionEntry: {
-          table_name: "pre_aggregations_0881abd4d6f522840d1da7b76532caa8dd536e2d8c8771070b16d3ddef62fa9c.animals_animals_rollup",
-        },
-      };
-
-      await apiGateway.getPreAggregationPreview({ query, context, res: (result) => { previews = result; } });
-
-      previews = previews?.preview?.data;
-    } catch (e) {
-      console.log(e);
-    }
-
-    res.json({ previews });
-  });
-
   router.post(`${basePath}/v1/pre-aggregation-preview`, async (req, res) => {
-    const { preAggregationId } = (req.body || {});
+    const { preAggregationId, tableName } = (req.body || {});
     const apiGateway = cubejs.apiGateway();
 
     const context = {
@@ -248,7 +219,7 @@ export default ({ basePath, setupAuthInfo, cubejs }) => {
         preAggregationId,
         timezone: 'UTC',
         versionEntry: {
-          table_name: "pre_aggregations_0881abd4d6f522840d1da7b76532caa8dd536e2d8c8771070b16d3ddef62fa9c.animals_animals_rollup",
+          table_name: tableName,
         },
       };
 
@@ -295,36 +266,6 @@ export default ({ basePath, setupAuthInfo, cubejs }) => {
     } catch (e) {
       console.log(e);
     }
-
-    // let previews;
-    // try {
-    //   const query = {
-    //     preAggregationId: preAggregations[0].id,
-    //     timezone: 'UTC',
-    //     versionEntry: {
-    //       table_name: "pre_aggregations_0881abd4d6f522840d1da7b76532caa8dd536e2d8c8771070b16d3ddef62fa9c.animals_orders_rollup",
-    //     },
-    //   };
-
-    //   await apiGateway.getPreAggregationPreview({ query, context, res: (result) => { previews = result; } });
-
-    //   previews.preview.data = previews.preview.data.slice(0, 5);
-    // } catch (e) {
-    //   console.log(e);
-    // }
-
-    // try {
-    //   await apiGateway.buildPreAggregations({ query: {}, context, res: () => { } });
-    // } catch (e) {
-    //   console.log(e);
-    // }
-
-    // try {
-    //   const tokens = [];
-    //   await apiGateway.preAggregationsJobsGET({ context, tokens });
-    // } catch (e) {
-    //   console.log(e);
-    // }
 
     res.json({ partitions });
   });
