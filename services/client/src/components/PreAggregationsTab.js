@@ -70,10 +70,10 @@ const PreAggregationsTab = ({ params }) => {
   ), [allDatasources, basePath, datasourceId, setLocation]);
 
   useEffect(() => {
-    if (!datasourceId && allDatasources.length) {
+    if (!datasourceId && allDatasources.length && location.pathname === basePath) {
       setLocation(`${basePath}/${allDatasources?.[0]?.id}`);
     }
-  }, [allDatasources, basePath, datasourceId, setLocation]);
+  }, [allDatasources, basePath, datasourceId, location.pathname, setLocation]);
 
   useEffect(() => {
     if (preAggregation && !preAggregationData && !preAggregationsData.fetching) {
