@@ -11,7 +11,7 @@ export const logging = async (message, event) => {
   }
 
   if (redisClient?.status !== 'ready') {
-    console.warn('Redis disabled. To view logs in UI, set the REDIS_ADDR environment variable.');
+    console.warn('Redis is disabled. To view logs in UI, set the REDIS_ADDR or check the connection.');
     return;
   }
 
