@@ -33,15 +33,17 @@ const PreAggregation = ({ data, datasourceId }) => {
 
   return (
     <div>
-      <div>
-        <b>{t('Refresh')}</b>
-        <br />
-        <Icon type="clock-circle" /> {refresh}
-        <br />
-        <Icon type={isScheduled ? 'check' : 'close'} /> {t('Automated refreshes')}
-        <br />
-        <Icon type={isIncremental ? 'check' : 'close'} /> {t('Incremental update')}
-      </div>
+      {refresh && (
+        <div>
+          <b>{t('Refresh')}</b>
+          <br />
+          <Icon type="clock-circle" /> {refresh}
+          <br />
+          <Icon type={isScheduled ? 'check' : 'close'} /> {t('Automated refreshes')}
+          <br />
+          <Icon type={isIncremental ? 'check' : 'close'} /> {t('Incremental update')}
+        </div>
+      )}
       <Tabs defaultActiveKey="1">
         <TabPane tab="Partitions" key="1">
           <PartitionsTable partitions={data?.partitions} />

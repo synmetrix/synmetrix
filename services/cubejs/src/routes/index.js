@@ -1,5 +1,6 @@
 import express from 'express';
 import { ScaffoldingTemplate } from '@cubejs-backend/schema-compiler';
+import { v4 as uuidv4 } from 'uuid';
 
 import { findDataSchemas, createDataSchema } from '../utils/dataSourceHelpers.js';
 import createMd5Hex from '../utils/md5Hex.js';
@@ -211,6 +212,7 @@ export default ({ basePath, setupAuthInfo, cubejs }) => {
       securityContext: {
         ...req.securityContext,
       },
+      requestId: 'preview-' + uuidv4(),
     };
 
     let previews;

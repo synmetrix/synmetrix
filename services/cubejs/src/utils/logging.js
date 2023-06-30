@@ -7,19 +7,13 @@ export const logging = async (message, event) => {
 
   const log = devLogger('info')(message, event);
   
-  // if (log) {
-  //   console.log(log);
-  // }
-
-  console.log(event);
-
-  if (!requestId) {
-    console.error('Not request', message);
+  if (log) {
+    console.log(log);
   }
-  
-  // if (requestId?.includes('scheduler')) {
-  //   return;
-  // }
+
+  if (!requestId || requestId?.includes('scheduler')) {
+    return;
+  }
 
   const data = event;
   data.event = message;

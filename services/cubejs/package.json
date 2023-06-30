@@ -41,6 +41,7 @@
     "pg-connection-string": "^2.2.0",
     "ramda": "^0.29.0",
     "redis": "^4.6.4",
-    "unchanged": "^2.2.1"
+    "unchanged": "^2.2.1",
+    "uuid": "^9.0.0"
   }
 }
