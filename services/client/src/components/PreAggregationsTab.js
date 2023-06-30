@@ -10,7 +10,7 @@ import PreAggregation from 'components/PreAggregation';
 import Breadcrumbs from 'components/Breadcrumbs';
 
 import useAppSettings from 'hooks/useAppSettings';
-import useCurrentUserState from 'hooks/useCurrentUserState';
+import useSources from 'hooks/useSources';
 import usePreAggregations from 'hooks/usePreAggregations';
 import useLocation from 'hooks/useLocation';
 
@@ -20,17 +20,25 @@ const { TextArea } = Input;
 const { Option } = Select;
 
 const PreAggregationsTab = ({ params }) => {
+  const { datasourceId, preAggregation } = params;
+
   const { t } = useTranslation();
   const [location, setLocation] = useLocation();
-  const { datasourceId, preAggregation } = params;
-  const { currentUserState: currentUser } = useCurrentUserState();
+
+  const { all: allDatasources } = useSources({ pauseQueryAll: false });
+  
   const { withAuthPrefix } = useAppSettings();
   const basePath = withAuthPrefix('/logs/preaggregations');
 
   const {
-    preAggregations,
+    allPreAggregations,
+    queries: {
+      preAggregationsData,
+    },
   } = usePreAggregations({
-    datasourceId,
+    params: {
+      datasourceId,
+    },
   });
 
   const onClickRow = recordId => {
@@ -38,65 +46,72 @@ const PreAggregationsTab = ({ params }) => {
   };
  
   const breadcrumbs = [
-    { path: basePath, title: 'PreAggregations' },
     datasourceId && { path: `${basePath}/${datasourceId}`, title: datasourceId },
     datasourceId && preAggregation && { path: `${basePath}/${datasourceId}/${preAggregation}`, title: preAggregation },
   ].filter(v => !!v);
 
-  const error = useMemo(() => {
-    if (preAggregations.error) {
-      return (
-        <div>
-          <div style={{ margin: '10px 0' }}><b>{t('Error: ')}</b>{preAggregations.error}</div>
-          {preAggregations.stack && (
-            <TextArea
-              disabled
-              rows={15}
-              value={preAggregations.stack}
-              style={{ color: 'rgba(0, 0, 0, 0.65)', backgroundColor: '#ffffff' }}
-            />
-          )}
-        </div>
-      );
-    }
-
-    return null;
-  }, [preAggregations.error, preAggregations.stack, t]);
-
-  const preAggregationsData = useMemo(() => (preAggregations.partitions || []).map(p => ({
+  const preAggregations = useMemo(() => (allPreAggregations.partitions || []).map(p => ({
     id: p?.preAggregation?.preAggregationName,
     name: p?.preAggregation?.id,
     last_time: formatTime(p?.partitions?.[0]?.versionEntries?.sort()?.[0]?.last_updated_at),
     partitions: p?.partitions?.length,
-  })), [preAggregations.partitions]);
+  })), [allPreAggregations.partitions]);
 
-  const preAggregationData = useMemo(() => preAggregations?.partitions?.find(p => p?.preAggregation?.preAggregationName === preAggregation), [preAggregation, preAggregations.partitions]);
+  const preAggregationData = useMemo(() => allPreAggregations?.partitions?.find(p => p?.preAggregation?.preAggregationName === preAggregation), [preAggregation, allPreAggregations.partitions]);
+
+  const select = useMemo(() => (
+    <Select
+      value={datasourceId}
+      style={{ width: 200, marginLeft: 5 }}
+      onChange={(value) => setLocation(`${basePath}/${value}`)}
+    >
+      {allDatasources?.map(d => (<Option value={d.id} key={d.id}>{d.name}</Option>))}
+    </Select>
+  ), [allDatasources, basePath, datasourceId, setLocation]);
 
   useEffect(() => {
-    if (preAggregation && !preAggregationData) {
-      setLocation(`${basePath}/${datasourceId}`);
+    if (!datasourceId && allDatasources.length) {
+      setLocation(`${basePath}/${allDatasources?.[0]?.id}`);
     }
-  }, [preAggregation, preAggregationData, datasourceId, basePath, setLocation]);
+  }, [allDatasources, basePath, datasourceId, setLocation]);
+
+  useEffect(() => {
+    if (preAggregation && !preAggregationData && !preAggregationsData.fetching) {
+      setLocation(`${basePath}/${datasourceId}/${preAggregation}`);
+    }
+  }, [preAggregation, preAggregationData, datasourceId, basePath, setLocation, preAggregationsData.fetching]);
 
   return (
     <div style={{ padding: 10 }}>
-      {t('Datasource')}: 
-      <Select value={datasourceId} style={{ width: 200 }} onChange={(value) => setLocation(`${basePath}/${value}`)}>
-        {currentUser?.datasources?.map(d => (<Option value={d.id}>{d.name}</Option>))}
-      </Select>
+      <div style={{ marginBottom: 10 }}>
+        {t('Datasource')}:
+        {select}
+      </div>
       <div style={{ marginBottom: 10 }}>
         <Breadcrumbs breadcrumbs={breadcrumbs} />
       </div>
-      {error && error}
-      {preAggregationsData && !preAggregation && (
-        <>
-          <PreAggregationsTable datasource={preAggregationsData} onClickRow={onClickRow} />
-        </>
+      {allPreAggregations.error && (
+        <div>
+          <div style={{ margin: '10px 0' }}><b>{t('Error: ')}</b>{allPreAggregations.error}</div>
+          {allPreAggregations.stack && (
+            <TextArea
+              disabled
+              rows={15}
+              value={allPreAggregations.stack}
+              style={{ color: 'rgba(0, 0, 0, 0.65)', backgroundColor: '#ffffff' }}
+            />
+          )}
+        </div>
       )}
-      {preAggregationsData && preAggregation && (
+      {preAggregations && !preAggregation && (
+        <PreAggregationsTable datasource={preAggregations} loading={preAggregationsData?.fetching} onClickRow={onClickRow} />
+      )}
+      {preAggregations && preAggregation && (
         <PreAggregation
-          datasourceId={datasourceId}
+          basePath={basePath}
+          loading={preAggregationsData.fetching}
           data={preAggregationData}
+          datasourceId={datasourceId}
         />
       )}
     </div>

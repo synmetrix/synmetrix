@@ -19,16 +19,18 @@ const preAggregationPreviewQuery = `
 `;
 
 const role = 'user';
-export default ({ datasourceId = null, preAggregationId = null, tableName = null }) => {
+export default ({ params }) => {
+  const { datasourceId, preAggregationId, tableName } = params;
+
   const [preAggregationsData, execQueryPreAggregations] = useQuery({
     query: preAggregationsQuery,
     variables: { datasource_id: datasourceId },
-    pause: true,
+    pause: false,
   }, {
     requestPolicy: 'cache-and-network',
     role,
   });
-    
+
   const [preAggregationPreviewData, execQueryPreAggregationPreview] = useQuery({
     query: preAggregationPreviewQuery,
     variables: {
@@ -41,7 +43,7 @@ export default ({ datasourceId = null, preAggregationId = null, tableName = null
     requestPolicy: 'cache-and-network',
     role,
   });
-  
+
   useEffect(() => {
     if (datasourceId) {
       execQueryPreAggregations();
@@ -49,16 +51,16 @@ export default ({ datasourceId = null, preAggregationId = null, tableName = null
   }, [datasourceId, execQueryPreAggregations]);
 
   useEffect(() => {
-    if (preAggregationId) {
+    if (datasourceId && preAggregationId) {
       execQueryPreAggregationPreview();
     }
-  }, [preAggregationId, execQueryPreAggregationPreview]);
+  }, [datasourceId, preAggregationId, execQueryPreAggregationPreview]);
 
-  const preAggregations = useMemo(() => preAggregationsData?.data?.pre_aggregations?.data || [], [preAggregationsData]);
+  const allPreAggregations = useMemo(() => preAggregationsData?.data?.pre_aggregations?.data || [], [preAggregationsData]);
   const previews = useMemo(() => preAggregationPreviewData?.data?.pre_aggregation_preview?.data?.previews, [preAggregationPreviewData]);
 
   return {
-    preAggregations,
+    allPreAggregations,
     previews,
     queries: {
       preAggregationsData,

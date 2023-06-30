@@ -4,8 +4,9 @@ import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
 
 import { Tabs, Input, Icon } from 'antd';
+
 import PartitionsTable from 'components/PartitionsTable';
-import PreAggregationPreview from './PreAggregationPreview';
+import PreAggregationPreview from 'components/PreAggregationPreview';
 
 const { TabPane } = Tabs;
 const { TextArea } = Input;

@@ -25,9 +25,11 @@ const PreAggregationPreview = ({ datasourceId, preAggregation }) => {
       preAggregationPreviewData,
     },
   } = usePreAggregations({
-    datasourceId,
-    preAggregationId: preAggregation?.id,
-    tableName,
+    params: {
+      datasourceId,
+      preAggregationId: preAggregation?.id,
+      tableName,
+    },
   });
 
   const columns = useMemo(() => Object.keys(previews?.[0] || {}).map(key => ({
