@@ -186,10 +186,6 @@ type PreAggregationsOutput {
   data: json!
 }
 
-type preAggregationsOutput {
-  preAggregationPartitions: json
-}
-
 type PreAggregationPreviewOutput {
   data: json!
 }

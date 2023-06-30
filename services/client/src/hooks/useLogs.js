@@ -75,14 +75,6 @@ const allLogsSubscription = `
   }
 `;
 
-const preAggregationsQuery = `
-  query ($datasource_id: String!) {
-    pre_aggregations(datasource_id: $datasource_id){
-      data
-    }
-  }
-`;
-
 const getListVariables = (pagination, params = {}) => {
   let res = {};
 
@@ -115,7 +107,7 @@ const getListVariables = (pagination, params = {}) => {
 const handleSubscription = (_, response) => response;
 
 const role = 'user';
-export default ({ pauseQueryAll = false, rowId = null, datasourceId = null, pagination = {}, params = {} }) => {
+export default ({ pauseQueryAll = false, rowId = null, pagination = {}, params = {} }) => {
   const [subscription, execSubscription] = useSubscription({
     query: allLogsSubscription,
     variables: getListVariables(pagination, params),
@@ -135,15 +127,6 @@ export default ({ pauseQueryAll = false, rowId = null, datasourceId = null, pagi
     query: allLogsQuery,
     variables: getListVariables(pagination, params),
     pause: pauseQueryAll,
-  }, {
-    requestPolicy: 'cache-and-network',
-    role,
-  });
-
-  const [preAggregationsData, execQueryPreAggregations] = useQuery({
-    query: preAggregationsQuery,
-    variables: { datasource_id: datasourceId },
-    pause: true,
   }, {
     requestPolicy: 'cache-and-network',
     role,
@@ -171,29 +154,19 @@ export default ({ pauseQueryAll = false, rowId = null, datasourceId = null, pagi
     }
   }, [rowId, execQueryCurrent]);
 
-  useEffect(() => {
-    if (datasourceId) {
-      execQueryPreAggregations();
-    }
-  }, [datasourceId, execQueryPreAggregations]);
-
   const allLogs = useMemo(() => allData.data?.request_logs || [], [allData.data]);
   const totalCount = useMemo(() => allData.data?.request_logs_aggregate?.aggregate?.count || 0, [allData.data]);
   const current = useMemo(() => currentData.data?.request_logs_by_pk || {}, [currentData]);
-  const preAggregations = useMemo(() => preAggregationsData?.data?.pre_aggregations?.data?.partitions || [], [preAggregationsData]);
 
   return {
     allLogs,
     current,
     totalCount,
-    preAggregations,
     queries: {
       allData,
       execQueryAll,
       currentData,
       execQueryCurrent,
-      preAggregationsData,
-      execQueryPreAggregations,
     },
     subscriptions: {
       subscription, execSubscription,

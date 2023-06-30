@@ -120,6 +120,5 @@ custom_types:
     - name: events_create_mutation_response
     - name: ExportDataModelsOutput
     - name: PreAggregationsOutput
-    - name: preAggregationsOutput
     - name: PreAggregationPreviewOutput
   scalars: []

@@ -34,7 +34,7 @@ services:
       - ./services/cubejs/index.js:/app/index.js
     ports:
       - 4000:4000
-      - 9229:9229
+      - 9231:9229
       - 13306:13306
       - 15432:15432
     env_file:

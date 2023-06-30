@@ -6,7 +6,7 @@ export const logging = async (message, event) => {
   const requestId = event?.requestId;
 
   const log = devLogger('info')(message, event);
-  
+
   if (log) {
     console.log(log);
   }

@@ -61,9 +61,6 @@
             id:
               _eq: X-Hasura-User-Id
 - table:
-    name: migrations
-    schema: auth
-- table:
     name: providers
     schema: auth
   array_relationships:
