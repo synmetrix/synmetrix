@@ -13,6 +13,7 @@ import {
   buildSecurityContext,
   findSqlCredentials,
 } from './src/utils/dataSourceHelpers.js';
+import { logging } from './src/utils/logging.js';
 
 const { 
   CUBEJS_SECRET,
@@ -305,6 +306,7 @@ const options = {
     port: CUBEJS_CUBESTORE_PORT
   }),
   cacheAndQueueDriver: 'cubestore',
+  logger: logging,
 
   // sql server
   pgSqlPort: parseInt(CUBEJS_PG_SQL_PORT, 10),

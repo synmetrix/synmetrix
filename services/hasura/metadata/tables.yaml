@@ -531,6 +531,13 @@
           table:
             name: explorations
             schema: public
+    - name: request_logs
+      using:
+        foreign_key_constraint_on:
+          column: datasource_id
+          table:
+            name: request_logs
+            schema: public
     - name: sql_credentials
       using:
         foreign_key_constraint_on:
@@ -1039,6 +1046,93 @@
         schedule: 0 0 * * *
         timeout: 60
 - table:
+    name: request_event_logs
+    schema: public
+  object_relationships:
+    - name: request_log
+      using:
+        foreign_key_constraint_on: request_id
+  select_permissions:
+    - role: user
+      permission:
+        columns:
+          - id
+          - created_at
+          - updated_at
+          - request_id
+          - event
+          - duration
+          - queue_prefix
+          - time_in_queue
+          - path
+          - query_key
+          - query_key_md5
+          - query
+          - query_sql
+          - timestamp
+          - error
+        filter:
+          _or:
+            - request_log:
+                user_id:
+                  _eq: X-Hasura-User-Id
+            - request_log:
+                datasource:
+                  team:
+                    members:
+                      user_id:
+                        _eq: X-Hasura-User-Id
+        allow_aggregations: true
+- table:
+    name: request_logs
+    schema: public
+  object_relationships:
+    - name: datasource
+      using:
+        foreign_key_constraint_on: datasource_id
+    - name: user
+      using:
+        foreign_key_constraint_on: user_id
+  array_relationships:
+    - name: request_event_logs
+      using:
+        foreign_key_constraint_on:
+          column: request_id
+          table:
+            name: request_event_logs
+            schema: public
+  computed_fields:
+    - name: duration
+      definition:
+        function:
+          name: duration
+          schema: public
+  select_permissions:
+    - role: user
+      permission:
+        columns:
+          - id
+          - created_at
+          - updated_at
+          - request_id
+          - user_id
+          - datasource_id
+          - start_time
+          - end_time
+          - path
+        computed_fields:
+          - duration
+        filter:
+          _or:
+            - user_id:
+                _eq: X-Hasura-User-Id
+            - datasource:
+                team:
+                  members:
+                    user_id:
+                      _eq: X-Hasura-User-Id
+        allow_aggregations: true
+- table:
     name: sql_credentials
     schema: public
   object_relationships:
@@ -1247,6 +1341,13 @@
           column: user_id
           table:
             name: reports
+            schema: public
+    - name: request_logs
+      using:
+        foreign_key_constraint_on:
+          column: user_id
+          table:
+            name: request_logs
             schema: public
     - name: versions
       using:

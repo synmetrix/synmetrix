@@ -160,6 +160,11 @@ const MainMenu = (props) => {
       scope: 'reports'
     },
     {
+      path: withAuthPrefix('/logs'),
+      title: t('Logs'),
+      scope: 'logs'
+    },
+    {
       path: withAuthPrefix('/sources'),
       title: t('Data Sources'),
       scope: 'datasources'

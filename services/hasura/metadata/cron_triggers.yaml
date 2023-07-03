@@ -1,1 +1,6 @@
-[]
+- name: save_logs
+  webhook: '{{ACTIONS_URL}}/rpc/save_logs'
+  schedule: '* * * * *'
+  include_in_metadata: true
+  payload: {}
+  comment: ""

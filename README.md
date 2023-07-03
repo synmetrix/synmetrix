@@ -1,11 +1,11 @@
 <p align="center"><a href="https://mlcraft.io"><img src="https://i.imgur.com/lVUNQtT.png" alt="Cube.js" width="300px"></a></p>
 
-[Website](https://mlcraft.io) • [Docs](./docs/README.md) • [Cube.js Schema docs](https://cube.dev/docs/getting-started-cubejs-schema) • [Docker Hub](https://hub.docker.com/u/mlcraft) • [Slack community](https://join.slack.com/t/mlcraft/shared_invite/zt-vg2tk8dh-sKA_W67BBcLLGXEKX78~dQ)
+[Website](https://mlcraft.io) • [Docs](./docs/README.md) • [Cube.js Models docs](https://cube.dev/docs/schema/getting-started) • [Docker Hub](https://hub.docker.com/u/mlcraft) • [Slack community](https://join.slack.com/t/mlcraft/shared_invite/zt-1x2gxwn37-J3tTvCR5xSFVfxwUU_YKtg)
 
 
 __MLCraft is a low-code metrics layer and a modern open-source alternative to Looker.__ 
 
-MLCraft (Metrics Layer Craft) originally was designed to extract and transform the data from several data warehouses and run machine learning experiments. [Cube.js](https://github.com/cube-js/cube.js/) is used as a primary query layer and makes it suitable for handling
+MLCraft (Metrics Layer Craft) originally was designed to extract and transform the data from several data warehouses and run machine learning experiments. [Cube.js](https://github.com/cube-js/cube) is used as a primary query layer and makes it suitable for handling
 trillions of data points.
 
 We offer a new way of working with data – it's called metrics store.
@@ -17,7 +17,7 @@ We offer a new way of working with data – it's called metrics store.
 * Create individual dashboards for different roles and teams or stakeholder groups, and track changes across multiple data sources with a unified dashboard
 
 ## Features
-* **Data modeling**: a [Cube.js](https://github.com/cube-js/cube.js/) Data Schema is used to model raw data into meaningful business metrics, transform and pre-aggregate data for optimal results.
+* **Data modeling**: a [Cube.js](https://github.com/cube-js/cube) Data Schema is used to model raw data into meaningful business metrics, transform and pre-aggregate data for optimal results.
 * **Version control**: manage schema changes with version control, rollback fast to the valid one.
 * **Auto testing and documentation**: good documentation and data testing will help downstream consumers curate the datasets.
 * **Metrics Governance**: keep an eye on metrics changes, know data owners and contributors, understand the context rapidly.
@@ -38,10 +38,6 @@ note: not all features are deployed yet. Please, sync with our [roadmap](https:/
 * Reverse ETL (as a single source of truth)
 * Business Metrics governance
 * Metrics metadata management
-
----
-
-If you want to schedule a 20-min call with our team to help you get set up, please select [some time directly here](https://calendly.com/mlcraft-io/video-meeting).
 
 ------
 
@@ -159,9 +155,8 @@ It's necessary to test such features as scheduled reports and alerts locally.
 
 For general help using MLCraft, please refer to the official MLCraft documentation. For additional help, you can use one of these channels to ask a question:
 
-* [Slack](https://join.slack.com/t/mlcraft/shared_invite/zt-vg2tk8dh-sKA_W67BBcLLGXEKX78~dQ) \(For live discussion with the Community and MLCraft team\)
+* [Slack](https://join.slack.com/t/mlcraft/shared_invite/zt-1x2gxwn37-J3tTvCR5xSFVfxwUU_YKtg) \(For live discussion with the Community and MLCraft team\)
 * [GitHub](https://github.com/mlcraft-io/mlcraft) \(Bug reports, Contributions\)
-* [Twitter](https://twitter.com/mlcraft_io) \(Get the news fast\)
 
 ## Roadmap
 
@@ -172,16 +167,6 @@ Check out our [roadmap](https://github.com/mlcraft-io/mlcraft/projects) to get i
 The core MLCraft is available under the [Apache License 2.0](https://github.com/mlcraft-io/mlcraft/blob/main/LICENSE) (Apache-2.0).
 
 All **other contents** are available under the [MIT License](LICENSE-community).
-
-## Contributors
-
-[@ifokeev](https://github.com/ifokeev)
-
-[@ilyozzz](https://github.com/ilyozzz)
-
-[@Libertonius](https://github.com/Libertonius)
-
-[@AlinaKhay](https://github.com/alinakhay)
 
 ## Authors
 

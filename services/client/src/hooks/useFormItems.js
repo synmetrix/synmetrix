@@ -1,7 +1,7 @@
 import React, { useCallback, useMemo, useImperativeHandle } from 'react';
 import { set, get } from 'unchanged';
 
-import { Col, Form, Input, Checkbox, Upload, message, Select, Button, Divider, Tooltip, Icon } from 'antd';
+import { Col, Form, Input, Checkbox, Upload, message, Select, Button, Divider, Tooltip, Icon, DatePicker } from 'antd';
 
 import { useSetState } from 'ahooks';
 import Slider from 'components/Slider';
@@ -154,6 +154,17 @@ export default ({ ref, form, initialValues, config, size = DEFAULT_INPUT_SIZE, i
         <InputDate
           values={value.values}
           onChange={value.onChange}
+        />
+      );
+    }
+
+    if (value.display === 'date') {
+      return (
+        <DatePicker
+          values={value.values}
+          onChange={value.onChange}
+          showTime={value.showTime}
+          allowClear={value.allowClear}
         />
       );
     }
