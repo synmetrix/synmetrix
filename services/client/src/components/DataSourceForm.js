@@ -325,7 +325,7 @@ const connectionFormItems = {
   },
 };
 
-const dbTiles = [
+export const dbTiles = [
   { title: 'POSTGRES', imgSrc: postgres },
   { title: 'MYSQL', imgSrc: mysql },
   { title: 'MONGOBI', imgSrc: mongobi },

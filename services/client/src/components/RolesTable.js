@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import PropTypes from 'prop-types';
 
 import { useTranslation } from 'react-i18next';
@@ -10,7 +10,7 @@ import TableList from 'components/TableList';
 
 import formatDistanceToNow from '../utils/formatDistanceToNow';
 
-const RolesTable = ({ roles, totalCount, loading }) => {
+const RolesTable = ({ roles, totalCount, loading, onModalOpen }) => {
   const { t } = useTranslation();
 
   const {
@@ -24,17 +24,16 @@ const RolesTable = ({ roles, totalCount, loading }) => {
 
   const columns = [
     {
-      title: 'Role',
-      dataIndex: 'role',
-      key: 'role',
+      title: 'Name',
+      dataIndex: 'name',
+      key: 'name',
     },
     {
       title: 'Access to data source',
       dataIndex: 'access',
       key: 'access',
       render: (_, record) => {
-        // length datasources
-        const count = 5;
+        const count = Object.keys(record?.datasources || {}).length;
         return `${count} Data sources`;
       }
     },
@@ -60,7 +59,7 @@ const RolesTable = ({ roles, totalCount, loading }) => {
       title: 'Actions',
       render: (_, record) => (
         <>
-          <Button onClick={() => {}}>
+          <Button onClick={() => onModalOpen(record.id)}>
             {t('Edit')}
           </Button>
           <Button onClick={() => {}}>
@@ -73,14 +72,19 @@ const RolesTable = ({ roles, totalCount, loading }) => {
 
   const expandedTableColumns = [
     {
-      dataIndex: 'name', // ?
-      key: 'name', // ?
+      dataIndex: 'id', // ?
+      key: 'id', // ?
     },
-    {
-      dataIndex: 'access_type',
-      key: 'access_type',
-    },
+    // {
+    //   dataIndex: 'access_type',
+    //   key: 'access_type',
+    // },
   ];
+
+  const datasource = useMemo(() => roles.map(role => ({
+    ...role,
+    datasources: Object.entries(role?.datasources || {}).map(([datasourceId, val]) => ({ id: datasourceId, ...val })),
+  })), [roles]);
 
   return [
     <Row type="flex" justify="space-around" align="top" gutter={24} key="1">
@@ -89,7 +93,7 @@ const RolesTable = ({ roles, totalCount, loading }) => {
           loading={loading}
           rowKey={row => row.id}
           columns={columns}
-          dataSource={roles}
+          dataSource={datasource}
           pagination={{
             pageSize,
             total: totalCount,
@@ -101,7 +105,7 @@ const RolesTable = ({ roles, totalCount, loading }) => {
               columns={expandedTableColumns}
               pagination={false}
               rowKey={row => row.id}
-              dataSource={roles?.find(({ id }) => id === record.id)?.datasources || []}
+              dataSource={record?.datasources || []}
               noEmptyImage
             />
           )}
@@ -115,12 +119,14 @@ RolesTable.propTypes = {
   roles: PropTypes.array,
   totalCount: PropTypes.number,
   loading: PropTypes.bool,
+  onModalOpen: PropTypes.func,
 };
 
 RolesTable.defaultProps = {
   roles: [],
   totalCount: 0,
   loading: false,
+  onModalOpen: () => {},
 };
 
 export default RolesTable;

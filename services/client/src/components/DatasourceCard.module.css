@@ -1,0 +1,36 @@
+.card {
+  cursor: pointer;
+  display: inline-block;
+  min-width: 260px;
+  max-width: 300px;
+  padding: 16px;
+  border: 1px solid rgba(165, 165, 165, 0.5);
+  border-radius: 8px;
+}
+
+.name {
+  font-weight: bold;
+}
+
+.sourceType {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 90px;
+  height: 24px;
+  padding: 0 6px;
+  font-weight: bold;
+  border: 1px solid rgba(165, 165, 165, 0.5);
+  border-radius: 8px;
+}
+
+.access {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 10px;
+}
+
+.selected {
+  background-color: beige;
+}
