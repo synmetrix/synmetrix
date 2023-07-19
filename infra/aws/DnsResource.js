@@ -61,6 +61,16 @@ class DnsResource extends pulumi.ComponentResource {
         type: 'CNAME',
         value: domainName, 
       },
+      mysqlApiCname: { 
+        name: pulumi.concat('mysql-api.', domainName),
+        type: 'CNAME',
+        value: domainName, 
+      },
+      pgApiCname: { 
+        name: pulumi.concat('pg-api.', domainName),
+        type: 'CNAME',
+        value: domainName, 
+      },
     };
 
     const lastDomainChar = domainName.charAt(domainName.length - 1);

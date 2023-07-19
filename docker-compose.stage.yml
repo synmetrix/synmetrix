@@ -61,6 +61,21 @@ services:
 
   cubejs:
     image: ${REGISTRY_HOST}/mlcraft/cubejs:latest
+    deploy:
+      labels:
+        # pg api
+        - traefik.enable=true
+        - traefik.http.routers.pg_api.rule=Host(`pg-api.${DOMAIN}`)
+        - traefik.http.routers.pg_api.entrypoints=websecure
+        - traefik.http.routers.pg_api.tls=true
+        - traefik.http.routers.pg_api.tls.certresolver=le
+        - traefik.http.services.pg_api.loadbalancer.server.port=15432
+        # mysql api
+        - traefik.http.routers.mysql_api.rule=Host(`mysql-api.${DOMAIN}`)
+        - traefik.http.routers.mysql_api.entrypoints=websecure
+        - traefik.http.routers.mysql_api.tls=true
+        - traefik.http.routers.mysql_api.tls.certresolver=le
+        - traefik.http.services.mysql-api.loadbalancer.server.port=13306
     command: yarn start
     env_file:
       - .env
@@ -88,6 +103,8 @@ services:
       GRAPHQL_SERVER_URL: ${PROTOCOL:-http}://api.${DOMAIN}/v1/graphql
       GRAPHQL_WS_URL: ${WS_PROTOCOL:-ws}://api.${DOMAIN}/v1/graphql
       GRAPHQL_PLUS_SERVER_URL: ${PROTOCOL:-http}://api-plus.${DOMAIN}
+      CUBEJS_MYSQL_API_URL: ${PROTOCOL:-http}://mysql-api.${DOMAIN}
+      CUBEJS_PG_API_URL: ${PROTOCOL:-http}://pg-api.${DOMAIN}
     networks:
       - mlcraft_default
 
