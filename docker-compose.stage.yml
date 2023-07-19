@@ -60,7 +60,7 @@ services:
       labels:
         # pg api
         - traefik.enable=true
-        - traefik.tcp.routers.pg_api.rule=HostSNI(`*`)
+        - traefik.tcp.routers.pg_api.rule=HostSNI(`pg-api.${DOMAIN}`)
         - traefik.tcp.routers.pg_api.entrypoints=sql
         - traefik.tcp.routers.pg_api.service=pg_api
         - traefik.tcp.services.pg_api.loadbalancer.server.port=15432
