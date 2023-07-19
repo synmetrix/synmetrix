@@ -99,12 +99,11 @@ services:
       context: ./services/client/
       args:
         NODE_ENV: test
-    environment:
-      GRAPHQL_SERVER_URL: ${PROTOCOL:-http}://api.${DOMAIN}/v1/graphql
-      GRAPHQL_WS_URL: ${WS_PROTOCOL:-ws}://api.${DOMAIN}/v1/graphql
-      GRAPHQL_PLUS_SERVER_URL: ${PROTOCOL:-http}://api-plus.${DOMAIN}
-      CUBEJS_MYSQL_API_URL: ${PROTOCOL:-http}://mysql-api.${DOMAIN}
-      CUBEJS_PG_API_URL: ${PROTOCOL:-http}://pg-api.${DOMAIN}
+        CUBEJS_MYSQL_API_URL: ${PROTOCOL:-http}://mysql-api.${DOMAIN}
+        CUBEJS_PG_API_URL: ${PROTOCOL:-http}://pg-api.${DOMAIN}
+        GRAPHQL_SERVER_URL: ${PROTOCOL:-http}://api.${DOMAIN}/v1/graphql
+        GRAPHQL_WS_URL: ${WS_PROTOCOL:-ws}://api.${DOMAIN}/v1/graphql
+        GRAPHQL_PLUS_SERVER_URL: ${PROTOCOL:-http}://api-plus.${DOMAIN}
     networks:
       - mlcraft_default
 
