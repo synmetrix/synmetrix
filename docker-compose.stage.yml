@@ -18,7 +18,7 @@ services:
       - mlcraft_default
 
   traefik:
-    image: traefik:v2.5.5
+    image: traefik:v3.0
     deploy:
       placement:
         constraints: [node.role == manager]
