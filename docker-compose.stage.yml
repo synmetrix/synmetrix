@@ -28,8 +28,6 @@ services:
         - traefik.http.routers.traefik.entrypoints=websecure
         - traefik.http.routers.traefik.service=api@internal
         - traefik.http.routers.traefik.tls=true
-        - traefik.http.routers.traefik.middlewares=admin
-        - traefik.http.middlewares.admin.basicauth.users=$BASIC_ADMIN_AUTH
         - traefik.http.services.traefik.loadbalancer.server.port=8888
     command:
       - --entrypoints.web.address=:80
