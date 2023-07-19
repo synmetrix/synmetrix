@@ -32,6 +32,7 @@ services:
     command:
       - --entrypoints.web.address=:80
       - --entrypoints.websecure.address=:443
+      - --entrypoints.sql.address=:5555
       - --entrypoints.web.http.redirections.entryPoint.to=websecure
       - --entrypoints.web.http.redirections.entryPoint.scheme=https
       - --entrypoints.web.http.redirections.entrypoint.permanent=true
@@ -46,6 +47,7 @@ services:
     ports:
       - 80:80
       - 443:443
+      - 5555:5555
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - ./etc/acme.json:/acme.json
@@ -59,14 +61,12 @@ services:
         # pg api
         - traefik.enable=true
         - traefik.http.routers.pg_api.rule=Host(`pg-api.${DOMAIN}`)
-        - traefik.http.routers.pg_api.entrypoints=websecure
-        - traefik.http.routers.pg_api.tls=true
+        - traefik.http.routers.pg_api.entrypoints=sql
         - traefik.http.routers.pg_api.service=pg_api
         - traefik.http.services.pg_api.loadbalancer.server.port=15432
         # mysql api
         - traefik.http.routers.mysql_api.rule=Host(`mysql-api.${DOMAIN}`)
-        - traefik.http.routers.mysql_api.entrypoints=websecure
-        - traefik.http.routers.mysql_api.tls=true
+        - traefik.http.routers.mysql_api.entrypoints=sql
         - traefik.http.routers.mysql_api.service=mysql_api
         - traefik.http.services.mysql_api.loadbalancer.server.port=13306
     command: yarn start
