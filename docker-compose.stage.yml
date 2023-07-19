@@ -65,12 +65,12 @@ services:
       labels:
         # pg api
         - traefik.enable=true
-        - traefik.http.routers.pg_api.rule=HostSNI(`pg-api.${DOMAIN}`)
+        - traefik.http.routers.pg_api.rule=Host(`pg-api.${DOMAIN}`)
         - traefik.http.routers.pg_api.entrypoints=db_api
         - traefik.http.routers.pg_api.service=pg_api
         - traefik.http.services.pg_api.loadbalancer.server.port=15432
         # mysql api
-        - traefik.http.routers.mysql_api.rule=HostSNI(`mysql-api.${DOMAIN}`)
+        - traefik.http.routers.mysql_api.rule=Host(`mysql-api.${DOMAIN}`)
         - traefik.http.routers.mysql_api.entrypoints=db_api
         - traefik.http.routers.mysql_api.service=mysql_api
         - traefik.http.services.mysql_api.loadbalancer.server.port=13306
