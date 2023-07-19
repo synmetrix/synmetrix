@@ -26,7 +26,6 @@ services:
         - traefik.enable=true
         - traefik.http.routers.traefik.rule=Host(`lb.${DOMAIN}`) && (PathPrefix(`/api`) || PathPrefix(`/dashboard`))
         - traefik.http.routers.traefik.entrypoints=websecure
-        - traefik.http.routers.traefik.service=api@internal
         - traefik.http.routers.traefik.tls=true
         - traefik.http.routers.traefik.service=traefik
         - traefik.http.services.traefik.loadbalancer.server.port=8888
@@ -43,7 +42,7 @@ services:
       - --api=true
       - --api.dashboard=true
       - --accesslog=true
-      # - --log.level=DEBUG
+      - --log.level=DEBUG
     ports:
       - 80:80
       - 443:443
