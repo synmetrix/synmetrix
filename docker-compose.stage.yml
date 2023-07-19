@@ -70,9 +70,6 @@ services:
         - traefik.tcp.routers.mysql_api.service=mysql_api
         - traefik.tcp.services.mysql_api.loadbalancer.server.port=13306
     command: yarn start
-    ports:
-      - 15432:15432
-      - 13306:13306
     env_file:
       - .env
       - .stage.env
