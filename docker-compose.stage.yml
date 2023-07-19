@@ -97,8 +97,8 @@ services:
       GRAPHQL_SERVER_URL: ${PROTOCOL:-http}://api.${DOMAIN}/v1/graphql
       GRAPHQL_WS_URL: ${WS_PROTOCOL:-ws}://api.${DOMAIN}/v1/graphql
       GRAPHQL_PLUS_SERVER_URL: ${PROTOCOL:-http}://api-plus.${DOMAIN}
-      CUBEJS_MYSQL_API_URL: tcp://mysql-api.${DOMAIN}:5555
-      CUBEJS_PG_API_URL: tcp://pg-api.${DOMAIN}:5555
+      CUBEJS_MYSQL_API_URL: tcp://sql-api.${DOMAIN}:13306
+      CUBEJS_PG_API_URL: tcp://sql-api.${DOMAIN}:15432
     networks:
       - mlcraft_default
 
