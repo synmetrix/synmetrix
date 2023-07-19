@@ -43,7 +43,7 @@ services:
       - --api=true
       - --api.dashboard=true
       - --accesslog=true
-      # - --log.level=DEBUG
+      - --log.level=DEBUG
     ports:
       - 80:80
       - 443:443
