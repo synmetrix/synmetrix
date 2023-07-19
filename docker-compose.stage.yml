@@ -74,7 +74,7 @@ services:
         - traefik.http.routers.mysql_api.entrypoints=websecure
         - traefik.http.routers.mysql_api.tls=true
         - traefik.http.routers.mysql_api.service=mysql_api
-        - traefik.http.services.mysql-api.loadbalancer.server.port=13306
+        - traefik.http.services.mysql_api.loadbalancer.server.port=13306
     command: yarn start
     env_file:
       - .env
