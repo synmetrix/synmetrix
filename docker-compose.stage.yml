@@ -28,7 +28,6 @@ services:
         - traefik.http.routers.traefik.entrypoints=websecure
         - traefik.http.routers.traefik.service=api@internal
         - traefik.http.routers.traefik.tls=true
-        - traefik.http.routers.traefik.tls.certresolver=le
         - traefik.http.routers.traefik.service=traefik
         - traefik.http.services.traefik.loadbalancer.server.port=8888
     command:
@@ -89,6 +88,7 @@ services:
         - traefik.http.routers.client.rule=Host(`app.${DOMAIN}`)
         - traefik.http.routers.client.entrypoints=websecure
         - traefik.http.routers.client.tls=true
+        - traefik.http.routers.client.tls.certresolver=le
         - traefik.http.services.client.loadbalancer.server.port=80
         - traefik.http.middlewares.client_compress.compress=true
         - traefik.http.routers.client.middlewares=client_compress
