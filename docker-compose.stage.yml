@@ -28,7 +28,6 @@ services:
         - traefik.http.routers.traefik.entrypoints=websecure
         - traefik.http.routers.traefik.service=api@internal
         - traefik.http.routers.traefik.tls=true
-        - traefik.http.routers.traefik.tls.certresolver=le
         - traefik.http.routers.traefik.middlewares=admin
         - traefik.http.middlewares.admin.basicauth.users=$BASIC_ADMIN_AUTH
         - traefik.http.services.traefik.loadbalancer.server.port=8888
@@ -68,13 +67,13 @@ services:
         - traefik.http.routers.pg_api.rule=Host(`pg-api.${DOMAIN}`)
         - traefik.http.routers.pg_api.entrypoints=websecure
         - traefik.http.routers.pg_api.tls=true
-        - traefik.http.routers.pg_api.tls.certresolver=le
+        - traefik.http.routers.pg_api.service=pg_api
         - traefik.http.services.pg_api.loadbalancer.server.port=15432
         # mysql api
         - traefik.http.routers.mysql_api.rule=Host(`mysql-api.${DOMAIN}`)
         - traefik.http.routers.mysql_api.entrypoints=websecure
         - traefik.http.routers.mysql_api.tls=true
-        - traefik.http.routers.mysql_api.tls.certresolver=le
+        - traefik.http.routers.mysql_api.service=mysql_api
         - traefik.http.services.mysql-api.loadbalancer.server.port=13306
     command: yarn start
     env_file:
@@ -91,7 +90,6 @@ services:
         - traefik.http.routers.client.rule=Host(`app.${DOMAIN}`)
         - traefik.http.routers.client.entrypoints=websecure
         - traefik.http.routers.client.tls=true
-        - traefik.http.routers.client.tls.certresolver=le
         - traefik.http.services.client.loadbalancer.server.port=80
         - traefik.http.middlewares.client_compress.compress=true
         - traefik.http.routers.client.middlewares=client_compress
@@ -116,7 +114,6 @@ services:
         - traefik.http.routers.hasura.rule=Host(`api.${DOMAIN}`)
         - traefik.http.routers.hasura.entrypoints=websecure
         - traefik.http.routers.hasura.tls=true
-        - traefik.http.routers.hasura.tls.certresolver=le
         - traefik.http.services.hasura.loadbalancer.server.port=8080
     env_file:
       - .env
@@ -132,7 +129,6 @@ services:
         - traefik.http.routers.hasura_plus.rule=Host(`api-plus.${DOMAIN}`)
         - traefik.http.routers.hasura_plus.entrypoints=websecure
         - traefik.http.routers.hasura_plus.tls=true
-        - traefik.http.routers.hasura_plus.tls.certresolver=le
         - traefik.http.services.hasura_plus.loadbalancer.server.port=3000
     env_file:
       - .env
