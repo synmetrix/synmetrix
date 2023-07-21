@@ -5,12 +5,12 @@ import { useTranslation } from 'react-i18next';
 import s from './DatasourceCard.module.css';
 
 export const calcMembersCount = (model) => {
-  return Object.entries(model || {}).reduce((acc, [_, arr]) => acc + arr.length, 0);
+  return Object.values(model || {}).reduce((acc, arr) => acc + (arr || []).length, 0);
 };
 
 const AccessPart = ({ datasourceMeta, datasourcePermissions, modelName }) => {
   const { t } = useTranslation();
-  
+
   const countCheckedMembers = useMemo(() => {
     let allColumnsCount = 0;
     let roleColumnsCount = 0;

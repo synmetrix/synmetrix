@@ -4,13 +4,15 @@ import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
 import { Row, Col, Button } from 'antd';
 
-import useTableState from 'hooks/useTableState';
-
 import TableList from 'components/TableList';
+import AccessListDatasource from 'components/AccessListDatasource';
+
+import useTableState from 'hooks/useTableState';
+import useAccessLists from 'hooks/useAccessLists';
 
 import formatDistanceToNow from '../utils/formatDistanceToNow';
 
-const RolesTable = ({ roles, totalCount, loading, onModalOpen }) => {
+const AccessListsTable = ({ totalCount, loading, onModalOpen, onRemoveAccessList }) => {
   const { t } = useTranslation();
 
   const {
@@ -21,6 +23,17 @@ const RolesTable = ({ roles, totalCount, loading, onModalOpen }) => {
     },
     onPageChange,
   } = useTableState({});
+
+  const {
+    all: accessLists,
+    mutations: {
+      deleteMutation, execDeleteMutation,
+    }
+  } = useAccessLists({
+    pauseQueryAll: false,
+    disableSubscription: false,
+    pagination: paginationVars,
+  });
 
   const columns = [
     {
@@ -33,7 +46,7 @@ const RolesTable = ({ roles, totalCount, loading, onModalOpen }) => {
       dataIndex: 'access',
       key: 'access',
       render: (_, record) => {
-        const count = Object.keys(record?.datasources || {}).length;
+        const count = Object.keys(record?.access_list?.datasources || {}).length;
         return `${count} Data sources`;
       }
     },
@@ -62,7 +75,7 @@ const RolesTable = ({ roles, totalCount, loading, onModalOpen }) => {
           <Button onClick={() => onModalOpen(record.id)}>
             {t('Edit')}
           </Button>
-          <Button onClick={() => {}}>
+          <Button onClick={() => execDeleteMutation({ id: record.id })}>
             {t('Delete')}
           </Button>
         </>
@@ -70,21 +83,16 @@ const RolesTable = ({ roles, totalCount, loading, onModalOpen }) => {
     }
   ];
 
-  const expandedTableColumns = [
-    {
-      dataIndex: 'id', // ?
-      key: 'id', // ?
-    },
-    // {
-    //   dataIndex: 'access_type',
-    //   key: 'access_type',
-    // },
-  ];
+  const datasource = useMemo(() => accessLists.map(accessList => {
+    const datasources = Object.entries(accessList?.access_list?.datasources || {}).map(([datasourceId, val]) => (
+      <AccessListDatasource key={datasourceId} datasourceId={datasourceId} datasourcePermissions={val?.models} />
+    ));
 
-  const datasource = useMemo(() => roles.map(role => ({
-    ...role,
-    datasources: Object.entries(role?.datasources || {}).map(([datasourceId, val]) => ({ id: datasourceId, ...val })),
-  })), [roles]);
+    return {
+      ...accessList,
+      datasources,
+    };
+  }), [accessLists]);
 
   return [
     <Row type="flex" justify="space-around" align="top" gutter={24} key="1">
@@ -100,33 +108,25 @@ const RolesTable = ({ roles, totalCount, loading, onModalOpen }) => {
             current: currentPage,
           }}
           onChange={onPageChange}
-          expandedRowRender={record => (
-            <TableList
-              columns={expandedTableColumns}
-              pagination={false}
-              rowKey={row => row.id}
-              dataSource={record?.datasources || []}
-              noEmptyImage
-            />
-          )}
+          expandedRowRender={record => record?.datasources || []}
         />
       </Col>
     </Row>
   ];
 };
 
-RolesTable.propTypes = {
-  roles: PropTypes.array,
+AccessListsTable.propTypes = {
   totalCount: PropTypes.number,
   loading: PropTypes.bool,
   onModalOpen: PropTypes.func,
+  onRemoveAccessList: PropTypes.func,
 };
 
-RolesTable.defaultProps = {
-  roles: [],
+AccessListsTable.defaultProps = {
   totalCount: 0,
   loading: false,
   onModalOpen: () => {},
+  onRemoveAccessList: () => {},
 };
 
-export default RolesTable;
+export default AccessListsTable;

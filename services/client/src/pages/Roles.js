@@ -1,19 +1,16 @@
-import React, { useEffect, useMemo, useState, useCallback } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 
 import { useTranslation } from 'react-i18next';
+
 import useLocation from 'hooks/useLocation';
 import useAppSettings from 'hooks/useAppSettings';
 
-import RolesManagement from 'components/RolesManagement';
+import AccessListsManagement from 'components/AccessListsManagement';
 import Breadcrumbs from 'components/Breadcrumbs';
-import RoleModal from 'components/RoleModal';
+import AccessListModal from 'components/AccessListModal';
 
-import useQuery from 'hooks/useQuery';
-import useRoles from 'hooks/useRoles';
-import useSources, { datasourceMetaQuery } from 'hooks/useSources';
 import usePermissions from 'hooks/usePermissions';
-// import AccessState from '../components/AccessPart';
 
 const Roles = ({ match }) => {
   const { t } = useTranslation();
@@ -21,45 +18,20 @@ const Roles = ({ match }) => {
   const { editId } = params;
   const [location, setLocation] = useLocation();
   const { withAuthPrefix } = useAppSettings();
-  const [allMeta, setAllMeta] = useState();
   const basePath = withAuthPrefix('/roles');
   const isNew = location.pathname.includes('/new');
-
-  const {
-    allRoles,
-    current,
-    saveRole,
-  } = useRoles({ editId });
-
-  const {
-    all,
-    currentMeta,
-    queries: {
-      metaData,
-      execQueryMeta,
-    },
-  } = useSources({
-    // pauseQueryAll: !!state.selectedSourceId,
-    // params: {
-    //   editId: state.selectedSourceId,
-    // },
-  });
 
   const { fallback } = usePermissions({ scope: 'alerts' });
   if (fallback) {
     return fallback;
   }
 
-  const onCreateRole = () => {
+  const onNewAccessList = () => {
     setLocation(`${basePath}/new`);
   };
 
   const onModalOpen = id => {
     setLocation(`${basePath}/${id || ''}`);
-  };
-
-  const onModalClose = () => {
-    setLocation(basePath);
   };
 
   const breadcrumbs = [
@@ -73,14 +45,16 @@ const Roles = ({ match }) => {
       <div style={{ marginBottom: 10 }}>
         <Breadcrumbs breadcrumbs={breadcrumbs} />
       </div>
-      <RoleModal
-        role={current}
-        onCancel={onModalClose}
-        onSave={saveRole}
-        visible={editId || isNew}
+      <AccessListModal
+        editId={editId}
+        onCancel={() => setLocation(basePath)}
+        visible={!!editId || isNew}
         title={editId ? t('Edit Role') : t('Create role')}
       />
-      <RolesManagement roles={allRoles} onCreateRole={onCreateRole} onModalOpen={onModalOpen} />
+      <AccessListsManagement
+        onNewAccessList={onNewAccessList}
+        onModalOpen={onModalOpen}
+      />
     </div>
   );
 };

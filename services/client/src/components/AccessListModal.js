@@ -4,62 +4,100 @@ import { set } from 'unchanged';
 
 import { useTranslation } from 'react-i18next';
 import { useSetState } from 'ahooks';
+import 'react-responsive-carousel/lib/styles/carousel.min.css';
+import { Carousel } from 'react-responsive-carousel';
 
-import {
-  Row, Col, Icon, Button, Input, Checkbox
-} from 'antd';
+import { Row, Col, Button, Input, Checkbox } from 'antd';
 
 import pickKeys from 'utils/pickKeys';
-
-import useSources from 'hooks/useSources';
 
 import Loader from 'components/Loader';
 import ModalView from 'components/ModalView';
 import DatasourceCard from 'components/DatasourceCard';
 import AccessPart, { calcMembersCount } from 'components/AccessPart';
 
+import useSources from 'hooks/useSources';
+import useAccessLists from 'hooks/useAccessLists';
+import useCheckResponse from 'hooks/useCheckResponse';
+
 const defaultState = {
-  role: null,
+  accessList: null,
   selectedSourceId: null,
   selectedModel: null,
   meta: {},
 };
 
-const RoleModal = ({ role, onSave, ...props }) => {
+const AccessListsModal = ({ editId, ...props }) => {
   const { t } = useTranslation();
-  const [state, updateState] = useSetState({
-    ...defaultState,
-    role,
-  });
+  const [state, updateState] = useSetState(defaultState);
 
   const {
     all,
+    queries: {
+      allData,
+    }
   } = useSources({
     pauseQueryAll: false,
     params: {
       editId: state?.selectedSourceId,
     },
   });
- 
-  const modalFooter = (
-    <Row type="flex">
-      <Col span={12} style={{ textAlign: 'left' }}>
-        <Button onClick={() => onSave()}>
-          {t('Save')}
-        </Button>
-      </Col>
-    </Row>
-  );
+
+  const {
+    current,
+    queries: {
+      currentData,
+    },
+    mutations: {
+      createMutation, execCreateMutation,
+      updateMutation, execUpdateMutation,
+    }
+  } = useAccessLists({
+    pauseQueryAll: true,
+    params: {
+      editId,
+    },
+  });
+
+  useCheckResponse(createMutation, () => { }, { successMessage: 'Created.' });
+  useCheckResponse(updateMutation, () => { }, { successMessage: 'Updated.' });
 
   const onSourceClick = useCallback((id) => {
     updateState({ selectedSourceId: id });
   }, [updateState]);
 
-  useEffect(() => {
-    if (role) {
-      updateState({ role });
+  const onSaveList = (accessList) => {
+    const newAccessList = {
+      name: accessList.name,
+      access_list: {
+        datasources: accessList.datasources,
+      },
+    };
+
+    if (editId) {
+      execUpdateMutation({
+        pk_columns: {
+          id: editId,
+        },
+        _set: newAccessList,
+      });
+    } else {
+      execCreateMutation({
+        object: newAccessList,
+      });
     }
-  }, [role, updateState]);
+  };
+
+  useEffect(() => {
+    if (current) {
+      updateState({
+        accessList: {
+          name: current?.name,
+          ...current?.access_list,
+        }
+      });
+    }
+  }, [current, updateState]);
 
   useEffect(() => {
     if (!state.selectedSourceId && all.length) {
@@ -88,63 +126,91 @@ const RoleModal = ({ role, onSave, ...props }) => {
       }), {});
     }
 
-    const updatedRole = set(`datasources.${state.selectedSourceId}.models.${state.selectedModel}`, updatedSettings, state.role);
-    updateState({ role: updatedRole });
-  }, [models, state.role, state.selectedModel, state.selectedSourceId, updateState]);
+    const updatedAccessList = set(`datasources.${state.selectedSourceId}.models.${state.selectedModel}`, updatedSettings, state.accessList);
+    updateState({ accessList: updatedAccessList });
+  }, [models, state.accessList, state.selectedModel, state.selectedSourceId, updateState]);
 
-  const cards = useMemo(() => (
-    all.map(source => (
-      <DatasourceCard
-        datasource={source}
-        roleState={state.role}
-        isSelected={source.id === state.selectedSourceId}
-        onClick={() => onSourceClick(source?.id)}
-        onLoadMeta={(id, m) => onLoadMeta(id, m)}
-      />
-    ))
-  ), [all, onLoadMeta, onSourceClick, state.role, state.selectedSourceId]);
+  const cards = useMemo(() => {
+    const chunks = all.reduce((acc, value, index) => {
+      const chunkIndex = Math.floor(index / 3);
 
-  const currentMembers = useMemo(() => state?.role?.datasources?.[state?.selectedSourceId]?.models || {}, [state.role, state.selectedSourceId]);
+      if (!acc[chunkIndex]) {
+        acc[chunkIndex] = [];
+      }
+
+      acc[chunkIndex].push(value);
+
+      return acc;
+    }, []);
+
+    return chunks.map((chunk) => (
+      <div style={{ display: 'flex', gap: 10 }} key={chunk?.[0]?.id}>
+        {chunk.map((source) => (
+          <div key={source.id}>
+            <DatasourceCard
+              datasource={source}
+              accessList={state.accessList}
+              isSelected={source.id === state.selectedSourceId}
+              onClick={() => onSourceClick(source?.id)}
+              onLoadMeta={(id, m) => onLoadMeta(id, m)}
+            />
+          </div>
+        ))}
+      </div>
+    ));
+  }, [all, onLoadMeta, onSourceClick, state.accessList, state.selectedSourceId]);
+
+  const currentMembers = useMemo(() => state?.accessList?.datasources?.[state?.selectedSourceId]?.models || {}, [state.accessList, state.selectedSourceId]);
   const isAllSelected = useMemo(() => {
     const currentSelectedCount = calcMembersCount(currentMembers?.[state?.selectedModel]);
     const totalMembersCount = calcMembersCount(state.meta?.[state.selectedSourceId]?.[state.selectedModel]);
 
     return currentSelectedCount === totalMembersCount;
   }, [currentMembers, state.meta, state.selectedModel, state.selectedSourceId]);
-  
+
+  const modalFooter = (
+    <Row type="flex">
+      <Col span={12} style={{ textAlign: 'left' }}>
+        <Button onClick={() => onSaveList(state.accessList)}>
+          {t('Save')}
+        </Button>
+      </Col>
+    </Row>
+  );
+
   return (
     <ModalView
-      {...pickKeys(['title', 'onCancel', 'visible', 'loading', 'breadcrumbs'], props)}
+      {...pickKeys(['title', 'onCancel', 'visible', 'breadcrumbs'], props)}
       footer={modalFooter}
-      // loading={checkMutation.fetching}
+      loading={allData.fetching || currentData.fetching}
       content={(
         <div>
           <div>
             <b>1. {t('Role name')}</b>
-            <Input 
-              type="text" 
-              value={state?.role?.name} 
+            <Input
+              type="text"
+              value={state?.accessList?.name} 
               placeholder={t('Team Manager')}
-              onChange={(e) => updateState({ role: { ...state?.role, name: e?.target?.value } })}
+              onChange={(e) => updateState({ accessList: { ...state?.accessList, name: e?.target?.value } })}
             />
           </div>
           <div>
             <b>2. {t('Set access to data source resources')}</b>
-            <div>
+            <Carousel showArrows stopOnHover showIndicators={false}>
               {cards}
-            </div>
+            </Carousel>
           </div>
           <Row>
             <Col xs={12}>
               <div style={{ padding: '16px', marginBottom: 10, borderRadius: 8, backgroundColor: '#F9F9F9' }}>
                 <b>{t('Data models')}</b>
                 {Object.keys(models).map(name => (
-                  <div style={{ cursor: 'pointer', display: 'flex', justifyContent: 'space-between', margin: '8px 0', padding: '10px 12px', fontSize: 12, borderRadius: 8, backgroundColor: state.selectedModel === name ? '#F0F1F3' : '#FFF' }} onClick={() => updateState({ selectedModel: name })}>
+                  <div key={name} style={{ cursor: 'pointer', display: 'flex', justifyContent: 'space-between', margin: '8px 0', padding: '10px 12px', fontSize: 12, borderRadius: 8, backgroundColor: state.selectedModel === name ? '#F0F1F3' : '#FFF' }} onClick={() => updateState({ selectedModel: name })}>
                     <b>{name}</b>
                     <div>
                       <AccessPart
                         datasourceMeta={state.meta?.[state?.selectedSourceId]}
-                        datasourcePermissions={state.role?.datasources?.[state.selectedSourceId]?.models}
+                        datasourcePermissions={state.accessList?.datasources?.[state.selectedSourceId]?.models}
                         modelName={name}
                       />
                     </div>
@@ -161,14 +227,14 @@ const RoleModal = ({ role, onSave, ...props }) => {
                 </div>
                 <div>
                   {Object.entries(models?.[state?.selectedModel] || []).map(([name, columns]) => (
-                    <div style={{ marginTop: 15 }}>
+                    <div key={name} style={{ marginTop: 15 }}>
                       <b>{(name || '').toUpperCase()}</b>
-                      {columns.map(column => {
+                      {(columns || []).map(column => {
                         const curSettings = currentMembers?.[state?.selectedModel]?.[name] || [];
                         const colIndex = curSettings.findIndex(col => col === column.shortTitle);
 
                         return (
-                          <div style={{ fontWeight: 600, color: '#000' }}>
+                          <div key={column.shortTitle} style={{ fontWeight: 600, color: '#000' }}>
                             <Checkbox
                               style={{ marginRight: 10 }}
                               checked={colIndex !== -1}
@@ -179,8 +245,8 @@ const RoleModal = ({ role, onSave, ...props }) => {
                                   curSettings.push(column.shortTitle);
                                 }
 
-                                const updatedRole = set(`datasources.${state.selectedSourceId}.models.${state.selectedModel}.${name}`, curSettings, state.role);
-                                updateState({ role: updatedRole });
+                                const updatedAccessList = set(`datasources.${state.selectedSourceId}.models.${state.selectedModel}.${name}`, curSettings, state.accessList);
+                                updateState({ accessList: updatedAccessList });
                               }}
                             />
                             {column.shortTitle}
@@ -199,12 +265,12 @@ const RoleModal = ({ role, onSave, ...props }) => {
   );
 };
 
-RoleModal.propTypes = {
-  role: PropTypes.object,
+AccessListsModal.propTypes = {
+  editId: PropTypes.string,
 };
 
-RoleModal.defaultProps = {
-  role: {},
+AccessListsModal.defaultProps = {
+  editId: null,
 };
 
-export default RoleModal;
+export default AccessListsModal;
