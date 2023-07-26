@@ -12,6 +12,7 @@ import {
   getDataSources,
   buildSecurityContext,
   findSqlCredentials,
+  getAccessList,
 } from './src/utils/dataSourceHelpers.js';
 import { logging } from './src/utils/logging.js';
 
@@ -73,6 +74,7 @@ const setupAuthInfo = async (req, auth) => {
   }
 
   const dataSource = await findDataSource({ dataSourceId, authToken });
+  const access = await getAccessList(userId);
 
   if (!dataSource?.id) {
     error = `Source "${dataSourceId}" not found`;
@@ -86,6 +88,7 @@ const setupAuthInfo = async (req, auth) => {
     dataSourceId,
     userId,
     authToken,
+    ...access,
     ...securityContext,
   };
 };
@@ -279,7 +282,39 @@ const scheduledRefreshContexts = async () => {
 
 const basePath = `/cubejs/datasources`;
 
+const getColumnsArray = (cube) => [
+  ...(cube?.dimensions || []),
+  ...(cube?.measures || []),
+  ...(cube?.segments || []),
+];
+
 const options = {
+  queryRewrite: async (query, { securityContext }) => {
+    const { dataSourceId, accessList, role } = securityContext;
+    const accessDatasource = accessList?.datasources?.[dataSourceId]?.cubes;
+
+    if (['owner', 'admin'].includes(role)) {
+      return query;
+    }
+
+    if (!accessDatasource) {
+      throw new Error("No access to datasource!");
+    }
+
+    const queryNames = getColumnsArray(query);
+    const accessNames = Object.values(accessDatasource).reduce((acc, cube) => ([
+      ...acc,
+      ...getColumnsArray(cube),
+    ]), []);
+
+    queryNames.forEach((cn) => {
+      if (!accessNames.includes(cn)) {
+        throw new Error(`No access to ${cn} cube!`);
+      }
+    });
+ 
+    return query;
+  },
   contextToAppId: ({ securityContext }) => `CUBEJS_APP_${securityContext?.dataSourceVersion}`,
   contextToOrchestratorId: ({ securityContext }) => `CUBEJS_APP_${securityContext?.dataSourceVersion}`,
   dbType,
@@ -290,10 +325,10 @@ const options = {
   schemaVersion: ({ securityContext }) => securityContext?.schemaVersion,
   driverFactory,
   repositoryFactory: ({ securityContext }) => {
-    const { dataSourceId, authToken } = securityContext || {};
+    const { dataSourceId, authToken, userId } = securityContext || {};
 
     return {
-      dataSchemaFiles: () => dataSchemaFiles({ dataSourceId, authToken }),
+      dataSchemaFiles: () => dataSchemaFiles({ dataSourceId, authToken, userId }),
     };
   },
   preAggregationsSchema: ({ securityContext }) => `pre_aggregations_${securityContext?.dataSourceVersion}`,

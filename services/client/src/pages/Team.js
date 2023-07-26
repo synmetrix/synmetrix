@@ -79,6 +79,8 @@ const Team = () => {
     mutations: {
       updateMutation,
       execUpdateMutation,
+      updateRoleMutation,
+      execUpdateRoleMutation,
       inviteMutation,
       execInviteMutation,
       deleteMutation,
@@ -91,6 +93,26 @@ const Team = () => {
   });
   
   const isTeamExists = !!currentTeam?.id;
+
+  const onAccessListChange = (roleId, accessListId) => {
+    execUpdateRoleMutation({
+      pk_columns: { id: roleId },
+      _set: { access_list_id: accessListId }
+    });
+  };
+
+  const onAccessUpdate = (res) => {
+    if (res && res?.update_member_roles_by_pk) {
+      execQueryAll();
+      message.success(t('Access list updated.'));
+    } else {
+      message.error(t('You have no permissions'));
+    }
+  };
+
+  useCheckResponse(updateRoleMutation, onAccessUpdate, {
+    successMessage: null,
+  });
 
   const onUpdate = (res) => {
     if (res) {
@@ -171,10 +193,10 @@ const Team = () => {
   const loading = inviteMutation.fetching ||  updateMutation.fetching || updateTeamMutation.fetching;
 
   const onInvite = data => {
-    const { email } = data;
+    const { email, role } = data;
     const teamId = currentTeam?.id;
 
-    return execInviteMutation({ teamId, email });
+    return execInviteMutation({ teamId, email, role });
   };
 
   if (fallback) {
@@ -228,6 +250,7 @@ const Team = () => {
       <TeamTable
         onChange={onChange}
         onRemove={onRemove}
+        onAccessListChange={onAccessListChange}
         disableManagement={disableManagement}
         loading={loading}
         data={members}

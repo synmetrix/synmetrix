@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useCallback } from 'react';
 import PropTypes from 'prop-types';
-import { set } from 'unchanged';
+import { set, remove } from 'unchanged';
 
 import { useTranslation } from 'react-i18next';
 import { useSetState } from 'ahooks';
@@ -11,7 +11,6 @@ import { Row, Col, Button, Input, Checkbox } from 'antd';
 
 import pickKeys from 'utils/pickKeys';
 
-import Loader from 'components/Loader';
 import ModalView from 'components/ModalView';
 import DatasourceCard from 'components/DatasourceCard';
 import AccessPart, { calcMembersCount } from 'components/AccessPart';
@@ -27,7 +26,7 @@ const defaultState = {
   meta: {},
 };
 
-const AccessListsModal = ({ editId, ...props }) => {
+const AccessListsModal = ({ editId, onClose, ...props }) => {
   const { t } = useTranslation();
   const [state, updateState] = useSetState(defaultState);
 
@@ -105,13 +104,13 @@ const AccessListsModal = ({ editId, ...props }) => {
     }
   }, [all, state.selectedSourceId, updateState]);
 
-  const models = useMemo(() => (state.meta?.[state?.selectedSourceId] || {}), [state.meta, state.selectedSourceId]);
+  const cubes = useMemo(() => (state.meta?.[state?.selectedSourceId] || {}), [state.meta, state.selectedSourceId]);
 
   useEffect(() => {
-    if ((!state.selectedModel && Object.keys(models).length) || (state.selectedModel && !models?.[state.selectedModel])) {
-      updateState({ selectedModel: Object.keys(models)[0] });
+    if ((!state.selectedModel && Object.keys(cubes).length) || (state.selectedModel && !cubes?.[state.selectedModel])) {
+      updateState({ selectedModel: Object.keys(cubes)[0] });
     }
-  }, [models, state.selectedModel, updateState]);
+  }, [cubes, state.selectedModel, updateState]);
 
   const onLoadMeta = useCallback((datasourceId, meta) => {
     updateState((prev) => ({ meta: { ...prev.meta, [datasourceId]: meta } }));
@@ -120,15 +119,15 @@ const AccessListsModal = ({ editId, ...props }) => {
   const onSelectAll = useCallback((checked) => {
     let updatedSettings;
     if (checked) {
-      updatedSettings = Object.entries(models?.[state.selectedModel]).reduce((acc, [name, arr]) => ({
+      updatedSettings = Object.entries(cubes?.[state.selectedModel]).reduce((acc, [name, arr]) => ({
         ...acc,
-        [name]: arr.map(c => c.shortTitle),
+        [name]: arr.map(c => c.name),
       }), {});
     }
 
-    const updatedAccessList = set(`datasources.${state.selectedSourceId}.models.${state.selectedModel}`, updatedSettings, state.accessList);
+    const updatedAccessList = set(`datasources.${state.selectedSourceId}.cubes.${state.selectedModel}`, updatedSettings, state.accessList);
     updateState({ accessList: updatedAccessList });
-  }, [models, state.accessList, state.selectedModel, state.selectedSourceId, updateState]);
+  }, [cubes, state.accessList, state.selectedModel, state.selectedSourceId, updateState]);
 
   const cards = useMemo(() => {
     const chunks = all.reduce((acc, value, index) => {
@@ -160,13 +159,18 @@ const AccessListsModal = ({ editId, ...props }) => {
     ));
   }, [all, onLoadMeta, onSourceClick, state.accessList, state.selectedSourceId]);
 
-  const currentMembers = useMemo(() => state?.accessList?.datasources?.[state?.selectedSourceId]?.models || {}, [state.accessList, state.selectedSourceId]);
+  const currentMembers = useMemo(() => state?.accessList?.datasources?.[state?.selectedSourceId]?.cubes || {}, [state.accessList, state.selectedSourceId]);
   const isAllSelected = useMemo(() => {
     const currentSelectedCount = calcMembersCount(currentMembers?.[state?.selectedModel]);
     const totalMembersCount = calcMembersCount(state.meta?.[state.selectedSourceId]?.[state.selectedModel]);
 
     return currentSelectedCount === totalMembersCount;
   }, [currentMembers, state.meta, state.selectedModel, state.selectedSourceId]);
+
+  const onCancel = () => {
+    updateState(defaultState);
+    onClose();
+  };
 
   const modalFooter = (
     <Row type="flex">
@@ -180,7 +184,8 @@ const AccessListsModal = ({ editId, ...props }) => {
 
   return (
     <ModalView
-      {...pickKeys(['title', 'onCancel', 'visible', 'breadcrumbs'], props)}
+      {...pickKeys(['title', 'visible', 'breadcrumbs'], props)}
+      onCancel={onCancel}
       footer={modalFooter}
       loading={allData.fetching || currentData.fetching}
       content={(
@@ -204,13 +209,13 @@ const AccessListsModal = ({ editId, ...props }) => {
             <Col xs={12}>
               <div style={{ padding: '16px', marginBottom: 10, borderRadius: 8, backgroundColor: '#F9F9F9' }}>
                 <b>{t('Data models')}</b>
-                {Object.keys(models).map(name => (
+                {Object.keys(cubes).map(name => (
                   <div key={name} style={{ cursor: 'pointer', display: 'flex', justifyContent: 'space-between', margin: '8px 0', padding: '10px 12px', fontSize: 12, borderRadius: 8, backgroundColor: state.selectedModel === name ? '#F0F1F3' : '#FFF' }} onClick={() => updateState({ selectedModel: name })}>
                     <b>{name}</b>
                     <div>
                       <AccessPart
                         datasourceMeta={state.meta?.[state?.selectedSourceId]}
-                        datasourcePermissions={state.accessList?.datasources?.[state.selectedSourceId]?.models}
+                        datasourcePermissions={state.accessList?.datasources?.[state.selectedSourceId]?.cubes}
                         modelName={name}
                       />
                     </div>
@@ -226,15 +231,15 @@ const AccessListsModal = ({ editId, ...props }) => {
                   {t('Select all')}
                 </div>
                 <div>
-                  {Object.entries(models?.[state?.selectedModel] || []).map(([name, columns]) => (
+                  {Object.entries(cubes?.[state?.selectedModel] || []).map(([name, columns]) => (
                     <div key={name} style={{ marginTop: 15 }}>
                       <b>{(name || '').toUpperCase()}</b>
                       {(columns || []).map(column => {
                         const curSettings = currentMembers?.[state?.selectedModel]?.[name] || [];
-                        const colIndex = curSettings.findIndex(col => col === column.shortTitle);
+                        const colIndex = curSettings.findIndex(col => col === column.name);
 
                         return (
-                          <div key={column.shortTitle} style={{ fontWeight: 600, color: '#000' }}>
+                          <div key={column.name} style={{ fontWeight: 600, color: '#000' }}>
                             <Checkbox
                               style={{ marginRight: 10 }}
                               checked={colIndex !== -1}
@@ -242,10 +247,10 @@ const AccessListsModal = ({ editId, ...props }) => {
                                 if (colIndex !== -1) {
                                   curSettings.splice(colIndex, 1);
                                 } else {
-                                  curSettings.push(column.shortTitle);
+                                  curSettings.push(column.name);
                                 }
 
-                                const updatedAccessList = set(`datasources.${state.selectedSourceId}.models.${state.selectedModel}.${name}`, curSettings, state.accessList);
+                                const updatedAccessList = set(`datasources.${state.selectedSourceId}.cubes.${state.selectedModel}.${name}`, curSettings, state.accessList);
                                 updateState({ accessList: updatedAccessList });
                               }}
                             />
@@ -267,10 +272,12 @@ const AccessListsModal = ({ editId, ...props }) => {
 
 AccessListsModal.propTypes = {
   editId: PropTypes.string,
+  onClose: PropTypes.func,
 };
 
 AccessListsModal.defaultProps = {
   editId: null,
+  onClose: () => {},
 };
 
 export default AccessListsModal;

@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useCallback } from 'react';
 import PropTypes from 'prop-types';
 
 import { useTranslation } from 'react-i18next';
@@ -9,10 +9,11 @@ import AccessListDatasource from 'components/AccessListDatasource';
 
 import useTableState from 'hooks/useTableState';
 import useAccessLists from 'hooks/useAccessLists';
+import useCheckResponse from 'hooks/useCheckResponse';
 
 import formatDistanceToNow from '../utils/formatDistanceToNow';
 
-const AccessListsTable = ({ totalCount, loading, onModalOpen, onRemoveAccessList }) => {
+const AccessListsTable = ({ totalCount, loading, onModalOpen }) => {
   const { t } = useTranslation();
 
   const {
@@ -27,6 +28,7 @@ const AccessListsTable = ({ totalCount, loading, onModalOpen, onRemoveAccessList
   const {
     all: accessLists,
     mutations: {
+      createMutation, execCreateMutation,
       deleteMutation, execDeleteMutation,
     }
   } = useAccessLists({
@@ -34,6 +36,27 @@ const AccessListsTable = ({ totalCount, loading, onModalOpen, onRemoveAccessList
     disableSubscription: false,
     pagination: paginationVars,
   });
+
+  useCheckResponse(createMutation, () => { }, {
+    successMessage: t('Copied.'),
+  });
+
+  useCheckResponse(deleteMutation, () => { }, {
+    successMessage: t('Deleted.'),
+  });
+
+  const onCopy = useCallback((accessList) => {
+    const newData = {
+      accessList: accessList.accessList,
+      name: accessList.name || '',
+    };
+  
+    newData.name += ' (copy)';
+
+    execCreateMutation({
+      object: newData,
+    });
+  }, [execCreateMutation]);
 
   const columns = [
     {
@@ -75,6 +98,9 @@ const AccessListsTable = ({ totalCount, loading, onModalOpen, onRemoveAccessList
           <Button onClick={() => onModalOpen(record.id)}>
             {t('Edit')}
           </Button>
+          <Button onClick={() => onCopy(record)}>
+            {t('Copy')}
+          </Button>
           <Button onClick={() => execDeleteMutation({ id: record.id })}>
             {t('Delete')}
           </Button>
@@ -85,7 +111,7 @@ const AccessListsTable = ({ totalCount, loading, onModalOpen, onRemoveAccessList
 
   const datasource = useMemo(() => accessLists.map(accessList => {
     const datasources = Object.entries(accessList?.access_list?.datasources || {}).map(([datasourceId, val]) => (
-      <AccessListDatasource key={datasourceId} datasourceId={datasourceId} datasourcePermissions={val?.models} />
+      <AccessListDatasource key={datasourceId} datasourceId={datasourceId} datasourcePermissions={val?.cubes} />
     ));
 
     return {
@@ -119,14 +145,12 @@ AccessListsTable.propTypes = {
   totalCount: PropTypes.number,
   loading: PropTypes.bool,
   onModalOpen: PropTypes.func,
-  onRemoveAccessList: PropTypes.func,
 };
 
 AccessListsTable.defaultProps = {
   totalCount: 0,
   loading: false,
   onModalOpen: () => {},
-  onRemoveAccessList: () => {},
 };
 
 export default AccessListsTable;

@@ -3,6 +3,21 @@ import JSum from 'jsum';
 import createMd5Hex from './md5Hex.js';
 import { fetchGraphQL } from './graphql.js';
 
+const accessListQuery = `
+  query ($userId: uuid!) {
+    users_by_pk(id: $userId) {
+      members {
+        member_roles {
+          team_role
+          access_list {
+            access_list
+          }
+        }
+      }
+    }
+  }
+`;
+
 const sourceFragment = `
   id
   name
@@ -90,6 +105,16 @@ export const getDataSources = async () => {
   return res;
 };
 
+export const getAccessList = async (userId) => {
+  let res = await fetchGraphQL(accessListQuery, { userId })
+  res = res?.data?.users_by_pk?.members?.[0]?.member_roles?.[0];
+
+  return {
+    accessList: res?.access_list?.access_list,
+    role: res?.team_role,
+  };
+};
+
 export const buildSecurityContext = (dataSource) => {
   if (!dataSource) {
     throw new Error('No dataSource provided');
@@ -161,9 +186,10 @@ export const dataSchemaFiles = async (args) => {
     return [];
   }
 
-  const schemas = await findDataSchemas(args);
+  let schemas = await findDataSchemas(args);
+  schemas = (schemas || []).map(schema => mapSchemaToFile(schema));
 
-  return (schemas || []).map(schema => mapSchemaToFile(schema));
+  return schemas;
 };
 
 export const getSchemaVersion = async (args) => {

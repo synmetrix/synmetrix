@@ -60,7 +60,7 @@ const DatasourceCard = ({ datasource, accessList, isSelected, onClick, onLoadMet
       <div className={s.access}>
         <AccessPart
           datasourceMeta={meta}
-          datasourcePermissions={accessList?.datasources?.[datasource?.id]?.models}
+          datasourcePermissions={accessList?.datasources?.[datasource?.id]?.cubes}
         />
         <div>
           <div className={s.sourceType}>

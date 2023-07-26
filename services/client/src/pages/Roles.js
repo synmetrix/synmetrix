@@ -47,7 +47,7 @@ const Roles = ({ match }) => {
       </div>
       <AccessListModal
         editId={editId}
-        onCancel={() => setLocation(basePath)}
+        onClose={() => setLocation(basePath)}
         visible={!!editId || isNew}
         title={editId ? t('Edit Role') : t('Create role')}
       />
