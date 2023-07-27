@@ -10,6 +10,8 @@ server {
               window.GRAPHQL_WS_URL = "$GRAPHQL_WS_URL";
               window.GRAPHQL_SERVER_URL = "$GRAPHQL_SERVER_URL";
               window.GRAPHQL_PLUS_SERVER_URL = "$GRAPHQL_PLUS_SERVER_URL";
+              window.CUBEJS_MYSQL_API_URL = "$CUBEJS_MYSQL_API_URL";
+              window.CUBEJS_PG_API_URL = "$CUBEJS_PG_API_URL";
               </script>';
       sub_filter_once on;
   }

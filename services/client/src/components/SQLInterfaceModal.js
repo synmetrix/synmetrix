@@ -4,13 +4,14 @@ import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
 
 import {
-  Row, Col, Icon, Button, message,
+  Row, Col, Button, message,
 } from 'antd';
 
 import pickKeys from 'utils/pickKeys';
 
 import useCheckResponse from 'hooks/useCheckResponse';
 import useSQLCredentials from 'hooks/useSQLCredentials';
+import useCurrentUserState from 'hooks/useCurrentUserState';
 
 import ModalView from 'components/ModalView';
 import SQLInterfaceForm from 'components/SQLInterfaceForm';
@@ -18,6 +19,8 @@ import SQLInterfaceForm from 'components/SQLInterfaceForm';
 const SQLInterfaceModal = (props) => {
   const { t } = useTranslation();
   const formRef = useRef(null);
+  const { currentUserState } = useCurrentUserState();
+  const currentUser = currentUserState?.users_by_pk;
 
   const {
     mutations: {
@@ -31,7 +34,10 @@ const SQLInterfaceModal = (props) => {
     form.validateFields((err, fieldsValue) => {
       if (err) return;
 
-      execCreateMutation({ object: fieldsValue });
+      execCreateMutation({ object: {
+        user_id: currentUser?.id,
+        ...fieldsValue
+      }});
     });
   };
 

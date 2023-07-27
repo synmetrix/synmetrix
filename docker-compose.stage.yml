@@ -28,13 +28,12 @@ services:
         - traefik.http.routers.traefik.entrypoints=websecure
         - traefik.http.routers.traefik.service=api@internal
         - traefik.http.routers.traefik.tls=true
-        - traefik.http.routers.traefik.tls.certresolver=le
-        - traefik.http.routers.traefik.middlewares=admin
-        - traefik.http.middlewares.admin.basicauth.users=$BASIC_ADMIN_AUTH
-        - traefik.http.services.traefik.loadbalancer.server.port=8888
+        - traefik.http.services.traefik.loadbalancer.server.port=888
     command:
       - --entrypoints.web.address=:80
       - --entrypoints.websecure.address=:443
+      - --entrypoints.pg_port.address=:15432
+      - --entrypoints.mysql_port.address=:13306
       - --entrypoints.web.http.redirections.entryPoint.to=websecure
       - --entrypoints.web.http.redirections.entryPoint.scheme=https
       - --entrypoints.web.http.redirections.entrypoint.permanent=true
@@ -45,14 +44,12 @@ services:
       - --api=true
       - --api.dashboard=true
       - --accesslog=true
-      - --certificatesresolvers.le.acme.httpchallenge=true
-      - --certificatesresolvers.le.acme.httpchallenge.entrypoint=web
-      - --certificatesresolvers.le.acme.email=$LETSENCRYPT_EMAIL
-      - --certificatesresolvers.le.acme.storage=/acme.json
       # - --log.level=DEBUG
     ports:
       - 80:80
       - 443:443
+      - 15432:15432
+      - 13306:13306
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - ./etc/acme.json:/acme.json
@@ -61,6 +58,19 @@ services:
 
   cubejs:
     image: ${REGISTRY_HOST}/mlcraft/cubejs:latest
+    deploy:
+      labels:
+        # pg api
+        - traefik.enable=true
+        - traefik.tcp.routers.pg_api.rule=HostSNI(`*`)
+        - traefik.tcp.routers.pg_api.entrypoints=pg_port
+        - traefik.tcp.routers.pg_api.service=pg_api
+        - traefik.tcp.services.pg_api.loadbalancer.server.port=15432
+        # mysql api
+        - traefik.tcp.routers.mysql_api.rule=HostSNI(`*`)
+        - traefik.tcp.routers.mysql_api.entrypoints=mysql_port
+        - traefik.tcp.routers.mysql_api.service=mysql_api
+        - traefik.tcp.services.mysql_api.loadbalancer.server.port=13306
     command: yarn start
     env_file:
       - .env
@@ -76,7 +86,6 @@ services:
         - traefik.http.routers.client.rule=Host(`app.${DOMAIN}`)
         - traefik.http.routers.client.entrypoints=websecure
         - traefik.http.routers.client.tls=true
-        - traefik.http.routers.client.tls.certresolver=le
         - traefik.http.services.client.loadbalancer.server.port=80
         - traefik.http.middlewares.client_compress.compress=true
         - traefik.http.routers.client.middlewares=client_compress
@@ -88,6 +97,8 @@ services:
       GRAPHQL_SERVER_URL: ${PROTOCOL:-http}://api.${DOMAIN}/v1/graphql
       GRAPHQL_WS_URL: ${WS_PROTOCOL:-ws}://api.${DOMAIN}/v1/graphql
       GRAPHQL_PLUS_SERVER_URL: ${PROTOCOL:-http}://api-plus.${DOMAIN}
+      CUBEJS_MYSQL_API_URL: tcp://sql-api.${DOMAIN}:13306
+      CUBEJS_PG_API_URL: tcp://sql-api.${DOMAIN}:15432
     networks:
       - mlcraft_default
 
@@ -99,7 +110,6 @@ services:
         - traefik.http.routers.hasura.rule=Host(`api.${DOMAIN}`)
         - traefik.http.routers.hasura.entrypoints=websecure
         - traefik.http.routers.hasura.tls=true
-        - traefik.http.routers.hasura.tls.certresolver=le
         - traefik.http.services.hasura.loadbalancer.server.port=8080
     env_file:
       - .env
@@ -115,7 +125,6 @@ services:
         - traefik.http.routers.hasura_plus.rule=Host(`api-plus.${DOMAIN}`)
         - traefik.http.routers.hasura_plus.entrypoints=websecure
         - traefik.http.routers.hasura_plus.tls=true
-        - traefik.http.routers.hasura_plus.tls.certresolver=le
         - traefik.http.services.hasura_plus.loadbalancer.server.port=3000
     env_file:
       - .env
