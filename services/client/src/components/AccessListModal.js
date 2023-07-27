@@ -65,6 +65,11 @@ const AccessListsModal = ({ editId, onClose, ...props }) => {
     updateState({ selectedSourceId: id });
   }, [updateState]);
 
+  const onCancel = () => {
+    updateState(defaultState);
+    onClose();
+  };
+
   const onSaveList = (accessList) => {
     const newAccessList = {
       name: accessList.name,
@@ -85,6 +90,8 @@ const AccessListsModal = ({ editId, onClose, ...props }) => {
         object: newAccessList,
       });
     }
+
+    onCancel();
   };
 
   useEffect(() => {
@@ -166,11 +173,6 @@ const AccessListsModal = ({ editId, onClose, ...props }) => {
 
     return currentSelectedCount === totalMembersCount;
   }, [currentMembers, state.meta, state.selectedModel, state.selectedSourceId]);
-
-  const onCancel = () => {
-    updateState(defaultState);
-    onClose();
-  };
 
   const modalFooter = (
     <Row type="flex">
