@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import { Row, Col, Button, Modal, Select } from 'antd';
 
 import useCurrentUserState from 'hooks/useCurrentUserState';
+import useCurrentTeamState from 'hooks/useCurrentTeamState';
 import useAccessLists from 'hooks/useAccessLists';
 
 import TableList from 'components/TableList';
@@ -13,6 +14,7 @@ const { Option } = Select;
 
 const TeamTable = ({ data, disableManagement, onRemove, onAccessListChange, loading }) => {
   const { currentUserState } = useCurrentUserState();
+  const { currentTeamState: currentTeam } = useCurrentTeamState();
   const currentUser = currentUserState?.users_by_pk;
 
   const {
@@ -20,6 +22,9 @@ const TeamTable = ({ data, disableManagement, onRemove, onAccessListChange, load
   } = useAccessLists({
     pauseQueryAll: false,
     disableSubscription: false,
+    params: {
+      teamId: currentTeam.id,
+    },
   });
 
   const showConfirm = record => {

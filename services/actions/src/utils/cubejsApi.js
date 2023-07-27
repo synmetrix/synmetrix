@@ -5,6 +5,24 @@ import fetch from 'node-fetch';
 
 import pickKeys from './pickKeys.js';
 import dateParser from './dateParser.js';
+import { fetchGraphQL } from '../utils/graphql';
+import apiError from './apiError.js';
+
+const accessListQuery = `
+  query ($userId: uuid!, $dataSourceId: uuid!) {
+    users_by_pk(id: $userId) {
+      display_name
+      members (where: {team: {datasources: {id: {_eq: $dataSourceId}}}}) {
+        member_roles {
+          access_list {
+            access_list
+          }
+          team_role
+        }
+      }
+    }
+  }
+`;
 
 const { CubejsApi: CubejsApiClient } = cubejsClientCore;
 const CUBEJS_SECRET = process.env.CUBEJS_SECRET || 'testToken';
@@ -61,6 +79,40 @@ const normalizeQuery = playgroundState => {
 
   return { query };
 };
+
+const sections = ['measures', 'dimensions', 'segments'];
+const filterByPermissions = async (meta, userId, dataSourceId, authToken) => {
+  let access = await fetchGraphQL(accessListQuery, { userId, dataSourceId }, authToken);
+  access = access?.data?.users_by_pk?.members?.[0]?.member_roles?.[0];
+
+  const accessList = access?.access_list?.access_list;
+  const role = access?.team_role;
+
+  if (!role) {
+    return apiError('Unknown role.');
+  }
+
+  let result = meta;
+  if (role === 'member') {
+    const accessDatasource = accessList?.datasources?.[dataSourceId]?.cubes;
+
+    result = result.map(cube => {
+      const cubePermissions = accessDatasource?.[cube.name];
+
+      if (!Object.values(cubePermissions || {}).length) {
+        return null;
+      }
+
+      sections.forEach(section => {
+        cube[section] = (cube?.[section] || []).filter(col => (cubePermissions?.[section] || []).includes(col.name));
+      });
+
+      return cube;
+    }).filter(Boolean);
+  }
+
+  return result;
+}
 
 const cubejsApi = ({ dataSourceId, userId, authToken }) => {
   const cubejsToken = jwt.sign({ dataSourceId, userId }, CUBEJS_SECRET, { expiresIn: '1d' });
@@ -120,7 +172,8 @@ const cubejsApi = ({ dataSourceId, userId, authToken }) => {
   return {
     meta: async () => {
       const meta = await init.meta();
-      return meta.cubes || {};
+      const result = await filterByPermissions(meta.cubes || {}, userId, dataSourceId, authToken);
+      return result;
     },
     query: async (playgroundState, fileType = 'json', args = {}) => {
       const normalizedQuery = normalizeQuery(playgroundState);

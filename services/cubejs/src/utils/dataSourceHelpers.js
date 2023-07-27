@@ -75,6 +75,7 @@ const sqlCredentialsQuery = `
   query ($username: String!) {
     sql_credentials(where: {username: {_eq: $username}}) {
       id
+      user_id
       password
       username
       datasource {

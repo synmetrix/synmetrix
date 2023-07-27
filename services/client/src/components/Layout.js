@@ -43,6 +43,11 @@ const UserMenu = ({ mode, anyTeam, restrictScopes = [] }) => {
       path: anyTeam ? withAuthPrefix('/team') : withAuthPrefix('/team/new'),
       title: t('Team'),
     });
+
+    accountSubMenu.push({
+      path: withAuthPrefix('/roles'),
+      title: t('Roles'),
+    });
   }
 
   accountSubMenu.push({
@@ -174,11 +179,6 @@ const MainMenu = (props) => {
       title: t('Data Schemas'),
       children: dataSourceItems,
       scope: 'dataschemas'
-    },
-    {
-      path: withAuthPrefix('/roles'),
-      title: t('Roles'),
-      scope: 'roles'
     },
   ];
 

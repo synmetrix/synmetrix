@@ -13,6 +13,7 @@ const allAccessListsQuery = `
       id
       name
       access_list
+      team_id
       created_at
       updated_at
     }
@@ -25,6 +26,7 @@ const accessListsSubscription = `
       id
       name
       access_list
+      team_id
       created_at
       updated_at
     }
@@ -36,6 +38,7 @@ const currentAccessListQuery = `
     access_lists_by_pk(id: $id) {
       name
       access_list
+      team_id
     }
   }
 `;
@@ -81,6 +84,10 @@ const getListVariables = (pagination, params = {}) => {
     };
   }
 
+  if (params.teamId) {
+    res = set('where.team_id._eq', params.teamId, res);
+  }
+
   return res;
 };
 
@@ -96,7 +103,7 @@ export default ({ pauseQueryAll, pagination = {}, params = {}, disableSubscripti
 
   const [allAccessData, execAllAccessQuery] = useQuery({
     query: allAccessListsQuery,
-    variables: getListVariables(pagination),
+    variables: getListVariables(pagination, params),
     pause: pauseQueryAll,
   }, {
     requestPolicy: 'cache-and-network',
@@ -115,7 +122,7 @@ export default ({ pauseQueryAll, pagination = {}, params = {}, disableSubscripti
 
   const [subscription, execSubscription] = useSubscription({
     query: accessListsSubscription,
-    variables: getListVariables(pagination),
+    variables: getListVariables(pagination, params),
     pause: disableSubscription,
   }, handleSubscription);
 
@@ -137,12 +144,6 @@ export default ({ pauseQueryAll, pagination = {}, params = {}, disableSubscripti
       execAllAccessQuery({ requestPolicy: 'network-only' });
     }
   }, [subscription.data, execAllAccessQuery]);
-
-  useEffect(() => {
-    if (editId) {
-      execQueryCurrent();
-    }
-  }, [editId, execQueryCurrent]);
 
   return {
     all,

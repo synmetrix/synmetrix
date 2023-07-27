@@ -1,13 +1,13 @@
 import React, { useEffect, useMemo, useCallback } from 'react';
 import PropTypes from 'prop-types';
-import { set, remove } from 'unchanged';
+import { set } from 'unchanged';
 
 import { useTranslation } from 'react-i18next';
 import { useSetState } from 'ahooks';
 import 'react-responsive-carousel/lib/styles/carousel.min.css';
 import { Carousel } from 'react-responsive-carousel';
 
-import { Row, Col, Button, Input, Checkbox } from 'antd';
+import { Row, Col, Button, Input, Checkbox, message } from 'antd';
 
 import pickKeys from 'utils/pickKeys';
 
@@ -18,6 +18,7 @@ import AccessPart, { calcMembersCount } from 'components/AccessPart';
 import useSources from 'hooks/useSources';
 import useAccessLists from 'hooks/useAccessLists';
 import useCheckResponse from 'hooks/useCheckResponse';
+import useCurrentTeamState from 'hooks/useCurrentTeamState';
 
 const defaultState = {
   accessList: null,
@@ -28,6 +29,7 @@ const defaultState = {
 
 const AccessListsModal = ({ editId, onClose, ...props }) => {
   const { t } = useTranslation();
+  const { currentTeamState: currentTeam } = useCurrentTeamState();
   const [state, updateState] = useSetState(defaultState);
 
   const {
@@ -55,11 +57,19 @@ const AccessListsModal = ({ editId, onClose, ...props }) => {
     pauseQueryAll: true,
     params: {
       editId,
+      teamId: currentTeam.id,
     },
   });
 
-  useCheckResponse(createMutation, () => { }, { successMessage: 'Created.' });
-  useCheckResponse(updateMutation, () => { }, { successMessage: 'Updated.' });
+  useCheckResponse(createMutation, () => {}, { successMessage: 'Created.' });
+
+  useCheckResponse(updateMutation, (res) => {
+    if (!res.update_access_lists_by_pk) {
+      message.error('No permissions');
+    } else {
+      message.success('Saved.');
+    }
+  }, { successMessage: null });
 
   const onSourceClick = useCallback((id) => {
     updateState({ selectedSourceId: id });
@@ -72,10 +82,11 @@ const AccessListsModal = ({ editId, onClose, ...props }) => {
 
   const onSaveList = (accessList) => {
     const newAccessList = {
-      name: accessList.name,
+      name: accessList?.name,
       access_list: {
-        datasources: accessList.datasources,
+        datasources: accessList?.datasources,
       },
+      team_id: currentTeam.id,
     };
 
     if (editId) {
@@ -103,7 +114,7 @@ const AccessListsModal = ({ editId, onClose, ...props }) => {
         }
       });
     }
-  }, [current, updateState]);
+  }, [current, currentTeam.id, updateState]);
 
   useEffect(() => {
     if (!state.selectedSourceId && all.length) {
@@ -171,7 +182,7 @@ const AccessListsModal = ({ editId, onClose, ...props }) => {
     const currentSelectedCount = calcMembersCount(currentMembers?.[state?.selectedModel]);
     const totalMembersCount = calcMembersCount(state.meta?.[state.selectedSourceId]?.[state.selectedModel]);
 
-    return currentSelectedCount === totalMembersCount;
+    return totalMembersCount && currentSelectedCount === totalMembersCount;
   }, [currentMembers, state.meta, state.selectedModel, state.selectedSourceId]);
 
   const modalFooter = (
@@ -225,46 +236,48 @@ const AccessListsModal = ({ editId, onClose, ...props }) => {
                 ))}
               </div>
             </Col>
-            <Col xs={12}>
-              <div style={{ padding: '16px', marginBottom: 10, borderRadius: 8, backgroundColor: '#FFF' }}>
-                <b>{t('Measures/dimensions/segments')}</b>
-                <div style={{ color: '#000' }}>
-                  <Checkbox checked={isAllSelected} style={{ marginRight: 10 }} onChange={(e) => onSelectAll(e.target.checked)} />
-                  {t('Select all')}
-                </div>
-                <div>
-                  {Object.entries(cubes?.[state?.selectedModel] || []).map(([name, columns]) => (
-                    <div key={name} style={{ marginTop: 15 }}>
-                      <b>{(name || '').toUpperCase()}</b>
-                      {(columns || []).map(column => {
-                        const curSettings = currentMembers?.[state?.selectedModel]?.[name] || [];
-                        const colIndex = curSettings.findIndex(col => col === column.name);
+            {cubes && (
+              <Col xs={12}>
+                <div style={{ padding: '16px', marginBottom: 10, borderRadius: 8, backgroundColor: '#FFF' }}>
+                  <b>{t('Measures/dimensions/segments')}</b>
+                  <div style={{ color: '#000' }}>
+                    <Checkbox checked={isAllSelected} style={{ marginRight: 10 }} onChange={(e) => onSelectAll(e.target.checked)} />
+                    {t('Select all')}
+                  </div>
+                  <div>
+                    {Object.entries(cubes?.[state?.selectedModel] || []).map(([name, columns]) => (
+                      <div key={name} style={{ marginTop: 15 }}>
+                        <b>{(name || '').toUpperCase()}</b>
+                        {(columns || []).map(column => {
+                          const curSettings = currentMembers?.[state?.selectedModel]?.[name] || [];
+                          const colIndex = curSettings.findIndex(col => col === column.name);
 
-                        return (
-                          <div key={column.name} style={{ fontWeight: 600, color: '#000' }}>
-                            <Checkbox
-                              style={{ marginRight: 10 }}
-                              checked={colIndex !== -1}
-                              onChange={() => {
-                                if (colIndex !== -1) {
-                                  curSettings.splice(colIndex, 1);
-                                } else {
-                                  curSettings.push(column.name);
-                                }
+                          return (
+                            <div key={column.name} style={{ fontWeight: 600, color: '#000' }}>
+                              <Checkbox
+                                style={{ marginRight: 10 }}
+                                checked={colIndex !== -1}
+                                onChange={() => {
+                                  if (colIndex !== -1) {
+                                    curSettings.splice(colIndex, 1);
+                                  } else {
+                                    curSettings.push(column.name);
+                                  }
 
-                                const updatedAccessList = set(`datasources.${state.selectedSourceId}.cubes.${state.selectedModel}.${name}`, curSettings, state.accessList);
-                                updateState({ accessList: updatedAccessList });
-                              }}
-                            />
-                            {column.shortTitle}
-                          </div>
-                        );
-                      })}
-                    </div>
-                  ))}
+                                  const updatedAccessList = set(`datasources.${state.selectedSourceId}.cubes.${state.selectedModel}.${name}`, curSettings, state.accessList);
+                                  updateState({ accessList: updatedAccessList });
+                                }}
+                              />
+                              {column.shortTitle}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    ))}
+                  </div>
                 </div>
-              </div>
-            </Col>
+              </Col>
+            )}
           </Row>
         </div>
       )}
