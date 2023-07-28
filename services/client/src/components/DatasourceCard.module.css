@@ -1,8 +1,7 @@
 .card {
   cursor: pointer;
   display: inline-block;
-  min-width: 260px;
-  max-width: 300px;
+  width: 244px;
   padding: 16px;
   border: 1px solid rgba(165, 165, 165, 0.5);
   border-radius: 8px;

@@ -7,13 +7,14 @@ import { useSetState } from 'ahooks';
 import 'react-responsive-carousel/lib/styles/carousel.min.css';
 import { Carousel } from 'react-responsive-carousel';
 
-import { Row, Col, Button, Input, Checkbox, message } from 'antd';
+import { Row, Col, Button, Input, Checkbox, message, Empty } from 'antd';
 
 import pickKeys from 'utils/pickKeys';
 
 import ModalView from 'components/ModalView';
 import DatasourceCard from 'components/DatasourceCard';
 import AccessPart, { calcMembersCount } from 'components/AccessPart';
+import Loader from 'components/Loader';
 
 import useSources from 'hooks/useSources';
 import useAccessLists from 'hooks/useAccessLists';
@@ -218,25 +219,25 @@ const AccessListsModal = ({ editId, onClose, ...props }) => {
               {cards}
             </Carousel>
           </div>
-          <Row>
-            <Col xs={12}>
-              <div style={{ padding: '16px', marginBottom: 10, borderRadius: 8, backgroundColor: '#F9F9F9' }}>
-                <b>{t('Data models')}</b>
-                {Object.keys(cubes).map(name => (
-                  <div key={name} style={{ cursor: 'pointer', display: 'flex', justifyContent: 'space-between', margin: '8px 0', padding: '10px 12px', fontSize: 12, borderRadius: 8, backgroundColor: state.selectedModel === name ? '#F0F1F3' : '#FFF' }} onClick={() => updateState({ selectedModel: name })}>
-                    <b>{name}</b>
-                    <div>
-                      <AccessPart
-                        datasourceMeta={state.meta?.[state?.selectedSourceId]}
-                        datasourcePermissions={state.accessList?.datasources?.[state.selectedSourceId]?.cubes}
-                        modelName={name}
-                      />
+          {Object.values(cubes).length ? (
+            <Row>
+              <Col xs={12}>
+                <div style={{ padding: '16px', marginBottom: 10, borderRadius: 8, backgroundColor: '#F9F9F9' }}>
+                  <b>{t('Data models')}</b>
+                  {Object.keys(cubes).map(name => (
+                    <div key={name} style={{ cursor: 'pointer', display: 'flex', justifyContent: 'space-between', margin: '8px 0', padding: '10px 12px', fontSize: 12, borderRadius: 8, backgroundColor: state.selectedModel === name ? '#F0F1F3' : '#FFF' }} onClick={() => updateState({ selectedModel: name })}>
+                      <b>{name}</b>
+                      <div>
+                        <AccessPart
+                          datasourceMeta={state.meta?.[state?.selectedSourceId]}
+                          datasourcePermissions={state.accessList?.datasources?.[state.selectedSourceId]?.cubes}
+                          modelName={name}
+                        />
+                      </div>
                     </div>
-                  </div>
-                ))}
-              </div>
-            </Col>
-            {cubes && (
+                  ))}
+                </div>
+              </Col>
               <Col xs={12}>
                 <div style={{ padding: '16px', marginBottom: 10, borderRadius: 8, backgroundColor: '#FFF' }}>
                   <b>{t('Measures/dimensions/segments')}</b>
@@ -277,8 +278,12 @@ const AccessListsModal = ({ editId, onClose, ...props }) => {
                   </div>
                 </div>
               </Col>
-            )}
-          </Row>
+            </Row>
+          ) : (
+            <Loader spinning={currentData.fetching}>
+              <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="No data." />
+            </Loader>
+          )}
         </div>
       )}
     />

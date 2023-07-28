@@ -2,7 +2,7 @@ import React, { useMemo, useCallback } from 'react';
 import PropTypes from 'prop-types';
 
 import { useTranslation } from 'react-i18next';
-import { Row, Col, Button } from 'antd';
+import { Row, Col, Button, message } from 'antd';
 
 import TableList from 'components/TableList';
 import AccessListDatasource from 'components/AccessListDatasource';
@@ -37,18 +37,25 @@ const AccessListsTable = ({ totalCount, loading, onModalOpen }) => {
     pagination: paginationVars,
   });
 
-  useCheckResponse(createMutation, () => { }, {
+  useCheckResponse(createMutation, () => {}, {
     successMessage: t('Copied.'),
   });
 
-  useCheckResponse(deleteMutation, () => { }, {
-    successMessage: t('Deleted.'),
+  useCheckResponse(deleteMutation, (res) => {
+    if (!res?.delete_access_lists_by_pk) {
+      message.error('No permissions');
+    } else {
+      message.success('Deleted.');
+    }
+  }, {
+    successMessage: null,
   });
 
   const onCopy = useCallback((accessList) => {
     const newData = {
-      accessList: accessList.accessList,
+      access_list: accessList.access_list,
       name: accessList.name || '',
+      team_id: accessList.team_id,
     };
   
     newData.name += ' (copy)';
@@ -69,7 +76,7 @@ const AccessListsTable = ({ totalCount, loading, onModalOpen }) => {
       dataIndex: 'access',
       key: 'access',
       render: (_, record) => {
-        const count = Object.keys(record?.access_list?.datasources || {}).length;
+        const count = Object.values(record?.access_list?.datasources || {}).length;
         return `${count} Data sources`;
       }
     },

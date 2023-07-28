@@ -6,7 +6,7 @@ export default async (session, input, headers) => {
   const userId = session?.['x-hasura-user-id'];
 
   try {
-    let result = await cubejsApi({
+    const result = await cubejsApi({
       dataSourceId,
       userId,
       authToken: headers?.authorization,

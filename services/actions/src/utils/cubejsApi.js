@@ -6,7 +6,7 @@ import fetch from 'node-fetch';
 import pickKeys from './pickKeys.js';
 import dateParser from './dateParser.js';
 import { fetchGraphQL } from '../utils/graphql';
-import apiError from './apiError.js';
+import apiError from '../utils/apiError.js';
 
 const accessListQuery = `
   query ($userId: uuid!, $dataSourceId: uuid!) {
@@ -110,7 +110,6 @@ const filterByPermissions = async (meta, userId, dataSourceId, authToken) => {
       return cube;
     }).filter(Boolean);
   }
-
   return result;
 }
 

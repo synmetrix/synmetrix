@@ -1,6 +1,5 @@
 import React, { useMemo, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { useTranslation } from 'react-i18next';
 import cx from 'classnames';
 
 import useSources from 'hooks/useSources';
@@ -41,10 +40,10 @@ const DatasourceCard = ({ datasource, accessList, isSelected, onClick, onLoadMet
   const meta = useMemo(() => updateMeta(currentMeta), [currentMeta]);
 
   useEffect(() => {
-    if (datasource.id && !currentMeta.length && !metaData.fetching) {
+    if (datasource.id && !metaData.data && !metaData.fetching) {
       execQueryMeta();
     }
-  }, [datasource.id, metaData.data, execQueryMeta, currentMeta, metaData.fetching]);
+  }, [datasource.id, metaData.data, execQueryMeta, metaData.fetching]);
 
   useEffect(() => {
     if (meta) {
