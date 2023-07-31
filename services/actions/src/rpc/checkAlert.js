@@ -97,6 +97,7 @@ const checkAndTriggerAlert = async (alert) => {
     let isUpperBoundMatched = false;
 
     const value = parseFloat(row[measure], 10);
+    console.log(`Alert ${id} measure value: ${value}`)
 
     if (lowerBound) {
       isLowerBoundMatched = value > lowerBound;
@@ -106,10 +107,17 @@ const checkAndTriggerAlert = async (alert) => {
       isUpperBoundMatched = value < upperBound;
     }
     
-    return isLowerBoundMatched && isUpperBoundMatched;
+    if (lowerBound && upperBound) {
+      return isLowerBoundMatched && isUpperBoundMatched;
+    } else if (lowerBound) {
+      return isLowerBoundMatched;
+    } else if (upperBound) {
+      return isUpperBoundMatched;
+    }
   });
 
   if (!isMatched) {
+    console.log(`Alert ${id} not fired, lowerBound: ${lowerBound}, upperBound: ${upperBound}`);
     await delLockData(alert);
     return result;
   }
