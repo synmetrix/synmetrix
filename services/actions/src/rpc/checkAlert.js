@@ -116,7 +116,7 @@ const checkAndTriggerAlert = async (alert) => {
     }
   });
 
-  if (!isMatched) {
+  if (isMatched) {
     console.log(`Alert ${id} not fired, lowerBound: ${lowerBound}, upperBound: ${upperBound}`);
     await delLockData(alert);
     return result;
