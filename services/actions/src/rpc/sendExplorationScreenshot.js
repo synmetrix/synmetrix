@@ -89,10 +89,12 @@ const getDataAndScreenshot = async (exploration) => {
   const { datasource_id: datasourceId, user_id: userId, id: explorationId } = exploration;
 
   const explorationTableURL = `${APP_FRONTEND_URL}/~/explore/${datasourceId}/${explorationId}/?screenshot=1`;
+  console.log("explorationTableURL", explorationTableURL)
 
   const accessToken = await generateUserAccessToken(userId);
 
   if (!accessToken) {
+    console.error('Access token hasn`t been signed')
     return { error: 'Access token hasn`t been signed' };
   }
 
