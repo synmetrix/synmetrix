@@ -24,15 +24,20 @@ const dev = NODE_ENV !== 'production';
 // 7 days
 const AWS_S3_PRESIGNED_URL_EXPIRES_IN = 7 * 24 * 60 * 60;
 
-const s3Client = new S3Client({
-  endpoint: AWS_S3_ENDPOINT,
+const s3ClientConfig = {
   forcePathStyle: true,
   region: AWS_S3_REGION,
   credentials: {
     accessKeyId: AWS_S3_ACCESS_KEY_ID,
     secretAccessKey: AWS_S3_SECRET_ACCESS_KEY,
   },
-});
+};
+
+if (AWS_S3_ENDPOINT) {
+  s3ClientConfig.endpoint = AWS_S3_ENDPOINT;
+}
+
+const s3Client = new S3Client(s3ClientConfig);
 
 export const findOrCreateBucket = async (bucketName) => {
   try {
