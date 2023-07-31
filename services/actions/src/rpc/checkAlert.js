@@ -99,14 +99,14 @@ const checkAndTriggerAlert = async (alert) => {
     const value = parseFloat(row[measure], 10);
 
     if (lowerBound) {
-      isLowerBoundMatched = value < lowerBound;
+      isLowerBoundMatched = value > lowerBound;
     }
 
     if (upperBound) {
-      isUpperBoundMatched = value > upperBound;
+      isUpperBoundMatched = value < upperBound;
     }
     
-    return isLowerBoundMatched || isUpperBoundMatched;
+    return isLowerBoundMatched && isUpperBoundMatched;
   });
 
   if (!isMatched) {
