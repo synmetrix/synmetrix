@@ -157,13 +157,13 @@ const DataSourcesTable = ({ editId, onModalClose, onModalOpen }) => {
       title: 'PG Host',
       dataIndex: 'pg_host',
       key: 'pg_host',
-      render: () => CUBEJS_MYSQL_API_URL,
+      render: () => CUBEJS_PG_API_URL,
     },
     {
       title: 'MySQL Host',
       dataIndex: 'mysql_host',
       key: 'mysql_host',
-      render: () => CUBEJS_PG_API_URL,
+      render: () => CUBEJS_MYSQL_API_URL,
     },
     {
       title: 'Username',
