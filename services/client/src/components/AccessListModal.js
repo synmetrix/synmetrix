@@ -34,7 +34,7 @@ const AccessListsModal = ({ editId, onClose, ...props }) => {
   const [state, updateState] = useSetState(defaultState);
 
   const {
-    all,
+    all: datasources,
     queries: {
       allData,
     }
@@ -58,7 +58,6 @@ const AccessListsModal = ({ editId, onClose, ...props }) => {
     pauseQueryAll: true,
     params: {
       editId,
-      teamId: currentTeam.id,
     },
   });
 
@@ -118,10 +117,10 @@ const AccessListsModal = ({ editId, onClose, ...props }) => {
   }, [current, currentTeam.id, updateState]);
 
   useEffect(() => {
-    if (!state.selectedSourceId && all.length) {
-      updateState({ selectedSourceId: all[0].id });
+    if (!state.selectedSourceId && datasources.length) {
+      updateState({ selectedSourceId: datasources[0].id });
     }
-  }, [all, state.selectedSourceId, updateState]);
+  }, [datasources, state.selectedSourceId, updateState]);
 
   const cubes = useMemo(() => (state.meta?.[state?.selectedSourceId] || {}), [state.meta, state.selectedSourceId]);
 
@@ -149,7 +148,7 @@ const AccessListsModal = ({ editId, onClose, ...props }) => {
   }, [cubes, state.accessList, state.selectedModel, state.selectedSourceId, updateState]);
 
   const cards = useMemo(() => {
-    const chunks = all.reduce((acc, value, index) => {
+    const chunks = datasources.reduce((acc, value, index) => {
       const chunkIndex = Math.floor(index / 3);
 
       if (!acc[chunkIndex]) {
@@ -176,7 +175,7 @@ const AccessListsModal = ({ editId, onClose, ...props }) => {
         ))}
       </div>
     ));
-  }, [all, onLoadMeta, onSourceClick, state.accessList, state.selectedSourceId]);
+  }, [datasources, onLoadMeta, onSourceClick, state.accessList, state.selectedSourceId]);
 
   const currentMembers = useMemo(() => state?.accessList?.datasources?.[state?.selectedSourceId]?.cubes || {}, [state.accessList, state.selectedSourceId]);
   const isAllSelected = useMemo(() => {
@@ -215,7 +214,7 @@ const AccessListsModal = ({ editId, onClose, ...props }) => {
           </div>
           <div>
             <b>2. {t('Set access to data source resources')}</b>
-            <Carousel showArrows stopOnHover showIndicators={false}>
+            <Carousel showArrows showIndicators={false}>
               {cards}
             </Carousel>
           </div>

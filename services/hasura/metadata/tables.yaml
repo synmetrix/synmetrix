@@ -99,6 +99,10 @@
 - table:
     name: access_lists
     schema: public
+  object_relationships:
+    - name: team
+      using:
+        foreign_key_constraint_on: team_id
   array_relationships:
     - name: member_roles
       using:
@@ -110,32 +114,69 @@
   insert_permissions:
     - role: user
       permission:
-        check: {}
+        check:
+          team:
+            members:
+              _and:
+                - user_id:
+                    _eq: X-Hasura-User-Id
+                - member_roles:
+                    team_role:
+                      _in:
+                        - owner
+                        - admin
         columns:
           - access_list
           - name
+          - team_id
   select_permissions:
     - role: user
       permission:
         columns:
           - access_list
-          - name
           - created_at
-          - updated_at
           - id
-        filter: {}
+          - name
+          - team_id
+          - updated_at
+        filter:
+          team:
+            members:
+              user_id:
+                _eq: X-Hasura-User-Id
   update_permissions:
     - role: user
       permission:
         columns:
           - access_list
           - name
-        filter: {}
+          - team_id
+        filter:
+          team:
+            members:
+              _and:
+                - user_id:
+                    _eq: X-Hasura-User-Id
+                - member_roles:
+                    team_role:
+                      _in:
+                        - owner
+                        - admin
         check: null
   delete_permissions:
     - role: user
       permission:
-        filter: {}
+        filter:
+          team:
+            members:
+              _and:
+                - user_id:
+                    _eq: X-Hasura-User-Id
+                - member_roles:
+                    team_role:
+                      _in:
+                        - owner
+                        - admin
 - table:
     name: alerts
     schema: public
@@ -782,7 +823,9 @@
                       _eq: X-Hasura-User-Id
                   - member_roles:
                       team_role:
-                        _eq: owner
+                        _in:
+                          - owner
+                          - admin
         columns:
           - access_list_id
           - id
@@ -817,7 +860,9 @@
                       _eq: X-Hasura-User-Id
                   - member_roles:
                       team_role:
-                        _eq: owner
+                        _in:
+                          - owner
+                          - admin
         check: null
   delete_permissions:
     - role: user
@@ -831,7 +876,9 @@
                       _eq: X-Hasura-User-Id
                   - member_roles:
                       team_role:
-                        _eq: owner
+                        _in:
+                          - owner
+                          - admin
 - table:
     name: members
     schema: public
@@ -1269,6 +1316,13 @@
     name: teams
     schema: public
   array_relationships:
+    - name: access_lists
+      using:
+        foreign_key_constraint_on:
+          column: team_id
+          table:
+            name: access_lists
+            schema: public
     - name: alerts
       using:
         foreign_key_constraint_on:

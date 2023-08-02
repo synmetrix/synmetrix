@@ -7,6 +7,8 @@ import { useTrackedEffect } from 'ahooks';
 import useMutation from './useMutation';
 import useQuery from './useQuery';
 
+import useCurrentTeamState from './useCurrentTeamState';
+
 const allAccessListsQuery = `
   query ($offset: Int, $limit: Int, $where: access_lists_bool_exp, $order_by: [access_lists_order_by!]) {
     access_lists (offset: $offset, limit: $limit, where: $where, order_by: $order_by) {
@@ -95,7 +97,12 @@ const handleSubscription = (_, response) => response;
 
 const role = 'user';
 export default ({ pauseQueryAll, pagination = {}, params = {}, disableSubscription = true }) => {
-  const { editId } = params;
+  const { currentTeamState } = useCurrentTeamState();
+
+  const reqParams = {
+    ...params,
+    teamId: currentTeamState?.id,
+  };
 
   const [updateMutation, execUpdateMutation] = useMutation(updateAccessListMutation, { role });
   const [deleteMutation, execDeleteMutation] = useMutation(delAccessListMutation, { role });
@@ -103,8 +110,8 @@ export default ({ pauseQueryAll, pagination = {}, params = {}, disableSubscripti
 
   const [allAccessData, execAllAccessQuery] = useQuery({
     query: allAccessListsQuery,
-    variables: getListVariables(pagination, params),
-    pause: pauseQueryAll,
+    variables: getListVariables(pagination, reqParams),
+    pause: true,
   }, {
     requestPolicy: 'cache-and-network',
     role,
@@ -113,7 +120,7 @@ export default ({ pauseQueryAll, pagination = {}, params = {}, disableSubscripti
   const [currentData, execQueryCurrent] = useQuery({
     query: currentAccessListQuery,
     variables: {
-      id: editId,
+      id: params.editId,
     },
   }, {
     requestPolicy: 'cache-and-network',
@@ -122,7 +129,7 @@ export default ({ pauseQueryAll, pagination = {}, params = {}, disableSubscripti
 
   const [subscription, execSubscription] = useSubscription({
     query: accessListsSubscription,
-    variables: getListVariables(pagination, params),
+    variables: getListVariables(pagination, reqParams),
     pause: disableSubscription,
   }, handleSubscription);
 
@@ -144,6 +151,12 @@ export default ({ pauseQueryAll, pagination = {}, params = {}, disableSubscripti
       execAllAccessQuery({ requestPolicy: 'network-only' });
     }
   }, [subscription.data, execAllAccessQuery]);
+
+  useEffect(() => {
+    if (reqParams.teamId && !pauseQueryAll) {
+      execAllAccessQuery();
+    }
+  }, [execAllAccessQuery, pauseQueryAll, reqParams.teamId]);
 
   return {
     all,

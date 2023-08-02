@@ -290,7 +290,8 @@ const getColumnsArray = (cube) => [
 
 const options = {
   queryRewrite: async (query, { securityContext }) => {
-    const { dataSourceId, accessList, role } = securityContext;
+    const { dataSourceId, userId } = securityContext;
+    const { accessList, role } = securityContext?.accessList ? securityContext : await getAccessList(userId);
     const accessDatasource = accessList?.datasources?.[dataSourceId]?.cubes;
 
     if (['owner', 'admin'].includes(role)) {
@@ -298,7 +299,7 @@ const options = {
     }
 
     if (!accessDatasource) {
-      throw new Error("No access to datasource!");
+      throw new Error('No access to datasource!');
     }
 
     const queryNames = getColumnsArray(query);
@@ -358,7 +359,10 @@ const options = {
 
     return {
       password: sqlCredentials.password,
-      securityContext,
+      securityContext: {
+        ...securityContext,
+        userId: sqlCredentials.user_id,
+      },
     };
   },
 };

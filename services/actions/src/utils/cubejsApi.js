@@ -82,15 +82,12 @@ const normalizeQuery = playgroundState => {
 
 const sections = ['measures', 'dimensions', 'segments'];
 const filterByPermissions = async (meta, userId, dataSourceId, authToken) => {
-  let access = await fetchGraphQL(accessListQuery, { userId, dataSourceId }, authToken);
-  access = access?.data?.users_by_pk?.members?.[0]?.member_roles?.[0];
+  const accessData = await fetchGraphQL(accessListQuery, { userId, dataSourceId }, authToken);
+  const member = accessData?.data?.users_by_pk?.members?.[0];
+  const memberRole = member?.member_roles?.[0];
 
-  const accessList = access?.access_list?.access_list;
-  const role = access?.team_role;
-
-  if (!role) {
-    return apiError('Unknown role.');
-  }
+  const accessList = memberRole?.access_list?.access_list;
+  const role = memberRole?.team_role;
 
   let result = meta;
   if (role === 'member') {
@@ -110,6 +107,7 @@ const filterByPermissions = async (meta, userId, dataSourceId, authToken) => {
       return cube;
     }).filter(Boolean);
   }
+
   return result;
 }
 
