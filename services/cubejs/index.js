@@ -294,7 +294,8 @@ const options = {
     const { config, role } = securityContext?.config ? securityContext : await getPermissions(userId);
     const accessDatasource = config?.datasources?.[dataSourceId]?.cubes;
 
-    if (['owner', 'admin'].includes(role)) {
+    const hasMemberFullAccess = (role === 'member') && !config;
+    if (['owner', 'admin'].includes(role) || hasMemberFullAccess) {
       return query;
     }
 

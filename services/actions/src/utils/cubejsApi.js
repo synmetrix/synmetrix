@@ -89,7 +89,7 @@ const filterByPermissions = async (meta, userId, dataSourceId, authToken) => {
   const role = memberRole?.team_role;
 
   let result = meta;
-  if (role === 'member') {
+  if (role === 'member' && config) {
     const accessDatasource = config?.datasources?.[dataSourceId]?.cubes;
 
     result = result.map(cube => {
