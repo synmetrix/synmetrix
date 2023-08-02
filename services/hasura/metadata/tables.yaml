@@ -126,14 +126,14 @@
                         - owner
                         - admin
         columns:
-          - access_list
+          - config
           - name
           - team_id
   select_permissions:
     - role: user
       permission:
         columns:
-          - access_list
+          - config
           - created_at
           - id
           - name
@@ -148,7 +148,7 @@
     - role: user
       permission:
         columns:
-          - access_list
+          - config
           - name
           - team_id
         filter:

@@ -15,7 +15,7 @@ const accessListQuery = `
       members (where: {team: {datasources: {id: {_eq: $dataSourceId}}}}) {
         member_roles {
           access_list {
-            access_list
+            config
           }
           team_role
         }
@@ -86,12 +86,12 @@ const filterByPermissions = async (meta, userId, dataSourceId, authToken) => {
   const member = accessData?.data?.users_by_pk?.members?.[0];
   const memberRole = member?.member_roles?.[0];
 
-  const accessList = memberRole?.access_list?.access_list;
+  const config = memberRole?.access_list?.config;
   const role = memberRole?.team_role;
 
   let result = meta;
   if (role === 'member') {
-    const accessDatasource = accessList?.datasources?.[dataSourceId]?.cubes;
+    const accessDatasource = config?.datasources?.[dataSourceId]?.cubes;
 
     result = result.map(cube => {
       const cubePermissions = accessDatasource?.[cube.name];

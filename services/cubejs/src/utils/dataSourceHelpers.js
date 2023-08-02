@@ -10,7 +10,7 @@ const accessListQuery = `
         member_roles {
           team_role
           access_list {
-            access_list
+            config
           }
         }
       }
@@ -106,12 +106,12 @@ export const getDataSources = async () => {
   return res;
 };
 
-export const getAccessList = async (userId) => {
+export const getPermissions = async (userId) => {
   let res = await fetchGraphQL(accessListQuery, { userId })
   res = res?.data?.users_by_pk?.members?.[0]?.member_roles?.[0];
 
   return {
-    accessList: res?.access_list?.access_list,
+    config: res?.access_list?.config,
     role: res?.team_role,
   };
 };

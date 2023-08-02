@@ -1,7 +1,10 @@
 .card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  flex-grow: 1;
   cursor: pointer;
-  display: inline-block;
-  width: 244px;
+  max-width: 250px;
   padding: 16px;
   border: 1px solid rgba(165, 165, 165, 0.5);
   border-radius: 8px;
@@ -15,7 +18,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  width: 90px;
+  min-width: 90px;
   height: 24px;
   padding: 0 6px;
   font-weight: bold;
@@ -32,4 +35,13 @@
 
 .selected {
   background-color: beige;
+}
+
+.icon {
+  height: 14px;
+  width: 14px;
+}
+
+.datasource {
+  font-size: 10px;
 }

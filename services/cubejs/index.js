@@ -12,7 +12,7 @@ import {
   getDataSources,
   buildSecurityContext,
   findSqlCredentials,
-  getAccessList,
+  getPermissions,
 } from './src/utils/dataSourceHelpers.js';
 import { logging } from './src/utils/logging.js';
 
@@ -74,7 +74,7 @@ const setupAuthInfo = async (req, auth) => {
   }
 
   const dataSource = await findDataSource({ dataSourceId, authToken });
-  const access = await getAccessList(userId);
+  const permissions = await getPermissions(userId);
 
   if (!dataSource?.id) {
     error = `Source "${dataSourceId}" not found`;
@@ -88,7 +88,7 @@ const setupAuthInfo = async (req, auth) => {
     dataSourceId,
     userId,
     authToken,
-    ...access,
+    ...permissions,
     ...securityContext,
   };
 };
@@ -291,8 +291,8 @@ const getColumnsArray = (cube) => [
 const options = {
   queryRewrite: async (query, { securityContext }) => {
     const { dataSourceId, userId } = securityContext;
-    const { accessList, role } = securityContext?.accessList ? securityContext : await getAccessList(userId);
-    const accessDatasource = accessList?.datasources?.[dataSourceId]?.cubes;
+    const { config, role } = securityContext?.config ? securityContext : await getPermissions(userId);
+    const accessDatasource = config?.datasources?.[dataSourceId]?.cubes;
 
     if (['owner', 'admin'].includes(role)) {
       return query;

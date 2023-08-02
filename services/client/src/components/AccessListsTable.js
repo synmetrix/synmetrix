@@ -53,7 +53,7 @@ const AccessListsTable = ({ totalCount, loading, onModalOpen }) => {
 
   const onCopy = useCallback((accessList) => {
     const newData = {
-      access_list: accessList.access_list,
+      config: accessList.config,
       name: accessList.name || '',
       team_id: accessList.team_id,
     };
@@ -76,7 +76,7 @@ const AccessListsTable = ({ totalCount, loading, onModalOpen }) => {
       dataIndex: 'access',
       key: 'access',
       render: (_, record) => {
-        const count = Object.values(record?.access_list?.datasources || {}).length;
+        const count = Object.values(record?.config?.datasources || {}).length;
         return `${count} Data sources`;
       }
     },
@@ -117,7 +117,7 @@ const AccessListsTable = ({ totalCount, loading, onModalOpen }) => {
   ];
 
   const datasource = useMemo(() => accessLists.map(accessList => {
-    const datasources = Object.entries(accessList?.access_list?.datasources || {}).map(([datasourceId, val]) => (
+    const datasources = Object.entries(accessList?.config?.datasources || {}).map(([datasourceId, val]) => (
       <AccessListDatasource key={datasourceId} datasourceId={datasourceId} datasourcePermissions={val?.cubes} />
     ));
 

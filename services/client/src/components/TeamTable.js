@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import PropTypes from 'prop-types';
 
 import { Row, Col, Button, Modal, Select } from 'antd';
@@ -35,6 +35,14 @@ const TeamTable = ({ data, disableManagement, onRemove, onAccessListChange, load
 
   const isRowDisabled = record => disableManagement || record?.user?.id === currentUser?.id;
 
+  const accessListOptions = useMemo(() => 
+    accessLists.map(a => (
+      <Option key={a.id} value={a.id}>
+        {a.name}
+      </Option>
+    ))
+  , [accessLists]);
+
   const managementColumns = [
     {
       title: 'Roles',
@@ -55,15 +63,13 @@ const TeamTable = ({ data, disableManagement, onRemove, onAccessListChange, load
         if (role === 'member') {
           return (
             <Select
-              value={accessList?.id}
+              allowClear
               style={{ width: 240 }}
-              onChange={(accessListId) => onAccessListChange(record?.member_roles?.[0]?.id, accessListId)}
+              value={accessList?.id || '* FULL ACCESS *'}
+              disabled={!accessLists.length}
+              onChange={(accessListId = null) => onAccessListChange(record?.member_roles?.[0]?.id, accessListId)}
             >
-              {accessLists.map(a => (
-                <Option key={a.id} value={a.id}>
-                  {a.name}
-                </Option>
-              ))}
+              {accessListOptions}
             </Select>
           );
         }

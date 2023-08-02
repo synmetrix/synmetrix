@@ -22,7 +22,7 @@ export const updateMeta = (currentMeta) => (
   }, {})
 );
 
-const DatasourceCard = ({ datasource, accessList, isSelected, onClick, onLoadMeta }) => {
+const DatasourceCard = ({ datasource, config, isSelected, onClick, onLoadMeta }) => {
   const {
     currentMeta,
     queries: {
@@ -59,20 +59,15 @@ const DatasourceCard = ({ datasource, accessList, isSelected, onClick, onLoadMet
       <div className={s.access}>
         <AccessPart
           datasourceMeta={meta}
-          datasourcePermissions={accessList?.datasources?.[datasource?.id]?.cubes}
+          datasourcePermissions={config?.datasources?.[datasource?.id]?.cubes}
         />
-        <div>
-          <div className={s.sourceType}>
-            <img
-              alt=''
-              style={{
-                height: 14,
-                width: 14,
-              }}
-              src={icon}
-            />
-            <span style={{ fontSize: 10 }}>{datasource?.db_type}</span>
-          </div>
+        <div className={s.sourceType}>
+          <img
+            alt=''
+            src={icon}
+            className={s.icon}
+          />
+          <span className={s.datasource}>{datasource?.db_type}</span>
         </div>
       </div>
     </div>
@@ -82,7 +77,7 @@ const DatasourceCard = ({ datasource, accessList, isSelected, onClick, onLoadMet
 DatasourceCard.propTypes = {
   datasource: PropTypes.object,
   isSelected: PropTypes.bool,
-  accessList: PropTypes.object,
+  config: PropTypes.object,
   onClick: PropTypes.func,
   onLoadMeta: PropTypes.func,
 };
@@ -90,7 +85,7 @@ DatasourceCard.propTypes = {
 DatasourceCard.defaultProps = {
   datasource: {},
   isSelected: false,
-  accessList: {},
+  config: {},
   onClick: () => {},
   onLoadMeta: () => {},
 };

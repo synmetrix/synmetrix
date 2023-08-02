@@ -52,3 +52,5 @@ alter table "public"."access_lists"
   foreign key ("team_id")
   references "public"."teams"
   ("id") on update cascade on delete cascade;
+
+alter table "public"."access_lists" rename column "access_list" to "config";

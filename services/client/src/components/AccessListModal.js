@@ -83,7 +83,7 @@ const AccessListsModal = ({ editId, onClose, ...props }) => {
   const onSaveList = (accessList) => {
     const newAccessList = {
       name: accessList?.name,
-      access_list: {
+      config: {
         datasources: accessList?.datasources,
       },
       team_id: currentTeam.id,
@@ -110,7 +110,7 @@ const AccessListsModal = ({ editId, onClose, ...props }) => {
       updateState({
         accessList: {
           name: current?.name,
-          ...current?.access_list,
+          ...current?.config,
         }
       });
     }
@@ -163,15 +163,13 @@ const AccessListsModal = ({ editId, onClose, ...props }) => {
     return chunks.map((chunk) => (
       <div style={{ display: 'flex', gap: 10 }} key={chunk?.[0]?.id}>
         {chunk.map((source) => (
-          <div key={source.id}>
-            <DatasourceCard
-              datasource={source}
-              accessList={state.accessList}
-              isSelected={source.id === state.selectedSourceId}
-              onClick={() => onSourceClick(source?.id)}
-              onLoadMeta={(id, m) => onLoadMeta(id, m)}
-            />
-          </div>
+          <DatasourceCard
+            datasource={source}
+            config={state.accessList}
+            isSelected={source.id === state.selectedSourceId}
+            onClick={() => onSourceClick(source?.id)}
+            onLoadMeta={(id, m) => onLoadMeta(id, m)}
+          />
         ))}
       </div>
     ));

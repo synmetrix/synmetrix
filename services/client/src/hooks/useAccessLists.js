@@ -14,7 +14,7 @@ const allAccessListsQuery = `
     access_lists (offset: $offset, limit: $limit, where: $where, order_by: $order_by) {
       id
       name
-      access_list
+      config
       team_id
       created_at
       updated_at
@@ -27,7 +27,7 @@ const accessListsSubscription = `
     access_lists (offset: $offset, limit: $limit, where: $where, order_by: $order_by) {
       id
       name
-      access_list
+      config
       team_id
       created_at
       updated_at
@@ -39,7 +39,7 @@ const currentAccessListQuery = `
   query ($id: uuid!) {
     access_lists_by_pk(id: $id) {
       name
-      access_list
+      config
       team_id
     }
   }
