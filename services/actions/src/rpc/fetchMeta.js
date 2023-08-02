@@ -11,7 +11,7 @@ export default async (session, input, headers) => {
       userId,
       authToken: headers?.authorization,
     }).meta();
-    
+
     return {
       cubes: result,
     };
