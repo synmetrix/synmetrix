@@ -6,7 +6,7 @@ import fetch from 'node-fetch';
 import pickKeys from './pickKeys.js';
 import dateParser from './dateParser.js';
 import { fetchGraphQL } from '../utils/graphql';
-import apiError from '../utils/apiError.js';
+import { DEFAULT_CATEGORIES } from './playgroundState.js';
 
 const accessListQuery = `
   query ($userId: uuid!, $dataSourceId: uuid!) {
@@ -80,7 +80,6 @@ const normalizeQuery = playgroundState => {
   return { query };
 };
 
-const sections = ['measures', 'dimensions', 'segments'];
 const filterByPermissions = async (meta, userId, dataSourceId, authToken) => {
   const accessData = await fetchGraphQL(accessListQuery, { userId, dataSourceId }, authToken);
   const member = accessData?.data?.users_by_pk?.members?.[0];
@@ -100,8 +99,8 @@ const filterByPermissions = async (meta, userId, dataSourceId, authToken) => {
         return null;
       }
 
-      sections.forEach(section => {
-        cube[section] = (cube?.[section] || []).filter(col => (cubePermissions?.[section] || []).includes(col.name));
+      DEFAULT_CATEGORIES.forEach(category => {
+        cube[category] = (cube?.[category] || []).filter(col => (cubePermissions?.[category] || []).includes(col.name));
       });
 
       return cube;
