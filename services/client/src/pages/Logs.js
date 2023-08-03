@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
+import { useTranslation } from 'react-i18next';
 
 import { Divider } from 'antd';
 
-import { useTranslation } from 'react-i18next';
 import useTableState from 'hooks/useTableState';
 import useLocation from 'hooks/useLocation';
 import useAppSettings from 'hooks/useAppSettings';
@@ -60,7 +60,7 @@ const Logs = ({ match }) => {
   };
 
   const breadcrumbs = [
-    { path: basePath, title: 'Logs' },
+    { path: basePath, title: t('Logs') },
     params?.rowId && { path: `${basePath}/${params?.rowId}`, title: params?.rowId },
   ].filter(v => !!v);
 
@@ -76,7 +76,7 @@ const Logs = ({ match }) => {
             title={t('Logs')}
             description={
               <ul>
-                <li>List cubejs logs</li>
+                <li>{t('List cubejs logs')}</li>
               </ul>
             }
           />

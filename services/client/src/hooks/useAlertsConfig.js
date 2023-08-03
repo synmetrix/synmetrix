@@ -1,6 +1,7 @@
 /* eslint-disable no-param-reassign */
 import React, { useMemo } from 'react';
 import produce from 'immer';
+import { useTranslation } from 'react-i18next';
 
 import useQuery from 'hooks/useQuery';
 import useSources, { datasourceMetaQuery } from 'hooks/useSources';
@@ -51,13 +52,30 @@ const commonFormItems = {
   },
 };
 
+const ScheduleLabel = () => {
+  const { t } = useTranslation();
+
+  return (
+    <>
+      {t('Schedule')}&nbsp;
+      <a
+        target="_blank"
+        rel="noopener noreferrer"
+        href="https://crontab.guru/"
+      >
+        {t('Build cron expression')}
+      </a>
+    </>
+  );
+};
+
 const triggerFormItems = {
   trigger_divider: {
     label: 'Trigger settings',
     display: 'divider'
   },
   schedule: {
-    label: (<>Schedule (<a target="_blank" rel="noopener noreferrer" href="https://crontab.guru/">Build cron expression</a>)</>),
+    label: <ScheduleLabel />,
     name: 'Schedule',
     required: true,
     placeholder: 'Minute Hour Day Month Weekday',

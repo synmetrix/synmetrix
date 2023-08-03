@@ -1,5 +1,6 @@
 import React, { useCallback, useMemo, useImperativeHandle } from 'react';
 import { set, get } from 'unchanged';
+import { useTranslation } from 'react-i18next';
 
 import { Col, Form, Input, Checkbox, Upload, message, Select, Button, Divider, Tooltip, Icon, DatePicker } from 'antd';
 
@@ -18,6 +19,7 @@ const DEFAULT_MODE = 'create';
 export const getOptionValue = obj => Object.values(obj).join('_');
 
 export default ({ ref, form, initialValues, config, size = DEFAULT_INPUT_SIZE, itemClassName, mode = DEFAULT_MODE }) => {
+  const { t } = useTranslation();
   const [state, updateState] = useSetState({});
 
   const sectionsIndex = useMemo(
@@ -246,7 +248,7 @@ export default ({ ref, form, initialValues, config, size = DEFAULT_INPUT_SIZE, i
     }
 
     if (value.display === 'divider') {
-      return <Divider style={value.style} orientation={value.orientation || 'left'}>{value.label}</Divider>;
+      return <Divider style={value.style} orientation={value.orientation || 'left'}>{t(value.label)}</Divider>;
     }
 
     if (initialValue === '') {
@@ -264,12 +266,14 @@ export default ({ ref, form, initialValues, config, size = DEFAULT_INPUT_SIZE, i
       rules.push(...value.rules);
     }
 
+    const label = typeof value.label === 'string' ? t(value.label) : value.label;
+
     return (
       <Col key={key} span={value.span || 12}>
         <Form.Item
           key={key}
           className={itemClassName}
-          label={value.label}
+          label={label}
           required={value.required || false}
           hasFeedback={state[`hasFeedback.${key}`] || false}
         >
@@ -282,7 +286,7 @@ export default ({ ref, form, initialValues, config, size = DEFAULT_INPUT_SIZE, i
         </Form.Item>
       </Col>
     );
-  }, [initialValues, itemClassName, state, form, getInput, getButton]);
+  }, [initialValues, itemClassName, state, form, getInput, getButton, t]);
 
   const formItems = useMemo(
     () => Object.entries(config || {}).filter(([_, value]) => value).map(([key, value]) => getFormItem(key, value)),

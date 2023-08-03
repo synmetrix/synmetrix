@@ -41,8 +41,8 @@ const DataSources = ({ match }) => {
   const showNewForm = location.pathname.includes('/new');
 
   const breadcrumbs = [
-    { path: basePath, title: 'Alerts' },
-    { path: `${basePath}/new`, title: 'New' },
+    { path: basePath, title: t('Alerts') },
+    { path: `${basePath}/new`, title: t('New') },
     params?.deliveryType && { path: `${basePath}/new/${params?.deliveryType}`, title: params?.deliveryType },
   ].filter(v => !!v);
 
@@ -53,8 +53,8 @@ const DataSources = ({ match }) => {
         description={(
           <>
             <ul>
-              <li>List and manage your alerts</li>
-              <li>Select the metrics to track and get notified when the values go out of bounds</li>
+              <li>{t('List and manage your alerts')}</li>
+              <li>{t('Select the metrics to track and get notified when the values go out of bounds')}</li>
             </ul>
             <Button type="primary" size="small" shape="round" onClick={() => onNewAlertClick()}>
               <Icon type="plus" />

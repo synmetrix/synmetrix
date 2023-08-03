@@ -1,0 +1,19 @@
+.select {
+  background: none;
+}
+
+.select .antd-select-selection {
+  background: none;
+  border: none;
+}
+
+.select > div,
+.select > div > div {
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.dropdown {
+  margin: 0;
+  padding: 0;
+}

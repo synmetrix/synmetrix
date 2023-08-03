@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { useTranslation } from 'react-i18next';
 
 import { Row, Col, Button, Modal } from 'antd';
 
@@ -10,12 +11,14 @@ import TableList from 'components/TableList';
 const { confirm } = Modal;
 
 const TeamTable = ({ data, disableManagement, onRemove, loading }) => {
+  const { t } = useTranslation();
+
   const { currentUserState } = useCurrentUserState();
   const currentUser = currentUserState?.users_by_pk;
 
   const showConfirm = record => {
     confirm({
-      title: `Do you want to remove ${record?.user?.display_name}?`,
+      title: `${t('Do you want to remove')} ${record?.user?.display_name}?`,
       onOk() {
         onRemove(record.id);
       },
@@ -28,7 +31,7 @@ const TeamTable = ({ data, disableManagement, onRemove, loading }) => {
 
   const managementColumns = [
     {
-      title: 'Roles',
+      title: t('Roles'),
       key: 'teamRole',
       render: (_, record) => {
         const { member_roles: roles } = record || {};
@@ -37,7 +40,7 @@ const TeamTable = ({ data, disableManagement, onRemove, loading }) => {
       }
     },
     {
-      title: 'Remove',
+      title: t('Remove'),
       key: 'remove',
       render: (_, record) => (
         <Button
@@ -54,7 +57,7 @@ const TeamTable = ({ data, disableManagement, onRemove, loading }) => {
 
   let columns = [
     {
-      title: 'Name',
+      title: t('Username'),
       dataIndex: 'user.display_name',
       key: 'display_name',
     },

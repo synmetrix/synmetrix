@@ -21,6 +21,7 @@ import usePermissions from 'hooks/usePermissions';
 import useCurrentUser from 'hooks/useCurrentUser';
 
 import MenuView from 'components/MenuView';
+import LanguageSelect from 'components/LanguageSelect';
 
 import s from './Layout.module.css';
 
@@ -271,6 +272,9 @@ const MainLayout = (props) => {
         >
           <div style={{ float: 'left' }}>
             <MainMenu restrictScopes={restrictScopes} />
+          </div>
+          <div style={{ float: 'right' }}>
+            <LanguageSelect />
           </div>
           <div style={{ float: 'right' }}>
             <UserMenu anyTeam={anyTeam} restrictScopes={restrictScopes} />

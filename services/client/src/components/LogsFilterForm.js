@@ -1,30 +1,33 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { useTranslation } from 'react-i18next';
 
 import SimpleForm from './SimpleForm';
 
 const LogsFilterForm = ({ onChange, initialValues }) => {
+  const { t } = useTranslation();
+
   const formConfig = {
     from: {
-      label: 'From',
+      label: t('From'),
       display: 'date',
       span: 4,
       showTime: true,
       allowClear: true,
     },
     to: {
-      label: 'To',
+      label: t('To'),
       display: 'date',
       span: 4,
       showTime: true,
       allowClear: true,
     },
     sort: {
-      label: 'Sort by duration',
+      label: t('Sort by duration'),
       display: 'select',
       span: 4,
       allowClear: true,
-      values: [{ Asc: 'asc' }, { Desc: 'desc' }],
+      values: [{ [t('Asc')]: 'asc' }, { [t('Desc')]: 'desc' }],
     },
   };
 

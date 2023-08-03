@@ -4589,6 +4589,11 @@ findup-sync@3.0.0:
     micromatch "^3.0.4"
     resolve-dir "^1.0.1"
 
+flag-icons@^6.9.2:
+  version "6.9.2"
+  resolved "https://registry.yarnpkg.com/flag-icons/-/flag-icons-6.9.2.tgz#18df86d7504c7bb012d50223583a497100b30977"
+  integrity sha512-zN/v2PJYdM0N/9R82KM99aRUtfLhj0WbFspOj1Ha1RZbwD7K2/4mMm2Qz8ujFli0d79gx2RgZ71astcXsHMdSA==
+
 flat-cache@^3.0.4:
   version "3.0.4"
   resolved "https://registry.yarnpkg.com/flat-cache/-/flat-cache-3.0.4.tgz#61b0338302b2fe9f957dcc32fc2a87f1c3048b11"

@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import PropTypes from 'prop-types';
 
-import { Input, Divider, Alert, Empty } from 'antd';
+import { Input, Divider, Alert } from 'antd';
 
 import { useTranslation } from 'react-i18next';
 
@@ -10,6 +10,7 @@ import useLogs from 'hooks/useLogs';
 import PrismCode from 'components/PrismCode';
 import Loader from 'components/Loader';
 import EventLogsTable from 'components/EventLogsTable';
+import EmptyDefault from 'components/EmptyDefault';
 import formatTime from 'utils/formatTime';
 
 const { TextArea } = Input;
@@ -73,7 +74,7 @@ const RequestLogInfo = ({ requestId }) => {
   if (!current?.request_id) {
     return (
       <Loader spinning={currentData?.fetching}>
-        <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
+        <EmptyDefault />
       </Loader>
     );
   }
