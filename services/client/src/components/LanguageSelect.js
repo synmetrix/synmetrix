@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocalStorageState } from 'ahooks';
+
 import ru from 'flag-icons/flags/4x3/ru.svg';
 import us from 'flag-icons/flags/4x3/us.svg';
 
@@ -19,15 +20,21 @@ const LanguageSelect = () => {
     { value: 'ru', icon: ru },
   ];
 
-  const handleChange = (lang) => {
+  const handleChange = useCallback((lang) => {
     i18n.changeLanguage(lang);
     setState(lang);
-  };
+  }, [i18n, setState]);
+
+  useEffect(() => {
+    if (state) {
+      handleChange(state);
+    }
+  }, [state, handleChange]);
 
   return (
     <Select
       defaultValue={state}
-      onChange={handleChange}
+      onChange={setState}
       className={s.select}
       dropdownClassName={s.dropdown}
     >
@@ -35,12 +42,7 @@ const LanguageSelect = () => {
         <Option key={v.value} value={v.value}>
           <img
             alt=''
-            style={{
-              height: 18,
-              width: 26,
-              margin: 0,
-              padding: 0,
-            }}
+            className={s.image}
             src={v.icon}
           />
         </Option>

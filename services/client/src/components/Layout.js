@@ -262,6 +262,7 @@ const MainLayout = (props) => {
           restrictScopes={restrictScopes}
           anyTeam={anyTeam}
         />
+        <LanguageSelect />
       </Sider>
       <Layout style={{ minHeight: 'auto' }}>
         <Header
