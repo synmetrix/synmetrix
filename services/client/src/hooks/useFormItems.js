@@ -131,7 +131,7 @@ export default ({ ref, form, initialValues, config, size = DEFAULT_INPUT_SIZE, i
             const optionTitle = Object.keys(obj).join('_');
 
             return (
-              <Option key={optionValue} value={optionValue} title={optionTitle}>{optionTitle}</Option>
+              <Option key={optionValue} value={optionValue} title={optionTitle}>{t(optionTitle)}</Option>
             );
           })}
         </Select>

@@ -76,7 +76,7 @@ const WorkspaceVisSection = (props) => {
         sectionState={sectionState}
         setSectionState={setSectionState}
         settings={settings}
-        emptyDesc={t('Select dimensions & measures from the left menu and run query')}
+        emptyDesc={t('Select dimensions & measures from left menu and run query')}
         chartId={chartId}
       />
     </Panel>
