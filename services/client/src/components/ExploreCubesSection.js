@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-
 import { set, getOr, get } from 'unchanged';
+import { useTranslation } from 'react-i18next';
 
 import { Typography } from 'antd';
 
@@ -101,6 +101,7 @@ const getSubSections = (catMembers, membersIndex) => {
 };
 
 const Cube = ({ members, selectedMembers, onMemberSelect }) => {
+  const { t } = useTranslation();
   const { baseMembers: { index: membersIndex } } = useAnalyticsQueryMembers({ selectedQueryMembers: selectedMembers });
 
   const shiftPress = useKeyPress('Shift');
@@ -241,7 +242,7 @@ const Cube = ({ members, selectedMembers, onMemberSelect }) => {
 
     return (
       <div key={category} className={s.categorySection}>
-        <Text className={s.categoryTitle}>{category}</Text>
+        <Text className={s.categoryTitle}>{t(category)}</Text>
         <div className={s.freeMembers}>
           {freeMembers.map((member, index) => getItem(category, member, index, categorySelectedMembers, selectedFilters))}
         </div>

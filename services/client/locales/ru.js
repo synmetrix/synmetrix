@@ -9,6 +9,8 @@ export default {
     All: 'Все',
     Dimensions: 'Измерения',
     Measures: 'Показатели',
+    dimensions: 'измерения',
+    measures: 'показатели',
     Refresh: 'Обновить',
     Format: 'Формат',
     Generate: 'Сгенерировать',
