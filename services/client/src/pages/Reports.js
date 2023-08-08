@@ -41,8 +41,8 @@ const DataSources = ({ match }) => {
   const showNewForm = location.pathname.includes('/new');
 
   const breadcrumbs = [
-    { path: basePath, title: 'Reports' },
-    { path: `${basePath}/new`, title: 'New' },
+    { path: basePath, title: t('Reports') },
+    { path: `${basePath}/new`, title: t('New') },
     params?.deliveryType && { path: `${basePath}/new/${params?.deliveryType}`, title: params?.deliveryType },
   ].filter(v => !!v);
 
@@ -53,8 +53,8 @@ const DataSources = ({ match }) => {
         description={(
           <>
             <ul>
-              <li>List and manage your reports</li>
-              <li>Select the metrics that will be automatically sent to you at the scheduled time</li>
+              <li>{t('List and manage your reports')}</li>
+              <li>{t('Select the metrics that will be automatically sent to you at the scheduled time')}</li>
             </ul>
             <Button type="primary" size="small" shape="round" onClick={() => onNewReportClick()}>
               <Icon type="plus" />

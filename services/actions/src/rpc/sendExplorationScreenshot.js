@@ -93,6 +93,7 @@ const getDataAndScreenshot = async (exploration) => {
   const accessToken = await generateUserAccessToken(userId);
 
   if (!accessToken) {
+    console.error('Access token hasn`t been signed')
     return { error: 'Access token hasn`t been signed' };
   }
 

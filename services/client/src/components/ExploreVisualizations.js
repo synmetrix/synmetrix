@@ -14,6 +14,7 @@ import usePinnedItems from 'hooks/usePinnedItems';
 
 import Loader from 'components/Loader';
 import SimpleForm from 'components/SimpleForm';
+import EmptyDefault from 'components/EmptyDefault';
 
 import vegaRenderOptions from 'utils/vega/renderOptions';
 import VegaSpec, { layerKeyRegex, calculateChartSize } from 'utils/vega/spec';
@@ -335,7 +336,7 @@ const ExploreVisualizations = (props) => {
             {state.isReadyToRender ?
               <VegaLite spec={sectionState.spec} width={sizes.chartWidth} />
             :
-              <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description={state.description} />}
+              <EmptyDefault description={state.description} />}
           </div>
         </Loader>
       </Col>

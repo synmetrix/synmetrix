@@ -1,17 +1,16 @@
 import React, { useMemo, useEffect } from 'react';
 import PropTypes from 'prop-types';
+import { useTranslation } from 'react-i18next';
 
 import { Tabs } from 'antd';
 
-import { useTranslation } from 'react-i18next';
+import useLocation from 'hooks/useLocation';
+import useAppSettings from 'hooks/useAppSettings';
 
 import PageInfo from 'components/PageInfo';
 import Container from 'components/Container';
 import LogsTab from 'components/LogsTab';
 import PreAggregationsTab from 'components/PreAggregationsTab';
-
-import useAppSettings from 'hooks/useAppSettings';
-import useLocation from 'hooks/useLocation';
 
 const { TabPane } = Tabs;
 
@@ -35,7 +34,7 @@ const Logs = ({ match }) => {
         title={t('Logs')}
         description={
           <ul>
-            <li>List cubejs logs and pre-aggregations</li>
+            <li>{t('List cubejs logs and pre-aggregations')}</li>
           </ul>
         }
       />

@@ -131,7 +131,7 @@ const SelectBranch = ({ onChange, onCreate, onSetDefault, branchStatus, currentB
             style={{ margin: '6px 0', cursor: 'pointer', background: 'transparent', border: 'none', paddingLeft: 2, fontWeight: 'bold' }}
             onClick={() => {
               navigator.clipboard.writeText(checksum);
-              message.success('Copied to clipboard');
+              message.success(t('Copied to clipboard'));
             }}
           >
             {checksum}

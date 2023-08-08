@@ -50,9 +50,9 @@ const DataSources = ({ match }) => {
   const showSQLInterfaceForm = location.pathname.includes('/sql-interface');
 
   const breadcrumbs = [
-    { path: basePath, title: 'Data Sources' },
-    showSQLInterfaceForm && { path: `${basePath}/sql-interface`, title: 'New SQL Interface' },
-    showNewForm && { path: `${basePath}/new`, title: 'New' },
+    { path: basePath, title: t('Data Sources') },
+    showSQLInterfaceForm && { path: `${basePath}/sql-interface`, title: t('New SQL Interface') },
+    showNewForm && { path: `${basePath}/new`, title: t('New') },
     params?.dbType && { path: `${basePath}/new/${params?.dbType}`, title: params?.dbType },
   ].filter(v => !!v);
 
@@ -65,8 +65,8 @@ const DataSources = ({ match }) => {
         description={(
           <>
             <ul>
-              <li>List and manage your Datasets</li>
-              <li>Connect new Data Source and create its Data Schema after</li>
+              <li>{t('List and manage your Datasets')}</li>
+              <li>{t('Connect new Data Source and create its Data Schema after')}</li>
             </ul>
             <Button type="primary" size="small" shape="round" onClick={() => onConnectNewClick()}>
               <Icon type="plus" />

@@ -1,5 +1,7 @@
 import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
+import { useTranslation } from 'react-i18next';
+
 import { useSetState , useTrackedEffect } from 'ahooks';
 import cronstrue from 'cronstrue';
 
@@ -16,6 +18,8 @@ import TableList from 'components/TableList';
 import formatDistanceToNow from '../utils/formatDistanceToNow';
 
 const AlertTable = ({ editId, onModalClose, onModalOpen }) => {
+  const { t } = useTranslation();
+
   const initModal = id => ({
     editId: id,
     visibleModal: !!id,
@@ -93,17 +97,17 @@ const AlertTable = ({ editId, onModalClose, onModalOpen }) => {
 
   const columns = [
     {
-      title: 'Name',
+      title: t('Name'),
       dataIndex: 'name',
       key: 'name',
     },
     {
-      title: 'Delivery Type',
+      title: t('Delivery Type'),
       dataIndex: 'delivery_type',
       key: 'delivery_type',
     },
     {
-      title: 'Bounds',
+      title: t('Bounds'),
       key: 'updated_at',
       render: (_, record) => {
         const { lowerBound, upperBound } = record.trigger_config;
@@ -124,7 +128,7 @@ const AlertTable = ({ editId, onModalClose, onModalOpen }) => {
       },
     },
     {
-      title: 'Schedule',
+      title: t('Schedule'),
       dataIndex: 'schedule',
       key: 'schedule',
       render: (_, record) => (
@@ -134,12 +138,12 @@ const AlertTable = ({ editId, onModalClose, onModalOpen }) => {
       )
     },
     {
-      title: 'Creator',
+      title: t('Creator'),
       dataIndex: ['user', 'display_name'],
       key: 'display_name',
     },
     {
-      title: 'Updated At',
+      title: t('Updated At'),
       dataIndex: 'updated_at',
       key: 'updated_at',
       render: (_, record) => {
@@ -148,7 +152,7 @@ const AlertTable = ({ editId, onModalClose, onModalOpen }) => {
       },
     },
     {
-      title: 'Created At',
+      title: t('Created At'),
       dataIndex: 'created_at',
       key: 'created_at',
       render: (_, record) => {

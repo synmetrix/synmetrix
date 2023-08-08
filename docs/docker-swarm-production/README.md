@@ -13,7 +13,7 @@ docker swarm init
 ./run-registry.sh
 
 # build images and push
-REGISTRY_HOST=127.0.0.1:50001 python3 cli.py --env stage services push
+DOMAIN=localhost REGISTRY_HOST=127.0.0.1:50001 python3 cli.py --env stage services push
 
 # up the stack
 DOMAIN=localhost REGISTRY_HOST=127.0.0.1:50001 python3 cli.py --env stage services up mlcraft_bi

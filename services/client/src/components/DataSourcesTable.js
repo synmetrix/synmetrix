@@ -1,9 +1,8 @@
 import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useSetState, useTrackedEffect } from 'ahooks';
-
-
 import { useTranslation } from 'react-i18next';
+
 import { Row, Col, Button } from 'antd';
 
 import equals from 'utils/equals';
@@ -21,6 +20,7 @@ import formatDistanceToNow from '../utils/formatDistanceToNow';
 
 const DataSourcesTable = ({ editId, onModalClose, onModalOpen }) => {
   const { t } = useTranslation();
+
   const initModal = id => ({
     editId: id,
     visibleModal: !!id,
@@ -123,17 +123,17 @@ const DataSourcesTable = ({ editId, onModalClose, onModalOpen }) => {
 
   const columns = [
     {
-      title: 'Name',
+      title: t('Name'),
       dataIndex: 'name',
       key: 'name',
     },
     {
-      title: 'Type',
+      title: t('Type'),
       dataIndex: 'db_type',
       key: 'db_type',
     },
     {
-      title: 'Updated At',
+      title: t('Updated At'),
       dataIndex: 'updated_at',
       key: 'updated_at',
       render: (_, record) => {
@@ -142,7 +142,7 @@ const DataSourcesTable = ({ editId, onModalClose, onModalOpen }) => {
       },
     },
     {
-      title: 'Created At',
+      title: t('Created At'),
       dataIndex: 'created_at',
       key: 'created_at',
       render: (_, record) => {
@@ -154,30 +154,30 @@ const DataSourcesTable = ({ editId, onModalClose, onModalOpen }) => {
 
   const expandedTableColumns = [
     {
-      title: 'PG Host',
+      title: t('PG Host'),
       dataIndex: 'pg_host',
       key: 'pg_host',
-      render: () => CUBEJS_MYSQL_API_URL,
-    },
-    {
-      title: 'MySQL Host',
-      dataIndex: 'mysql_host',
-      key: 'mysql_host',
       render: () => CUBEJS_PG_API_URL,
     },
     {
-      title: 'Username',
+      title: t('MySQL Host'),
+      dataIndex: 'mysql_host',
+      key: 'mysql_host',
+      render: () => CUBEJS_MYSQL_API_URL,
+    },
+    {
+      title: t('Username'),
       dataIndex: 'username',
       key: 'username',
     },
     {
-      title: 'Created by',
+      title: t('Created by'),
       dataIndex: 'user_id',
       key: 'user_id',
       render: (_, record) => record?.user?.display_name,
     },
     {
-      title: 'Created At',
+      title: t('Created At'),
       dataIndex: 'created_at',
       key: 'created_at',
       render: (_, record) => {
@@ -186,7 +186,7 @@ const DataSourcesTable = ({ editId, onModalClose, onModalOpen }) => {
       },
     },
     {
-      title: 'Action',
+      title: t('Actions'),
       dataIndex: 'action',
       render: (_, record) => {
         return (

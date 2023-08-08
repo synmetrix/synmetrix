@@ -62,6 +62,7 @@ type Mutation {
   invite_team_member(
     email: String!
     teamId: uuid
+    role: String
   ): InviteTeamMemberOutput
 }
 

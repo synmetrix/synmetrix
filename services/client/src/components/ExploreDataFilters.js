@@ -1,10 +1,9 @@
 import React, { useMemo } from 'react';
 import PropTypes from 'prop-types';
 
-import { Empty } from 'antd';
-
 import { getOr } from 'unchanged';
 
+import EmptyDefault from 'components/EmptyDefault';
 import FilterGroup from 'components/PlaygroundFilterGroup';
 
 const ExploreDataFilters = ({ availableQueryMembers, selectedQueryMembers, onMemberChange }) => {
@@ -26,7 +25,7 @@ const ExploreDataFilters = ({ availableQueryMembers, selectedQueryMembers, onMem
   );
 
   if (!filters.length) {
-    return <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
+    return <EmptyDefault />;
   }
 
   return (

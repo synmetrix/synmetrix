@@ -393,7 +393,7 @@ const DataSchemas = ({ editorWidth, editorHeight, match }) => {
     const file = target.files?.[0];
 
     if (file?.type !== 'application/zip') {
-      message.error('Format is unsupported.');
+      message.error(t('Format is unsupported.'));
       return false;
     }
 
@@ -402,12 +402,12 @@ const DataSchemas = ({ editorWidth, editorHeight, match }) => {
     try {
       await zip.loadAsync(file);
     } catch (err) {
-      message.error('Bad archive.');
+      message.error(t('Bad archive.'));
       return false;
     }
 
     if (!zip?.files?.['meta.yaml']) {
-      message.error('Wrong archive.');
+      message.error(t('Wrong archive.'));
       return false;
     }
 
@@ -422,7 +422,7 @@ const DataSchemas = ({ editorWidth, editorHeight, match }) => {
       const checksum = md5(`${name}-${content}`);
 
       if (zipMeta?.schemas?.[name]?.checksum !== checksum) {
-        message.warning(`Checksum of file "${name}" do not match. Skipped.`);
+        message.warning(`${t('Checksum of file')} "${name}" ${t('do not match. Skipped.')}`);
         return false;
       }
 
@@ -454,7 +454,7 @@ const DataSchemas = ({ editorWidth, editorHeight, match }) => {
     const checksum = calcChecksum(newDataschemas);
 
     if (currentVersion.checksum === checksum) {
-      message.info('There is no changes.');
+      message.info(t('There is no changes.'));
       return false;
     }
 
@@ -553,38 +553,36 @@ const DataSchemas = ({ editorWidth, editorHeight, match }) => {
     <Loader key="content" spinning={fetching}>
       <div className={s.root}>
         <div className={s.sidebar}>
-          <Loader spinning={false}>
-            <>
-              <SelectBranch
-                branches={all}
-                moreMenu={branchMenu}
-                currentBranchId={currentBranchId}
-                branchStatus={currentBranch?.status}
-                dataSourceId={dataSourceId}
-                onChange={setCurrentBranchId}
-                onCreate={onCreateBranch}
-                onSetDefault={onSetDefault}
-                currentVersion={currentVersion}
-                loading={fetching}
-              />
-              <Divider style={{ margin: '0' }} />
-              <IdeSchemasList
-                schemas={dataschemas}
-                onItemClick={openSchema}
-                onCreate={onClickCreate}
-                onEdit={onClickUpdate}
-                onDelete={onClickDelete}
-                moreMenu={ideMenu}
-              />
-              <input
-                type='file'
-                accept='application/zip'
-                ref={inputFile}
-                onChange={onUploadFile}
-                style={{ display: 'none' }}
-              />
-            </>
-          </Loader>
+          <>
+            <SelectBranch
+              branches={all}
+              moreMenu={branchMenu}
+              currentBranchId={currentBranchId}
+              branchStatus={currentBranch?.status}
+              dataSourceId={dataSourceId}
+              onChange={setCurrentBranchId}
+              onCreate={onCreateBranch}
+              onSetDefault={onSetDefault}
+              currentVersion={currentVersion}
+              loading={fetching}
+            />
+            <Divider style={{ margin: '0' }} />
+            <IdeSchemasList
+              schemas={dataschemas}
+              onItemClick={openSchema}
+              onCreate={onClickCreate}
+              onEdit={onClickUpdate}
+              onDelete={onClickDelete}
+              moreMenu={ideMenu}
+            />
+            <input
+              type='file'
+              accept='application/zip'
+              ref={inputFile}
+              onChange={onUploadFile}
+              style={{ display: 'none' }}
+            />
+          </>
         </div>
         <div className={s.content}>
           <Tabs

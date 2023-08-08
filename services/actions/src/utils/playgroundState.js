@@ -38,6 +38,7 @@ export const resolveMember = (memberName, memberType, cubesMap) => {
   return member;
 }
 
+export const DEFAULT_CATEGORIES = ['dimensions', 'measures', 'segments'];
 export const updatePlaygroundState = (playgroundState, meta) => {
   const cubePairs = (meta || []).map(m => [
     m.name,
@@ -48,7 +49,7 @@ export const updatePlaygroundState = (playgroundState, meta) => {
 
   const skippedMembers = [];
 
-  const keys = ['dimensions', 'measures', 'segments', 'filters'];
+  const keys = [...DEFAULT_CATEGORIES, 'filters'];
   const updatedPlaygroundState = Object.keys(playgroundState).reduce((acc, curKey) => {
     if (keys.find(key => key === curKey)) {
       const filteredArray = playgroundState[curKey].filter(m => {

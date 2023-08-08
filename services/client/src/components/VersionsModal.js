@@ -31,17 +31,17 @@ const VersionsModal = ({ versions, onRestore }) => {
 
   const versionColumns = [
     {
-      title: 'Checksum',
+      title: t('Checksum'),
       dataIndex: 'checksum',
       key: 'checksum',
     },
     {
-      title: 'Author',
+      title: t('Author'),
       dataIndex: ['user', 'display_name'],
       key: 'display_name',
     },
     {
-      title: 'Created At',
+      title: t('Created At'),
       dataIndex: 'created_at',
       key: 'created_at',
       render: (_, record) => {
@@ -50,7 +50,7 @@ const VersionsModal = ({ versions, onRestore }) => {
       },
     },
     {
-      title: 'Actions',
+      title: t('Actions'),
       render: (_, record, index) => {
         if (index === 0) {
           return false;
@@ -67,7 +67,7 @@ const VersionsModal = ({ versions, onRestore }) => {
 
   const schemaColumns = [
     {
-      title: 'Name',
+      title: t('Name'),
       dataIndex: 'name',
       key: 'name',
     },

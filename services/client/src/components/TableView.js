@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import { set, getOr } from 'unchanged';
 import cx from 'classnames';
 
-import { Empty, message } from 'antd';
+import { message } from 'antd';
 import { useTable, useSortBy } from 'react-table';
 import copy from 'copy-to-clipboard';
 
@@ -14,6 +14,8 @@ import Loader from 'components/Loader';
 import MenuView from 'components/MenuView';
 import PopoverButton from 'components/PopoverButton';
 import ErrorMessage from 'components/ErrorMessage';
+import EmptyDefault from 'components/EmptyDefault';
+
 import s from './TableView.module.css';
 
 const COL_WIDTH = 200;
@@ -263,7 +265,7 @@ const TableView = (props) => {
   if (!columns.length && !rows.length) {
     return (
       <Loader spinning={loading}>
-        <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description={emptyDesc} />
+        <EmptyDefault description={emptyDesc} />
       </Loader>
     );
   }

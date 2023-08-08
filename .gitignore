@@ -104,3 +104,4 @@ __pycache__
 /cli/config.yml
 /.history
 /.cubestore
+/infra/aws/.pulumi-passphrase
