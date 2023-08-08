@@ -3,6 +3,21 @@ import JSum from 'jsum';
 import createMd5Hex from './md5Hex.js';
 import { fetchGraphQL } from './graphql.js';
 
+const accessListQuery = `
+  query ($userId: uuid!) {
+    users_by_pk(id: $userId) {
+      members {
+        member_roles {
+          team_role
+          access_list {
+            config
+          }
+        }
+      }
+    }
+  }
+`;
+
 const sourceFragment = `
   id
   name
@@ -60,6 +75,7 @@ const sqlCredentialsQuery = `
   query ($username: String!) {
     sql_credentials(where: {username: {_eq: $username}}) {
       id
+      user_id
       password
       username
       datasource {
@@ -88,6 +104,16 @@ export const getDataSources = async () => {
   res = res?.data?.datasources;
 
   return res;
+};
+
+export const getPermissions = async (userId) => {
+  let res = await fetchGraphQL(accessListQuery, { userId })
+  res = res?.data?.users_by_pk?.members?.[0]?.member_roles?.[0];
+
+  return {
+    config: res?.access_list?.config,
+    role: res?.team_role,
+  };
 };
 
 export const buildSecurityContext = (dataSource) => {
@@ -161,9 +187,10 @@ export const dataSchemaFiles = async (args) => {
     return [];
   }
 
-  const schemas = await findDataSchemas(args);
+  let schemas = await findDataSchemas(args);
+  schemas = (schemas || []).map(schema => mapSchemaToFile(schema));
 
-  return (schemas || []).map(schema => mapSchemaToFile(schema));
+  return schemas;
 };
 
 export const getSchemaVersion = async (args) => {

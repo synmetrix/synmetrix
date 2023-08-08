@@ -11,7 +11,12 @@ const allMembersQuery = `
         display_name
       }
       member_roles {
+        id
         team_role
+        access_list {
+          id
+          name
+        }
       }
     }
   }
@@ -28,6 +33,17 @@ const editMemberMutation = `
   }
 `;
 
+const editMemberRoleMutation = `
+  mutation (
+    $pk_columns: member_roles_pk_columns_input!,
+    $_set: member_roles_set_input!
+  ) {
+    update_member_roles_by_pk(pk_columns: $pk_columns, _set: $_set) {
+      id
+    }
+  }
+`;
+
 const delMemberMutation = `
   mutation ($id: uuid!) {
     delete_members_by_pk(id: $id) {
@@ -37,8 +53,8 @@ const delMemberMutation = `
 `;
 
 const inviteMemberMutation = `
-  mutation ($email: String!, $teamId: uuid!) {
-    invite_team_member(email: $email, teamId: $teamId) {
+  mutation ($email: String!, $teamId: uuid!, $role: String) {
+    invite_team_member(email: $email, teamId: $teamId, role: $role) {
       memberId
     }
   }
@@ -70,6 +86,7 @@ export default (props = {}) => {
   const { pauseQueryAll, pagination = {}, params = {} } = props;
 
   const [updateMutation, execUpdateMutation] = useMutation(editMemberMutation, { role });
+  const [updateRoleMutation, execUpdateRoleMutation] = useMutation(editMemberRoleMutation, { role });
   const [deleteMutation, execDeleteMutation] = useMutation(delMemberMutation, { role });
   const [inviteMutation, execInviteMutation] = useMutation(inviteMemberMutation, { role });
 
@@ -107,6 +124,8 @@ export default (props = {}) => {
       execDeleteMutation,
       updateMutation,
       execUpdateMutation,
+      updateRoleMutation,
+      execUpdateRoleMutation,
       inviteMutation,
       execInviteMutation,
     },

@@ -1,7 +1,7 @@
 import { useEffect, useMemo } from 'react';
 import { useSubscription } from 'urql';
 import { set } from 'unchanged';
-import { useTrackedEffect, useThrottleFn } from 'ahooks';
+import { useTrackedEffect } from 'ahooks';
 
 import useQuery from './useQuery';
 import useMutation from './useMutation';
