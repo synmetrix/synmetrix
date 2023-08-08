@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { get, getOr } from 'unchanged';
+import { useTranslation } from 'react-i18next';
 
 import { Icon, Button, Row, Form, Tabs, Collapse } from 'antd';
 import cx from 'classnames';
@@ -21,6 +22,8 @@ const openAnimation = {
   enter: () => { },
 };
 const SimpleForm = React.forwardRef((props, ref) => {
+  const { t } = useTranslation();
+
   const {
     form, 
     initialValues,
@@ -77,7 +80,7 @@ const SimpleForm = React.forwardRef((props, ref) => {
                     onChange={() => onToggleSection(subSectionKey)}
                     openAnimation={openAnimation}
                   >
-                    <Panel header={subSectionKey} key={subSectionKey}>
+                    <Panel header={t(subSectionKey)} key={subSectionKey}>
                       {subSectionFormItems.map(([itemKey, item]) => getFormItem(itemKey, item))}
                     </Panel>
                   </Collapse>
@@ -91,10 +94,17 @@ const SimpleForm = React.forwardRef((props, ref) => {
 
             const onTabClose = get(`${key}.onTabClose`, tabsConfig) || noop;
             const closable = get(`${key}.closable`, tabsConfig) || false;
+            
+            let title = key;
+            const numTitle = title.match(/(\D+)(\d+)/);
+
+            if (numTitle?.[2]) {
+              title = `${t(numTitle?.[1])}${numTitle?.[2]}`;
+            }
 
             const tab = (
               <div>
-                {key}
+                {t(title)}
                 {closable && (
                   <Button onClick={() => onTabClose(key)} type="link" shape="circle" icon="close" size="small" className={s.close} />
                 )}
@@ -116,7 +126,7 @@ const SimpleForm = React.forwardRef((props, ref) => {
 
     return items;
   },
-  [collapseState.activePanelKey, formItems, getFormItem, onToggleSection, sectionsIndex, tabsConfig]
+  [collapseState.activePanelKey, formItems, getFormItem, onToggleSection, sectionsIndex, tabsConfig, t]
   );
 
   const onFormSubmit = (e) => {

@@ -2,7 +2,9 @@ import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 
 import Prism from 'prismjs';
-import { Typography, Empty } from 'antd';
+import { Typography } from 'antd';
+
+import EmptyDefault from 'components/EmptyDefault';
 
 import s from './PrismCode.module.css';
 
@@ -22,7 +24,7 @@ const PrismCode = ({ style, code, lang }) => {
   );
 
   if (!htmlContent) {
-    return <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />;
+    return <EmptyDefault />;
   }
 
   return (

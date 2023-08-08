@@ -39,7 +39,7 @@ const SqlRunner = ({ data, loading, error, onRun, width, height, editorHeight, .
             placement="bottom"
             content={(
               <div>
-                Row Limit: <br />
+                {t('Rows Limit')}: <br />
                 <InputNumber value={limit} onChange={setLimit} />
               </div>
             )}
@@ -102,12 +102,14 @@ SqlRunner.propTypes = {
   editorHeight: PropTypes.number,
   error: PropTypes.object,
   onRun: PropTypes.func,
+  loading: PropTypes.bool,
 };
 
 SqlRunner.defaultProps = {
   editorHeight: 100,
   error: {},
   onRun: () => { },
+  loading: false,
 };
 
 export default SqlRunner;

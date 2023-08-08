@@ -27,25 +27,25 @@ const Profile = () => {
     }
 
     if (data?.statusCode >= 200 && data?.statusCode <= 300) {
-      message.success('All tokens expired');
+      message.success(t('All tokens expired'));
       cleanTokens();
     } else if (data?.message) {
       message.error(data.message);
     }
-  }, [cleanTokens, revoke]);
+  }, [cleanTokens, revoke, t]);
 
   return (
     <>
       <Row>
         <Col offset={6} span={12}>
-          <Card title="Security" bordered={false}>
+          <Card title={t('Security')} bordered={false}>
             <UpdatePasswordForm />
           </Card>
         </Col>
       </Row>
       <Row>
         <Col offset={6} span={12}>
-          <Card title="Active sessions" bordered={false}>
+          <Card title={t('Active sessions')} bordered={false}>
             <Button type="primary" onClick={() => revokeTokens()}>
               <Icon type="logout" />
               {t('Logout from all sessions')}

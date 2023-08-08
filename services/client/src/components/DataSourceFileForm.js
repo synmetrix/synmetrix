@@ -38,9 +38,9 @@ const DataSourceFileForm = React.forwardRef((props, ref) => {
       placeholder: t('Select policy'),
       default: 'rolling_update',
       values: [
-        { 'Rolling Update': 'rolling_update' },
-        { Append: 'append' },
-        { Truncate: 'truncate' },
+        { [t('Rolling Update')]: 'rolling_update' },
+        { [t('Append')]: 'append' },
+        { [t('Truncate')]: 'truncate' },
       ],
     },
   };

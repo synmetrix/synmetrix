@@ -24,7 +24,7 @@ const DataSchemaForm = React.forwardRef((props, ref) => {
 
   return (
     <Form onSubmit={onFormSubmit}>
-      <Form.Item label="Filename" required>
+      <Form.Item label={t('Filename')} required>
         {form.getFieldDecorator('name', {
           initialValue: initialValues.name,
           rules: [{ required: true }]

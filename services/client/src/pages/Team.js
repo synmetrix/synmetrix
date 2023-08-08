@@ -213,12 +213,12 @@ const Team = () => {
             {!disableManagement && (
               <>
                 <ul>
-                  <li>Manage your Team</li>
-                  <li>Grant roles and manage personal access</li>
+                  <li>{t('Manage your Team')}</li>
+                  <li>{t('Grant roles and manage personal access')}</li>
                 </ul>
                 <Button style={{ marginRight: 10 }} disabled={!isTeamExists} type="primary" size="small" shape="round" onClick={() => onInviteOpen()}>
                   <Icon type="plus" />
-                  {t('Invite a Team Member')}
+                  {t('Invite Team Member')}
                 </Button>
                 <Button type="primary" disabled={!isTeamExists} size="small" shape="round" onClick={() => onSettingsOpen()}>
                   <Icon type="setting" />

@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react';
 import PropTypes from 'prop-types';
 import cx from 'classnames';
+import { useTranslation } from 'react-i18next';
 
 import { Row, Col } from 'antd';
 
@@ -11,6 +12,8 @@ import formatDistanceToNow from '../utils/formatDistanceToNow';
 import s from './LogsTable.module.css';
 
 const LogsTable = ({ logs, pagination, loading, onClickRow, onPageChange }) => {
+  const { t } = useTranslation();
+
   const datasource = useMemo(() => logs.map(l => {
     const startTime = formatTime(l.start_time);
     const endTime = formatTime(l.end_time);
@@ -29,42 +32,42 @@ const LogsTable = ({ logs, pagination, loading, onClickRow, onPageChange }) => {
 
   const columns = [
     {
-      title: 'Datasource',
+      title: t('Datasource'),
       dataIndex: ['datasource', 'name'],
       key: 'datasource_name',
     },
     {
-      title: 'Path',
+      title: t('Path'),
       dataIndex: 'path',
       key: 'path',
     },
     {
-      title: 'Events',
+      title: t('Events'),
       dataIndex: ['request_event_logs_aggregate', 'aggregate', 'count'],
       key: 'events_count',
     },
     {
-      title: 'Creator',
+      title: t('Creator'),
       dataIndex: ['user', 'display_name'],
       key: 'display_name',
     },
     {
-      title: 'Duration (ms)',
+      title: t('Duration (ms)'),
       dataIndex: 'duration',
       key: 'duration',
     },
     {
-      title: 'Start time',
+      title: t('Start time'),
       dataIndex: 'startTime',
       key: 'startTime',
     },
     {
-      title: 'End time',
+      title: t('End time'),
       dataIndex: 'endTime',
       key: 'endTime',
     },
     {
-      title: 'Created At',
+      title: t('Created At'),
       dataIndex: 'createdAt',
       key: 'createdAt',
     },

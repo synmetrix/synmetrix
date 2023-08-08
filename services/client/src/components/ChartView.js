@@ -1,11 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import { Empty } from 'antd';
-
 import { LineChart, Line, CartesianGrid, XAxis, YAxis, Tooltip } from 'recharts';
 
 import Loader from 'components/Loader';
+import EmptyDefault from 'components/EmptyDefault';
 
 const ChartView = (props) => {
   const {
@@ -19,7 +18,7 @@ const ChartView = (props) => {
   } = props;
 
   if (!data || !data.length) {
-    return <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description={emptyDesc} />;
+    return <EmptyDefault description={emptyDesc} />;
   }
 
   return (

@@ -2,6 +2,7 @@
 /* eslint-disable no-param-reassign */
 import React, { useMemo } from 'react';
 import PropTypes from 'prop-types';
+import { useTranslation } from 'react-i18next';
 
 import { Row, Col, Form, Input } from 'antd';
 
@@ -24,6 +25,8 @@ const deliveryTiles = [
 ];
 
 const ReportForm = React.forwardRef((props, ref) => {
+  const { t } = useTranslation();
+
   const {
     edit, form, initialValues, onSubmit,
     onDeliveryTypeSelect,
@@ -59,17 +62,17 @@ const ReportForm = React.forwardRef((props, ref) => {
     <Row gutter={24}>
       <Form onSubmit={onSubmit} {...restProps}>
         <Col span={12}>
-          <Form.Item label="Report Name" required>
+          <Form.Item label={t('Report Name')} required>
             {form.getFieldDecorator('name', {
               initialValue: initialValues.name,
               rules: [
-                { required: true, message: 'Name is required' }
+                { required: true, message: t('Name is required') }
               ]
             })(<Input />)}
           </Form.Item>
         </Col>
         <Col span={12}>
-          <Form.Item label="Type" required>
+          <Form.Item label={t('Type')} required>
             {form.getFieldDecorator('delivery_type', {
               initialValue: initialValues.delivery_type,
               rules: [{ required: true }]
