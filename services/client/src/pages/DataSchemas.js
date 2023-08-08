@@ -553,38 +553,36 @@ const DataSchemas = ({ editorWidth, editorHeight, match }) => {
     <Loader key="content" spinning={fetching}>
       <div className={s.root}>
         <div className={s.sidebar}>
-          <Loader spinning={false}>
-            <>
-              <SelectBranch
-                branches={all}
-                moreMenu={branchMenu}
-                currentBranchId={currentBranchId}
-                branchStatus={currentBranch?.status}
-                dataSourceId={dataSourceId}
-                onChange={setCurrentBranchId}
-                onCreate={onCreateBranch}
-                onSetDefault={onSetDefault}
-                currentVersion={currentVersion}
-                loading={fetching}
-              />
-              <Divider style={{ margin: '0' }} />
-              <IdeSchemasList
-                schemas={dataschemas}
-                onItemClick={openSchema}
-                onCreate={onClickCreate}
-                onEdit={onClickUpdate}
-                onDelete={onClickDelete}
-                moreMenu={ideMenu}
-              />
-              <input
-                type='file'
-                accept='application/zip'
-                ref={inputFile}
-                onChange={onUploadFile}
-                style={{ display: 'none' }}
-              />
-            </>
-          </Loader>
+          <>
+            <SelectBranch
+              branches={all}
+              moreMenu={branchMenu}
+              currentBranchId={currentBranchId}
+              branchStatus={currentBranch?.status}
+              dataSourceId={dataSourceId}
+              onChange={setCurrentBranchId}
+              onCreate={onCreateBranch}
+              onSetDefault={onSetDefault}
+              currentVersion={currentVersion}
+              loading={fetching}
+            />
+            <Divider style={{ margin: '0' }} />
+            <IdeSchemasList
+              schemas={dataschemas}
+              onItemClick={openSchema}
+              onCreate={onClickCreate}
+              onEdit={onClickUpdate}
+              onDelete={onClickDelete}
+              moreMenu={ideMenu}
+            />
+            <input
+              type='file'
+              accept='application/zip'
+              ref={inputFile}
+              onChange={onUploadFile}
+              style={{ display: 'none' }}
+            />
+          </>
         </div>
         <div className={s.content}>
           <Tabs

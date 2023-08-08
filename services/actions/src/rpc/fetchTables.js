@@ -18,6 +18,4 @@ export default async (session, input, headers) => {
   } catch (err) {
     return apiError(err);
   }
-
-  return false;
 };

@@ -44,6 +44,13 @@ const UserMenu = ({ mode, anyTeam, restrictScopes = [] }) => {
       path: anyTeam ? withAuthPrefix('/team') : withAuthPrefix('/team/new'),
       title: t('Team'),
     });
+
+    if (anyTeam) {
+      accountSubMenu.push({
+        path: withAuthPrefix('/roles'),
+        title: t('Roles'),
+      });
+    }
   }
 
   accountSubMenu.push({

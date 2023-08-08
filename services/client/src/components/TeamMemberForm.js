@@ -13,7 +13,18 @@ const formConfig = {
       type: 'email',
       message: 'Email is not valid',
     }],
-  }
+  },
+  role: {
+    label: 'Role',
+    required: true,
+    display: 'select',
+    allowClear: false,
+    default: 'member',
+    values: [
+      { Member: 'member' },
+      { Admin: 'admin' },
+    ],
+  },
 };
 
 const TeamMemberForm = React.forwardRef((props, ref) => {
