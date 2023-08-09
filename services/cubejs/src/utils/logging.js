@@ -1,5 +1,6 @@
 import { devLogger } from '@cubejs-backend/server-core/dist/src/core/logger.js';
 import redisClient from './redis.js';
+import fs from 'fs';
 
 export const logging = async (message, event) => {
   const requestId = event?.requestId;
@@ -15,11 +16,7 @@ export const logging = async (message, event) => {
     return;
   }
 
-  if (!requestId) {
-    console.error('Not request', message);
-  }
-
-  if (requestId?.includes('scheduler')) {
+  if (!requestId || requestId?.includes('scheduler')) {
     return;
   }
 

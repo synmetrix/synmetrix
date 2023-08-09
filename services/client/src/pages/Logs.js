@@ -1,113 +1,51 @@
-import React, { useState } from 'react';
+import React, { useMemo, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import moment from 'moment';
 import { useTranslation } from 'react-i18next';
 
-import { Divider } from 'antd';
+import { Tabs } from 'antd';
 
-import useTableState from 'hooks/useTableState';
 import useLocation from 'hooks/useLocation';
 import useAppSettings from 'hooks/useAppSettings';
-import useLogs from 'hooks/useLogs';
 
-import LogsTable from 'components/LogsTable';
 import PageInfo from 'components/PageInfo';
 import Container from 'components/Container';
-import Breadcrumbs from 'components/Breadcrumbs';
-import RequestLogInfo from 'components/RequestLogInfo';
-import LogsFilterForm from 'components/LogsFilterForm';
+import LogsTab from 'components/LogsTab';
+import PreAggregationsTab from 'components/PreAggregationsTab';
 
-const defaultFilterState = {
-  from: moment().subtract(1, 'days'),
-  to: null,
-  sort: null,
-};
+const { TabPane } = Tabs;
 
 const Logs = ({ match }) => {
   const { t } = useTranslation();
-  const { params = {} } = match || {};
-  const { rowId } = params || null;
-  const [filter, setFilter] = useState(defaultFilterState);
-  const [location, setLocation] = useLocation();
   const { withAuthPrefix } = useAppSettings();
+  const [location, setLocation] = useLocation();
   const basePath = withAuthPrefix('/logs');
+  const { params = {} } = match || {};
+  const section = useMemo(() => location.pathname.match(/logs\/(\w+)/)?.[1] || null, [location.pathname]);
 
-  const {
-    tableState: {
-      pageSize,
-      currentPage,
-      paginationVars,
-    },
-    onPageChange,
-  } = useTableState({});
-
-  const {
-    allLogs,
-    totalCount,
-    queries: {
-      allData,
+  useEffect(() => {
+    if (!section) {
+      setLocation(`${basePath}/requests`);
     }
-  } = useLogs({
-    rowId,
-    pagination: paginationVars,
-    params: {
-      ...filter,
-    },
-  });
-
-  const onClickRow = recordId => {
-    setLocation(`${basePath}/${recordId}`);
-  };
-
-  const breadcrumbs = [
-    { path: basePath, title: t('Logs') },
-    params?.rowId && { path: `${basePath}/${params?.rowId}`, title: params?.rowId },
-  ].filter(v => !!v);
-
-  const onFilterChange = data => {
-    setFilter(data);
-  };
+  }, [section, basePath, setLocation]);
 
   return (
     <Container>
-      {!rowId && (
-        <>
-          <PageInfo
-            title={t('Logs')}
-            description={
-              <ul>
-                <li>{t('List cubejs logs')}</li>
-              </ul>
-            }
-          />
-          <Divider />
-          <div style={{ marginLeft: 20 }}>
-            <LogsFilterForm initialValues={filter} onChange={onFilterChange} />
-          </div>
-          <Divider />
-          <LogsTable
-            logs={allLogs}
-            loading={allData?.fetching}
-            totalCount={totalCount}
-            onClickRow={onClickRow}
-            onPageChange={onPageChange}
-            basePath={basePath}
-            pagination={{
-              pageSize,
-              total: totalCount,
-              current: currentPage,
-            }}
-          />
-        </>
-      )}
-      {rowId && (
-        <div style={{ padding: '20px 20px' }}>
-          <div style={{ marginBottom: 10 }}>
-            <Breadcrumbs breadcrumbs={breadcrumbs} />
-          </div>
-          <RequestLogInfo requestId={rowId} />
-        </div>
-      )}
+      <PageInfo
+        title={t('Logs')}
+        description={
+          <ul>
+            <li>{t('List cubejs logs and pre-aggregations')}</li>
+          </ul>
+        }
+      />
+      <Tabs defaultActiveKey="requests" activeKey={section} onChange={(key) => setLocation(`${basePath}/${key}`)}>
+        <TabPane tab="Requests" key="requests">
+          <LogsTab params={params} />
+        </TabPane>
+        <TabPane tab="Pre-Aggregations" key="preaggregations">
+          <PreAggregationsTab params={params} />
+        </TabPane>
+      </Tabs>
     </Container>
   );
 };

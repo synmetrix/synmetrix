@@ -1,5 +1,6 @@
 import express from 'express';
 import { ScaffoldingTemplate } from '@cubejs-backend/schema-compiler';
+import { v4 as uuidv4 } from 'uuid';
 
 import { findDataSchemas, createDataSchema } from '../utils/dataSourceHelpers.js';
 import createMd5Hex from '../utils/md5Hex.js';
@@ -201,6 +202,74 @@ export default ({ basePath, setupAuthInfo, cubejs }) => {
       const { messages } = err;
       res.status(500).json({ code: 'code_validation_error', message: messages?.toString() });
     }
+  });
+
+  router.post(`${basePath}/v1/pre-aggregation-preview`, async (req, res) => {
+    const { preAggregationId, tableName } = (req.body || {});
+    const apiGateway = cubejs.apiGateway();
+
+    const context = {
+      securityContext: {
+        ...req.securityContext,
+      },
+      requestId: 'preview-' + uuidv4(),
+    };
+
+    let previews;
+    try {
+      const query = {
+        preAggregationId,
+        timezone: 'UTC',
+        versionEntry: {
+          table_name: tableName,
+        },
+      };
+
+      await apiGateway.getPreAggregationPreview({ query, context, res: (result) => { previews = result; } });
+
+      previews = previews?.preview?.data;
+    } catch (e) {
+      console.log(e);
+    }
+
+    res.json({ previews });
+  });
+
+  router.get(`${basePath}/v1/pre-aggregations`, async (req, res) => {
+    const apiGateway = cubejs.apiGateway();
+
+    const context = {
+      securityContext: {
+        ...req.securityContext,
+      },
+    };
+
+    let preAggregations;
+    await apiGateway.getPreAggregations({ cacheOnly: false, context, res: (result) => { preAggregations = result; } });
+
+    if (preAggregations.error) {
+      res.json(preAggregations);
+      return;
+    }
+
+    let partitions;
+    try {
+      const preAggregationIds = (preAggregations?.preAggregations || []).map(p => ({
+        id: p.id,
+      }));
+
+      const query = {
+        preAggregations: preAggregationIds,
+      };
+
+      await apiGateway.getPreAggregationPartitions({ query, context, res: (result) => { partitions = result; } });
+
+      partitions = partitions.preAggregationPartitions;
+    } catch (e) {
+      console.log(e);
+    }
+
+    res.json({ partitions });
   });
 
   return router;
