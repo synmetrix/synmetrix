@@ -5,6 +5,7 @@ import { Table } from 'antd';
 import cx from 'classnames';
 
 import s from './TableList.module.css';
+import EmptyDefault from './EmptyDefault';
 
 const TableList = ({ noEmptyImage, ...restProps }) => (
   <Table
@@ -13,6 +14,10 @@ const TableList = ({ noEmptyImage, ...restProps }) => (
       [s.small]: true,
       [s.noImage]: noEmptyImage,
     })}
+    locale={{
+      emptyText: <EmptyDefault />,
+      
+    }}
     rowClassName={s.row}
     {...restProps}
   />

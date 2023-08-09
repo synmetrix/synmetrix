@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
+import i18n from 'i18next';
 
 import { Select, Input, DatePicker } from 'antd';
 import trackEvent from 'utils/trackEvent';
 import moment from 'moment';
 import InputDate from './InputDate';
-import useDebounce from '../hooks/useDebounce';
+import useDebounce from 'hooks/useDebounce';
+import { locales } from 'hooks/useFormItems';
 
 const { RangePicker } = DatePicker;
 
@@ -41,6 +43,7 @@ const filterInputs = {
         key="input"
         onChange={onChange}
         value={value}
+        locale={locales?.[i18n.language] || locales.en}
       />
     );
   },

@@ -1,12 +1,15 @@
 import React, { useRef, useEffect } from 'react';
 import PropTypes from 'prop-types';
+import i18n from 'i18next';
 
 import moment from 'moment';
 import { useSetState } from 'ahooks';
+import { useTranslation } from 'react-i18next';
 
 import { DatePicker, Button, Input, message } from 'antd';
 import PopoverButton from 'components/PopoverButton';
 import useDebounce from 'hooks/useDebounce';
+import { locales } from 'hooks/useFormItems';
 
 import s from './InputDate.module.css';
 
@@ -28,6 +31,7 @@ const items = [
 const FORMAT = 'YYYY-MM-DD';
 
 const InputDate = ({ values, onChange }) => {
+  const { t } = useTranslation();
   const filterContainer = useRef(null);
 
   let inputValue;
@@ -104,7 +108,7 @@ const InputDate = ({ values, onChange }) => {
     <div className={s.inputDate} ref={filterContainer}>
       <Input
         onChange={onInputChange}
-        value={state.inputValue}
+        value={t(state.inputValue)}
         suffix={(
           <PopoverButton
             getPopupContainer={() => filterContainer.current}
@@ -124,6 +128,7 @@ const InputDate = ({ values, onChange }) => {
                 open={state.datePickerVisible}
                 showToday={false}
                 getCalendarContainer={() => filterContainer.current}
+                locale={locales?.[i18n.language] || locales.en}
                 renderExtraFooter={() => (
                   <div className={s.footerContainer}>
                     {items.map(i => (
@@ -133,7 +138,7 @@ const InputDate = ({ values, onChange }) => {
                         size='small'
                         onClick={() => onDateChange(i)}
                       >
-                        {i}
+                        {t(i)}
                       </Button>
                     ))}
                   </div>

@@ -6,6 +6,7 @@ import { Tabs } from 'antd';
 
 import useLocation from 'hooks/useLocation';
 import useAppSettings from 'hooks/useAppSettings';
+import usePermissions from 'hooks/usePermissions';
 
 import PageInfo from 'components/PageInfo';
 import Container from 'components/Container';
@@ -28,6 +29,11 @@ const Logs = ({ match }) => {
     }
   }, [section, basePath, setLocation]);
 
+  const { fallback } = usePermissions({ scope: 'logs' });
+  if (fallback) {
+    return fallback;
+  }
+
   return (
     <Container>
       <PageInfo
@@ -39,10 +45,10 @@ const Logs = ({ match }) => {
         }
       />
       <Tabs defaultActiveKey="requests" activeKey={section} onChange={(key) => setLocation(`${basePath}/${key}`)}>
-        <TabPane tab="Requests" key="requests">
+        <TabPane tab={t('Requests')} key="requests">
           <LogsTab params={params} />
         </TabPane>
-        <TabPane tab="Pre-Aggregations" key="preaggregations">
+        <TabPane tab={t('Pre-Aggregations')} key="preaggregations">
           <PreAggregationsTab params={params} />
         </TabPane>
       </Tabs>

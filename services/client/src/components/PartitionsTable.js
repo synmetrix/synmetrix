@@ -15,12 +15,12 @@ const PartitionsTable = ({ partitions }) => {
 
   const columns = [
     {
-      title: 'Name',
+      title: t('Name'),
       dataIndex: 'preAggregationId',
       key: 'preAggregationId',
     },
     {
-      title: 'Last started',
+      title: t('Last started'),
       dataIndex: 'last_time',
       key: 'last_time',
       render: (_, record) => {

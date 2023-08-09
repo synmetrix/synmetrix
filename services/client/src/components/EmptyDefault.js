@@ -4,11 +4,10 @@ import { useTranslation } from 'react-i18next';
 
 import { Empty } from 'antd';
 
-const emptyDesc = 'No Data';
-const EmptyDefault = ({ description = emptyDesc }) => {
+const EmptyDefault = ({ description }) => {
   const { t } = useTranslation();
 
-  const desc = typeof description === 'string' ? t(description) : description;
+  const desc = typeof(description) === 'string' ? t(description) : description;
 
   return (
     <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description={desc} />
@@ -23,7 +22,7 @@ EmptyDefault.propTypes = {
 };
 
 EmptyDefault.defaultProps = {
-  description: null,
+  description: 'No Data',
 };
 
 export default EmptyDefault;

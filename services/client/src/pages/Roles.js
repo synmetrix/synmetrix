@@ -35,8 +35,8 @@ const Roles = ({ match }) => {
   };
 
   const breadcrumbs = [
-    { path: `${basePath}`, title: 'Roles' },
-    isNew && { path: `${basePath}/new`, title: 'New' },
+    { path: `${basePath}`, title: t('Roles') },
+    isNew && { path: `${basePath}/new`, title: t('New') },
     editId && { path: `${basePath}/${editId}`, title: editId },
   ].filter(v => !!v);
 

@@ -22,17 +22,17 @@ const AccessPart = ({ datasourceMeta, datasourcePermissions, modelName }) => {
     }
 
     if (allColumnsCount && allColumnsCount === roleColumnsCount) {
-      return 'full';
+      return t('full access');
     }
     if (roleColumnsCount > 0 && allColumnsCount > 0) {
-      return 'partial';
+      return t('partial access');
     }
-    return 'no';
-  }, [datasourceMeta, datasourcePermissions, modelName]);
+    return t('no access');
+  }, [datasourceMeta, datasourcePermissions, modelName, t]);
 
   return (
     <div>
-      {countCheckedMembers.toUpperCase()} {t('ACCESS')}
+      {countCheckedMembers.toUpperCase()}
     </div>
   );
 };

@@ -1,4 +1,5 @@
 import React, { useCallback, useMemo, useImperativeHandle } from 'react';
+import i18n from 'i18next';
 import { set, get } from 'unchanged';
 import { useTranslation } from 'react-i18next';
 
@@ -9,12 +10,19 @@ import Slider from 'components/Slider';
 import InputNumber from 'components/InputNumber';
 import ErrorMessage from 'components/ErrorMessage';
 import InputDate from 'components/InputDate';
+import ruLocale from 'antd/es/date-picker/locale/ru_RU';
+import enLocale from 'antd/es/date-picker/locale/en_US';
 
 const { TextArea } = Input;
 const { Option } = Select;
 const noop = () => { };
 const DEFAULT_INPUT_SIZE = 'default';
 const DEFAULT_MODE = 'create';
+
+export const locales = {
+  ru: ruLocale,
+  en: enLocale,
+};
 
 export const getOptionValue = obj => Object.values(obj).join('_');
 
@@ -156,6 +164,7 @@ export default ({ ref, form, initialValues, config, size = DEFAULT_INPUT_SIZE, i
         <InputDate
           values={value.values}
           onChange={value.onChange}
+          locale={locales?.[i18n.language] || locales.en}
         />
       );
     }
@@ -167,6 +176,8 @@ export default ({ ref, form, initialValues, config, size = DEFAULT_INPUT_SIZE, i
           onChange={value.onChange}
           showTime={value.showTime}
           allowClear={value.allowClear}
+          placeholder={value?.placeholder ? t(value.placeholder) : t('Select date')}
+          locale={locales?.[i18n.language] || locales.en}
         />
       );
     }
@@ -216,7 +227,7 @@ export default ({ ref, form, initialValues, config, size = DEFAULT_INPUT_SIZE, i
         )}
       />
     );
-  }, [parseFile, size, mode]);
+  }, [parseFile, size, mode, t]);
 
   const getButton = useCallback((value, key) => {
     return (

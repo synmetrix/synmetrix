@@ -43,9 +43,9 @@ const AccessListsTable = ({ totalCount, loading, onModalOpen }) => {
 
   useCheckResponse(deleteMutation, (res) => {
     if (!res?.delete_access_lists_by_pk) {
-      message.error('No permissions');
+      message.error(t('No permissions'));
     } else {
-      message.success('Deleted.');
+      message.success(t('Deleted.'));
     }
   }, {
     successMessage: null,
@@ -58,30 +58,30 @@ const AccessListsTable = ({ totalCount, loading, onModalOpen }) => {
       team_id: accessList.team_id,
     };
   
-    newData.name += ' (copy)';
+    newData.name += ` (${t('copy')})`;
 
     execCreateMutation({
       object: newData,
     });
-  }, [execCreateMutation]);
+  }, [execCreateMutation, t]);
 
   const columns = [
     {
-      title: 'Name',
+      title: t('Name'),
       dataIndex: 'name',
       key: 'name',
     },
     {
-      title: 'Access to data source',
+      title: t('Access to data source'),
       dataIndex: 'access',
       key: 'access',
       render: (_, record) => {
         const count = Object.values(record?.config?.datasources || {}).length;
-        return `${count} Data sources`;
+        return `${count} ${t('Data sources')}`;
       }
     },
     {
-      title: 'Created At',
+      title: t('Created At'),
       dataIndex: 'created_at',
       key: 'created_at',
       render: (_, record) => {
@@ -90,7 +90,7 @@ const AccessListsTable = ({ totalCount, loading, onModalOpen }) => {
       },
     },
     {
-      title: 'Updated At',
+      title: t('Updated At'),
       dataIndex: 'updated_at',
       key: 'updated_at',
       render: (_, record) => {
@@ -99,7 +99,7 @@ const AccessListsTable = ({ totalCount, loading, onModalOpen }) => {
       },
     },
     {
-      title: 'Actions',
+      title: t('Actions'),
       render: (_, record) => (
         <>
           <Button onClick={() => onModalOpen(record.id)}>

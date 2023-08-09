@@ -7,7 +7,7 @@ import { useSetState } from 'ahooks';
 import 'react-responsive-carousel/lib/styles/carousel.min.css';
 import { Carousel } from 'react-responsive-carousel';
 
-import { Row, Col, Button, Input, Checkbox, message, Empty } from 'antd';
+import { Row, Col, Button, Input, Checkbox, message } from 'antd';
 
 import pickKeys from 'utils/pickKeys';
 
@@ -15,6 +15,7 @@ import ModalView from 'components/ModalView';
 import DatasourceCard from 'components/DatasourceCard';
 import AccessPart, { calcMembersCount } from 'components/AccessPart';
 import Loader from 'components/Loader';
+import EmptyDefault from 'components/EmptyDefault';
 
 import useSources from 'hooks/useSources';
 import useAccessLists from 'hooks/useAccessLists';
@@ -61,13 +62,13 @@ const AccessListsModal = ({ editId, onClose, ...props }) => {
     },
   });
 
-  useCheckResponse(createMutation, () => {}, { successMessage: 'Created.' });
+  useCheckResponse(createMutation, () => {}, { successMessage: t('Created.') });
 
   useCheckResponse(updateMutation, (res) => {
     if (!res.update_access_lists_by_pk) {
-      message.error('No permissions');
+      message.error(t('No permissions'));
     } else {
-      message.success('Saved.');
+      message.success(t('Saved.'));
     }
   }, { successMessage: null });
 
@@ -245,7 +246,7 @@ const AccessListsModal = ({ editId, onClose, ...props }) => {
                   <div>
                     {Object.entries(cubes?.[state?.selectedModel] || []).map(([name, columns]) => (
                       <div key={name} style={{ marginTop: 15 }}>
-                        <b>{(name || '').toUpperCase()}</b>
+                        <b>{t((name || '').toUpperCase())}</b>
                         {(columns || []).map(column => {
                           const curSettings = currentMembers?.[state?.selectedModel]?.[name] || [];
                           const colIndex = curSettings.findIndex(col => col === column.name);
@@ -278,7 +279,7 @@ const AccessListsModal = ({ editId, onClose, ...props }) => {
             </Row>
           ) : (
             <Loader spinning={currentData.fetching}>
-              <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="No data." />
+              <EmptyDefault />
             </Loader>
           )}
         </div>

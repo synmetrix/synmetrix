@@ -1,17 +1,14 @@
 import React, { useMemo } from 'react';
 import PropTypes from 'prop-types';
 
-import { useTranslation } from 'react-i18next';
-
-import { Row, Col, Empty } from 'antd';
+import { Row, Col } from 'antd';
 
 import usePreAggregations from 'hooks/usePreAggregations';
 
 import TableList from 'components/TableList';
+import EmptyDefault from 'components/EmptyDefault';
 
 const PreAggregationPreview = ({ datasourceId, preAggregation }) => {
-  const { t } = useTranslation();
-
   const tableName = useMemo(() => {
     const schemaName = preAggregation?.preAggregation?.preAggregationsSchema;
     const table = preAggregation?.id?.toLowerCase().replace('.', '_');
@@ -39,7 +36,7 @@ const PreAggregationPreview = ({ datasourceId, preAggregation }) => {
   })), [previews]);
 
   if (!previews && !preAggregationPreviewData.fetching) {
-    return <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description={t('No data. Please check Cube.js logs.')} />;
+    return <EmptyDefault description="No data. Please check Cube.js logs." />;
   }
 
   return (
