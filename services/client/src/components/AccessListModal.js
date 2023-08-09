@@ -82,10 +82,25 @@ const AccessListsModal = ({ editId, onClose, ...props }) => {
   };
 
   const onSaveList = (accessList) => {
+    const filteredDatasources = Object.entries(accessList?.datasources || {}).reduce((acc, [id, datasource]) => {
+      const models = Object.values(datasource?.cubes || {});
+      const isAllEmpty = models.every(m => Object.values(m || {}).every(s => !s.length));
+
+      if (!isAllEmpty) {
+        return {
+          ...acc,
+          [id]: datasource,
+        };
+      }
+
+      return acc;
+    }, {});
+      
     const newAccessList = {
       name: accessList?.name,
       config: {
-        datasources: accessList?.datasources,
+        ...current.config,
+        datasources: filteredDatasources,
       },
       team_id: currentTeam.id,
     };
@@ -263,7 +278,8 @@ const AccessListsModal = ({ editId, onClose, ...props }) => {
                                     curSettings.push(column.name);
                                   }
 
-                                  const updatedAccessList = set(`datasources.${state.selectedSourceId}.cubes.${state.selectedModel}.${name}`, curSettings, state.accessList);
+                                  const sectionPath = `datasources.${state.selectedSourceId}.cubes.${state.selectedModel}.${name}`;
+                                  const updatedAccessList = set(sectionPath, curSettings, state.accessList);
                                   updateState({ accessList: updatedAccessList });
                                 }}
                               />
