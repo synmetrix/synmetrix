@@ -15,13 +15,9 @@ const rangeOperators = ['inDateRange', 'notInDateRange'];
 const inputlessOperators = ['set', 'notSet'];
 
 const filterInputs = {
-  string: ({ values, onChange }) => {
-    console.log(values);
-
-    return (
-      <Select key="input" style={{ width: 300 }} mode="tags" onChange={onChange} value={values} />
-    );
-  },
+  string: ({ values, onChange }) => (
+    <Select key="input" style={{ width: 300 }} mode="tags" onChange={onChange} value={values} />
+  ),
   number: ({ values, onChange }) => (
     <Input
       key="input"
