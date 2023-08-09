@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
+import { useTranslation } from 'react-i18next';
 import moment from 'moment';
 
 import useTableState from 'hooks/useTableState';
@@ -19,6 +20,7 @@ const defaultFilterState = {
 };
 
 const LogsTab = ({ params }) => {
+  const { t } = useTranslation();
   const { rowId } = params || null;
   const [filter, setFilter] = useState(defaultFilterState);
   const [_, setLocation] = useLocation();
@@ -53,7 +55,7 @@ const LogsTab = ({ params }) => {
   };
 
   const breadcrumbs = [
-    { path: basePath, title: 'Logs' },
+    { path: basePath, title: t('Logs') },
     params?.rowId && { path: `${basePath}/${params?.rowId}`, title: params?.rowId },
   ].filter(v => !!v);
 

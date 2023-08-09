@@ -1,24 +1,27 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { useTranslation } from 'react-i18next';
 
 import { Row, Col } from 'antd';
 
 import TableList from 'components/TableList';
 
 const PreAggregationsTable = ({ datasource, loading, onClickRow }) => {
+  const { t } = useTranslation();
+
   const columns = [
     {
-      title: 'Name',
+      title: t('Name'),
       dataIndex: 'name',
       key: 'name',
     },
     {
-      title: 'Last started at',
+      title: t('Last started'),
       dataIndex: 'last_time',
       key: 'last_time',
     },
     {
-      title: 'Partitions',
+      title: t('Partitions'),
       dataIndex: 'partitions',
       key: 'partitions',
     },

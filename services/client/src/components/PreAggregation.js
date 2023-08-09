@@ -45,10 +45,10 @@ const PreAggregation = ({ data, datasourceId }) => {
         </div>
       )}
       <Tabs defaultActiveKey="1">
-        <TabPane tab="Partitions" key="1">
+        <TabPane tab={t('Partitions')} key="1">
           <PartitionsTable partitions={data?.partitions} />
         </TabPane>
-        <TabPane tab="Definition" key="2">
+        <TabPane tab={t('Definition')} key="2">
           <TextArea
             disabled
             rows={20}
@@ -56,7 +56,7 @@ const PreAggregation = ({ data, datasourceId }) => {
             style={{ color: 'rgba(0, 0, 0, 0.65)', backgroundColor: 'white' }}
           />
         </TabPane>
-        <TabPane tab="Preview" key="3">
+        <TabPane tab={t('Preview')} key="3">
           <PreAggregationPreview datasourceId={datasourceId} preAggregation={data?.preAggregation} />
         </TabPane>
       </Tabs>

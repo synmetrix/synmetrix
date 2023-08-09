@@ -13,6 +13,7 @@ const { confirm } = Modal;
 const { Option } = Select;
 
 const TeamTable = ({ data, disableManagement, onRemove, onAccessListChange, loading }) => {
+  const { t } = useTranslation();
   const { currentUserState } = useCurrentUserState();
   const currentUser = currentUserState?.users_by_pk;
 
@@ -51,11 +52,11 @@ const TeamTable = ({ data, disableManagement, onRemove, onAccessListChange, load
       render: (_, record) => {
         const { member_roles: roles } = record || {};
 
-        return roles.map(r => r.team_role).join(',');
+        return roles.map(r => t(r.team_role)).join(',');
       },
     },
     {
-      title: 'Access list',
+      title: t('Access list'),
       key: 'accessList',
       render: (_, record) => {
         const accessList = record?.member_roles?.[0]?.access_list;
