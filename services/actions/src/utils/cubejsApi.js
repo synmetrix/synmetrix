@@ -168,7 +168,12 @@ const cubejsApi = ({ dataSourceId, userId, authToken }) => {
   return {
     meta: async () => {
       const meta = await init.meta();
-      const result = await filterByPermissions(meta.cubes || {}, userId, dataSourceId, authToken);
+      
+      let result = meta.cubes;
+      if (userId) {
+        result = await filterByPermissions(meta.cubes || {}, userId, dataSourceId, authToken);
+      }
+
       return result;
     },
     query: async (playgroundState, fileType = 'json', args = {}) => {
