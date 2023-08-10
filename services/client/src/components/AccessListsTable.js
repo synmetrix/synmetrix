@@ -6,6 +6,7 @@ import { Row, Col, Button, message } from 'antd';
 
 import TableList from 'components/TableList';
 import AccessListDatasource from 'components/AccessListDatasource';
+import EmptyDefault from 'components/EmptyDefault';
 
 import useTableState from 'hooks/useTableState';
 import useAccessLists from 'hooks/useAccessLists';
@@ -117,9 +118,13 @@ const AccessListsTable = ({ totalCount, loading, onModalOpen }) => {
   ];
 
   const datasource = useMemo(() => accessLists.map(accessList => {
-    const datasources = Object.entries(accessList?.config?.datasources || {}).map(([datasourceId, val]) => (
+    let datasources = Object.entries(accessList?.config?.datasources || {}).map(([datasourceId, val]) => (
       <AccessListDatasource key={datasourceId} datasourceId={datasourceId} datasourcePermissions={val?.cubes} />
     ));
+
+    if (!datasources.length) {
+      datasources = <EmptyDefault />;
+    }
 
     return {
       ...accessList,
@@ -141,7 +146,7 @@ const AccessListsTable = ({ totalCount, loading, onModalOpen }) => {
             current: currentPage,
           }}
           onChange={onPageChange}
-          expandedRowRender={record => record?.datasources || []}
+          expandedRowRender={record => record?.datasources}
         />
       </Col>
     </Row>
