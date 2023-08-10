@@ -99,7 +99,7 @@ const AccessListsModal = ({ editId, onClose, ...props }) => {
     const newAccessList = {
       name: accessList?.name,
       config: {
-        ...current.config,
+        ...current?.config,
         datasources: filteredDatasources,
       },
       team_id: currentTeam.id,
