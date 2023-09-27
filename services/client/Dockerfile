@@ -27,7 +27,7 @@ COPY . /app
 RUN yarn run build
 
 # production environment
-FROM nginx:1.19.0-alpine
+FROM nginx:1.19.0
 COPY --from=build /app/build /usr/share/nginx/html
 
 ARG ENABLE_MINIO_PROXY
