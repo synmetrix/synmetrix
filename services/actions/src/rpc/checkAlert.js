@@ -25,20 +25,6 @@ const alertQuery = `
   }
 `;
 
-const checkMultipleMeasuresBounds = ({ dataset, triggerConfig, defaultMeasure }) => {
-  if (Object.keys(triggerConfig?.measures || {}).length > 0) {
-    // measures keys contains ":" instead of "." in the DB for preventing JSON object nesting
-    const measures = Object.entries(triggerConfig.measures).map(([k, v]) => ({ key: [k.replace(':', '.')], config: v }));
-
-    return measures.any(({ key, config }) => checkBoundsMatch({ dataset, measure: key, lowerBound: config.lowerBound, upperBound: config.upperBound }));
-  }
-
-  const lowerBound = parseFloat(triggerConfig.lowerBound, 10) || null;
-  const upperBound = parseFloat(triggerConfig.upperBound, 10) || null;
-
-  return checkBoundsMatch({ dataset, measure: defaultMeasure, lowerBound, upperBound });
-};
-
 const checkBoundsMatch = ({ dataset, measure, lowerBound, upperBound }) => !!dataset.find(row => {
   let isLowerBoundMatched = false;
   let isUpperBoundMatched = false;
@@ -63,6 +49,20 @@ const checkBoundsMatch = ({ dataset, measure, lowerBound, upperBound }) => !!dat
 
   return false;
 });
+
+const checkMultipleMeasuresBounds = ({ dataset, triggerConfig, defaultMeasure }) => {
+  if (Object.keys(triggerConfig?.measures || {}).length > 0) {
+    // measures keys contains ":" instead of "." in the DB for preventing JSON object nesting
+    const measures = Object.entries(triggerConfig.measures).map(([k, v]) => ({ key: [k.replace(':', '.')], config: v }));
+
+    return measures.any(({ key, config }) => checkBoundsMatch({ dataset, measure: key, lowerBound: config.lowerBound, upperBound: config.upperBound }));
+  }
+
+  const lowerBound = parseFloat(triggerConfig.lowerBound, 10) || null;
+  const upperBound = parseFloat(triggerConfig.upperBound, 10) || null;
+
+  return checkBoundsMatch({ dataset, measure: defaultMeasure, lowerBound, upperBound });
+};
 
 const checkAndTriggerAlert = async (alert) => {
   const result = {
