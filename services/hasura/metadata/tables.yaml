@@ -56,24 +56,13 @@
         columns:
           - email
           - mfa_enabled
-          - user_id
         filter:
           user:
             id:
               _eq: X-Hasura-User-Id
-  update_permissions:
-    - role: user
-      permission:
-        columns:
-          - email
-        filter:
-          user:
-            id:
-              _eq: X-Hasura-User-Id
-        check:
-          user:
-            id:
-              _eq: X-Hasura-User-Id
+- table:
+    name: migrations
+    schema: auth
 - table:
     name: providers
     schema: auth
@@ -1504,15 +1493,6 @@
                   members:
                     user_id:
                       _eq: X-Hasura-User-Id
-  update_permissions:
-    - role: user
-      permission:
-        columns:
-          - display_name
-        filter:
-          id:
-            _eq: X-Hasura-User-Id
-        check: {}
 - table:
     name: versions
     schema: public

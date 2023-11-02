@@ -91,6 +91,13 @@ actions:
       forward_client_headers: true
     permissions:
       - role: user
+  - name: send_test_alert
+    definition:
+      kind: synchronous
+      handler: '{{ACTIONS_URL}}/rpc/send_test_alert'
+      forward_client_headers: true
+    permissions:
+      - role: user
   - name: validate_datasource
     definition:
       kind: synchronous
@@ -121,4 +128,5 @@ custom_types:
     - name: ExportDataModelsOutput
     - name: PreAggregationsOutput
     - name: PreAggregationPreviewOutput
+    - name: SendTestAlertOutput
   scalars: []
