@@ -136,6 +136,8 @@ services:
       GRAPHQL_SERVER_URL: http://hasura:8080/v1/graphql
       GRAPHQL_WS_URL: ws://hasura:8080/v1/graphql
       GRAPHQL_PLUS_SERVER_URL: http://hasura_plus:8080
+      CUBEJS_MYSQL_API_URL: tcp://cubejs:13306
+      CUBEJS_PG_API_URL: tcp://cubejs:15432
     ports:
       - 9055:9055
     networks:
