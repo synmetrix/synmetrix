@@ -81,7 +81,8 @@ const normalizeQuery = playgroundState => {
 };
 
 const filterByPermissions = async (meta, userId, dataSourceId, authToken) => {
-  const accessData = await fetchGraphQL(accessListQuery, { userId, dataSourceId }, authToken);
+  const token = authToken.substring(0,6) === 'Bearer' ? authToken : `Bearer ${authToken}`;
+  const accessData = await fetchGraphQL(accessListQuery, { userId, dataSourceId }, token);
   const member = accessData?.data?.users_by_pk?.members?.[0];
   const memberRole = member?.member_roles?.[0];
 

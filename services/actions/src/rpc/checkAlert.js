@@ -26,24 +26,27 @@ const alertQuery = `
 `;
 
 const checkBoundsMatch = ({ dataset, measure, lowerBound, upperBound }) => !!dataset.find(row => {
+  const parsedLowerBound = parseFloat(lowerBound, 10) || null;
+  const parsedUpperBound = parseFloat(upperBound, 10) || null;
+
   let isLowerBoundMatched = false;
   let isUpperBoundMatched = false;
 
   const value = parseFloat(row[measure], 10);
 
-  if (lowerBound) {
-    isLowerBoundMatched = value > lowerBound;
+  if (parsedLowerBound) {
+    isLowerBoundMatched = value > parsedLowerBound;
   }
 
-  if (upperBound) {
-    isUpperBoundMatched = value < upperBound;
+  if (parsedUpperBound) {
+    isUpperBoundMatched = value < parsedUpperBound;
   }
   
-  if (lowerBound && upperBound) {
+  if (parsedLowerBound && parsedUpperBound) {
     return isLowerBoundMatched && isUpperBoundMatched;
-  } else if (lowerBound) {
+  } else if (parsedLowerBound) {
     return isLowerBoundMatched;
-  } else if (upperBound) {
+  } else if (parsedUpperBound) {
     return isUpperBoundMatched;
   }
 
@@ -53,15 +56,12 @@ const checkBoundsMatch = ({ dataset, measure, lowerBound, upperBound }) => !!dat
 const checkMultipleMeasuresBounds = ({ dataset, triggerConfig, defaultMeasure }) => {
   if (Object.keys(triggerConfig?.measures || {}).length > 0) {
     // measures keys contains ":" instead of "." in the DB for preventing JSON object nesting
-    const measures = Object.entries(triggerConfig.measures).map(([k, v]) => ({ key: [k.replace(':', '.')], config: v }));
+    const measures = Object.entries(triggerConfig.measures).map(([k, v]) => ({ key: k.replace(':', '.'), config: v }));
 
-    return measures.any(({ key, config }) => checkBoundsMatch({ dataset, measure: key, lowerBound: config.lowerBound, upperBound: config.upperBound }));
+    return measures.some(({ key, config }) => checkBoundsMatch({ dataset, measure: key, lowerBound: config.lowerBound, upperBound: config.upperBound }));
   }
 
-  const lowerBound = parseFloat(triggerConfig.lowerBound, 10) || null;
-  const upperBound = parseFloat(triggerConfig.upperBound, 10) || null;
-
-  return checkBoundsMatch({ dataset, measure: defaultMeasure, lowerBound, upperBound });
+  return checkBoundsMatch({ dataset, measure: defaultMeasure, lowerBound: triggerConfig.lowerBound, upperBound: triggerConfig.upperBound });
 };
 
 const checkAndTriggerAlert = async (alert) => {
@@ -130,7 +130,7 @@ const checkAndTriggerAlert = async (alert) => {
   const defaultMeasure = playgroundState?.measures?.[0]; // compatibility with 1st version of alerts
   const isMatched = checkMultipleMeasuresBounds({ dataset, triggerConfig, defaultMeasure });
 
-  if (isMatched) {
+  if (!isMatched) {
     await delLockData(alert);
     return result;
   }
