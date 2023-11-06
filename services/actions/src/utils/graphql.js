@@ -26,9 +26,8 @@ export const parseResponse = async (res) => {
 export const fetchGraphQL = async (query, variables, authToken) => {
   const headers = {};
 
-  const token = authToken.substring(0,6) === 'Bearer' ? authToken : `Bearer ${authToken}`;
-
-  if (token) {
+  if (authToken) {
+    const token = authToken.substring(0,6) === 'Bearer' ? authToken : `Bearer ${authToken}`;
     headers.authorization = token;
   } else {
     headers['x-hasura-admin-secret'] = HASURA_GRAPHQL_ADMIN_SECRET;
