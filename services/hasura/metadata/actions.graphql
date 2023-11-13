@@ -89,6 +89,15 @@ type Mutation {
 }
 
 type Mutation {
+  send_test_alert(
+    name: String
+    deliveryType: String!
+    deliveryConfig: json!
+    explorationId: uuid
+  ): SendTestAlertOutput
+}
+
+type Mutation {
   validate_datasource(
     id: uuid!
   ): ValidateSourceOutput
@@ -189,5 +198,10 @@ type PreAggregationsOutput {
 
 type PreAggregationPreviewOutput {
   data: json!
+}
+
+type SendTestAlertOutput {
+  error: Boolean
+  result: json
 }
 
