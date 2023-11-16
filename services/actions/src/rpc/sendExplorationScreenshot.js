@@ -180,7 +180,7 @@ const sendToSlack = async ({ header, jsonUrl, screenshotUrl, webhookUrl }) => {
   };
 
   const body = {
-    username: 'Synmetrix Notifications',
+    username: 'MLCraft Notifications',
     blocks: [...defaultBlocks, screenshotBlock],
   };
 
