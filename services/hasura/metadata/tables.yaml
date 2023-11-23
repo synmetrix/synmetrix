@@ -850,9 +850,11 @@
       permission:
         columns:
           - access_list_id
+          - created_at
           - id
           - member_id
           - team_role
+          - updated_at
         filter:
           member:
             team:
