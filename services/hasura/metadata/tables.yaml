@@ -58,9 +58,15 @@
           - mfa_enabled
           - user_id
         filter:
-          user:
-            id:
-              _eq: X-Hasura-User-Id
+          _or:
+            - user_id:
+                _eq: X-Hasura-User-Id
+            - user:
+                members:
+                  team:
+                    members:
+                      user_id:
+                        _eq: X-Hasura-User-Id
   update_permissions:
     - role: user
       permission:
