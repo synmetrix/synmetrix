@@ -1337,6 +1337,10 @@
 - table:
     name: teams
     schema: public
+  object_relationships:
+    - name: user
+      using:
+        foreign_key_constraint_on: user_id
   array_relationships:
     - name: access_lists
       using:
@@ -1388,6 +1392,7 @@
           - id
           - name
           - updated_at
+          - user_id
         filter:
           members:
             user_id:
@@ -1486,6 +1491,20 @@
           column: user_id
           table:
             name: request_logs
+            schema: public
+    - name: sql_credentials
+      using:
+        foreign_key_constraint_on:
+          column: user_id
+          table:
+            name: sql_credentials
+            schema: public
+    - name: teams
+      using:
+        foreign_key_constraint_on:
+          column: user_id
+          table:
+            name: teams
             schema: public
     - name: versions
       using:
