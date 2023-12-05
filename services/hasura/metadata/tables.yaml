@@ -945,7 +945,9 @@
                     _eq: X-Hasura-User-Id
                 - member_roles:
                     team_role:
-                      _eq: owner
+                      _in:
+                        - owner
+                        - admin
 - table:
     name: pinned_items
     schema: public
