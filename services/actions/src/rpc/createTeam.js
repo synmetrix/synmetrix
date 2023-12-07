@@ -37,9 +37,8 @@ const createTeam = async ({ userId, name }) => {
 };
 
 export default async (session, input, headers) => {
-  const { name } = input || {};
-  const userId = session?.['x-hasura-user-id'];
-  // const authToken = headers?.authorization;
+  const { name = "Default team" } = input || {};
+  const userId = session?.['x-hasura-user-id'] || input?.event?.data?.new?.id;
 
   let newTeam;
 
