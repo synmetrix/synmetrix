@@ -646,6 +646,12 @@
           table:
             name: sql_credentials
             schema: public
+  computed_fields:
+    - name: db_params_computed
+      definition:
+        function:
+          name: hide_password
+          schema: public
   insert_permissions:
     - role: user
       permission:
@@ -669,14 +675,15 @@
     - role: user
       permission:
         columns:
-          - db_params
-          - db_type
-          - name
           - created_at
-          - updated_at
+          - db_type
           - id
+          - name
           - team_id
+          - updated_at
           - user_id
+        computed_fields:
+          - db_params_computed
         filter:
           _or:
             - user_id:
