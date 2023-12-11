@@ -24,6 +24,7 @@ const datasourcesQuery = `
       db_type
       created_at
       updated_at
+      db_params_computed
       sql_credentials {
         id
         username
@@ -65,13 +66,13 @@ const checkdatasourceMutation = `
   }
 `;
 
-const editdatasourceQuery = `
+const currentDatasourceQuery = `
   query ($id: uuid!) {
     datasources_by_pk(id: $id) {
       id
       name
       db_type
-      db_params
+      db_params_computed
       created_at
       updated_at
     }
@@ -111,6 +112,7 @@ const datasourcesSubscription = `
       db_type
       created_at
       updated_at
+      db_params_computed
       sql_credentials {
         id
         username
@@ -151,6 +153,16 @@ const runSourceSQLMutation = `
     }
   }
 `;
+
+const prepareSourceData = (data) => {
+  const newData = data ? {
+    ...data,
+    db_params: data?.db_params_computed,
+  } : {};
+
+  delete newData.db_params_computed;
+  return newData;
+};
 
 const getListVariables = (pagination, params = {}) => {
   let res = {
@@ -235,11 +247,11 @@ export default ({ pauseQueryAll, pagination = {}, params = {}, disableSubscripti
     }
   }, [currentTeamState.id, pauseQueryAll, doQueryAll]);
 
-  const all = useMemo(() => allData.data?.datasources || [], [allData.data]);
+  const all = useMemo(() => allData.data?.datasources?.map(d => prepareSourceData(d)) || [], [allData.data]);
   const totalCount = useMemo(() => allData.data?.datasources_aggregate.aggregate.count, [allData.data]);
 
   const [currentData, execQueryCurrent] = useQuery({
-    query: editdatasourceQuery,
+    query: currentDatasourceQuery,
     variables: {
       id: editId,
     },
@@ -248,8 +260,7 @@ export default ({ pauseQueryAll, pagination = {}, params = {}, disableSubscripti
     requestPolicy: 'cache-and-network',
     role,
   });
-
-  const current = useMemo(() => currentData.data?.datasources_by_pk || {}, [currentData.data]);
+  const current = useMemo(() => prepareSourceData(currentData?.data?.datasources_by_pk), [currentData.data]);
   const currentMeta = useMemo(() => metaData.data?.fetch_meta?.cubes || [], [metaData.data]);
 
   useEffect(() => {
