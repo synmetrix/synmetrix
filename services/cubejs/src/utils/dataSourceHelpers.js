@@ -1,7 +1,7 @@
-import { set } from 'unchanged';
-import JSum from 'jsum';
-import createMd5Hex from './md5Hex.js';
-import { fetchGraphQL } from './graphql.js';
+import { set } from "unchanged";
+import JSum from "jsum";
+import createMd5Hex from "./md5Hex.js";
+import { fetchGraphQL } from "./graphql.js";
 
 const accessListQuery = `
   query ($userId: uuid!) {
@@ -60,7 +60,6 @@ const branchSchemasQuery = `
   }
 `;
 
-
 const upsertVersionMutation = `
   mutation ($object: versions_insert_input!) {
     insert_versions_one(
@@ -107,7 +106,7 @@ export const getDataSources = async () => {
 };
 
 export const getPermissions = async (userId) => {
-  let res = await fetchGraphQL(accessListQuery, { userId })
+  let res = await fetchGraphQL(accessListQuery, { userId });
   res = res?.data?.users_by_pk?.members?.[0]?.member_roles?.[0];
 
   return {
@@ -118,11 +117,11 @@ export const getPermissions = async (userId) => {
 
 export const buildSecurityContext = (dataSource) => {
   if (!dataSource) {
-    throw new Error('No dataSource provided');
+    throw new Error("No dataSource provided");
   }
 
   if (!dataSource?.db_params) {
-    throw new Error('No dbParams provided');
+    throw new Error("No dbParams provided");
   }
 
   const data = {
@@ -131,22 +130,28 @@ export const buildSecurityContext = (dataSource) => {
     dbParams: dataSource.db_params,
   };
 
-  const dataSourceVersion = JSum.digest(data, 'SHA256', 'hex');
+  const dataSourceVersion = JSum.digest(data, "SHA256", "hex");
 
-  const files = (dataSource?.dataschemas || []).map(schema => mapSchemaToFile(schema));
+  const files = (dataSource?.dataschemas || []).map((schema) =>
+    mapSchemaToFile(schema)
+  );
   const schemaVersion = createMd5Hex(files);
 
   return {
     ...data,
     dataSourceVersion,
     schemaVersion,
-  }
+  };
 };
 
 export const createDataSchema = async (object) => {
   const { authToken, ...version } = object;
 
-  let res = await fetchGraphQL(upsertVersionMutation, { object: version }, authToken);
+  let res = await fetchGraphQL(
+    upsertVersionMutation,
+    { object: version },
+    authToken
+  );
   res = res?.data?.insert_versions_one;
 
   return res;
@@ -155,7 +160,7 @@ export const createDataSchema = async (object) => {
 export const findDataSchemas = async (args) => {
   let vars = {
     order_by: {
-      created_at: 'desc',
+      created_at: "desc",
     },
     where: {
       datasource_id: {
@@ -165,13 +170,18 @@ export const findDataSchemas = async (args) => {
   };
 
   if (args?.branchId) {
-    vars = set('where.id._eq', args.branchId, vars);
+    vars = set("where.id._eq", args.branchId, vars);
   } else {
-    vars = set('where.status._eq', 'active', vars);
+    vars = set("where.status._eq", "active", vars);
   }
 
-  let dataSchemas = await fetchGraphQL(branchSchemasQuery, vars, args.authToken);
-  dataSchemas = dataSchemas?.data?.branches?.[0]?.versions?.[0]?.dataschemas || [];
+  let dataSchemas = await fetchGraphQL(
+    branchSchemasQuery,
+    vars,
+    args.authToken
+  );
+  dataSchemas =
+    dataSchemas?.data?.branches?.[0]?.versions?.[0]?.dataschemas || [];
 
   return dataSchemas;
 };
@@ -179,7 +189,7 @@ export const findDataSchemas = async (args) => {
 export const mapSchemaToFile = (schema) => ({
   fileName: schema.name,
   readOnly: true,
-  content: schema.code
+  content: schema.code,
 });
 
 export const dataSchemaFiles = async (args) => {
@@ -188,7 +198,7 @@ export const dataSchemaFiles = async (args) => {
   }
 
   let schemas = await findDataSchemas(args);
-  schemas = (schemas || []).map(schema => mapSchemaToFile(schema));
+  schemas = (schemas || []).map((schema) => mapSchemaToFile(schema));
 
   return schemas;
 };
