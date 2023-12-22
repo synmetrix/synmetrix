@@ -1,7 +1,7 @@
 import { ScaffoldingTemplate } from "@cubejs-backend/schema-compiler";
 import {
-  findDataSchemas,
   createDataSchema,
+  findDataSchemas,
 } from "../utils/dataSourceHelpers.js";
 import createMd5Hex from "../utils/md5Hex.js";
 

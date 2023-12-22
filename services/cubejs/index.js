@@ -1,15 +1,18 @@
 import ServerCore from "@cubejs-backend/server-core";
 import express from "express";
+import fs from "fs";
+import swaggerUi from "swagger-ui-express";
+import YAML from "yaml";
 
 import routes from "./src/routes/index.js";
 import { logging } from "./src/utils/logging.js";
 
+import { checkAuth } from "./src/utils/checkAuth.js";
+import checkSqlAuth from "./src/utils/checkSqlAuth.js";
 import driverFactory from "./src/utils/driverFactory.js";
 import queryRewrite from "./src/utils/queryRewrite.js";
-import checkSqlAuth from "./src/utils/checkSqlAuth.js";
-import checkAuth from "./src/utils/checkAuth.js";
-import scheduledRefreshContexts from "./src/utils/scheduledRefreshContexts.js";
 import repositoryFactory from "./src/utils/repositoryFactory.js";
+import scheduledRefreshContexts from "./src/utils/scheduledRefreshContexts.js";
 
 const {
   CUBEJS_SECRET,
@@ -43,7 +46,7 @@ const externalDriverFactory = async () =>
     port: CUBEJS_CUBESTORE_PORT,
   });
 
-const basePath = `/cubejs/datasources`;
+const basePath = `/api`;
 
 const options = {
   queryRewrite,
@@ -75,7 +78,12 @@ const options = {
 
 const cubejs = new ServerCore(options);
 
-app.use(routes({ basePath, checkAuth, cubejs }));
+const file = fs.readFileSync("./src/swagger.yaml", "utf8");
+const swaggerDocument = YAML.parse(file);
+
+app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+
+app.use(routes({ basePath, cubejs }));
 
 cubejs.initApp(app);
 

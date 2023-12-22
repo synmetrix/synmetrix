@@ -43,7 +43,9 @@
     "pg-connection-string": "^2.2.0",
     "ramda": "^0.29.0",
     "redis": "^4.6.4",
+    "swagger-ui-express": "^5.0.0",
     "unchanged": "^2.2.1",
-    "uuid": "^9.0.0"
+    "uuid": "^9.0.0",
+    "yaml": "^2.3.4"
   }
 }

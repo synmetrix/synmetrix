@@ -1,15 +1,10 @@
 import jwt from "jsonwebtoken";
 
 import {
-  findDataSource,
   buildSecurityContext,
+  findDataSource,
   getPermissions,
 } from "./dataSourceHelpers.js";
-
-const pushError = (req, error) => {
-  req.securityContext = { error };
-  return null;
-};
 
 const { CUBEJS_SECRET } = process.env;
 
@@ -18,20 +13,26 @@ const { CUBEJS_SECRET } = process.env;
  *
  * @param {Object} req - The request object from the client.
  * @param {Object} req.headers - The headers of the request.
- * @param {string} req.headers.authorization - The Cube.js authorization token.
- * @param {string} req.headers["x-hasura-authorization"] - The Hasura authorization token.
+ * @param {string} req.headers.authorization - The Cube server Bearer authorization token.
  * @returns {Promise} - A promise that resolves to the security context for the request.
  *
  * @throws {Error} - Throws an error if the JWT verification fails or if no dataSourceId is provided.
  */
 const checkAuth = async (req) => {
-  const {
-    authorization: cubejsAuthToken,
-    "x-hasura-authorization": authToken,
-  } = req.headers;
+  const authHeader = req.headers.authorization;
 
   let jwtDecoded;
-  let error;
+  let cubejsAuthToken;
+
+  if (authHeader.startsWith("Bearer ")) {
+    cubejsAuthToken = authHeader.split(" ")[1];
+  } else {
+    cubejsAuthToken = authHeader;
+  }
+
+  if (!cubejsAuthToken) {
+    throw new Error("Provide Cube authorization token");
+  }
 
   try {
     jwtDecoded = jwt.verify(cubejsAuthToken, CUBEJS_SECRET);
@@ -39,21 +40,21 @@ const checkAuth = async (req) => {
     throw err;
   }
 
-  const { dataSourceId, userId } = jwtDecoded || {};
+  const { dataSourceId, userId, authToken } = jwtDecoded || {};
+
+  if (!authToken) {
+    throw new Error("Provide Hasura authorization token");
+  }
 
   if (!dataSourceId) {
-    error = "Provide dataSourceId";
-
-    return pushError(req, error);
+    throw new Error("Provide dataSourceId");
   }
 
   const dataSource = await findDataSource({ dataSourceId, authToken });
   const permissions = await getPermissions(userId);
 
   if (!dataSource?.id) {
-    error = `Source "${dataSourceId}" not found`;
-
-    return pushError(req, error);
+    throw new Error(`Source "${dataSourceId}" not found`);
   }
 
   const securityContext = buildSecurityContext(dataSource);
@@ -67,4 +68,14 @@ const checkAuth = async (req) => {
   };
 };
 
-export default checkAuth;
+const checkAuthMiddleware = async (req, _, next) => {
+  try {
+    await checkAuth(req);
+    next();
+  } catch (err) {
+    next(err);
+  }
+};
+
+export { checkAuth };
+export default checkAuthMiddleware;
