@@ -6,7 +6,7 @@ import {
   getPermissions,
 } from "./dataSourceHelpers.js";
 
-const { CUBEJS_SECRET } = process.env;
+const { JWT_KEY, JWT_ALGORITHM } = process.env;
 
 /**
  * Asynchronous function to check the authentication of a request.
@@ -20,6 +20,7 @@ const { CUBEJS_SECRET } = process.env;
  */
 const checkAuth = async (req) => {
   const authHeader = req.headers.authorization;
+  const dataSourceId = req.headers["x-hasura-datasource-id"];
 
   let jwtDecoded;
   let cubejsAuthToken;
@@ -35,22 +36,20 @@ const checkAuth = async (req) => {
   }
 
   try {
-    jwtDecoded = jwt.verify(cubejsAuthToken, CUBEJS_SECRET);
+    jwtDecoded = jwt.verify(cubejsAuthToken, JWT_KEY, {
+      algorithms: [JWT_ALGORITHM],
+    });
   } catch (err) {
     throw err;
   }
 
-  const { dataSourceId, userId, authToken } = jwtDecoded || {};
-
-  if (!authToken) {
-    throw new Error("Provide Hasura authorization token");
-  }
+  const { "x-hasura-user-id": userId } = jwtDecoded?.hasura || {};
 
   if (!dataSourceId) {
     throw new Error("Provide dataSourceId");
   }
 
-  const dataSource = await findDataSource({ dataSourceId, authToken });
+  const dataSource = await findDataSource({ dataSourceId });
   const permissions = await getPermissions(userId);
 
   if (!dataSource?.id) {
@@ -62,7 +61,7 @@ const checkAuth = async (req) => {
   req.securityContext = {
     dataSourceId,
     userId,
-    authToken,
+    authToken: cubejsAuthToken,
     ...permissions,
     ...securityContext,
   };

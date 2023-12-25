@@ -126,20 +126,21 @@ const filterByPermissions = async (meta, userId, dataSourceId, authToken) => {
 };
 
 const cubejsApi = ({ dataSourceId, userId, authToken }) => {
-  const cubejsToken = jwt.sign(
-    { dataSourceId, userId, authToken },
-    CUBEJS_SECRET,
-    {
-      expiresIn: "1d",
-    }
-  );
+  let cubejsAuthToken;
+
+  if (authToken.startsWith("Bearer ")) {
+    cubejsAuthToken = authToken.split(" ")[1];
+  } else {
+    cubejsAuthToken = authToken;
+  }
 
   const reqHeaders = {
-    Authorization: `Bearer ${cubejsToken}`,
+    Authorization: `Bearer ${cubejsAuthToken}`,
+    "x-hasura-datasource-id": dataSourceId,
   };
 
   const apiUrl = `${CUBEJS_URL}/api/v1`;
-  const init = new CubejsApiClient(cubejsToken, {
+  const init = new CubejsApiClient(authToken, {
     apiUrl,
     headers: reqHeaders,
   });

@@ -9,6 +9,29 @@ components:
       type: http
       scheme: bearer
 paths:
+  /readyz:
+    get:
+      summary: Returns the ready state of the deployment
+      responses:
+        200:
+          description: Status of deployment readiness
+          schema:
+            type: object
+            properties:
+              health:
+                type: string
+
+  /livez:
+    get:
+      summary: Returns the liveness state of the deployment
+      responses:
+        200:
+          description: Status of deployment liveness
+          schema:
+            type: object
+            properties:
+              health:
+                type: string
   /api/v1/load:
     get:
       summary: Get the data for a query
@@ -123,30 +146,6 @@ paths:
       security:
         - BearerAuth: []
         - HasuraAuth: []
-
-  /readyz:
-    get:
-      summary: Returns the ready state of the deployment
-      responses:
-        200:
-          description: Status of deployment readiness
-          schema:
-            type: object
-            properties:
-              health:
-                type: string
-
-  /livez:
-    get:
-      summary: Returns the liveness state of the deployment
-      responses:
-        200:
-          description: Status of deployment liveness
-          schema:
-            type: object
-            properties:
-              health:
-                type: string
   /api/v1/run-sql:
     post:
       summary: 'Run SQL query'
