@@ -365,15 +365,17 @@
     - role: user
       permission:
         check:
-          _or:
-            - datasource:
-                user_id:
-                  _eq: X-Hasura-User-Id
-            - datasource:
-                team:
-                  members:
-                    user_id:
+          datasource:
+            team:
+              members:
+                _and:
+                  - user_id:
                       _eq: X-Hasura-User-Id
+                  - member_roles:
+                      team_role:
+                        _in:
+                          - owner
+                          - admin
         columns:
           - datasource_id
           - name
@@ -391,15 +393,11 @@
           - id
           - user_id
         filter:
-          _or:
-            - datasource:
+          datasource:
+            team:
+              members:
                 user_id:
                   _eq: X-Hasura-User-Id
-            - datasource:
-                team:
-                  members:
-                    user_id:
-                      _eq: X-Hasura-User-Id
         allow_aggregations: true
   update_permissions:
     - role: user
@@ -408,16 +406,29 @@
           - name
           - status
         filter:
-          _or:
-            - datasource:
-                user_id:
-                  _eq: X-Hasura-User-Id
-            - datasource:
-                team:
-                  members:
-                    user_id:
+          datasource:
+            team:
+              members:
+                _and:
+                  - user_id:
                       _eq: X-Hasura-User-Id
-        check: null
+                  - member_roles:
+                      team_role:
+                        _in:
+                          - owner
+                          - admin
+        check:
+          datasource:
+            team:
+              members:
+                _and:
+                  - user_id:
+                      _eq: X-Hasura-User-Id
+                  - member_roles:
+                      team_role:
+                        _in:
+                          - owner
+                          - admin
 - table:
     name: dashboards
     schema: public
@@ -519,19 +530,17 @@
     - role: user
       permission:
         check:
-          _or:
-            - version:
-                branch:
-                  datasource:
-                    user_id:
+          datasource:
+            team:
+              members:
+                _and:
+                  - member_roles:
+                      team_role:
+                        _in:
+                          - owner
+                          - admin
+                  - user_id:
                       _eq: X-Hasura-User-Id
-            - version:
-                branch:
-                  datasource:
-                    team:
-                      members:
-                        user_id:
-                          _eq: X-Hasura-User-Id
         columns:
           - code
           - datasource_id
@@ -552,19 +561,17 @@
           - user_id
           - version_id
         filter:
-          _or:
-            - version:
-                branch:
-                  datasource:
-                    user_id:
+          datasource:
+            team:
+              members:
+                _and:
+                  - member_roles:
+                      team_role:
+                        _in:
+                          - owner
+                          - admin
+                  - user_id:
                       _eq: X-Hasura-User-Id
-            - version:
-                branch:
-                  datasource:
-                    team:
-                      members:
-                        user_id:
-                          _eq: X-Hasura-User-Id
         allow_aggregations: true
   update_permissions:
     - role: user
@@ -573,33 +580,29 @@
           - code
           - name
         filter:
-          _or:
-            - version:
-                branch:
-                  datasource:
-                    user_id:
+          datasource:
+            team:
+              members:
+                _and:
+                  - member_roles:
+                      team_role:
+                        _in:
+                          - owner
+                          - admin
+                  - user_id:
                       _eq: X-Hasura-User-Id
-            - version:
-                branch:
-                  datasource:
-                    team:
-                      members:
-                        user_id:
-                          _eq: X-Hasura-User-Id
         check:
-          _or:
-            - version:
-                branch:
-                  datasource:
-                    user_id:
+          datasource:
+            team:
+              members:
+                _and:
+                  - member_roles:
+                      team_role:
+                        _in:
+                          - owner
+                          - admin
+                  - user_id:
                       _eq: X-Hasura-User-Id
-            - version:
-                branch:
-                  datasource:
-                    team:
-                      members:
-                        user_id:
-                          _eq: X-Hasura-User-Id
 - table:
     name: datasources
     schema: public
