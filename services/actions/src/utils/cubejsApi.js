@@ -25,7 +25,6 @@ const accessListQuery = `
 `;
 
 const { CubejsApi: CubejsApiClient } = cubejsClientCore;
-const CUBEJS_SECRET = process.env.CUBEJS_SECRET || "testToken";
 const CUBEJS_URL = process.env.CUBEJS_URL || "http://cubejs:4000";
 
 const queryBaseMembers = [

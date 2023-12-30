@@ -23,20 +23,20 @@ const checkAuth = async (req) => {
   const dataSourceId = req.headers["x-hasura-datasource-id"];
 
   let jwtDecoded;
-  let cubejsAuthToken;
+  let authToken;
 
   if (authHeader.startsWith("Bearer ")) {
-    cubejsAuthToken = authHeader.split(" ")[1];
+    authToken = authHeader.split(" ")[1];
   } else {
-    cubejsAuthToken = authHeader;
+    authToken = authHeader;
   }
 
-  if (!cubejsAuthToken) {
-    throw new Error("Provide Cube authorization token");
+  if (!authToken) {
+    throw new Error("Provide Hasura Authorization token");
   }
 
   try {
-    jwtDecoded = jwt.verify(cubejsAuthToken, JWT_KEY, {
+    jwtDecoded = jwt.verify(authToken, JWT_KEY, {
       algorithms: [JWT_ALGORITHM],
     });
   } catch (err) {
@@ -46,14 +46,24 @@ const checkAuth = async (req) => {
   const { "x-hasura-user-id": userId } = jwtDecoded?.hasura || {};
 
   if (!dataSourceId) {
-    throw new Error("Provide dataSourceId");
+    throw new Error(
+      "400: No x-hasura-datasource-id provided, headers: " +
+        JSON.stringify(req.headers)
+    );
   }
 
-  const dataSource = await findDataSource({ dataSourceId });
-  const permissions = await getPermissions(userId);
+  const permissions = await getPermissions({ dataSourceId, userId, authToken });
+
+  if (!permissions?.dataSourceId) {
+    throw new Error(`403: No permissions for source "${dataSourceId}"`);
+  }
+
+  const dataSource = await findDataSource({
+    dataSourceId: permissions?.dataSourceId,
+  });
 
   if (!dataSource?.id) {
-    throw new Error(`Source "${dataSourceId}" not found`);
+    throw new Error(`404: Source "${dataSourceId}" not found`);
   }
 
   const securityContext = buildSecurityContext(dataSource);
@@ -61,7 +71,7 @@ const checkAuth = async (req) => {
   req.securityContext = {
     dataSourceId,
     userId,
-    authToken: cubejsAuthToken,
+    authToken,
     ...permissions,
     ...securityContext,
   };

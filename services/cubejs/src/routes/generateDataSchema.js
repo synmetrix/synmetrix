@@ -116,6 +116,7 @@ export default async (req, res, cubejs) => {
     }));
 
     const commitObject = {
+      authToken,
       user_id: userId,
       branch_id: branchId,
       checksum: commitChecksum,

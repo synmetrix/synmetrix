@@ -1,5 +1,3 @@
-import { getPermissions } from "./dataSourceHelpers.js";
-
 const getColumnsArray = (cube) => [
   ...(cube?.dimensions || []),
   ...(cube?.measures || []),
@@ -22,18 +20,20 @@ const getColumnsArray = (cube) => [
  * @throws {Error} - Throws an error if the user does not have access to the data source or to a specific cube.
  */
 const queryRewrite = async (query, { securityContext }) => {
-  const { dataSourceId, userId } = securityContext;
-  const { config, role } = securityContext?.config
-    ? securityContext
-    : await getPermissions(userId);
+  const { dataSourceId } = securityContext;
+  const { config, role } = securityContext?.config ? securityContext : {};
   const accessDatasource = config?.datasources?.[dataSourceId]?.cubes;
 
-  if (["owner", "admin"].includes(role) || !config) {
+  if (!config) {
+    throw new Error("403: AccessList is not configured");
+  }
+
+  if (["owner", "admin"].includes(role)) {
     return query;
   }
 
   if (!accessDatasource) {
-    throw new Error("No access to datasource!");
+    throw new Error("403: No access to datasource");
   }
 
   const queryNames = getColumnsArray(query);
@@ -44,7 +44,7 @@ const queryRewrite = async (query, { securityContext }) => {
 
   queryNames.forEach((cn) => {
     if (!accessNames.includes(cn)) {
-      throw new Error(`No access to ${cn} cube!`);
+      throw new Error(`403: No access to ${cn} cube properties`);
     }
   });
 

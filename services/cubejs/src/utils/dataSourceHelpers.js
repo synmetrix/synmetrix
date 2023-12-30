@@ -4,7 +4,7 @@ import { fetchGraphQL } from "./graphql.js";
 import createMd5Hex from "./md5Hex.js";
 
 const accessListQuery = `
-  query ($userId: uuid!) {
+  query ($userId: uuid!, $dataSourceId: uuid!) {
     users_by_pk(id: $userId) {
       members {
         member_roles {
@@ -14,6 +14,10 @@ const accessListQuery = `
           }
         }
       }
+    }
+    datasources_by_pk(id: $dataSourceId) {
+      id
+      name
     }
   }
 `;
@@ -84,8 +88,8 @@ const sqlCredentialsQuery = `
   }
 `;
 
-export const findDataSource = async ({ dataSourceId, authToken }) => {
-  let res = await fetchGraphQL(sourceQuery, { id: dataSourceId }, authToken);
+export const findDataSource = async ({ dataSourceId }) => {
+  let res = await fetchGraphQL(sourceQuery, { id: dataSourceId });
   res = res?.data?.datasources_by_pk;
 
   return res;
@@ -105,13 +109,19 @@ export const getDataSources = async () => {
   return res;
 };
 
-export const getPermissions = async (userId) => {
-  let res = await fetchGraphQL(accessListQuery, { userId });
-  res = res?.data?.users_by_pk?.members?.[0]?.member_roles?.[0];
+export const getPermissions = async ({ dataSourceId, userId, authToken }) => {
+  const res = await fetchGraphQL(
+    accessListQuery,
+    { dataSourceId, userId },
+    authToken
+  );
+
+  const memberRoles = res?.data?.users_by_pk?.members?.[0]?.member_roles?.[0];
 
   return {
-    config: res?.access_list?.config,
-    role: res?.team_role,
+    config: memberRoles?.access_list?.config,
+    role: memberRoles?.team_role,
+    dataSourceId: res?.data?.datasources_by_pk?.id,
   };
 };
 
