@@ -1,4 +1,3 @@
-import { set } from "unchanged";
 import { fetchGraphQL } from "./graphql.js";
 
 const accessListQuery = `
@@ -169,21 +168,4 @@ export const findDataSchemas = async ({ branchId, authToken }) => {
     res?.data?.branches?.[0]?.versions?.[0]?.dataschemas || [];
 
   return dataSchemas;
-};
-
-export const mapSchemaToFile = (schema) => ({
-  fileName: schema.name,
-  readOnly: true,
-  content: schema.code,
-});
-
-export const dataSchemaFiles = async ({ branchId, authToken }) => {
-  if (!branchId) {
-    return [];
-  }
-
-  let schemas = await findDataSchemas({ branchId, authToken });
-  schemas = (schemas || []).map((schema) => mapSchemaToFile(schema));
-
-  return schemas;
 };
