@@ -80,7 +80,7 @@ const sourcesQuery = `
 `;
 
 const branchSchemasQuery = `
-  query ($order_by: [versions_order_by!], $where: branches_bool_exp) {
+  query ($branchId: uuid!) {
     ${selectedBranchModelsFragment}
   }
 `;
