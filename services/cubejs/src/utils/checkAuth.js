@@ -6,18 +6,22 @@ import buildSecurityContext from "./buildSecurityContext.js";
 const { JWT_KEY, JWT_ALGORITHM } = process.env;
 
 /**
- * Asynchronous function to check the authentication of a request.
+ * Checks the authorization of the request and sets the security context.
  *
- * @param {Object} req - The request object from the client.
- * @param {Object} req.headers - The headers of the request.
- * @param {string} req.headers.authorization - The Cube server Bearer authorization token.
- * @returns {Promise} - A promise that resolves to the security context for the request.
- *
- * @throws {Error} - Throws an error if the JWT verification fails or if no dataSourceId is provided.
+ * @param {Object} req - The request object.
+ * @throws {Error} If the Hasura Authorization token is not provided.
+ * @throws {Error} If no x-hasura-datasource-id is provided in the headers.
+ * @throws {Error} If there are no permissions for the specified data source.
+ * @throws {Error} If there is no default branch for the specified data source.
+ * @throws {Error} If the specified data source is not found.
+ * @returns {Promise<void>} A promise that resolves when the security context is set.
  */
 const checkAuth = async (req) => {
+  // Extract the authorization header from the request
   const authHeader = req.headers.authorization;
+  // Extract the data source ID from the request headers
   const dataSourceId = req.headers["x-hasura-datasource-id"];
+  // Extract the branch ID from the request headers
   const branchId = req.headers["x-hasura-branch-id"];
 
   let jwtDecoded;

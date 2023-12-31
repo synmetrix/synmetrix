@@ -28,60 +28,77 @@
         <article>
             <pre class="prettyprint source linenums"><code>import jwt from "jsonwebtoken";
 
-import {
-  findDataSource,
-  buildSecurityContext,
-  getPermissions,
-} from "./dataSourceHelpers.js";
+import { findDataSource, getPermissions } from "./dataSourceHelpers.js";
+import buildSecurityContext from "./buildSecurityContext.js";
 
-const pushError = (req, error) => {
-  req.securityContext = { error };
-  return null;
-};
-
-const { CUBEJS_SECRET } = process.env;
+const { JWT_KEY, JWT_ALGORITHM } = process.env;
 
 /**
- * Asynchronous function to check the authentication of a request.
+ * Checks the authorization of the request and sets the security context.
  *
- * @param {Object} req - The request object from the client.
- * @param {Object} req.headers - The headers of the request.
- * @param {string} req.headers.authorization - The Cube.js authorization token.
- * @param {string} req.headers["x-hasura-authorization"] - The Hasura authorization token.
- * @returns {Promise} - A promise that resolves to the security context for the request.
- *
- * @throws {Error} - Throws an error if the JWT verification fails or if no dataSourceId is provided.
+ * @param {Object} req - The request object.
+ * @throws {Error} If the Hasura Authorization token is not provided.
+ * @throws {Error} If no x-hasura-datasource-id is provided in the headers.
+ * @throws {Error} If there are no permissions for the specified data source.
+ * @throws {Error} If there is no default branch for the specified data source.
+ * @throws {Error} If the specified data source is not found.
+ * @returns {Promise&lt;void>} A promise that resolves when the security context is set.
  */
 const checkAuth = async (req) => {
-  const {
-    authorization: cubejsAuthToken,
-    "x-hasura-authorization": authToken,
-  } = req.headers;
+  // Extract the authorization header from the request
+  const authHeader = req.headers.authorization;
+  // Extract the data source ID from the request headers
+  const dataSourceId = req.headers["x-hasura-datasource-id"];
+  // Extract the branch ID from the request headers
+  const branchId = req.headers["x-hasura-branch-id"];
 
   let jwtDecoded;
-  let error;
+  let authToken;
+
+  if (authHeader.startsWith("Bearer ")) {
+    authToken = authHeader.split(" ")[1];
+  } else {
+    authToken = authHeader;
+  }
+
+  if (!authToken) {
+    throw new Error("Provide Hasura Authorization token");
+  }
 
   try {
-    jwtDecoded = jwt.verify(cubejsAuthToken, CUBEJS_SECRET);
+    jwtDecoded = jwt.verify(authToken, JWT_KEY, {
+      algorithms: [JWT_ALGORITHM],
+    });
   } catch (err) {
     throw err;
   }
 
-  const { dataSourceId, userId } = jwtDecoded || {};
+  const { "x-hasura-user-id": userId } = jwtDecoded?.hasura || {};
 
   if (!dataSourceId) {
-    error = "Provide dataSourceId";
-
-    return pushError(req, error);
+    throw new Error(
+      "400: No x-hasura-datasource-id provided, headers: " +
+        JSON.stringify(req.headers)
+    );
   }
 
-  const dataSource = await findDataSource({ dataSourceId, authToken });
-  const permissions = await getPermissions(userId);
+  const permissions = await getPermissions({ dataSourceId, userId, authToken });
+
+  if (!permissions?.dataSourceId) {
+    throw new Error(`403: No permissions for source "${dataSourceId}"`);
+  }
+
+  if (!permissions?.defaultBranchId) {
+    throw new Error(`403: No default branch for source "${dataSourceId}"`);
+  }
+
+  const dataSource = await findDataSource({
+    dataSourceId: permissions?.dataSourceId,
+    branchId: branchId || permissions?.defaultBranchId,
+  });
 
   if (!dataSource?.id) {
-    error = `Source "${dataSourceId}" not found`;
-
-    return pushError(req, error);
+    throw new Error(`404: Source "${dataSourceId}" not found`);
   }
 
   const securityContext = buildSecurityContext(dataSource);
@@ -90,12 +107,23 @@ const checkAuth = async (req) => {
     dataSourceId,
     userId,
     authToken,
+    branchId,
     ...permissions,
     ...securityContext,
   };
 };
 
-export default checkAuth;
+const checkAuthMiddleware = async (req, _, next) => {
+  try {
+    await checkAuth(req);
+    next();
+  } catch (err) {
+    next(err);
+  }
+};
+
+export { checkAuth };
+export default checkAuthMiddleware;
 </code></pre>
         </article>
     </section>
@@ -106,13 +134,13 @@ export default checkAuth;
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#buildSecurityContext">buildSecurityContext</a></li><li><a href="global.html#checkAuth">checkAuth</a></li><li><a href="global.html#checkSqlAuth">checkSqlAuth</a></li><li><a href="global.html#createMd5Hex">createMd5Hex</a></li><li><a href="global.html#driverFactory">driverFactory</a></li><li><a href="global.html#logging">logging</a></li><li><a href="global.html#makeUrl">makeUrl</a></li><li><a href="global.html#mapSchemaToFile">mapSchemaToFile</a></li><li><a href="global.html#queryRewrite">queryRewrite</a></li><li><a href="global.html#repositoryFactory">repositoryFactory</a></li><li><a href="global.html#scheduledRefreshContexts">scheduledRefreshContexts</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#buildSecurityContext">buildSecurityContext</a></li><li><a href="global.html#checkAuth">checkAuth</a></li><li><a href="global.html#checkSqlAuth">checkSqlAuth</a></li><li><a href="global.html#createMd5Hex">createMd5Hex</a></li><li><a href="global.html#dataSchemaFiles">dataSchemaFiles</a></li><li><a href="global.html#driverFactory">driverFactory</a></li><li><a href="global.html#logging">logging</a></li><li><a href="global.html#makeUrl">makeUrl</a></li><li><a href="global.html#mapSchemaToFile">mapSchemaToFile</a></li><li><a href="global.html#queryRewrite">queryRewrite</a></li><li><a href="global.html#repositoryFactory">repositoryFactory</a></li><li><a href="global.html#scheduledRefreshContexts">scheduledRefreshContexts</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.2</a> on Thu Dec 21 2023 21:04:37 GMT+0300 (Moscow Standard Time)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.2</a> on Sun Dec 31 2023 22:34:03 GMT+0300 (Moscow Standard Time)
 </footer>
 
 <script> prettyPrint(); </script>

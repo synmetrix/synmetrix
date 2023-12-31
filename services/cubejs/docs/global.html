@@ -98,68 +98,6 @@
 
         
             
-<h4 class="name" id="buildSecurityContext"><span class="type-signature">(constant) </span>buildSecurityContext<span class="type-signature"></span></h4>
-
-
-
-
-<div class="description">
-    Function to build the security context for a given data source.
-</div>
-
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="utils_buildSecurityContext.js.html">utils/buildSecurityContext.js</a>, <a href="utils_buildSecurityContext.js.html#line18">line 18</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-        
-            
 <h4 class="name" id="logging"><span class="type-signature">(constant) </span>logging<span class="type-signature"></span></h4>
 
 
@@ -232,7 +170,7 @@
     
 
     
-    <h4 class="name" id="checkAuth"><span class="type-signature">(async) </span>checkAuth<span class="signature">(req)</span><span class="type-signature"> &rarr; {Promise}</span></h4>
+    <h4 class="name" id="buildSecurityContext"><span class="type-signature"></span>buildSecurityContext<span class="signature">(dataSource)</span><span class="type-signature"> &rarr; {Object}</span></h4>
     
 
     
@@ -240,7 +178,313 @@
 
 
 <div class="description">
-    Asynchronous function to check the authentication of a request.
+    Function to build the security context for a given data source.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>dataSource</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The data source object.
+                <h6>Properties</h6>
+                
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>id</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The ID of the data source.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>db_type</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The type of the database.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>db_params</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The parameters for the database connection.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>dataschemas</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The data schemas for the data source.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+            </td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="utils_buildSecurityContext.js.html">utils/buildSecurityContext.js</a>, <a href="utils_buildSecurityContext.js.html#line18">line 18</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Throws:</h5>
+
+        
+
+<dl>
+    <dt>
+        <div class="param-desc">
+        - Throws an error if no data source or no dbParams are provided.
+        </div>
+    </dt>
+    <dd></dd>
+    <dt>
+        <dl>
+            <dt>
+                Type
+            </dt>
+            <dd>
+                
+<span class="param-type">Error</span>
+
+
+            </dd>
+        </dl>
+    </dt>
+    <dd></dd>
+</dl>
+
+
+    
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    - The security context for the data source.
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Object</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="checkAuth"><span class="type-signature">(async) </span>checkAuth<span class="signature">(req)</span><span class="type-signature"> &rarr; {Promise.&lt;void>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Checks the authorization of the request and sets the security context.
 </div>
 
 
@@ -292,128 +536,7 @@
 
             
 
-            <td class="description last">The request object from the client.
-                <h6>Properties</h6>
-                
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>headers</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Object</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">The headers of the request.
-                <h6>Properties</h6>
-                
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>authorization</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">The Cube.js authorization token.</td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-            </td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>headers["x-hasura-authorization"</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">The Hasura authorization token.</td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-            </td>
+            <td class="description last">The request object.</td>
         </tr>
 
     
@@ -454,7 +577,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="utils_checkAuth.js.html">utils/checkAuth.js</a>, <a href="utils_checkAuth.js.html#line27">line 27</a>
+        <a href="utils_checkAuth.js.html">utils/checkAuth.js</a>, <a href="utils_checkAuth.js.html#line19">line 19</a>
     </li></ul></dd>
     
 
@@ -478,13 +601,13 @@
 
 
 <h5>Throws:</h5>
-
-        
+<ul>
+        <li>
 
 <dl>
     <dt>
         <div class="param-desc">
-        - Throws an error if the JWT verification fails or if no dataSourceId is provided.
+        If the Hasura Authorization token is not provided.
         </div>
     </dt>
     <dd></dd>
@@ -504,15 +627,123 @@
     <dd></dd>
 </dl>
 
-
+</li>
     
+        <li>
+
+<dl>
+    <dt>
+        <div class="param-desc">
+        If no x-hasura-datasource-id is provided in the headers.
+        </div>
+    </dt>
+    <dd></dd>
+    <dt>
+        <dl>
+            <dt>
+                Type
+            </dt>
+            <dd>
+                
+<span class="param-type">Error</span>
+
+
+            </dd>
+        </dl>
+    </dt>
+    <dd></dd>
+</dl>
+
+</li>
+    
+        <li>
+
+<dl>
+    <dt>
+        <div class="param-desc">
+        If there are no permissions for the specified data source.
+        </div>
+    </dt>
+    <dd></dd>
+    <dt>
+        <dl>
+            <dt>
+                Type
+            </dt>
+            <dd>
+                
+<span class="param-type">Error</span>
+
+
+            </dd>
+        </dl>
+    </dt>
+    <dd></dd>
+</dl>
+
+</li>
+    
+        <li>
+
+<dl>
+    <dt>
+        <div class="param-desc">
+        If there is no default branch for the specified data source.
+        </div>
+    </dt>
+    <dd></dd>
+    <dt>
+        <dl>
+            <dt>
+                Type
+            </dt>
+            <dd>
+                
+<span class="param-type">Error</span>
+
+
+            </dd>
+        </dl>
+    </dt>
+    <dd></dd>
+</dl>
+
+</li>
+    
+        <li>
+
+<dl>
+    <dt>
+        <div class="param-desc">
+        If the specified data source is not found.
+        </div>
+    </dt>
+    <dd></dd>
+    <dt>
+        <dl>
+            <dt>
+                Type
+            </dt>
+            <dd>
+                
+<span class="param-type">Error</span>
+
+
+            </dd>
+        </dl>
+    </dt>
+    <dd></dd>
+</dl>
+
+</li>
+    </ul>
 
 
 <h5>Returns:</h5>
 
         
 <div class="param-desc">
-    - A promise that resolves to the security context for the request.
+    A promise that resolves when the security context is set.
 </div>
 
 
@@ -523,7 +754,7 @@
     </dt>
     <dd>
         
-<span class="param-type">Promise</span>
+<span class="param-type">Promise.&lt;void></span>
 
 
     </dd>
@@ -665,7 +896,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="utils_checkSqlAuth.js.html">utils/checkSqlAuth.js</a>, <a href="utils_checkSqlAuth.js.html#line15">line 15</a>
+        <a href="utils_checkSqlAuth.js.html">utils/checkSqlAuth.js</a>, <a href="utils_checkSqlAuth.js.html#line14">line 14</a>
     </li></ul></dd>
     
 
@@ -897,6 +1128,116 @@
     <dd>
         
 <span class="param-type">string</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="dataSchemaFiles"><span class="type-signature"></span>dataSchemaFiles<span class="signature">()</span><span class="type-signature"> &rarr; {Array}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Retrieves the data schema files.
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="utils_repositoryFactory.js.html">utils/repositoryFactory.js</a>, <a href="utils_repositoryFactory.js.html#line13">line 13</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    - The data schema files.
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Array</span>
 
 
     </dd>
@@ -1956,7 +2297,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="utils_queryRewrite.js.html">utils/queryRewrite.js</a>, <a href="utils_queryRewrite.js.html#line24">line 24</a>
+        <a href="utils_queryRewrite.js.html">utils/queryRewrite.js</a>, <a href="utils_queryRewrite.js.html#line22">line 22</a>
     </li></ul></dd>
     
 
@@ -2043,7 +2384,7 @@
     
 
     
-    <h4 class="name" id="repositoryFactory"><span class="type-signature"></span>repositoryFactory<span class="signature">(securityContext)</span><span class="type-signature"> &rarr; {Object}</span></h4>
+    <h4 class="name" id="repositoryFactory"><span class="type-signature"></span>repositoryFactory<span class="signature">(options)</span><span class="type-signature"> &rarr; {Object}</span></h4>
     
 
     
@@ -2051,7 +2392,7 @@
 
 
 <div class="description">
-    Function to create a repository object for a given security context.
+    Generates documentation for the repository factory.
 </div>
 
 
@@ -2064,6 +2405,48 @@
 
     <h5>Parameters:</h5>
     
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>options</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The options for the repository factory.
+                <h6>Properties</h6>
+                
 
 <table class="params">
     <thead>
@@ -2103,95 +2486,7 @@
 
             
 
-            <td class="description last">The security context object.
-                <h6>Properties</h6>
-                
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>dataSourceId</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">The ID of the data source.</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>authToken</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">The authentication token for the data source.</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>userId</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">The ID of the user.</td>
+            <td class="description last">The security context.</td>
         </tr>
 
     
@@ -2239,7 +2534,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="utils_repositoryFactory.js.html">utils/repositoryFactory.js</a>, <a href="utils_repositoryFactory.js.html#line12">line 12</a>
+        <a href="utils_repositoryFactory.js.html">utils/repositoryFactory.js</a>, <a href="utils_repositoryFactory.js.html#line7">line 7</a>
     </li></ul></dd>
     
 
@@ -2268,7 +2563,7 @@
 
         
 <div class="param-desc">
-    - The repository object, which includes a method to get the data schema files for the data source.
+    - The repository factory object.
 </div>
 
 
@@ -2349,7 +2644,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="utils_scheduledRefreshContexts.js.html">utils/scheduledRefreshContexts.js</a>, <a href="utils_scheduledRefreshContexts.js.html#line8">line 8</a>
+        <a href="utils_scheduledRefreshContexts.js.html">utils/scheduledRefreshContexts.js</a>, <a href="utils_scheduledRefreshContexts.js.html#line9">line 9</a>
     </li></ul></dd>
     
 
@@ -2417,13 +2712,13 @@
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#buildSecurityContext">buildSecurityContext</a></li><li><a href="global.html#checkAuth">checkAuth</a></li><li><a href="global.html#checkSqlAuth">checkSqlAuth</a></li><li><a href="global.html#createMd5Hex">createMd5Hex</a></li><li><a href="global.html#driverFactory">driverFactory</a></li><li><a href="global.html#logging">logging</a></li><li><a href="global.html#makeUrl">makeUrl</a></li><li><a href="global.html#mapSchemaToFile">mapSchemaToFile</a></li><li><a href="global.html#queryRewrite">queryRewrite</a></li><li><a href="global.html#repositoryFactory">repositoryFactory</a></li><li><a href="global.html#scheduledRefreshContexts">scheduledRefreshContexts</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#buildSecurityContext">buildSecurityContext</a></li><li><a href="global.html#checkAuth">checkAuth</a></li><li><a href="global.html#checkSqlAuth">checkSqlAuth</a></li><li><a href="global.html#createMd5Hex">createMd5Hex</a></li><li><a href="global.html#dataSchemaFiles">dataSchemaFiles</a></li><li><a href="global.html#driverFactory">driverFactory</a></li><li><a href="global.html#logging">logging</a></li><li><a href="global.html#makeUrl">makeUrl</a></li><li><a href="global.html#mapSchemaToFile">mapSchemaToFile</a></li><li><a href="global.html#queryRewrite">queryRewrite</a></li><li><a href="global.html#repositoryFactory">repositoryFactory</a></li><li><a href="global.html#scheduledRefreshContexts">scheduledRefreshContexts</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.2</a> on Thu Dec 21 2023 21:04:37 GMT+0300 (Moscow Standard Time)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.2</a> on Sun Dec 31 2023 22:34:03 GMT+0300 (Moscow Standard Time)
 </footer>
 
 <script> prettyPrint(); </script>
