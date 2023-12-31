@@ -1,19 +1,16 @@
-import { dataSchemaFiles } from "./dataSourceHelpers.js";
-
 /**
- * Function to create a repository object for a given security context.
- *
- * @param {Object} securityContext - The security context object.
- * @param {string} securityContext.dataSourceId - The ID of the data source.
- * @param {string} securityContext.authToken - The authentication token for the data source.
- * @param {string} securityContext.userId - The ID of the user.
- * @returns {Object} - The repository object, which includes a method to get the data schema files for the data source.
+ * Generates documentation for the repository factory.
+ * @param {Object} options - The options for the repository factory.
+ * @param {Object} options.securityContext - The security context.
+ * @returns {Object} - The repository factory object.
  */
 const repositoryFactory = ({ securityContext }) => {
-  const { dataSourceId, authToken, userId } = securityContext || {};
-
   return {
-    dataSchemaFiles: () => dataSchemaFiles({ dataSourceId, authToken, userId }),
+    /**
+     * Retrieves the data schema files.
+     * @returns {Array} - The data schema files.
+     */
+    dataSchemaFiles: () => securityContext?.files || [],
   };
 };
 

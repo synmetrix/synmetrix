@@ -31,14 +31,15 @@ app.use(express.urlencoded({ limit: "50mb", extended: true }));
 
 const dbType = ({ securityContext }) => securityContext?.dbType || "none";
 const contextToOrchestratorId = ({ securityContext }) =>
-  `CUBEJS_APP_${securityContext?.dataSourceVersion}`;
+  `CUBEJS_APP_${securityContext?.dataSourceVersion}_${securityContext?.schemaVersion}}`;
 
 const contextToAppId = ({ securityContext }) =>
-  `CUBEJS_APP_${securityContext?.dataSourceVersion}`;
+  `CUBEJS_APP_${securityContext?.dataSourceVersion}_${securityContext?.schemaVersion}}`;
 
 const schemaVersion = ({ securityContext }) => securityContext?.schemaVersion;
+
 const preAggregationsSchema = ({ securityContext }) =>
-  `pre_aggregations_${securityContext?.dataSourceVersion}`;
+  `pre_aggregations_${securityContext?.dataSourceVersion}_${securityContext?.schemaVersion}}`;
 
 const externalDriverFactory = async () =>
   ServerCore.createDriver("cubestore", {

@@ -13,9 +13,6 @@ export const fetchGraphQL = async (query, variables, authToken) => {
     delete headers["x-hasura-admin-secret"];
   }
 
-  console.log(query);
-  console.log("headers: ", headers);
-
   const result = await fetch(HASURA_ENDPOINT, {
     method: "POST",
     body: JSON.stringify({

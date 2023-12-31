@@ -28,7 +28,7 @@
     "@cubejs-backend/query-orchestrator": "^0.34.36",
     "@cubejs-backend/questdb-driver": "^0.34.36",
     "@cubejs-backend/redshift-driver": "^0.33.7",
-    "@cubejs-backend/server-core": "^0.34.36",
+    "@cubejs-backend/server-core": "^0.34.40",
     "@cubejs-backend/snowflake-driver": "^0.34.33",
     "@cubejs-backend/trino-driver": "^0.34.36",
     "body-parser": "^1.19.0",

@@ -15,7 +15,7 @@ import createMd5Hex from "./md5Hex.js";
  *
  * @throws {Error} - Throws an error if no data source or no dbParams are provided.
  */
-export const buildSecurityContext = (dataSource) => {
+const buildSecurityContext = (dataSource) => {
   if (!dataSource) {
     throw new Error("No dataSource provided");
   }
@@ -32,14 +32,18 @@ export const buildSecurityContext = (dataSource) => {
 
   const dataSourceVersion = JSum.digest(data, "SHA256", "hex");
 
-  const files = (dataSource?.dataschemas || []).map((schema) =>
-    mapSchemaToFile(schema)
-  );
+  const files = (
+    dataSource?.branches?.[0]?.versions?.[0]?.dataschemas || []
+  ).map((schema) => mapSchemaToFile(schema));
+
   const schemaVersion = createMd5Hex(files);
 
   return {
     ...data,
     dataSourceVersion,
     schemaVersion,
+    files,
   };
 };
+
+export default buildSecurityContext;

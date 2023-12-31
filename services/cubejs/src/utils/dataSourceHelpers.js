@@ -1,7 +1,5 @@
-import JSum from "jsum";
 import { set } from "unchanged";
 import { fetchGraphQL } from "./graphql.js";
-import createMd5Hex from "./md5Hex.js";
 
 const accessListQuery = `
   query ($userId: uuid!, $dataSourceId: uuid!) {
@@ -19,6 +17,10 @@ const accessListQuery = `
       id
       name
     }
+    branches(where: {datasource_id: {_eq: $dataSourceId}, status: {_eq: active}}) {
+      id
+      name
+    }
   }
 `;
 
@@ -27,17 +29,43 @@ const sourceFragment = `
   name
   db_type
   db_params
-  dataschemas {
+`;
+
+const modelsFragment = `
+  id
+  name
+  code
+`;
+
+const versionsFragment = `
+  versions (limit: 1, order_by: {created_at: desc}) {
+    dataschemas {
+      ${modelsFragment}
+    }
+  }
+`;
+
+const activeBranchModelsFragment = `
+  branches(where: {status: {_eq: active}}) {
     id
     name
-    code
+    ${versionsFragment}
+  }
+`;
+
+const selectedBranchModelsFragment = `
+  branches(where: {id: {_eq: $branchId}}) {
+    id
+    name
+    ${versionsFragment}
   }
 `;
 
 const sourceQuery = `
-  query ($id: uuid!) {
-    datasources_by_pk(id: $id) {
+  query ($dataSourceId: uuid!, $branchId: uuid!) {
+    datasources_by_pk(id: $dataSourceId) {
       ${sourceFragment}
+      ${selectedBranchModelsFragment}
     }
   }
 `;
@@ -46,21 +74,14 @@ const sourcesQuery = `
   {
     datasources {
       ${sourceFragment}
+      ${activeBranchModelsFragment}
     }
   }
 `;
 
 const branchSchemasQuery = `
   query ($order_by: [versions_order_by!], $where: branches_bool_exp) {
-    branches (where: $where) {
-      versions (limit: 1, order_by: $order_by) {
-        dataschemas {
-          id
-          name
-          code
-        }
-      }
-    }
+    ${selectedBranchModelsFragment}
   }
 `;
 
@@ -83,13 +104,14 @@ const sqlCredentialsQuery = `
       username
       datasource {
         ${sourceFragment}
+        ${activeBranchModelsFragment}
       }
     }
   }
 `;
 
-export const findDataSource = async ({ dataSourceId }) => {
-  let res = await fetchGraphQL(sourceQuery, { id: dataSourceId });
+export const findDataSource = async ({ dataSourceId, branchId }) => {
+  let res = await fetchGraphQL(sourceQuery, { dataSourceId, branchId });
   res = res?.data?.datasources_by_pk;
 
   return res;
@@ -117,40 +139,13 @@ export const getPermissions = async ({ dataSourceId, userId, authToken }) => {
   );
 
   const memberRoles = res?.data?.users_by_pk?.members?.[0]?.member_roles?.[0];
+  const defaultBranch = res?.data?.branches?.[0];
 
   return {
     config: memberRoles?.access_list?.config,
     role: memberRoles?.team_role,
     dataSourceId: res?.data?.datasources_by_pk?.id,
-  };
-};
-
-export const buildSecurityContext = (dataSource) => {
-  if (!dataSource) {
-    throw new Error("No dataSource provided");
-  }
-
-  if (!dataSource?.db_params) {
-    throw new Error("No dbParams provided");
-  }
-
-  const data = {
-    dataSourceId: dataSource.id,
-    dbType: dataSource.db_type?.toLowerCase(),
-    dbParams: dataSource.db_params,
-  };
-
-  const dataSourceVersion = JSum.digest(data, "SHA256", "hex");
-
-  const files = (dataSource?.dataschemas || []).map((schema) =>
-    mapSchemaToFile(schema)
-  );
-  const schemaVersion = createMd5Hex(files);
-
-  return {
-    ...data,
-    dataSourceVersion,
-    schemaVersion,
+    defaultBranchId: defaultBranch?.id,
   };
 };
 
@@ -167,31 +162,11 @@ export const createDataSchema = async (object) => {
   return res;
 };
 
-export const findDataSchemas = async (args) => {
-  let vars = {
-    order_by: {
-      created_at: "desc",
-    },
-    where: {
-      datasource_id: {
-        _eq: args?.dataSourceId,
-      },
-    },
-  };
+export const findDataSchemas = async ({ branchId, authToken }) => {
+  const res = await fetchGraphQL(branchSchemasQuery, { branchId }, authToken);
 
-  if (args?.branchId) {
-    vars = set("where.id._eq", args.branchId, vars);
-  } else {
-    vars = set("where.status._eq", "active", vars);
-  }
-
-  let dataSchemas = await fetchGraphQL(
-    branchSchemasQuery,
-    vars,
-    args.authToken
-  );
-  dataSchemas =
-    dataSchemas?.data?.branches?.[0]?.versions?.[0]?.dataschemas || [];
+  const dataSchemas =
+    res?.data?.branches?.[0]?.versions?.[0]?.dataschemas || [];
 
   return dataSchemas;
 };
@@ -202,19 +177,13 @@ export const mapSchemaToFile = (schema) => ({
   content: schema.code,
 });
 
-export const dataSchemaFiles = async (args) => {
-  if (!args.dataSourceId) {
+export const dataSchemaFiles = async ({ branchId, authToken }) => {
+  if (!branchId) {
     return [];
   }
 
-  let schemas = await findDataSchemas(args);
+  let schemas = await findDataSchemas({ branchId, authToken });
   schemas = (schemas || []).map((schema) => mapSchemaToFile(schema));
 
   return schemas;
-};
-
-export const getSchemaVersion = async (args) => {
-  const files = await dataSchemaFiles(args);
-
-  return createMd5Hex(files);
 };

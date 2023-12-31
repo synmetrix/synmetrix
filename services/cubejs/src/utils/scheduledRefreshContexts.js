@@ -1,4 +1,5 @@
-import { getDataSources, buildSecurityContext } from "./dataSourceHelpers.js";
+import { getDataSources } from "./dataSourceHelpers.js";
+import buildSecurityContext from "./buildSecurityContext.js";
 
 /**
  * Asynchronous function to get the security contexts for all data sources.

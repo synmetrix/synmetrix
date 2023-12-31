@@ -1,7 +1,6 @@
-import {
-  buildSecurityContext,
-  findSqlCredentials,
-} from "./dataSourceHelpers.js";
+import { findSqlCredentials } from "./dataSourceHelpers.js";
+
+import buildSecurityContext from "./buildSecurityContext.js";
 
 /**
  * Asynchronous function to check the SQL authentication for a user.

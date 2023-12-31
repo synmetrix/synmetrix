@@ -1,10 +1,7 @@
 import jwt from "jsonwebtoken";
 
-import {
-  buildSecurityContext,
-  findDataSource,
-  getPermissions,
-} from "./dataSourceHelpers.js";
+import { findDataSource, getPermissions } from "./dataSourceHelpers.js";
+import buildSecurityContext from "./buildSecurityContext.js";
 
 const { JWT_KEY, JWT_ALGORITHM } = process.env;
 
@@ -21,6 +18,7 @@ const { JWT_KEY, JWT_ALGORITHM } = process.env;
 const checkAuth = async (req) => {
   const authHeader = req.headers.authorization;
   const dataSourceId = req.headers["x-hasura-datasource-id"];
+  const branchId = req.headers["x-hasura-branch-id"];
 
   let jwtDecoded;
   let authToken;
@@ -58,8 +56,13 @@ const checkAuth = async (req) => {
     throw new Error(`403: No permissions for source "${dataSourceId}"`);
   }
 
+  if (!permissions?.defaultBranchId) {
+    throw new Error(`403: No default branch for source "${dataSourceId}"`);
+  }
+
   const dataSource = await findDataSource({
     dataSourceId: permissions?.dataSourceId,
+    branchId: branchId || permissions?.defaultBranchId,
   });
 
   if (!dataSource?.id) {
@@ -72,6 +75,7 @@ const checkAuth = async (req) => {
     dataSourceId,
     userId,
     authToken,
+    branchId,
     ...permissions,
     ...securityContext,
   };

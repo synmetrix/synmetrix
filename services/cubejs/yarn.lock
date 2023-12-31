@@ -3345,6 +3345,30 @@
     ramda "^0.27.0"
     uuid "^8.3.2"
 
+"@cubejs-backend/api-gateway@^0.34.40":
+  version "0.34.40"
+  resolved "https://registry.yarnpkg.com/@cubejs-backend/api-gateway/-/api-gateway-0.34.40.tgz#35be4e70499dfa6864e0849d784be45aab4f68c6"
+  integrity sha512-I1FxmjYrhuMROmU3q1Fcj6UJgDsv953qgNriRz/VV9KQlYpCqc5eKf1QgfexaMiKo5A3tZ6Nc7sLG6j3yBE14g==
+  dependencies:
+    "@cubejs-backend/native" "^0.34.40"
+    "@cubejs-backend/shared" "^0.34.33"
+    "@ungap/structured-clone" "^0.3.4"
+    body-parser "^1.19.0"
+    chrono-node "^2.6.2"
+    express-graphql "^0.12.0"
+    graphql "^15.8.0"
+    graphql-scalars "^1.10.0"
+    inflection "^1.12.0"
+    joi "^17.8.3"
+    jsonwebtoken "^8.3.0"
+    jwk-to-pem "^2.0.4"
+    moment "^2.24.0"
+    moment-timezone "^0.5.27"
+    nexus "^1.1.0"
+    node-fetch "^2.6.1"
+    ramda "^0.27.0"
+    uuid "^8.3.2"
+
 "@cubejs-backend/athena-driver@^0.34.36":
   version "0.34.36"
   resolved "https://registry.yarnpkg.com/@cubejs-backend/athena-driver/-/athena-driver-0.34.36.tgz#209578c719b3ac957645b71a1a2a26d0db830c57"
@@ -3425,6 +3449,11 @@
   resolved "https://registry.yarnpkg.com/@cubejs-backend/cubesql/-/cubesql-0.34.36.tgz#2dd7d4dee30531e7e3b25539a1c8f1039f371673"
   integrity sha512-thFC3cWrT0JgmWGA6cikpG0huIvrxW0WkmAH9pgutlf0oeRR+HNxn5xYzBXFjTgWQPpfvPc5IdyIjw7wkJHHjw==
 
+"@cubejs-backend/cubesql@^0.34.40":
+  version "0.34.40"
+  resolved "https://registry.yarnpkg.com/@cubejs-backend/cubesql/-/cubesql-0.34.40.tgz#a24b3147d874eacf671cf54a17b0dd9757fd7420"
+  integrity sha512-XUWWGKJAJJm3SG6mazdWiwq/snjUBOdjz2KZEBHmyyTPT5E0cmULWGn5zOTz4qjv6CxgWrMbSZ4dbLNC78o13g==
+
 "@cubejs-backend/cubestore-driver@^0.34.36":
   version "0.34.36"
   resolved "https://registry.yarnpkg.com/@cubejs-backend/cubestore-driver/-/cubestore-driver-0.34.36.tgz#1774823aca49d3690422c1f73452bd88f986cc73"
@@ -3444,10 +3473,38 @@
     uuid "^8.3.2"
     ws "^7.4.3"
 
+"@cubejs-backend/cubestore-driver@^0.34.37":
+  version "0.34.37"
+  resolved "https://registry.yarnpkg.com/@cubejs-backend/cubestore-driver/-/cubestore-driver-0.34.37.tgz#d53dfe6db9729811e5eb6ba08a5f632269c3e101"
+  integrity sha512-/josVcWH84RFd/Vq3LBJtV8jy3VJFqQ8t8Zb25EtMbViN9W1I1hZO1AYL6P7Q75UEJumiweOdXo0J2nUucOAJA==
+  dependencies:
+    "@cubejs-backend/base-driver" "^0.34.33"
+    "@cubejs-backend/cubestore" "^0.34.37"
+    "@cubejs-backend/shared" "^0.34.33"
+    csv-write-stream "^2.0.0"
+    flatbuffers "23.3.3"
+    fs-extra "^9.1.0"
+    generic-pool "^3.6.0"
+    moment-timezone "^0.5.31"
+    node-fetch "^2.6.1"
+    sqlstring "^2.3.3"
+    tempy "^1.0.1"
+    uuid "^8.3.2"
+    ws "^7.4.3"
+
 "@cubejs-backend/cubestore@^0.34.36":
   version "0.34.36"
   resolved "https://registry.yarnpkg.com/@cubejs-backend/cubestore/-/cubestore-0.34.36.tgz#a664bf8d813dc5cae4c449182b35e3942ffcc002"
   integrity sha512-mPZxFfmsz4j+hXKRD65GpmlPsbp36GDOYp6W0GiCrMgHom0Hlq0QBd9nIJqWrL+TjP7LKMSIkvoz+4KvQEIx0Q==
+  dependencies:
+    "@cubejs-backend/shared" "^0.34.33"
+    "@octokit/core" "^3.2.5"
+    source-map-support "^0.5.19"
+
+"@cubejs-backend/cubestore@^0.34.37":
+  version "0.34.37"
+  resolved "https://registry.yarnpkg.com/@cubejs-backend/cubestore/-/cubestore-0.34.37.tgz#8f36c43927f5a74f7692c9681ea9ab3048b9bef9"
+  integrity sha512-qEL54nhpA/h4MZfDET9nZvTY47ExFl5/PRl5eviWhjO25lYDqh+DysTR/mm9SAz6y5p6IgDiDnaFSDltbIZV3w==
   dependencies:
     "@cubejs-backend/shared" "^0.34.33"
     "@octokit/core" "^3.2.5"
@@ -3609,6 +3666,15 @@
     "@cubejs-backend/shared" "^0.34.33"
     "@cubejs-infra/post-installer" "^0.0.7"
 
+"@cubejs-backend/native@^0.34.40":
+  version "0.34.40"
+  resolved "https://registry.yarnpkg.com/@cubejs-backend/native/-/native-0.34.40.tgz#486162838f7f621f394fa7693e9195c7f751b673"
+  integrity sha512-kWmYEnfopnZSS0DLC3JFVDEMZf1YYbRCSlWjYoSgrRtRZRxnGhUY2s9GZ6rHlAcjV7pjm9cnMSmGNMbS8Sh+nA==
+  dependencies:
+    "@cubejs-backend/cubesql" "^0.34.40"
+    "@cubejs-backend/shared" "^0.34.33"
+    "@cubejs-infra/post-installer" "^0.0.7"
+
 "@cubejs-backend/postgres-driver@^0.33.7":
   version "0.33.7"
   resolved "https://registry.yarnpkg.com/@cubejs-backend/postgres-driver/-/postgres-driver-0.33.7.tgz#a084f72f678d380918566024364c02cabbcad4e5"
@@ -3653,6 +3719,24 @@
   dependencies:
     "@cubejs-backend/base-driver" "^0.34.33"
     "@cubejs-backend/cubestore-driver" "^0.34.36"
+    "@cubejs-backend/shared" "^0.34.33"
+    csv-write-stream "^2.0.0"
+    es5-ext "0.10.53"
+    generic-pool "^3.7.1"
+    ioredis "^4.27.8"
+    lru-cache "^6.0.0"
+    moment-range "^4.0.2"
+    moment-timezone "^0.5.33"
+    ramda "^0.27.2"
+    redis "^3.0.2"
+
+"@cubejs-backend/query-orchestrator@^0.34.39":
+  version "0.34.39"
+  resolved "https://registry.yarnpkg.com/@cubejs-backend/query-orchestrator/-/query-orchestrator-0.34.39.tgz#99b162c2df9157d882f3573a703cbf415bc8ac2b"
+  integrity sha512-StlHERb604tgiWAOlbj8oHPXGInnOnQ67F93roB4PTXHh46+XwuDOnk1Qt0EsuiUUpJm1rVkoiWcMQF75JODsg==
+  dependencies:
+    "@cubejs-backend/base-driver" "^0.34.33"
+    "@cubejs-backend/cubestore-driver" "^0.34.37"
     "@cubejs-backend/shared" "^0.34.33"
     csv-write-stream "^2.0.0"
     es5-ext "0.10.53"
@@ -3717,17 +3801,46 @@
     ramda "^0.27.2"
     syntax-error "^1.3.0"
 
-"@cubejs-backend/server-core@^0.34.36":
-  version "0.34.36"
-  resolved "https://registry.yarnpkg.com/@cubejs-backend/server-core/-/server-core-0.34.36.tgz#bb92e33955798a4671509757a92a0932732afe7d"
-  integrity sha512-caiLuRqkjWAr3HjepXQRD6eWGQyFWDckYswgJswjEj7jJ4Dih2mz5wMOC0YiqJ0hpayF1HbwyZhOY0jzmC5L3w==
+"@cubejs-backend/schema-compiler@^0.34.40":
+  version "0.34.40"
+  resolved "https://registry.yarnpkg.com/@cubejs-backend/schema-compiler/-/schema-compiler-0.34.40.tgz#b047032709d48c0eaa960ea5a1f1a32a5bd13343"
+  integrity sha512-wOIl+Bvymmj4tFiS7FVqek2Ne734tEMVV9oqy0goe3ua3vv6ZQEeoFEjhaKp5XKyro8il2EM7sE2EJxYE2xzuA==
   dependencies:
-    "@cubejs-backend/api-gateway" "^0.34.36"
+    "@babel/code-frame" "^7.12.11"
+    "@babel/core" "^7.12.10"
+    "@babel/generator" "^7.12.10"
+    "@babel/parser" "^7.12.10"
+    "@babel/preset-env" "^7.12.10"
+    "@babel/standalone" "^7.12.10"
+    "@babel/traverse" "^7.12.10"
+    "@babel/types" "^7.12.12"
+    "@cubejs-backend/native" "^0.34.40"
+    "@cubejs-backend/shared" "^0.34.33"
+    antlr4ts "0.5.0-alpha.4"
+    camelcase "^6.2.0"
+    cron-parser "^3.5.0"
+    humps "^2.0.1"
+    inflection "^1.12.0"
+    joi "^17.8.3"
+    js-yaml "^4.1.0"
+    lru-cache "^5.1.1"
+    moment-range "^4.0.1"
+    moment-timezone "^0.5.33"
+    node-dijkstra "^2.5.0"
+    ramda "^0.27.2"
+    syntax-error "^1.3.0"
+
+"@cubejs-backend/server-core@^0.34.40":
+  version "0.34.40"
+  resolved "https://registry.yarnpkg.com/@cubejs-backend/server-core/-/server-core-0.34.40.tgz#e9b23eb9e4197a21415e9ea2b687c2d743fc289b"
+  integrity sha512-wKefX45Jd+DlEE4FnU5iJSRslPyMz+a4R4gkDTU7TRUpKR8GOF5dnuEeAgHfkYCL8j9lzqRXMeMRw2cdB0V4mA==
+  dependencies:
+    "@cubejs-backend/api-gateway" "^0.34.40"
     "@cubejs-backend/cloud" "^0.34.33"
     "@cubejs-backend/dotenv" "^9.0.2"
-    "@cubejs-backend/native" "^0.34.36"
-    "@cubejs-backend/query-orchestrator" "^0.34.36"
-    "@cubejs-backend/schema-compiler" "^0.34.36"
+    "@cubejs-backend/native" "^0.34.40"
+    "@cubejs-backend/query-orchestrator" "^0.34.39"
+    "@cubejs-backend/schema-compiler" "^0.34.40"
     "@cubejs-backend/shared" "^0.34.33"
     "@cubejs-backend/templates" "^0.34.33"
     codesandbox-import-utils "^2.1.12"
