@@ -24,6 +24,7 @@ const checkSqlAuth = async (_, user) => {
     password: sqlCredentials.password,
     securityContext: {
       ...securityContext,
+      ...sqlCredentials.permissions,
       userId: sqlCredentials.user_id,
     },
   };

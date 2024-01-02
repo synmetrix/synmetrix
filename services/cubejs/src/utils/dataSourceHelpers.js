@@ -99,6 +99,16 @@ const sqlCredentialsQuery = `
     sql_credentials(where: {username: {_eq: $username}}) {
       id
       user_id
+      user {
+        members {
+          member_roles {
+            team_role
+            access_list {
+              config
+            }
+          }
+        }
+      }
       password
       username
       datasource {
@@ -117,10 +127,18 @@ export const findDataSource = async ({ dataSourceId, branchId }) => {
 };
 
 export const findSqlCredentials = async (username) => {
-  let res = await fetchGraphQL(sqlCredentialsQuery, { username });
-  res = res?.data?.sql_credentials?.[0];
+  const res = await fetchGraphQL(sqlCredentialsQuery, { username });
+  const sqlCredentials = res?.data?.sql_credentials?.[0];
 
-  return res;
+  const memberRoles = sqlCredentials?.user?.members?.[0]?.member_roles?.[0];
+
+  return {
+    ...sqlCredentials,
+    permissions: {
+      config: memberRoles?.access_list?.config,
+      role: memberRoles?.team_role,
+    },
+  };
 };
 
 export const getDataSources = async () => {
