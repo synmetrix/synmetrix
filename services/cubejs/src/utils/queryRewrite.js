@@ -32,7 +32,7 @@ const queryRewrite = async (query, { securityContext }) => {
   }
 
   if (!accessDatasource) {
-    throw new Error("403: No access to datasource");
+    throw new Error("403: You have no access to the datasource");
   }
 
   const queryNames = getColumnsArray(query);
@@ -43,7 +43,7 @@ const queryRewrite = async (query, { securityContext }) => {
 
   queryNames.forEach((cn) => {
     if (!accessNames.includes(cn)) {
-      throw new Error(`403: No access to "${cn}" cube property`);
+      throw new Error(`403: You have no access to "${cn}" cube property`);
     }
   });
 
