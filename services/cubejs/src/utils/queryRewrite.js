@@ -43,7 +43,7 @@ const queryRewrite = async (query, { securityContext }) => {
 
   queryNames.forEach((cn) => {
     if (!accessNames.includes(cn)) {
-      throw new Error(`403: No access to ${cn} cube properties`);
+      throw new Error(`403: No access to "${cn}" cube property`);
     }
   });
 
