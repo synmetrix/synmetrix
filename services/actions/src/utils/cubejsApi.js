@@ -1,4 +1,3 @@
-import jwt from "jsonwebtoken";
 import cubejsClientCore from "@cubejs-client/core";
 import timeoutSignal from "timeout-signal";
 import fetch from "node-fetch";

@@ -15,6 +15,15 @@ export default async (req, res, cubejs) => {
   const { securityContext } = req;
   const driver = await cubejs.options.driverFactory({ securityContext });
 
+  if (!req.body.query) {
+    res.status(400).json({
+      code: "query_missing",
+      message: "The query parameter is missing.",
+    });
+
+    return;
+  }
+
   try {
     const rows = await driver.query(req.body.query);
     res.json(rows);

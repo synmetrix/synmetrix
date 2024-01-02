@@ -8,6 +8,66 @@ components:
     BearerAuth:
       type: http
       scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    GenerateDataSchemaRequest:
+      type: object
+      properties:
+        tables:
+          type: array
+          items:
+            type: string
+        overwrite:
+          type: boolean
+        branchId:
+          type: string
+        format:
+          type: string
+          default: yaml
+      required:
+        - tables
+        - overwrite
+        - branchId
+        - format
+    PreAggregationPreviewRequest:
+      type: object
+      properties:
+        preAggregationId:
+          type: string
+        tableName:
+          type: string
+        timezone:
+          type: string
+          default: UTC
+      required:
+        - preAggregationId
+        - tableName
+        - timezone
+    RunSQLRequest:
+      type: object
+      properties:
+        query:
+          type: string
+      required:
+        - query
+  parameters:
+    HasuraDatasourceId:
+      name: x-hasura-datasource-id
+      in: header
+      description: The ID of the datasource
+      required: true
+      schema:
+        type: string
+        format: uuid
+    HasuraBranchId:
+      name: x-hasura-branch-id
+      in: header
+      description: The ID of the branch
+      required: false
+      schema:
+        type: string
+        format: uuid
+
 paths:
   /readyz:
     get:
@@ -44,16 +104,8 @@ paths:
         - name: queryType
           in: query
           description: Set to `multi` for multiple queries for data blending
-        - name: x-hasura-datasource-id
-          in: header
-          description: The ID of the datasource
-          required: true
-          type: string
-        - name: x-hasura-branch-id
-          in: header
-          description: The ID of the branch
-          required: false
-          type: string
+        - $ref: '#/components/parameters/HasuraDatasourceId'
+        - $ref: '#/components/parameters/HasuraBranchId'
       responses:
         200:
           description: Successful response
@@ -83,16 +135,8 @@ paths:
           description: URLencoded Cube Query
           required: true
           type: string
-        - name: x-hasura-datasource-id
-          in: header
-          description: The ID of the datasource
-          required: true
-          type: string
-        - name: x-hasura-branch-id
-          in: header
-          description: The ID of the branch
-          required: false
-          type: string
+        - $ref: '#/components/parameters/HasuraDatasourceId'
+        - $ref: '#/components/parameters/HasuraBranchId'
       responses:
         200:
           description: SQL query details
@@ -108,16 +152,8 @@ paths:
     get:
       summary: Get meta-information for cubes defined in the data model
       parameters:
-        - name: x-hasura-datasource-id
-          in: header
-          description: The ID of the datasource
-          required: true
-          type: string
-        - name: x-hasura-branch-id
-          in: header
-          description: The ID of the branch
-          required: false
-          type: string
+        - $ref: '#/components/parameters/HasuraDatasourceId'
+        - $ref: '#/components/parameters/HasuraBranchId'
       responses:
         200:
           description: Array of cube metadata
@@ -131,89 +167,17 @@ paths:
       security:
         - BearerAuth: []
 
-  /api/v1/run-scheduled-refresh:
-    get:
-      summary: Trigger a scheduled refresh run to refresh pre-aggregations
-      parameters:
-        - name: queryingOptions
-          in: query
-          description: URL encoded Cube Query options such as timezone
-          type: string
-        - name: x-hasura-datasource-id
-          in: header
-          description: The ID of the datasource
-          required: true
-          type: string
-        - name: x-hasura-branch-id
-          in: header
-          description: The ID of the branch
-          required: false
-          type: string
-      responses:
-        200:
-          description: Empty object response if scheduled successfully
-          schema:
-            type: object
-      security:
-        - BearerAuth: []
-
-  /api/v1/pre-aggregations/jobs:
-    post:
-      summary: Trigger pre-aggregation build jobs or retrieve statuses of such jobs
-      parameters:
-        - in: body
-          name: body
-          description: Job action and selector details
-          required: true
-          schema:
-            type: object
-            properties:
-              action:
-                type: string
-              selector:
-                type: object
-        - name: x-hasura-datasource-id
-          in: header
-          description: The ID of the datasource
-          required: true
-          type: string
-        - name: x-hasura-branch-id
-          in: header
-          description: The ID of the branch
-          required: false
-          type: string
-      responses:
-        200:
-          description: Array of tokens of triggered jobs or job status details
-          schema:
-            type: array
-            items:
-              type: object
-      security:
-        - BearerAuth: []
   /api/v1/run-sql:
     post:
       summary: 'Run SQL query on the datasource'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RunSQLRequest'
       parameters:
-        - in: 'body'
-          name: 'body'
-          required: true
-          schema:
-            type: 'object'
-            properties:
-              query:
-                type: 'string'
-                description: 'The SQL query to run.'
-        - name: x-hasura-datasource-id
-          in: header
-          description: The ID of the datasource
-          required: true
-          type: string
-        - name: x-hasura-branch-id
-          in: header
-          description: The ID of the branch
-          required: false
-          type: string
+        - $ref: '#/components/parameters/HasuraDatasourceId'
+        - $ref: '#/components/parameters/HasuraBranchId'
       responses:
         '200':
           description: 'Successful operation'
@@ -238,16 +202,8 @@ paths:
     get:
       summary: 'Test connection of the datasource'
       parameters:
-        - name: x-hasura-datasource-id
-          in: header
-          description: The ID of the datasource
-          required: true
-          type: string
-        - name: x-hasura-branch-id
-          in: header
-          description: The ID of the branch
-          required: false
-          type: string
+        - $ref: '#/components/parameters/HasuraDatasourceId'
+        - $ref: '#/components/parameters/HasuraBranchId'
       responses:
         '200':
           description: 'Successful operation'
@@ -257,16 +213,8 @@ paths:
     get:
       summary: 'Get tables schema from the datasource'
       parameters:
-        - name: x-hasura-datasource-id
-          in: header
-          description: The ID of the datasource
-          required: true
-          type: string
-        - name: x-hasura-branch-id
-          in: header
-          description: The ID of the branch
-          required: false
-          type: string
+        - $ref: '#/components/parameters/HasuraDatasourceId'
+        - $ref: '#/components/parameters/HasuraBranchId'
       responses:
         '200':
           description: 'Successful operation'
@@ -275,28 +223,13 @@ paths:
   /api/v1/generate-dataschema:
     post:
       summary: 'Generate data models from the datasource tables'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GenerateDataSchemaRequest'
       parameters:
-        - in: 'body'
-          name: 'body'
-          required: true
-          schema:
-            type: 'object'
-            properties:
-              tables:
-                type: 'array'
-                items:
-                  type: 'string'
-              overwrite:
-                type: 'boolean'
-              branchId:
-                type: 'string'
-              format:
-                type: 'string'
-        - name: x-hasura-datasource-id
-          in: header
-          description: The ID of the datasource
-          required: true
-          type: string
+        - $ref: '#/components/parameters/HasuraDatasourceId'
       responses:
         '200':
           description: 'Successful operation'
@@ -306,16 +239,8 @@ paths:
     post:
       summary: 'Validate data models code'
       parameters:
-        - name: x-hasura-datasource-id
-          in: header
-          description: The ID of the datasource
-          required: true
-          type: string
-        - name: x-hasura-branch-id
-          in: header
-          description: The ID of the branch
-          required: false
-          type: string
+        - $ref: '#/components/parameters/HasuraDatasourceId'
+        - $ref: '#/components/parameters/HasuraBranchId'
       responses:
         '200':
           description: 'Successful operation'
@@ -324,12 +249,14 @@ paths:
   /api/v1/pre-aggregation-preview:
     post:
       summary: 'Pre-aggregation preview'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PreAggregationPreviewRequest'
       parameters:
-        - in: 'body'
-          name: 'body'
-          required: true
-          schema:
-            type: 'object'
+        - $ref: '#/components/parameters/HasuraDatasourceId'
+        - $ref: '#/components/parameters/HasuraBranchId'
       responses:
         '200':
           description: 'Successful operation'
@@ -338,6 +265,9 @@ paths:
   /api/v1/pre-aggregations:
     get:
       summary: 'Get pre-aggregations'
+      parameters:
+        - $ref: '#/components/parameters/HasuraDatasourceId'
+        - $ref: '#/components/parameters/HasuraBranchId'
       responses:
         '200':
           description: 'Successful operation'

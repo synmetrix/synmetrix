@@ -19,6 +19,11 @@ const { JWT_KEY, JWT_ALGORITHM } = process.env;
 const checkAuth = async (req) => {
   // Extract the authorization header from the request
   const authHeader = req.headers.authorization;
+
+  if (!authHeader) {
+    throw new Error("Provide Hasura Authorization token");
+  }
+
   // Extract the data source ID from the request headers
   const dataSourceId = req.headers["x-hasura-datasource-id"];
   // Extract the branch ID from the request headers
