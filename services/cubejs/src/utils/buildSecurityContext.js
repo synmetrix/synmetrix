@@ -2,6 +2,7 @@ import JSum from "jsum";
 
 import mapSchemaToFile from "./mapSchemaToFile.js";
 import createMd5Hex from "./md5Hex.js";
+import prepareDbParams from "./prepareDbParams.js";
 
 /**
  * Function to build the security context for a given data source.
@@ -29,6 +30,8 @@ const buildSecurityContext = (dataSource) => {
     dbType: dataSource.db_type?.toLowerCase(),
     dbParams: dataSource.db_params,
   };
+
+  data.dbParams = prepareDbParams(data.dbParams, data.dbType);
 
   const dataSourceVersion = JSum.digest(data, "SHA256", "hex");
 
