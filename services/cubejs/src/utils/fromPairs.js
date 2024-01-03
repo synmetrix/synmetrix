@@ -1,3 +1,9 @@
+/**
+ * Function to convert an array of key-value pairs into an object.
+ *
+ * @param {Array} pairs - An array of key-value pairs, where each pair is an array of two elements: the key and the value.
+ * @returns {Object} - An object that contains the keys and values from the pairs.
+ */
 export default (pairs) => {
   const result = {};
   let idx = 0;
