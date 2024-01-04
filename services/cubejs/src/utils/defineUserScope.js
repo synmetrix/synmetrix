@@ -31,8 +31,6 @@ const defineUserScope = (
       (branch) => branch.status === "active"
     );
 
-    console.log(dataSource.branches, defaultBranch);
-
     if (!defaultBranch) {
       throw new Error(`400: default branch not found`);
     }

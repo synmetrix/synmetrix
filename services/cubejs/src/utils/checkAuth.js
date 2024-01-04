@@ -75,6 +75,8 @@ const checkAuth = async (req) => {
   );
 
   req.securityContext = {
+    authToken,
+    userId,
     userScope,
     user,
   };

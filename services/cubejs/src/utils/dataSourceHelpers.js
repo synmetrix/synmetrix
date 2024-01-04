@@ -158,39 +158,6 @@ export const getDataSources = async () => {
   return res;
 };
 
-export const getActiveBranch = async ({ dataSourceId, authToken }) => {
-  const res = await fetchGraphQL(
-    activeBranchQuery,
-    { dataSourceId },
-    authToken
-  );
-
-  const defaultBranch = res?.data?.branches?.[0];
-
-  return {
-    dataSourceId: defaultBranch?.datasource_id,
-    defaultBranchId: defaultBranch?.id,
-  };
-};
-
-// export const getPermissions = async ({ dataSourceId, userId, authToken }) => {
-//   const res = await fetchGraphQL(
-//     accessListQuery,
-//     { dataSourceId, userId },
-//     authToken
-//   );
-
-//   const memberRoles = res?.data?.users_by_pk?.members?.[0]?.member_roles?.[0];
-//   const defaultBranch = res?.data?.branches?.[0];
-
-//   return {
-//     config: memberRoles?.access_list?.config,
-//     role: memberRoles?.team_role,
-//     dataSourceId: defaultBranch?.datasource_id,
-//     defaultBranchId: defaultBranch?.id,
-//   };
-// };
-
 export const createDataSchema = async (object) => {
   const { authToken, ...version } = object;
 
