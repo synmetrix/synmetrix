@@ -20,23 +20,19 @@ const getColumnsArray = (cube) => [
  * @throws {Error} - Throws an error if the user does not have access to the data source or to a specific cube.
  */
 const queryRewrite = async (query, { securityContext }) => {
-  const { dataSourceId, config, role } = securityContext;
-  const accessDatasource = config?.datasources?.[dataSourceId]?.cubes;
+  const { userScope } = securityContext;
+  const { dataSourceAccessList, role } = userScope;
 
   if (["owner", "admin"].includes(role)) {
     return query;
   }
 
-  if (!config) {
-    throw new Error("403: AccessList is not configured");
-  }
-
-  if (!accessDatasource) {
+  if (!dataSourceAccessList) {
     throw new Error("403: You have no access to the datasource");
   }
 
   const queryNames = getColumnsArray(query);
-  const accessNames = Object.values(accessDatasource).reduce(
+  const accessNames = Object.values(dataSourceAccessList).reduce(
     (acc, cube) => [...acc, ...getColumnsArray(cube)],
     []
   );

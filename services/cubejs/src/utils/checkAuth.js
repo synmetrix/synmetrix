@@ -1,7 +1,7 @@
 import jwt from "jsonwebtoken";
 
-import { findDataSource, getPermissions } from "./dataSourceHelpers.js";
-import buildSecurityContext from "./buildSecurityContext.js";
+import { findUser } from "./dataSourceHelpers.js";
+import defineUserScope from "./defineUserScope.js";
 
 const { JWT_KEY, JWT_ALGORITHM } = process.env;
 
@@ -59,34 +59,24 @@ const checkAuth = async (req) => {
     );
   }
 
-  const permissions = await getPermissions({ dataSourceId, userId, authToken });
-
-  if (!permissions?.dataSourceId) {
-    throw new Error(`403: No permissions for source "${dataSourceId}"`);
-  }
-
-  if (!permissions?.defaultBranchId) {
-    throw new Error(`403: No default branch for source "${dataSourceId}"`);
-  }
-
-  const dataSource = await findDataSource({
-    dataSourceId: permissions?.dataSourceId,
-    branchId: branchId || permissions?.defaultBranchId,
+  const user = await findUser({
+    userId,
   });
 
-  if (!dataSource?.id) {
-    throw new Error(`404: Source "${dataSourceId}" not found`);
+  if (!user.dataSources?.length || !user.members?.length) {
+    throw new Error(`404: user "${userId}" not found`);
   }
 
-  const securityContext = buildSecurityContext(dataSource);
+  const userScope = defineUserScope(
+    user.dataSources,
+    user.members,
+    dataSourceId,
+    branchId
+  );
 
   req.securityContext = {
-    dataSourceId,
-    userId,
-    authToken,
-    branchId,
-    ...permissions,
-    ...securityContext,
+    userScope,
+    user,
   };
 };
 

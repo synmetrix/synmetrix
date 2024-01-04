@@ -1,4 +1,5 @@
 import DriverDependencies from "@cubejs-backend/server-core/dist/src/core/DriverDependencies.js";
+import defineUserScope from "./defineUserScope.js";
 
 const driverError = (err) => {
   console.error("Driver error:");
@@ -23,8 +24,29 @@ const driverError = (err) => {
  *
  * @throws {Error} - Throws an error if the driver is invalid.
  */
-const driverFactory = async ({ securityContext }) => {
-  const { dbParams, dbType } = securityContext || {};
+const driverFactory = async ({ securityContext, dataSource }) => {
+  const { userScope, user } = securityContext || {};
+
+  let dbParams;
+  let dbType;
+
+  console.log("dataSource", dataSource);
+  if (!dataSource || dataSource === "default") {
+    dbParams = userScope.dataSource.dbParams;
+    dbType = userScope.dataSource.dbType;
+  } else {
+    const nextUserScope = defineUserScope(
+      user.dataSources,
+      user.members,
+      dataSource
+    );
+
+    console.log("nextUserScope", nextUserScope);
+    dbParams = nextUserScope.dataSource.dbParams;
+    dbType = nextUserScope.dataSource.dbType;
+  }
+
+  console.log("dbParams", dbParams);
 
   let driverModule;
 
