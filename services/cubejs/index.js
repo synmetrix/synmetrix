@@ -41,7 +41,7 @@ const schemaVersion = ({ securityContext }) =>
   securityContext?.userScope?.dataSource?.schemaVersion;
 
 const preAggregationsSchema = ({ securityContext }) =>
-  `pre_aggregations_${securityContext?.userScope?.dataSource?.dataSourceVersion}_${securityContext?.userScope?.dataSource?.schemaVersion}}`;
+  `pre_aggregations_${securityContext?.userScope?.dataSource?.preAggregationSchema}`;
 
 const externalDriverFactory = async () =>
   ServerCore.createDriver("cubestore", {

@@ -35,15 +35,20 @@ const buildSecurityContext = (dataSource, branch) => {
 
   const dataSourceVersion = JSum.digest(data, "SHA256", "hex");
 
-  const files = (branch?.versions?.[0]?.dataschemas || []).map((schema) =>
-    mapSchemaToFile(schema)
-  );
+  const dataModels =
+    branch?.versions?.[0]?.dataschemas ||
+    dataSource.branches?.[0]?.versions?.[0]?.dataschemas ||
+    [];
+
+  const files = dataModels.map((schema) => mapSchemaToFile(schema));
 
   const schemaVersion = createMd5Hex(files);
+  const preAggregationSchema = createMd5Hex(data.dataSourceId);
 
   return {
     ...data,
     dataSourceVersion,
+    preAggregationSchema,
     schemaVersion,
     files,
   };

@@ -1,5 +1,28 @@
 import buildSecurityContext from "./buildSecurityContext.js";
 
+export const getDataSourceAccessList = (
+  allMembers,
+  selectedDataSourceId,
+  selectedTeamId
+) => {
+  const dataSourceMemberRole = allMembers.find(
+    (member) => member.team_id === selectedTeamId
+  )?.member_roles?.[0];
+
+  if (!dataSourceMemberRole) {
+    throw new Error(`403: member role not found`);
+  }
+
+  const { access_list: accessList } = dataSourceMemberRole;
+  const dataSourceAccessList =
+    accessList?.datasources?.[selectedDataSourceId]?.cubes;
+
+  return {
+    role: dataSourceMemberRole?.team_role,
+    dataSourceAccessList,
+  };
+};
+
 const defineUserScope = (
   allDataSources,
   allMembers,
@@ -38,24 +61,17 @@ const defineUserScope = (
     selectedBranch = defaultBranch;
   }
 
-  const dataSourceMemberRole = allMembers.find(
-    (member) => (member.team_id = dataSource.team_id)
-  )?.member_roles?.[0];
-
-  if (!dataSourceMemberRole) {
-    throw new Error(`403: member role not found`);
-  }
-
-  const { access_list: accessList } = dataSourceMemberRole;
-  const dataSourceAccessList =
-    accessList?.datasources?.[selectedDataSourceId]?.cubes;
+  const dataSourceAccessList = getDataSourceAccessList(
+    allMembers,
+    selectedDataSourceId,
+    dataSource.team_id
+  );
 
   const dataSourceContext = buildSecurityContext(dataSource, selectedBranch);
 
   return {
     dataSource: dataSourceContext,
-    dataSourceAccessList,
-    role: dataSourceMemberRole.team_role,
+    ...dataSourceAccessList,
   };
 };
 
