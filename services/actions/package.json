@@ -5,8 +5,8 @@
   "license": "MIT",
   "type": "module",
   "scripts": {
-    "start": "nodemon --es-module-specifier-resolution=node index.js",
-    "start.dev": "nodemon -L --es-module-specifier-resolution=node --inspect=0.0.0.0"
+    "start": "node index.js",
+    "start.dev": "nodemon --exitcrash -L --es-module-specifier-resolution=node --inspect=0.0.0.0"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.262.0",
