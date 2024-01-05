@@ -33,6 +33,7 @@ type Query {
 type Query {
   fetch_meta(
     datasource_id: uuid!
+    branch_id: uuid
   ): SourceMetaOutput
 }
 
@@ -83,6 +84,7 @@ type Query {
 type Mutation {
   run_query(
     datasource_id: uuid!
+    branch_id: uuid
     query: String!
     limit: Int!
   ): RunSourceQueryOutput

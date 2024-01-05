@@ -12,6 +12,7 @@ const explorationQuery = `
   query ($id: uuid!) {
     explorations_by_pk(id: $id) {
       id
+      branch_id
       datasource_id
       playground_state
     }
@@ -40,6 +41,7 @@ export const fetchData = async (exploration, args, authToken) => {
 
   const cubejs = cubejsApi({
     dataSourceId: exploration.datasource_id,
+    branchId: exploration.branch_id,
     userId: userId,
     authToken,
   });

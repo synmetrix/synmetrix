@@ -123,7 +123,7 @@ const filterByPermissions = async (meta, userId, dataSourceId, authToken) => {
   return result;
 };
 
-const cubejsApi = ({ dataSourceId, userId, authToken }) => {
+const cubejsApi = ({ dataSourceId, branchId, userId, authToken }) => {
   let cubejsAuthToken;
 
   if (authToken.startsWith("Bearer ")) {
@@ -136,6 +136,10 @@ const cubejsApi = ({ dataSourceId, userId, authToken }) => {
     Authorization: `Bearer ${cubejsAuthToken}`,
     "x-hasura-datasource-id": dataSourceId,
   };
+
+  if (branchId) {
+    reqHeaders["x-hasura-branch-id"] = branchId;
+  }
 
   const apiUrl = `${CUBEJS_URL}/api/v1`;
   const init = new CubejsApiClient(authToken, {

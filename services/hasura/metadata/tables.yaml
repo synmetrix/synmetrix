@@ -354,6 +354,13 @@
       using:
         foreign_key_constraint_on: user_id
   array_relationships:
+    - name: explorations
+      using:
+        foreign_key_constraint_on:
+          column: branch_id
+          table:
+            name: explorations
+            schema: public
     - name: versions
       using:
         foreign_key_constraint_on:
@@ -762,6 +769,9 @@
     name: explorations
     schema: public
   object_relationships:
+    - name: branch
+      using:
+        foreign_key_constraint_on: branch_id
     - name: datasource
       using:
         foreign_key_constraint_on: datasource_id
@@ -803,6 +813,7 @@
         set:
           user_id: x-hasura-user-id
         columns:
+          - branch_id
           - datasource_id
           - playground_settings
           - playground_state
@@ -810,6 +821,7 @@
     - role: user
       permission:
         columns:
+          - branch_id
           - created_at
           - datasource_id
           - id
