@@ -15,14 +15,11 @@ const driverError = (err) => {
 };
 
 /**
- * Asynchronous function to create a database driver with the given security context.
- *
- * @param {Object} securityContext - The security context object.
- * @param {Object|string} securityContext.dbParams - The parameters for the database connection, either as an object or as a JSON string.
- * @param {string} securityContext.dbType - The type of the database.
- * @returns {Promise} - A promise that resolves to a database driver object.
- *
- * @throws {Error} - Throws an error if the driver is invalid.
+ * Factory function that creates a driver instance based on the provided security context and data source.
+ * @param {Object} options - The options object.
+ * @param {Object} options.securityContext - The security context object.
+ * @param {Object} options.dataSource - The data source object.
+ * @returns {Promise<Object>} A promise that resolves to the driver instance.
  */
 const driverFactory = async ({ securityContext, dataSource }) => {
   const { userScope, user } = securityContext || {};
@@ -30,7 +27,6 @@ const driverFactory = async ({ securityContext, dataSource }) => {
   let dbParams;
   let dbType;
 
-  console.log("dataSource", dataSource);
   if (!dataSource || dataSource === "default") {
     dbParams = userScope.dataSource.dbParams;
     dbType = userScope.dataSource.dbType;
@@ -41,12 +37,9 @@ const driverFactory = async ({ securityContext, dataSource }) => {
       dataSource
     );
 
-    console.log("nextUserScope", nextUserScope);
     dbParams = nextUserScope.dataSource.dbParams;
     dbType = nextUserScope.dataSource.dbType;
   }
-
-  console.log("dbParams", dbParams);
 
   let driverModule;
 
