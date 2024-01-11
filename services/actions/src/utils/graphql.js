@@ -27,7 +27,8 @@ export const fetchGraphQL = async (query, variables, authToken) => {
   const headers = {};
 
   if (authToken) {
-    headers.authorization = authToken;
+    const token = authToken.substring(0,6) === 'Bearer' ? authToken : `Bearer ${authToken}`;
+    headers.authorization = token;
   } else {
     headers['x-hasura-admin-secret'] = HASURA_GRAPHQL_ADMIN_SECRET;
   }

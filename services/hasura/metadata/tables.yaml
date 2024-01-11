@@ -58,9 +58,15 @@
           - mfa_enabled
           - user_id
         filter:
-          user:
-            id:
-              _eq: X-Hasura-User-Id
+          _or:
+            - user_id:
+                _eq: X-Hasura-User-Id
+            - user:
+                members:
+                  team:
+                    members:
+                      user_id:
+                        _eq: X-Hasura-User-Id
   update_permissions:
     - role: user
       permission:
@@ -348,6 +354,13 @@
       using:
         foreign_key_constraint_on: user_id
   array_relationships:
+    - name: explorations
+      using:
+        foreign_key_constraint_on:
+          column: branch_id
+          table:
+            name: explorations
+            schema: public
     - name: versions
       using:
         foreign_key_constraint_on:
@@ -359,15 +372,17 @@
     - role: user
       permission:
         check:
-          _or:
-            - datasource:
-                user_id:
-                  _eq: X-Hasura-User-Id
-            - datasource:
-                team:
-                  members:
-                    user_id:
+          datasource:
+            team:
+              members:
+                _and:
+                  - user_id:
                       _eq: X-Hasura-User-Id
+                  - member_roles:
+                      team_role:
+                        _in:
+                          - owner
+                          - admin
         columns:
           - datasource_id
           - name
@@ -385,15 +400,11 @@
           - id
           - user_id
         filter:
-          _or:
-            - datasource:
+          datasource:
+            team:
+              members:
                 user_id:
                   _eq: X-Hasura-User-Id
-            - datasource:
-                team:
-                  members:
-                    user_id:
-                      _eq: X-Hasura-User-Id
         allow_aggregations: true
   update_permissions:
     - role: user
@@ -402,16 +413,29 @@
           - name
           - status
         filter:
-          _or:
-            - datasource:
-                user_id:
-                  _eq: X-Hasura-User-Id
-            - datasource:
-                team:
-                  members:
-                    user_id:
+          datasource:
+            team:
+              members:
+                _and:
+                  - user_id:
                       _eq: X-Hasura-User-Id
-        check: null
+                  - member_roles:
+                      team_role:
+                        _in:
+                          - owner
+                          - admin
+        check:
+          datasource:
+            team:
+              members:
+                _and:
+                  - user_id:
+                      _eq: X-Hasura-User-Id
+                  - member_roles:
+                      team_role:
+                        _in:
+                          - owner
+                          - admin
 - table:
     name: dashboards
     schema: public
@@ -513,19 +537,17 @@
     - role: user
       permission:
         check:
-          _or:
-            - version:
-                branch:
-                  datasource:
-                    user_id:
+          datasource:
+            team:
+              members:
+                _and:
+                  - member_roles:
+                      team_role:
+                        _in:
+                          - owner
+                          - admin
+                  - user_id:
                       _eq: X-Hasura-User-Id
-            - version:
-                branch:
-                  datasource:
-                    team:
-                      members:
-                        user_id:
-                          _eq: X-Hasura-User-Id
         columns:
           - code
           - datasource_id
@@ -546,19 +568,17 @@
           - user_id
           - version_id
         filter:
-          _or:
-            - version:
-                branch:
-                  datasource:
-                    user_id:
+          datasource:
+            team:
+              members:
+                _and:
+                  - member_roles:
+                      team_role:
+                        _in:
+                          - owner
+                          - admin
+                  - user_id:
                       _eq: X-Hasura-User-Id
-            - version:
-                branch:
-                  datasource:
-                    team:
-                      members:
-                        user_id:
-                          _eq: X-Hasura-User-Id
         allow_aggregations: true
   update_permissions:
     - role: user
@@ -567,33 +587,29 @@
           - code
           - name
         filter:
-          _or:
-            - version:
-                branch:
-                  datasource:
-                    user_id:
+          datasource:
+            team:
+              members:
+                _and:
+                  - member_roles:
+                      team_role:
+                        _in:
+                          - owner
+                          - admin
+                  - user_id:
                       _eq: X-Hasura-User-Id
-            - version:
-                branch:
-                  datasource:
-                    team:
-                      members:
-                        user_id:
-                          _eq: X-Hasura-User-Id
         check:
-          _or:
-            - version:
-                branch:
-                  datasource:
-                    user_id:
+          datasource:
+            team:
+              members:
+                _and:
+                  - member_roles:
+                      team_role:
+                        _in:
+                          - owner
+                          - admin
+                  - user_id:
                       _eq: X-Hasura-User-Id
-            - version:
-                branch:
-                  datasource:
-                    team:
-                      members:
-                        user_id:
-                          _eq: X-Hasura-User-Id
 - table:
     name: datasources
     schema: public
@@ -640,6 +656,12 @@
           table:
             name: sql_credentials
             schema: public
+  computed_fields:
+    - name: db_params_computed
+      definition:
+        function:
+          name: hide_password
+          schema: public
   insert_permissions:
     - role: user
       permission:
@@ -663,14 +685,15 @@
     - role: user
       permission:
         columns:
-          - db_params
-          - db_type
-          - name
           - created_at
-          - updated_at
+          - db_type
           - id
+          - name
           - team_id
+          - updated_at
           - user_id
+        computed_fields:
+          - db_params_computed
         filter:
           _or:
             - user_id:
@@ -746,6 +769,9 @@
     name: explorations
     schema: public
   object_relationships:
+    - name: branch
+      using:
+        foreign_key_constraint_on: branch_id
     - name: datasource
       using:
         foreign_key_constraint_on: datasource_id
@@ -787,6 +813,7 @@
         set:
           user_id: x-hasura-user-id
         columns:
+          - branch_id
           - datasource_id
           - playground_settings
           - playground_state
@@ -794,6 +821,7 @@
     - role: user
       permission:
         columns:
+          - branch_id
           - created_at
           - datasource_id
           - id
@@ -850,9 +878,11 @@
       permission:
         columns:
           - access_list_id
+          - created_at
           - id
           - member_id
           - team_role
+          - updated_at
         filter:
           member:
             team:
@@ -937,7 +967,9 @@
                     _eq: X-Hasura-User-Id
                 - member_roles:
                     team_role:
-                      _eq: owner
+                      _in:
+                        - owner
+                        - admin
 - table:
     name: pinned_items
     schema: public
@@ -1329,6 +1361,10 @@
 - table:
     name: teams
     schema: public
+  object_relationships:
+    - name: user
+      using:
+        foreign_key_constraint_on: user_id
   array_relationships:
     - name: access_lists
       using:
@@ -1380,6 +1416,7 @@
           - id
           - name
           - updated_at
+          - user_id
         filter:
           members:
             user_id:
@@ -1479,6 +1516,20 @@
           table:
             name: request_logs
             schema: public
+    - name: sql_credentials
+      using:
+        foreign_key_constraint_on:
+          column: user_id
+          table:
+            name: sql_credentials
+            schema: public
+    - name: teams
+      using:
+        foreign_key_constraint_on:
+          column: user_id
+          table:
+            name: teams
+            schema: public
     - name: versions
       using:
         foreign_key_constraint_on:
@@ -1513,6 +1564,24 @@
           id:
             _eq: X-Hasura-User-Id
         check: {}
+  event_triggers:
+    - name: create_team
+      definition:
+        enable_manual: true
+        insert:
+          columns: '*'
+      retry_conf:
+        interval_sec: 10
+        num_retries: 0
+        timeout_sec: 60
+      webhook: '{{ACTIONS_URL}}/rpc/create_team'
+      cleanup_config:
+        batch_size: 10000
+        clean_invocation_logs: false
+        clear_older_than: 168
+        paused: true
+        schedule: 0 0 * * *
+        timeout: 60
 - table:
     name: versions
     schema: public

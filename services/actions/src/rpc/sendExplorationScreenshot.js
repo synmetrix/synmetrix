@@ -183,25 +183,31 @@ const getDataAndScreenshot = async (exploration) => {
 };
 
 const sendToSlack = async ({ header, jsonUrl, screenshotUrl, webhookUrl }) => {
-  const body = {
-    username: "MLCraft Notifications",
-    blocks: [
-      {
-        type: "section",
-        text: {
-          type: "mrkdwn",
-          text: `*${header}* \n\n<${jsonUrl}|Download JSON>`,
-        },
-      },
-      {
-        type: "image",
-        image_url: screenshotUrl,
-        alt_text: header,
-      },
-    ],
+  const defaultBlocks = [{
+    type: 'section',
+    text: {
+      type: 'mrkdwn',
+      text: `*${header}* \n\n<${jsonUrl}|Download JSON>`
+    },
+  }];
+  
+  const screenshotBlock = {
+    type: 'image',
+    image_url: screenshotUrl,
+    alt_text: header,
   };
 
-  const deliveryResult = await sendToWebhook({ webhookUrl, body });
+  const body = {
+    username: 'MLCraft Notifications',
+    blocks: [...defaultBlocks, screenshotBlock],
+  };
+
+  let deliveryResult = await sendToWebhook({ webhookUrl, body });
+
+  if (deliveryResult?.status === 400) {
+    body.blocks = defaultBlocks;
+    deliveryResult = await sendToWebhook({ webhookUrl, body });
+  }
 
   return deliveryResult;
 };

@@ -1,4 +1,4 @@
-FROM node:18.9.0-slim
+FROM --platform=linux/amd64 node:18.9.0-slim
 
 RUN apt-get update \
   && apt-get install -y wget gnupg \

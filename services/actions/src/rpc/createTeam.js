@@ -4,8 +4,8 @@ import { fetchGraphQL } from '../utils/graphql';
 import apiError from '../utils/apiError';
 
 const createTeamMutation = `
-  mutation ($name: String) {
-    insert_teams_one(object: { name: $name }) {
+  mutation ($user_id: uuid, $name: String) {
+    insert_teams_one(object: { user_id: $user_id, name: $name }) {
       id
       name
     }
@@ -31,20 +31,19 @@ const updateAssetsMutation = `
   }
 `;
 
-const createTeam = async ({ name }) => {
-  const res = await fetchGraphQL(createTeamMutation, { name });
+const createTeam = async ({ userId, name }) => {
+  const res = await fetchGraphQL(createTeamMutation, { user_id: userId, name });
   return res?.data?.insert_teams_one;
 };
 
 export default async (session, input, headers) => {
-  const { name } = input || {};
-  const userId = session?.['x-hasura-user-id'];
-  // const authToken = headers?.authorization;
+  const { name = "Default team" } = input || {};
+  const userId = session?.['x-hasura-user-id'] || input?.event?.data?.new?.id;
 
   let newTeam;
 
   try {
-    newTeam = await createTeam({ name });
+    newTeam = await createTeam({ userId, name });
     const { id: teamId } = newTeam;
 
     if (!teamId) {
