@@ -53,7 +53,8 @@ const normalizeTables = (schema, tables, dbType) => {
 
 export default async (req, res, cubejs) => {
   const { securityContext } = req;
-  const { dataSourceId, userId, dbType, authToken } = securityContext;
+  const { userScope, userId, authToken } = securityContext;
+  const { dataSourceId, dbType } = userScope.dataSource;
 
   const driver = await cubejs.options.driverFactory({ securityContext });
 

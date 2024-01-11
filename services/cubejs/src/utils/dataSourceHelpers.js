@@ -1,39 +1,39 @@
 import { fetchGraphQL } from "./graphql.js";
-
-const accessListQuery = `
-  query ($userId: uuid!, $dataSourceId: uuid!) {
-    users_by_pk(id: $userId) {
-      members {
-        member_roles {
-          team_role
-          access_list {
-            config
-          }
-        }
-      }
-    }
-    datasources_by_pk(id: $dataSourceId) {
-      id
-      name
-    }
-    branches(where: {datasource_id: {_eq: $dataSourceId}, status: {_eq: active}}) {
-      id
-      name
-    }
-  }
-`;
+import { getDataSourceAccessList } from "./defineUserScope.js";
+import buildSecurityContext from "./buildSecurityContext.js";
 
 const sourceFragment = `
   id
   name
   db_type
   db_params
+  team_id
 `;
 
 const modelsFragment = `
   id
   name
   code
+`;
+
+const branchesFragment = `
+  id
+  name
+  status
+`;
+
+const membersFragment = `
+  members {
+    id
+    team_id
+    member_roles {
+      id
+      team_role
+      access_list {
+        config
+      }
+    }
+  }
 `;
 
 const versionsFragment = `
@@ -46,25 +46,29 @@ const versionsFragment = `
 
 const activeBranchModelsFragment = `
   branches(where: {status: {_eq: active}}) {
-    id
-    name
+    ${branchesFragment}
     ${versionsFragment}
   }
 `;
 
 const selectedBranchModelsFragment = `
-  branches(where: {id: {_eq: $branchId}}) {
-    id
-    name
+  branches_by_pk(id: $branchId) {
+    ${branchesFragment}
     ${versionsFragment}
   }
 `;
 
-const sourceQuery = `
-  query ($dataSourceId: uuid!, $branchId: uuid!) {
-    datasources_by_pk(id: $dataSourceId) {
-      ${sourceFragment}
-      ${selectedBranchModelsFragment}
+const userQuery = `
+  query ($userId: uuid!) {
+    users_by_pk(id: $userId) {
+      datasources {
+        ${sourceFragment}
+        branches {
+          ${branchesFragment}
+          ${versionsFragment}
+        }
+      }
+      ${membersFragment}
     }
   }
 `;
@@ -100,14 +104,7 @@ const sqlCredentialsQuery = `
       id
       user_id
       user {
-        members {
-          member_roles {
-            team_role
-            access_list {
-              config
-            }
-          }
-        }
+        ${membersFragment}
       }
       password
       username
@@ -119,26 +116,25 @@ const sqlCredentialsQuery = `
   }
 `;
 
-export const findDataSource = async ({ dataSourceId, branchId }) => {
-  let res = await fetchGraphQL(sourceQuery, { dataSourceId, branchId });
-  res = res?.data?.datasources_by_pk;
+export const findUser = async ({ userId }) => {
+  const res = await fetchGraphQL(userQuery, {
+    userId,
+  });
 
-  return res;
+  const dataSources = res?.data?.users_by_pk?.datasources;
+  const members = res?.data?.users_by_pk?.members;
+
+  return {
+    dataSources,
+    members,
+  };
 };
 
 export const findSqlCredentials = async (username) => {
   const res = await fetchGraphQL(sqlCredentialsQuery, { username });
   const sqlCredentials = res?.data?.sql_credentials?.[0];
 
-  const memberRoles = sqlCredentials?.user?.members?.[0]?.member_roles?.[0];
-
-  return {
-    ...sqlCredentials,
-    permissions: {
-      config: memberRoles?.access_list?.config,
-      role: memberRoles?.team_role,
-    },
-  };
+  return sqlCredentials;
 };
 
 export const getDataSources = async () => {
@@ -146,24 +142,6 @@ export const getDataSources = async () => {
   res = res?.data?.datasources;
 
   return res;
-};
-
-export const getPermissions = async ({ dataSourceId, userId, authToken }) => {
-  const res = await fetchGraphQL(
-    accessListQuery,
-    { dataSourceId, userId },
-    authToken
-  );
-
-  const memberRoles = res?.data?.users_by_pk?.members?.[0]?.member_roles?.[0];
-  const defaultBranch = res?.data?.branches?.[0];
-
-  return {
-    config: memberRoles?.access_list?.config,
-    role: memberRoles?.team_role,
-    dataSourceId: res?.data?.datasources_by_pk?.id,
-    defaultBranchId: defaultBranch?.id,
-  };
 };
 
 export const createDataSchema = async (object) => {
@@ -183,7 +161,7 @@ export const findDataSchemas = async ({ branchId, authToken }) => {
   const res = await fetchGraphQL(branchSchemasQuery, { branchId }, authToken);
 
   const dataSchemas =
-    res?.data?.branches?.[0]?.versions?.[0]?.dataschemas || [];
+    res?.data?.branches_by_pk?.versions?.[0]?.dataschemas || [];
 
   return dataSchemas;
 };

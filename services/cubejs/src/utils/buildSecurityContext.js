@@ -16,7 +16,7 @@ import prepareDbParams from "./prepareDbParams.js";
  *
  * @throws {Error} - Throws an error if no data source or no dbParams are provided.
  */
-const buildSecurityContext = (dataSource) => {
+const buildSecurityContext = (dataSource, branch) => {
   if (!dataSource) {
     throw new Error("No dataSource provided");
   }
@@ -35,15 +35,20 @@ const buildSecurityContext = (dataSource) => {
 
   const dataSourceVersion = JSum.digest(data, "SHA256", "hex");
 
-  const files = (
-    dataSource?.branches?.[0]?.versions?.[0]?.dataschemas || []
-  ).map((schema) => mapSchemaToFile(schema));
+  const dataModels =
+    branch?.versions?.[0]?.dataschemas ||
+    dataSource.branches?.[0]?.versions?.[0]?.dataschemas ||
+    [];
+
+  const files = dataModels.map((schema) => mapSchemaToFile(schema));
 
   const schemaVersion = createMd5Hex(files);
+  const preAggregationSchema = createMd5Hex(data.dataSourceId);
 
   return {
     ...data,
     dataSourceVersion,
+    preAggregationSchema,
     schemaVersion,
     files,
   };

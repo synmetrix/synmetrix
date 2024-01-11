@@ -29,17 +29,19 @@ const app = express();
 app.use(express.json({ limit: "50mb", extended: true }));
 app.use(express.urlencoded({ limit: "50mb", extended: true }));
 
-const dbType = ({ securityContext }) => securityContext?.dbType || "none";
+const dbType = ({ securityContext }) =>
+  securityContext?.userScope?.dataSource?.dbType || "none";
 const contextToOrchestratorId = ({ securityContext }) =>
-  `CUBEJS_APP_${securityContext?.dataSourceVersion}_${securityContext?.schemaVersion}}`;
+  `CUBEJS_APP_${securityContext?.userScope?.dataSource?.dataSourceVersion}_${securityContext?.userScope?.dataSource?.schemaVersion}}`;
 
 const contextToAppId = ({ securityContext }) =>
-  `CUBEJS_APP_${securityContext?.dataSourceVersion}_${securityContext?.schemaVersion}}`;
+  `CUBEJS_APP_${securityContext?.userScope?.dataSource?.dataSourceVersion}_${securityContext?.userScope?.dataSource?.schemaVersion}}`;
 
-const schemaVersion = ({ securityContext }) => securityContext?.schemaVersion;
+const schemaVersion = ({ securityContext }) =>
+  securityContext?.userScope?.dataSource?.schemaVersion;
 
 const preAggregationsSchema = ({ securityContext }) =>
-  `pre_aggregations_${securityContext?.dataSourceVersion}_${securityContext?.schemaVersion}}`;
+  `pre_aggregations_${securityContext?.userScope?.dataSource?.preAggregationSchema}`;
 
 const externalDriverFactory = async () =>
   ServerCore.createDriver("cubestore", {

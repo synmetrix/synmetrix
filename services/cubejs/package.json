@@ -3,7 +3,7 @@
   "type": "module",
   "scripts": {
     "start": "node index.js",
-    "start.dev": "nodemon --inspect=0.0.0.0  --max-old-space-size=8096 --max-http-header-size=32768 --watch src --watch index.js",
+    "start.dev": "nodemon --exitcrash --inspect=0.0.0.0  --max-old-space-size=8096 --max-http-header-size=32768 --watch src --watch index.js",
     "jsdoc": "jsdoc index.js -r src -d docs"
   },
   "dependencies": {

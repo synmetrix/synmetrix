@@ -10,7 +10,7 @@ const repositoryFactory = ({ securityContext }) => {
      * Retrieves the data schema files.
      * @returns {Array} - The data schema files.
      */
-    dataSchemaFiles: () => securityContext?.files || [],
+    dataSchemaFiles: () => securityContext?.userScope?.dataSource?.files || [],
   };
 };
 
