@@ -11,7 +11,7 @@ RUN apt-get update -y \
   && wget -q -O - https://apt.corretto.aws/corretto.key | apt-key add - \
   && echo "deb https://apt.corretto.aws stable main" | tee /etc/apt/sources.list.d/corretto.list \
   && apt-get update -y \
-  && apt-get install -y google-chrome-stable fonts-ipafont-gothic fonts-wqy-zenhei fonts-thai-tlwg fonts-kacst fonts-freefont-ttf libxss1 java-1.8.0-amazon-corretto-jdk \
+  && apt-get install -y chromium fonts-ipafont-gothic fonts-wqy-zenhei fonts-thai-tlwg fonts-kacst fonts-freefont-ttf libxss1 java-1.8.0-amazon-corretto-jdk \
   --no-install-recommends \
   && rm -rf /var/lib/apt/lists/*
 

@@ -1,12 +1,12 @@
-import fetch from 'node-fetch';
-import puppeteer from 'puppeteer';
-import moment from 'moment-timezone';
-import nodemailer from 'nodemailer';
+import fetch from "node-fetch";
+import puppeteer from "puppeteer";
+import moment from "moment-timezone";
+import nodemailer from "nodemailer";
 
-import apiError from '../utils/apiError';
-import logger from '../utils/logger';
-import { putFileToBucket } from '../utils/s3';
-import generateUserAccessToken from '../utils/jwt';
+import apiError from "../utils/apiError";
+import logger from "../utils/logger";
+import { putFileToBucket } from "../utils/s3";
+import generateUserAccessToken from "../utils/jwt";
 
 const {
   SMTP_HOST,
@@ -19,14 +19,14 @@ const {
   AWS_S3_BUCKET_NAME,
 } = process.env;
 
-const EXPLORATION_DATA_SELECTOR = '#explorationTable';
+const EXPLORATION_DATA_SELECTOR = "#explorationTable";
 const PUPPETEER_WAITING_TIMEOUT = 30000;
-const TIMEZONE = 'UTC';
+const TIMEZONE = "UTC";
 
 const mailerOptions = {
   host: SMTP_HOST,
   port: SMTP_PORT,
-  secure: SMTP_SECURE === 'true',
+  secure: SMTP_SECURE === "true",
 };
 
 if (SMTP_USER && SMTP_PASS) {
@@ -34,20 +34,17 @@ if (SMTP_USER && SMTP_PASS) {
     user: SMTP_USER,
     pass: SMTP_PASS,
   };
-};
+}
 
 const mailer = nodemailer.createTransport(mailerOptions);
 
 const sendToWebhook = async ({ webhookUrl, body, headers = {} }) => {
   try {
-    const result = await fetch(
-      webhookUrl,
-      {
-        method: 'POST',
-        body: JSON.stringify(body),
-        headers,
-      }
-    );
+    const result = await fetch(webhookUrl, {
+      method: "POST",
+      body: JSON.stringify(body),
+      headers,
+    });
 
     return result;
   } catch (err) {
@@ -56,15 +53,17 @@ const sendToWebhook = async ({ webhookUrl, body, headers = {} }) => {
 };
 
 const getCleanSelectorSize = (selector) => {
-  const header = document.querySelector('.ant-layout-header');
-  const footer = document.querySelector('.ant-layout-footer');
-  const sider = document.querySelector('.ant-layout-sider');
-  const alert = document.querySelector('.ant-alert');
+  const header = document.querySelector(".ant-layout-header");
+  const footer = document.querySelector(".ant-layout-footer");
+  const sider = document.querySelector(".ant-layout-sider");
+  const alert = document.querySelector(".ant-alert");
 
-  [header, footer, sider, alert].forEach(element => element?.parentNode?.removeChild(element));
+  [header, footer, sider, alert].forEach((element) =>
+    element?.parentNode?.removeChild(element)
+  );
 
   const selectorWidth = document.querySelector(selector).scrollWidth;
-  const selectorHeight = document.querySelector(selector).scrollHeight
+  const selectorHeight = document.querySelector(selector).scrollHeight;
 
   return { width: selectorWidth, height: selectorHeight };
 };
@@ -86,27 +85,39 @@ const fetchDatasetResponseHandler = async (response) => {
 };
 
 const getDataAndScreenshot = async (exploration) => {
-  const { datasource_id: datasourceId, user_id: userId, id: explorationId } = exploration;
+  const {
+    datasource_id: datasourceId,
+    user_id: userId,
+    id: explorationId,
+  } = exploration;
 
   const explorationTableURL = `${APP_FRONTEND_URL}/~/explore/${datasourceId}/${explorationId}/?screenshot=1`;
 
   const accessToken = await generateUserAccessToken(userId);
 
   if (!accessToken) {
-    console.error('Access token hasn`t been signed')
-    return { error: 'Access token hasn`t been signed' };
+    console.error("Access token hasn`t been signed");
+    return { error: "Access token hasn`t been signed" };
   }
 
   let browser;
 
   try {
     browser = await puppeteer.launch({
+      pipe: true,
       headless: true,
-      defaultViewport: null,
-      executablePath: '/usr/bin/google-chrome-stable',
-      args: ['--disable-gpu', '--disable-dev-shm-usage', '--disable-setuid-sandbox', '--no-sandbox'],
+      dumpio: true,
+      args: [
+        "--disable-dev-shm-usage",
+        "--disable-setuid-sandbox",
+        "--no-sandbox",
+        "--no-zygote",
+        "--disable-gpu",
+        "--disable-audio-output",
+        "--headless",
+        "--single-process",
+      ],
     });
-    
   } catch (error) {
     logger.error(`browser start error: ${error}`);
 
@@ -115,7 +126,7 @@ const getDataAndScreenshot = async (exploration) => {
 
   const page = await browser.newPage();
 
-  page.on('console', (msg) => {
+  page.on("console", (msg) => {
     logger.log(`browser console log: ${msg.text()}`);
   });
 
@@ -125,7 +136,7 @@ const getDataAndScreenshot = async (exploration) => {
 
   await page.evaluate((token) => {
     localStorage.clear();
-    localStorage.setItem('access-token', token);
+    localStorage.setItem("access-token", token);
   }, accessToken);
 
   // intercept rows fetching
@@ -134,9 +145,13 @@ const getDataAndScreenshot = async (exploration) => {
 
   try {
     const [, datasetResponse] = await Promise.all([
-      page.goto(explorationTableURL, { waitUntil: 'domcontentloaded' }),
-      page.waitForResponse(fetchDatasetResponseHandler, { timeout: PUPPETEER_WAITING_TIMEOUT }),
-      page.waitForSelector(EXPLORATION_DATA_SELECTOR, { timeout: PUPPETEER_WAITING_TIMEOUT }),
+      page.goto(explorationTableURL, { waitUntil: "domcontentloaded" }),
+      page.waitForResponse(fetchDatasetResponseHandler, {
+        timeout: PUPPETEER_WAITING_TIMEOUT,
+      }),
+      page.waitForSelector(EXPLORATION_DATA_SELECTOR, {
+        timeout: PUPPETEER_WAITING_TIMEOUT,
+      }),
     ]);
 
     const datasetJsonResponse = await datasetResponse.json();
@@ -149,13 +164,16 @@ const getDataAndScreenshot = async (exploration) => {
   }
 
   // wait for table resizes and side effects
-  await new Promise(r => setTimeout(r, 1000));
-  
-  const { width, height } = await page.evaluate(getCleanSelectorSize, EXPLORATION_DATA_SELECTOR);
+  await new Promise((r) => setTimeout(r, 1000));
+
+  const { width, height } = await page.evaluate(
+    getCleanSelectorSize,
+    EXPLORATION_DATA_SELECTOR
+  );
   await page.setViewport({ width, height });
 
   const resultImageBinary = await page.screenshot({
-    encoding: 'binary',
+    encoding: "binary",
     fullPage: true,
   });
 
@@ -166,20 +184,20 @@ const getDataAndScreenshot = async (exploration) => {
 
 const sendToSlack = async ({ header, jsonUrl, screenshotUrl, webhookUrl }) => {
   const body = {
-    username: 'MLCraft Notifications',
+    username: "MLCraft Notifications",
     blocks: [
       {
-        type: 'section',
+        type: "section",
         text: {
-          type: 'mrkdwn',
-          text: `*${header}* \n\n<${jsonUrl}|Download JSON>`
+          type: "mrkdwn",
+          text: `*${header}* \n\n<${jsonUrl}|Download JSON>`,
         },
       },
       {
-        type: 'image',
+        type: "image",
         image_url: screenshotUrl,
         alt_text: header,
-      }
+      },
     ],
   };
 
@@ -207,23 +225,24 @@ export default async ({ deliveryType, exploration, deliveryConfig, name }) => {
     return apiError(error);
   }
 
-  const dateMoment = moment().tz(TIMEZONE).format('DD-MM-YYYY HH:mm');
+  const dateMoment = moment().tz(TIMEZONE).format("DD-MM-YYYY HH:mm");
   const filePathPrefix = `${explorationId}/${dateMoment}`;
 
   const { error: uploadDataError, url: jsonUrl } = await putFileToBucket({
     bucketName: AWS_S3_BUCKET_NAME,
     fileBody: JSON.stringify(data),
     filePath: `${filePathPrefix}/data.json`,
-    fileContentType: 'text/json'
+    fileContentType: "text/json",
   });
 
-  const { error: uploadScreenshotError, url: screenshotUrl } = await putFileToBucket({
-    bucketName: AWS_S3_BUCKET_NAME,
-    fileBody: screenshot,
-    filePath: `${filePathPrefix}/screenshot.png`,
-    fileContentType: 'image/png',
-    fileContentLength: Buffer.byteLength(screenshot)
-  });
+  const { error: uploadScreenshotError, url: screenshotUrl } =
+    await putFileToBucket({
+      bucketName: AWS_S3_BUCKET_NAME,
+      fileBody: screenshot,
+      filePath: `${filePathPrefix}/screenshot.png`,
+      fileContentType: "image/png",
+      fileContentLength: Buffer.byteLength(screenshot),
+    });
 
   const s3Error = uploadDataError || uploadScreenshotError;
 
@@ -236,19 +255,32 @@ export default async ({ deliveryType, exploration, deliveryConfig, name }) => {
   const header = `${name} at ${dateMoment}`;
 
   switch (deliveryType) {
-    case 'WEBHOOK':
-      deliveryResult = await sendToWebhook({ webhookUrl, body: { jsonUrl, screenshotUrl } });
+    case "WEBHOOK":
+      deliveryResult = await sendToWebhook({
+        webhookUrl,
+        body: { jsonUrl, screenshotUrl },
+      });
       break;
-    case 'SLACK':
-      deliveryResult = await sendToSlack({ header, jsonUrl, screenshotUrl, webhookUrl });
+    case "SLACK":
+      deliveryResult = await sendToSlack({
+        header,
+        jsonUrl,
+        screenshotUrl,
+        webhookUrl,
+      });
       break;
-    case 'EMAIL':
-      deliveryResult = await sendToEmail({ header, jsonUrl, screenshotUrl, address });
+    case "EMAIL":
+      deliveryResult = await sendToEmail({
+        header,
+        jsonUrl,
+        screenshotUrl,
+        address,
+      });
 
       break;
     default:
-      return apiError('Unsupported delivery type');
-  };
+      return apiError("Unsupported delivery type");
+  }
 
   return { error: false, deliveryResult };
 };
