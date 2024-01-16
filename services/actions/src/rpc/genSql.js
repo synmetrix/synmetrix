@@ -1,11 +1,10 @@
-import unchanged from 'unchanged';
-
-import cubejsApi from '../utils/cubejsApi';
-import apiError from '../utils/apiError';
-import { updatePlaygroundState, replaceQueryParams } from '../utils/playgroundState';
-import { fetchGraphQL } from '../utils/graphql';
-
-const { get, getOr } = unchanged;
+import apiError from "../utils/apiError.js";
+import cubejsApi from "../utils/cubejsApi.js";
+import { fetchGraphQL } from "../utils/graphql.js";
+import {
+  replaceQueryParams,
+  updatePlaygroundState,
+} from "../utils/playgroundState.js";
 
 const explorationQuery = `
   query ($id: uuid!) {
@@ -21,11 +20,7 @@ const explorationQuery = `
 export const rawSql = async (exploration, args, authToken) => {
   const { playground_state: playgroundState } = exploration;
 
-  const {
-    userId,
-    limit,
-    offset,
-  } = args || {};
+  const { userId, limit, offset } = args || {};
 
   const cubejs = cubejsApi({
     dataSourceId: exploration.datasource_id,
@@ -36,7 +31,10 @@ export const rawSql = async (exploration, args, authToken) => {
 
   const meta = await cubejs.meta();
 
-  const { updatedPlaygroundState } = updatePlaygroundState(playgroundState, meta);
+  const { updatedPlaygroundState } = updatePlaygroundState(
+    playgroundState,
+    meta
+  );
 
   if (limit) {
     updatedPlaygroundState.limit = limit;
@@ -46,7 +44,7 @@ export const rawSql = async (exploration, args, authToken) => {
     updatedPlaygroundState.offset = offset;
   }
 
-  const sql = await cubejs.query(updatedPlaygroundState, 'sql');
+  const sql = await cubejs.query(updatedPlaygroundState, "sql");
 
   if (sql) {
     sql.sql = replaceQueryParams(sql.sql, sql.params);
@@ -57,11 +55,15 @@ export const rawSql = async (exploration, args, authToken) => {
 
 export default async (session, input, headers) => {
   const { exploration_id: explorationId } = input || {};
-  const userId = session?.['x-hasura-user-id'];
+  const userId = session?.["x-hasura-user-id"];
   const { authorization: authToken } = headers || {};
 
   try {
-    const exploration = await fetchGraphQL(explorationQuery, { id: explorationId }, authToken);
+    const exploration = await fetchGraphQL(
+      explorationQuery,
+      { id: explorationId },
+      authToken
+    );
 
     const { sql, params, preAggregations } = await rawSql(
       exploration?.data?.explorations_by_pk,
@@ -81,6 +83,4 @@ export default async (session, input, headers) => {
   } catch (err) {
     return apiError(err);
   }
-
-  return false;
 };

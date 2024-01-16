@@ -1,13 +1,16 @@
-export const text = (text, { indent = 0, bold = false, italic = false, postNewLine = true }) => {
+export const text = (
+  text,
+  { indent = 0, bold = false, italic = false, postNewLine = true }
+) => {
   let resultText = text;
-  const indentPrefix = `${[...Array(indent)].map(() => '&nbsp;').join('')}`;
+  const indentPrefix = `${[...Array(indent)].map(() => "&nbsp;").join("")}`;
 
   if (bold) {
-    resultText = `**${resultText}**`
+    resultText = `**${resultText}**`;
   }
 
   if (italic) {
-    resultText = `*${resultText}*`
+    resultText = `*${resultText}*`;
   }
 
   resultText = `${indentPrefix} ${resultText}`;
@@ -19,10 +22,15 @@ export const text = (text, { indent = 0, bold = false, italic = false, postNewLi
   return resultText;
 };
 
-export const header = (header, { size, indent = 0 }) => `${[...Array(size)].map(() => '#').join('')} ${text(`${header}`, { indent })}`;
+export const header = (header, { size, indent = 0 }) =>
+  `${[...Array(size)].map(() => "#").join("")} ${text(`${header}`, {
+    indent,
+  })}`;
 
-export const orderedList = (list) => `${list.map((item, index) => `${index + 1}. ${item}`).join(' \n ')}\n\n`;
+export const orderedList = (list) =>
+  `${list.map((item, index) => `${index + 1}. ${item}`).join(" \n ")}\n\n`;
 
-export const unorderedList = (list) => `${list.map((item) => `- ${item}`).join('\n')}\n\n`;
+export const unorderedList = (list) =>
+  `${list.map((item) => `- ${item}`).join("\n")}\n\n`;
 
-export const divider = '---\n';
+export const divider = "---\n";

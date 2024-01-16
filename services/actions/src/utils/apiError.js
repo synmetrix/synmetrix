@@ -1,12 +1,12 @@
-import { fileURLToPath } from 'url';
+import { fileURLToPath } from "url";
 
-import logger from './logger';
+import logger from "./logger.js";
 
 const __filename = fileURLToPath(import.meta.url);
 
 const toString = (err) => {
   if (Array.isArray(err)) {
-    return err.join(', ').toString();
+    return err.join(", ").toString();
   }
 
   return err.toString();

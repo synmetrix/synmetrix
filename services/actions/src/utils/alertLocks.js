@@ -1,9 +1,9 @@
-import moment from 'moment-timezone';
+import moment from "moment-timezone";
 
-import { fetchGraphQL } from '../utils/graphql';
-import redisClient from '../utils/redis';
+import { fetchGraphQL } from "../utils/graphql.js";
+import redisClient from "../utils/redis.js";
 
-const TIMEZONE = 'UTC';
+const TIMEZONE = "UTC";
 
 const alertSetLockMutation = `
   mutation ($id: uuid!, $locks_config: jsonb) {
@@ -45,7 +45,7 @@ export const getLockData = async (alert) => {
     return result;
   }
 
-  const ttl = moment().tz(TIMEZONE).diff(expiresAt, 'seconds');
+  const ttl = moment().tz(TIMEZONE).diff(expiresAt, "seconds");
 
   result.key = lockKey;
   result.value = value;
@@ -59,14 +59,17 @@ export const setLockData = async (alert, { value, ttl }) => {
   const lockKey = getLockKey(id);
 
   if (redisClient) {
-    await redisClient.set(lockKey, value, 'EX', ttl);
+    await redisClient.set(lockKey, value, "EX", ttl);
 
     return;
   }
 
-  const expiresAt = moment().tz(TIMEZONE).add(ttl, 'seconds').format();
+  const expiresAt = moment().tz(TIMEZONE).add(ttl, "seconds").format();
 
-  await fetchGraphQL(alertSetLockMutation, { id, locks_config: { value, expiresAt } });
+  await fetchGraphQL(alertSetLockMutation, {
+    id,
+    locks_config: { value, expiresAt },
+  });
 
   return;
 };

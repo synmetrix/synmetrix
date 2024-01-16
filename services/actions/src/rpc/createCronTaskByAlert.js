@@ -1,27 +1,23 @@
-import { fetchMetadataAPI } from '../utils/hasuraMetadataApi';
-import logger from '../utils/logger';
-import apiError from '../utils/apiError';
-import redisClient from '../utils/redis';
+import apiError from "../utils/apiError.js";
+import { fetchMetadataAPI } from "../utils/hasuraMetadataApi.js";
+import logger from "../utils/logger.js";
+import redisClient from "../utils/redis.js";
 
-import deleteCronTaskByReport from './deleteCronTaskByAlert';
+import deleteCronTaskByReport from "./deleteCronTaskByAlert.js";
 
 const getCronTaskParamsForAlert = (payload) => {
-  const {
-    trigger_config: triggerConfig,
-    schedule,
-    id
-  } = payload || {};
+  const { trigger_config: triggerConfig, schedule, id } = payload || {};
 
   const timeout = (parseInt(triggerConfig?.requestTimeout, 10) || 1) * 60;
 
   return {
-    type: 'create_cron_trigger',
+    type: "create_cron_trigger",
     args: {
       name: id,
       webhook: `{{ACTIONS_URL}}/rpc/check_alert`,
       schedule,
       payload: {
-        id
+        id,
       },
       retry_conf: {
         num_retries: 0,
@@ -29,25 +25,22 @@ const getCronTaskParamsForAlert = (payload) => {
         timeout_seconds: timeout,
       },
       include_in_metadata: false,
-      comment: `Cron event for alert id: ${id}`
-    }
-  }
+      comment: `Cron event for alert id: ${id}`,
+    },
+  };
 };
 
 const getCronTaskParamsForReport = (payload) => {
-  const {
-    schedule,
-    id
-  } = payload || {};
+  const { schedule, id } = payload || {};
 
   return {
-    type: 'create_cron_trigger',
+    type: "create_cron_trigger",
     args: {
       name: id,
       webhook: `{{ACTIONS_URL}}/rpc/check_report`,
       schedule,
       payload: {
-        id
+        id,
       },
       retry_conf: {
         num_retries: 5,
@@ -55,9 +48,9 @@ const getCronTaskParamsForReport = (payload) => {
         timeout_seconds: 60,
       },
       include_in_metadata: false,
-      comment: `Cron event for scheduled report id: ${id}`
-    }
-  }
+      comment: `Cron event for scheduled report id: ${id}`,
+    },
+  };
 };
 
 export default async (session, input) => {
@@ -68,30 +61,29 @@ export default async (session, input) => {
   let cronTaskParams;
   let isNeedToClearLocks = false;
 
-
   switch (tableName) {
-    case 'reports':
+    case "reports":
       cronTaskParams = getCronTaskParamsForReport(payload);
       break;
-    case 'alerts':
+    case "alerts":
       cronTaskParams = getCronTaskParamsForAlert(payload);
       isNeedToClearLocks = true;
       break;
     default:
-      return apiError('Unsupported table name to create cron task');
+      return apiError("Unsupported table name to create cron task");
   }
 
   try {
     // recreate the cron task if fields or exploration has been changed
-    if (operationName === 'UPDATE') {
+    if (operationName === "UPDATE") {
       const deletionParams = {
         event: {
           data: {
             old: {
-              id
-            }
-          }
-        }
+              id,
+            },
+          },
+        },
       };
 
       if (isNeedToClearLocks) {

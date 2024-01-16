@@ -1,14 +1,14 @@
 import {
-  S3Client,
-  PutObjectCommand,
   CreateBucketCommand,
-  ListBucketsCommand,
   GetObjectCommand,
-} from '@aws-sdk/client-s3';
+  ListBucketsCommand,
+  PutObjectCommand,
+  S3Client,
+} from "@aws-sdk/client-s3";
 
-import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 
-import logger from './logger';
+import logger from "./logger.js";
 
 const {
   AWS_S3_ENDPOINT,
@@ -19,7 +19,7 @@ const {
   NODE_ENV,
 } = process.env;
 
-const dev = NODE_ENV !== 'production';
+const dev = NODE_ENV !== "production";
 
 // 7 days
 const AWS_S3_PRESIGNED_URL_EXPIRES_IN = 7 * 24 * 60 * 60;
@@ -44,10 +44,12 @@ export const findOrCreateBucket = async (bucketName) => {
     const listBucketsResult = await s3Client.send(new ListBucketsCommand({}));
     const buckets = listBucketsResult?.Buckets ?? [];
 
-    const bucket = buckets.find(bucket => bucket.Name === bucketName);
+    const bucket = buckets.find((bucket) => bucket.Name === bucketName);
 
     if (!bucket) {
-      const createBucketResult = await s3Client.send(new CreateBucketCommand({ Bucket: bucketName }));
+      const createBucketResult = await s3Client.send(
+        new CreateBucketCommand({ Bucket: bucketName })
+      );
 
       if (!createBucketResult?.Location) {
         throw new Error(`${bucketName} hasn't been created`);
@@ -69,7 +71,9 @@ export const getPresignedDowloadUrl = async ({ bucketName, filePath }) => {
   });
 
   try {
-    const url = await getSignedUrl(s3Client, command, { expiresIn: AWS_S3_PRESIGNED_URL_EXPIRES_IN });
+    const url = await getSignedUrl(s3Client, command, {
+      expiresIn: AWS_S3_PRESIGNED_URL_EXPIRES_IN,
+    });
 
     return { url };
   } catch (error) {
@@ -79,7 +83,13 @@ export const getPresignedDowloadUrl = async ({ bucketName, filePath }) => {
   }
 };
 
-export const putFileToBucket = async ({ bucketName, fileBody, filePath, fileContentType, fileContentLength }) => {
+export const putFileToBucket = async ({
+  bucketName,
+  fileBody,
+  filePath,
+  fileContentType,
+  fileContentLength,
+}) => {
   const { error } = await findOrCreateBucket(bucketName);
 
   if (error) {
@@ -102,7 +112,10 @@ export const putFileToBucket = async ({ bucketName, fileBody, filePath, fileCont
     return { error };
   }
 
-  const { url, error: presignError } = await getPresignedDowloadUrl({ bucketName, filePath });
+  const { url, error: presignError } = await getPresignedDowloadUrl({
+    bucketName,
+    filePath,
+  });
 
   if (presignError) {
     return { error: presignError };

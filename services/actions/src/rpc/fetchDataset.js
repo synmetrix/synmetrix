@@ -1,12 +1,7 @@
-import unchanged from 'unchanged';
-
-import cubejsApi from '../utils/cubejsApi';
-import logger from '../utils/logger';
-import apiError from '../utils/apiError';
-import { updatePlaygroundState } from '../utils/playgroundState';
-import { fetchGraphQL } from '../utils/graphql';
-
-const { get, getOr } = unchanged;
+import cubejsApi from "../utils/cubejsApi.js";
+import { fetchGraphQL } from "../utils/graphql.js";
+import logger from "../utils/logger.js";
+import { updatePlaygroundState } from "../utils/playgroundState.js";
 
 const explorationQuery = `
   query ($id: uuid!) {
@@ -22,11 +17,11 @@ const explorationQuery = `
 export const fetchData = async (exploration, args, authToken) => {
   let { playground_state: playgroundState } = exploration;
 
-  const { 
+  const {
     userId,
     renewQuery = true,
     validateMeta = true,
-    format = 'json',
+    format = "json",
     limit,
     offset,
   } = args || {};
@@ -66,25 +61,29 @@ export const fetchData = async (exploration, args, authToken) => {
     ...cubeData,
     annotation: {
       ...cubeData.annotation,
-      skippedMembers
-    }
+      skippedMembers,
+    },
   };
 };
 
 export default async (session, input, headers) => {
   const { exploration_id: explorationId } = input || {};
-  const userId = session?.['x-hasura-user-id'];
+  const userId = session?.["x-hasura-user-id"];
   const authToken = headers?.authorization;
 
   try {
-    const exploration = await fetchGraphQL(explorationQuery, { id: explorationId }, authToken);
+    const exploration = await fetchGraphQL(
+      explorationQuery,
+      { id: explorationId },
+      authToken
+    );
 
     const result = await fetchData(
       exploration?.data?.explorations_by_pk,
       {
         userId,
       },
-      authToken,
+      authToken
     );
 
     return result;
@@ -100,7 +99,7 @@ export default async (session, input, headers) => {
     if (isContinueWait) {
       progress = {
         loading: true,
-        ...(err?.progressResponse?.stage),
+        ...err?.progressResponse?.stage,
       };
     } else {
       const errMessage = err.message || err;

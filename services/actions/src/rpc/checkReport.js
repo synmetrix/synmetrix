@@ -1,7 +1,7 @@
-import sendExplorationScreenshot from './sendExplorationScreenshot';
+import sendExplorationScreenshot from "./sendExplorationScreenshot.js";
 
-import apiError from '../utils/apiError';
-import { fetchGraphQL } from '../utils/graphql';
+import apiError from "../utils/apiError.js";
+import { fetchGraphQL } from "../utils/graphql.js";
 
 const reportQuery = `
   query ($id: uuid!) {
@@ -20,7 +20,7 @@ const reportQuery = `
   }
 `;
 
-export default async (session, input) => {
+export default async (_, input) => {
   const { id } = input?.payload || {};
 
   const queryResult = await fetchGraphQL(reportQuery, { id });
@@ -34,7 +34,7 @@ export default async (session, input) => {
   } = report;
 
   if (!exploration) {
-    return apiError('Exploration not found');
+    return apiError("Exploration not found");
   }
 
   try {
@@ -42,7 +42,7 @@ export default async (session, input) => {
       deliveryType,
       deliveryConfig,
       exploration,
-      name: `Report ${name}`
+      name: `Report ${name}`,
     });
 
     if (error) {

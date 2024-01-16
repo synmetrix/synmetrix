@@ -1,6 +1,6 @@
-import { fetchGraphQL } from '../utils/graphql';
-import apiError from '../utils/apiError';
-import createMd5Hex from '../utils/md5Hex';
+import apiError from "../utils/apiError.js";
+import { fetchGraphQL } from "../utils/graphql.js";
+import createMd5Hex from "../utils/md5Hex.js";
 
 const datasourcesQuery = `
   query ($id: uuid!) {
@@ -33,28 +33,30 @@ export default async (session, input, headers) => {
   const datasourceId = input?.event?.data?.new?.id;
 
   if (!datasourceId) {
-    return apiError('There is no datasource_id!')
+    return apiError("There is no datasource_id!");
   }
 
   try {
-    const datasourcesResp = await fetchGraphQL(datasourcesQuery, { id: datasourceId });
+    const datasourcesResp = await fetchGraphQL(datasourcesQuery, {
+      id: datasourceId,
+    });
     const datasource = datasourcesResp?.data?.datasources_by_pk;
     const dataschemas = datasource?.dataschemas || [];
     const branches = datasource?.branches || [];
 
     if (branches.length) {
-      return 'Branches already created.';
+      return "Branches already created.";
     }
 
-    let checksum = 'No data';
+    let checksum = "No data";
     if (dataschemas.length) {
-      checksum = dataschemas.reduce((acc, cur) => acc + cur.code, '');
+      checksum = dataschemas.reduce((acc, cur) => acc + cur.code, "");
       checksum = createMd5Hex(checksum);
     }
 
     const branchData = {
-      name: 'main',
-      status: 'created',
+      name: "main",
+      status: "created",
       user_id: datasource.user_id,
       datasource_id: datasourceId,
       versions: {
@@ -64,17 +66,19 @@ export default async (session, input, headers) => {
           dataschemas: {
             data: dataschemas,
             on_conflict: {
-              constraint: 'dataschemas_pkey',
-              update_columns: ['version_id'],
+              constraint: "dataschemas_pkey",
+              update_columns: ["version_id"],
             },
           },
         },
       },
     };
 
-    const result = await fetchGraphQL(createBranchMutation, { object: branchData });
+    const result = await fetchGraphQL(createBranchMutation, {
+      object: branchData,
+    });
     return result;
-  } catch(e) {
+  } catch (e) {
     console.log(e);
     return apiError(e);
   }

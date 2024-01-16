@@ -1,5 +1,5 @@
-import { fetchGraphQL } from '../utils/graphql';
-import apiError from '../utils/apiError';
+import apiError from "../utils/apiError.js";
+import { fetchGraphQL } from "../utils/graphql.js";
 
 const createEventsMutation = `
   mutation ($objects: [events_insert_input!]!) {
@@ -14,7 +14,7 @@ const createEvents = async (input) => {
   return res?.data?.insert_events;
 };
 
-export default (session, input, headers) => {
+export default (_, input) => {
   try {
     return createEvents(input);
   } catch (err) {

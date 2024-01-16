@@ -1,7 +1,7 @@
-import { createTeamMember, OWNER_ROLE } from './inviteTeamMember';
+import { createTeamMember, OWNER_ROLE } from "./inviteTeamMember.js";
 
-import { fetchGraphQL } from '../utils/graphql';
-import apiError from '../utils/apiError';
+import apiError from "../utils/apiError.js";
+import { fetchGraphQL } from "../utils/graphql.js";
 
 const createTeamMutation = `
   mutation ($user_id: uuid, $name: String) {
@@ -36,9 +36,9 @@ const createTeam = async ({ userId, name }) => {
   return res?.data?.insert_teams_one;
 };
 
-export default async (session, input, headers) => {
+export default async (session, input) => {
   const { name = "Default team" } = input || {};
-  const userId = session?.['x-hasura-user-id'] || input?.event?.data?.new?.id;
+  const userId = session?.["x-hasura-user-id"] || input?.event?.data?.new?.id;
 
   let newTeam;
 
@@ -47,7 +47,7 @@ export default async (session, input, headers) => {
     const { id: teamId } = newTeam;
 
     if (!teamId) {
-      throw new Error('No team created. Contact Administrator');
+      throw new Error("No team created. Contact Administrator");
     }
 
     await createTeamMember({
