@@ -1,8 +1,10 @@
 FROM node:16.10.0-bullseye
 
 ARG DATABRICKS_JDBC_URL=https://databricks-bi-artifacts.s3.us-east-2.amazonaws.com/simbaspark-drivers/jdbc/2.6.32/DatabricksJDBC42-2.6.32.1054.zip
+ARG HASURA_VERSION=v2.36.0
+ARG BRANCH=feature/mlcraft-to-synmetrix
 
-RUN yarn global add pm2 wait-on
+RUN yarn global add pm2@5.3.0 wait-on@7.2.0
 
 RUN apt-get update -y \
   && apt-get install -y wget gnupg curl git unixodbc-dev nginx gettext-base apt-transport-https ca-certificates gnupg unzip \
@@ -17,17 +19,20 @@ RUN apt-get update -y \
 
 WORKDIR /app
 
-# hasura engine
-RUN curl -o graphql-engine https://graphql-engine-cdn.hasura.io/server/latest/linux-amd64
-RUN chmod +x ./graphql-engine
+# hasura engine binary WORKS ONLY WITH AMD64 ARCHITECTURE
+RUN curl -o graphql-engine https://graphql-engine-cdn.hasura.io/server/latest/linux-amd64 \
+    && mv graphql-engine /usr/local/bin/ \
+    && chmod +x /usr/local/bin/graphql-engine
+
 # hasura CLI
-RUN curl -L https://github.com/hasura/graphql-engine/raw/stable/cli/get.sh | bash
+RUN export VERSION=${HASURA_VERSION} \
+    && curl -L https://github.com/hasura/graphql-engine/raw/stable/cli/get.sh | bash
 
 # hasura backend plus
-RUN git clone https://github.com/nhost/hasura-backend-plus /app/hasura-backend-plus
+RUN git clone --depth 1 https://github.com/nhost/hasura-backend-plus /app/hasura-backend-plus
 
 # mlcraft
-RUN git clone https://github.com/mlcraft-io/mlcraft /app/mlcraft
+RUN git clone --recurse-submodules --depth 1 --branch $BRANCH https://github.com/mlcraft-io/mlcraft /app/mlcraft
 
 COPY . /app/
 

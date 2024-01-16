@@ -1,0 +1,3 @@
+[submodule "services/client-v2"]
+	path = services/client-v2
+	url = https://github.com/mlcraft-io/client-v2

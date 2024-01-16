@@ -7,36 +7,36 @@ services:
       - 6379:6379
 
   postgres:
-    image: postgres:12
+    image: postgres:${POSTGRES_VERSION:-14}
     volumes:
-      - db_data:/var/lib/postgresql/data
+      - pg_db_data:/var/lib/postgresql/data
     environment:
-      POSTGRES_USER: mlcraft_stack
+      POSTGRES_USER: synmetrix_stack
       POSTGRES_PASSWORD: pg_pass
-      POSTGRES_DB: mlcraft_stack
+      POSTGRES_DB: synmetrix_stack
 
   cubestore:
-    image: cubejs/cubestore:${CUBESTORE_VERSION:-v0.32.4}
+    image: cubejs/cubestore:${CUBESTORE_VERSION:-v0.34.45}
     environment:
       - CUBESTORE_REMOTE_DIR=/cube/data
     volumes:
-      - cubestore_data:/cube/data
+      - cube_store_data:/cube/data
 
-  mlcraft_stack:
-    image: mlcraft/mlcraft-stack:${MLCRAFT_VERSION}
+  synmetrix_stack:
+    image: synmetrix/synmetrix-stack:${SYNMETRIX_VERSION:-latest}
     restart: always
     build:
-      context: ./scripts/containers/mlcraft-stack
+      context: ./scripts/containers/stack
     ports:
       - 80:8888 # nginx app
       - 15432:15432 # pg api
       - 13306:13306 # mysql api
     environment:
       # postgres database used by Hasura as a data source and to store Hasura metadata
-      HASURA_GRAPHQL_DATABASE_URL: postgres://mlcraft_stack:pg_pass@postgres:5432/mlcraft_stack
+      HASURA_GRAPHQL_DATABASE_URL: postgres://synmetrix_stack:pg_pass@postgres:5432/synmetrix_stack
       # secure your Hasura console via admin secret
-      HASURA_GRAPHQL_ADMIN_SECRET: mlcraft
-      # SMTP credentials to send emails from MLCraft
+      HASURA_GRAPHQL_ADMIN_SECRET: synmetrix
+      # SMTP credentials to send emails from synmetrix
       SMTP_HOST: ${SECRETS_SMTP_HOST}
       SMTP_PORT: ${SECRETS_SMTP_PORT}
       SMTP_SECURE: ${SECRETS_SMTP_SECURE}
@@ -51,5 +51,5 @@ services:
       - postgres
 
 volumes:
-  db_data:
-  cubestore_data:
+  pg_db_data:
+  cube_store_data:

@@ -46,6 +46,8 @@ wget https://raw.githubusercontent.com/mlcraft-io/mlcraft/main/install-manifests
 curl https://raw.githubusercontent.com/mlcraft-io/mlcraft/main/install-manifests/docker-compose/docker-compose.yml -o docker-compose.yml
 ```
 
+NOTE: Please check environment variables in the `docker-compose.yml` file. You can change them if needed.
+
 ### Step 2: Run MLCraft
 
 The following command will run MLCraft along with a Postgres database to store its data.

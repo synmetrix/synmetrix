@@ -1,0 +1,1 @@
+docker-compose -f docker-compose.stack.yml up -d --build
