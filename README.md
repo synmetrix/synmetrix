@@ -3,58 +3,36 @@
 [Website](https://mlcraft.io) • [Docs](./docs/README.md) • [Cube.js Models docs](https://cube.dev/docs/schema/getting-started) • [Docker Hub](https://hub.docker.com/u/mlcraft) • [Slack community](https://join.slack.com/t/mlcraft/shared_invite/zt-1x2gxwn37-J3tTvCR5xSFVfxwUU_YKtg)
 
 
-__MLCraft is a low-code metrics layer and a modern open-source alternative to Looker.__ 
+# MLCraft
 
-MLCraft (Metrics Layer Craft) originally was designed to extract and transform the data from several data warehouses and run machine learning experiments. [Cube.js](https://github.com/cube-js/cube) is used as a primary query layer and makes it suitable for handling
-trillions of data points.
+MLCraft is an open source data engineering platform and semantic layer for centralized metrics management. It provides a complete framework for modeling, integrating, transforming, aggregating, and distributing metrics data at scale.
 
-We offer a new way of working with data – it's called metrics store.
+## Key Features
 
-* Access insights with confidence, keep teams up-to-date on metrics changes, build institutional knowledge with stakeholders to empower your decision-making
+-   **Data modeling and transformations**: Flexibly define metrics and dimensions using SQL and [Cube](https://github.com/cube-js/cube) data models. Apply transformations and aggregations.
+-   **Semantic layer**: Consolidate metrics from across sources into a unified, governed data model. Eliminate metric definition differences.
+-   **Scheduled reports and alerts**: Monitor metrics and get notified of changes via configurable reports and alerts.
+-   **Versioning**: Track schema changes over time for transparency and auditability.
+-   **Role-based access control**: Manage permissions for data models and metrics access.
+-   **Data exploration**: Analyze metrics through the UI, or integrate with any BI tool via the SQL API.
+-   **Caching**: Optimize performance using pre-aggregations and caching from [Cube](https://github.com/cube-js/cube).
+-   **Teams**: Collaborate on metrics modeling across your organization.
 
-* Take advantage of an enterprise-level metrics platform that allows you to visualize key insights via an easy GraphQL API or JDBC client
+## Overview
 
-* Create individual dashboards for different roles and teams or stakeholder groups, and track changes across multiple data sources with a unified dashboard
+MLCraft leverages [Cube (Cube.js)](https://github.com/cube-js/cube) to implement flexible data models that can consolidate metrics from across warehouses, databases, APIs and more. This unified semantic layer eliminates differences in definitions and calculations, providing a single source of truth.
 
-## Features
-* **Data modeling**: a [Cube.js](https://github.com/cube-js/cube) Data Schema is used to model raw data into meaningful business metrics, transform and pre-aggregate data for optimal results.
-* **Version control**: manage schema changes with version control, rollback fast to the valid one.
-* **Auto testing and documentation**: good documentation and data testing will help downstream consumers curate the datasets.
-* **Metrics Governance**: keep an eye on metrics changes, know data owners and contributors, understand the context rapidly.
-* **Multitenancy and row-level security**: collaborate on the metrics and warehouses together with your team.
-* **Query orchestration and multi-level caching**: any production-ready analytics solution requires key components such as analytic SQL generation, query results caching and execution orchestration.
+The metrics data model can then be distributed downstream to any consumer via a SQL API, allowing integration into BI tools, reporting, dashboards, data science, and more.
 
-note: not all features are deployed yet. Please, sync with our [roadmap](https://github.com/mlcraft-io/mlcraft/projects). Leave your email in the newsletter form on [mlcraft.io](https://mlcraft.io) if you would know about new features.
+By combining best practices from data engineering, like caching, orchestration, and transformation, with self-service analytics capabilities, MLCraft speeds up data-driven workflows from metrics definition to consumption.
 
-<div align="center">
-  <a href="https://youtu.be/-ivNme3sfGs"><img src="https://i.imgur.com/RW7wKI9.png" alt="MLCraft BI Demo"></a>
-</div>
-
-## Use cases
-
-* Team Business Intelligence
-* Events collection & Event analytics
-* Machine Learning
-* Reverse ETL (as a single source of truth)
-* Business Metrics governance
-* Metrics metadata management
-
-------
-
-## Demo
-
-Demo: [app.mlcraft.org](https://app.mlcraft.org)
-
-Login: `demo@mlcraft.io`
-
-Password: `demodemo`
-
-## Quick start
+## Getting Started
 
 ### Prerequisites
 
 - [Docker](https://docs.docker.com/install)
 - [Docker Compose](https://docs.docker.com/compose/install)
+
 
 ### Step 1: Get the docker-compose file
 
@@ -99,64 +77,59 @@ Admin Console (Hasura Console) will be available on `http://localhost/console`
 
 NOTE: check out `HASURA_GRAPHQL_ADMIN_SECRET` in the `docker-compose` file. You'll need it to enter the Admin Console.
 
-## Local development 
 
-### Prerequisites
+## Documentation
 
-- [Docker](https://docs.docker.com/install)
-- [Docker Compose](https://docs.docker.com/compose/install)
-- Python3 (with pip3)
-- Node.js 8.9+ with `yarn` installed
+-   [Official Documentation](https://docs.synmetrix.org/)
+-   [Cube Documentation](https://cube.dev/docs)
 
-```
-git clone https://github.com/mlcraft-io/mlcraft.git
-cd mlcraft
-bash init.sh
-```
+## Demo
 
-To start UI in dev mode:
+Demo: [app.mlcraft.org](https://app.mlcraft.org)
+* Login: `demo@mlcraft.io`
+* Password: `demodemo`
 
-```
-python3 cli.py ui
-```
 
-Then visit [http://localhost:3000](http://localhost:3000)
+----
+
+
+## Data Modeling
+
+MLCraft leverages Cube for flexible data modeling and transformations.
+
+Cube implements a multi-stage SQL data modeling architecture:
+
+-   Raw data sits in a source database such as Postgres, MySQL, etc.
+-   The raw data is modeled into reusable data marts using Cube Data Models files. These models files allow defining metrics, dimensions, granularities and relationships.
+-   The models act as an abstraction layer between the raw data and application code.
+-   Cube then generates optimized analytical SQL queries against the raw data based on the model.
+-   The Cube Store distributed cache optimizes query performance by caching query results.
+
+This modeling architecture makes it simple to create fast and complex analytical queries with Cube that are optimized to run against large datasets.
+
+The unified data model can consolidate metrics from across different databases and systems, providing a consistent semantic layer for end users.
+
+## Cube Store
+
+For production workloads, MLCraft uses Cube Store as the caching and query execution layer.
+
+Cube Store is a purpose-built database for operational analytics, optimized for fast aggregations and time series data. It provides:
+
+-   Distributed querying for scalability
+-   Advanced caching for fast queries
+-   columnar storage for analytics performance
+-   Integration with Cube for modeling
+
+By leveraging Cube Store and Cube together, MLCraft benefits from excellent analytics performance and flexibility in modeling metrics.
 
 ---
-
-To start containers manually:
-
-```
-python3 cli.py services up
-```
-
-To destroy all services (volumes will still present):
-
-```
-python3 cli.py services destroy
-```
-
-Also check:
-
-```
-python3 cli.py --help
-```
-
-### ngrok tunells
-  
-[Ngrok](https://ngrok.com/) is a tool for allow you to instantly open access to remote systems. We use it for proxying requests from dockerized apps to frontend part in development mode.
-
-After installing the tool you need to obtain your authtoken in ngrok dashboard and update the variable in `ngrok.yml` file. Then run `bash ngrok.sh` command.
-It opens tunnels for backend, frontend and object storage services. Don't forget to change default routes by ngrok-generated ones.
-
-It's necessary to test such features as scheduled reports and alerts locally.
 
 ## Community support
 
 For general help using MLCraft, please refer to the official MLCraft documentation. For additional help, you can use one of these channels to ask a question:
 
-* [Slack](https://join.slack.com/t/mlcraft/shared_invite/zt-1x2gxwn37-J3tTvCR5xSFVfxwUU_YKtg) \(For live discussion with the Community and MLCraft team\)
-* [GitHub](https://github.com/mlcraft-io/mlcraft) \(Bug reports, Contributions\)
+* [Slack](https://join.slack.com/t/mlcraft/shared_invite/zt-1x2gxwn37-J3tTvCR5xSFVfxwUU_YKtg) / For live discussion with the Community and MLCraft team
+* [GitHub](https://github.com/mlcraft-io/mlcraft) / Bug reports, Contributions
 
 ## Roadmap
 
@@ -172,6 +145,6 @@ All **other contents** are available under the [MIT License](LICENSE-community).
 
 [@ifokeev](https://github.com/ifokeev)
 
-[@ilyozzz](https://github.com/ilyozzz)
-
 [@Libertonius](https://github.com/Libertonius)
+
+[@ilyozzz](https://github.com/ilyozzz)
