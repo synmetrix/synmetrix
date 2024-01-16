@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   postgres:
-    image: postgres:12.2
+    image: postgres:${POSTGRES_VERSION}
     deploy:
       placement:
         constraints: [node.role == manager]
@@ -141,7 +141,7 @@ services:
       - .stage.env
 
   cubestore:
-    image: cubejs/cubestore:${CUBESTORE_VERSION:-v0.32.4}
+    image: cubejs/cubestore:${CUBESTORE_VERSION}
     environment:
       - CUBESTORE_REMOTE_DIR=/cube/data
     volumes:

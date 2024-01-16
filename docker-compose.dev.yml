@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   postgres:
-    image: postgres:12.2
+    image: postgres:${POSTGRES_VERSION}
     ports:
       - 5435:5432
     volumes:
@@ -144,7 +144,7 @@ services:
       - mlcraft_default
 
   cubestore:
-    image: cubejs/cubestore:${CUBESTORE_VERSION:-v0.32.4}
+    image: cubejs/cubestore:${CUBESTORE_VERSION}
     ports:
       - 3030:3030
     environment:
