@@ -178,7 +178,7 @@ module.exports = {
       env: {
         HASURA_GRAPHQL_ENDPOINT: "/v1/graphql",
         HASURA_WS_ENDPOINT: "/v1/graphql",
-        GRAPHQL_PLUS_SERVER_URL: "/",
+        GRAPHQL_PLUS_SERVER_URL: "",
         CUBEJS_PG_API_URL,
         CUBEJS_MYSQL_API_URL,
         CUBEJS_REST_API_URL: CUBEJS_URL,
