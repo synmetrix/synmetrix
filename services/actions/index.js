@@ -39,7 +39,7 @@ app.post("/rpc/:method", async (req, res) => {
 
   const requestInput = input ?? req.body;
 
-  const modulePath = `./src/rpc/${hyphensToCamelCase(method)}`;
+  const modulePath = `./src/rpc/${hyphensToCamelCase(method)}.js`;
   const module = await import(modulePath);
 
   if (!module) {
