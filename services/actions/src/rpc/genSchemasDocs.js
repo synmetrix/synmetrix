@@ -1,6 +1,7 @@
 import produce from 'immer';
 
 import apiError from '../utils/apiError';
+import generateUserAccessToken from "../utils/jwt";
 import { fetchGraphQL } from '../utils/graphql';
 import { header, unorderedList, divider, text } from '../utils/markdownHelpers';
 
@@ -15,10 +16,12 @@ const versionQuery = `
         }
       }
       user {
+        id
         display_name
       }
       created_at
       branch {
+        id
         name
         status
         datasource_id
@@ -34,8 +37,8 @@ const versionQuery = `
 `;
 
 const datasourceMetaQuery = `
-  query ($datasourceId: uuid!) {
-    fetch_meta(datasource_id: $datasourceId) {
+  query ($datasourceId: uuid!, $branchId: uuid) {
+    fetch_meta(datasource_id: $datasourceId, branch_id: $branchId) {
       cubes
     }
   }
@@ -143,11 +146,12 @@ const generateDataschemaDoc = (dataschema) => {
 
 const generateVersionDoc = async ({ version }) => {
   const { id: versionId, user, dataschemas, branch } = version;
-  const { display_name: versionAuthorName } = user;
-  const { name: branchName, datasource_id: datasourceId } = branch;
+  const { id: userId, display_name: versionAuthorName } = user;
+  const { name: branchName, datasource_id: datasourceId, id: branchId } = branch;
   const dataschemasCollaborators = dataschemas.map(ds => ds.user.display_name);
 
-  const metaResp = await fetchGraphQL(datasourceMetaQuery, { datasourceId });
+  const authToken = await generateUserAccessToken(userId);
+  const metaResp = await fetchGraphQL(datasourceMetaQuery, { datasourceId, branchId  }, authToken);
 
   let doc = header('Documentation', { size: 1 });
 
