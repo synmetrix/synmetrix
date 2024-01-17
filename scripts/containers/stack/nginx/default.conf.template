@@ -7,8 +7,8 @@ server {
     proxy_pass http://localhost:5000;
     sub_filter <head>
             '<head><script language="javascript">
-            window.GRAPHQL_WS_URL = "$GRAPHQL_WS_URL";
-            window.GRAPHQL_SERVER_URL = "$GRAPHQL_SERVER_URL";
+            window.HASURA_WS_ENDPOINT = "$HASURA_WS_ENDPOINT";
+            window.HASURA_GRAPHQL_ENDPOINT = "$HASURA_GRAPHQL_ENDPOINT";
             window.GRAPHQL_PLUS_SERVER_URL = "$GRAPHQL_PLUS_SERVER_URL";
             window.CUBEJS_MYSQL_API_URL = "$CUBEJS_MYSQL_API_URL";
             window.CUBEJS_PG_API_URL = "$CUBEJS_PG_API_URL";
