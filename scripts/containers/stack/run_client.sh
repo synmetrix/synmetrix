@@ -1,4 +1,1 @@
-cd mlcraft/services/client && \
-yarn install --silent  --network-timeout 100000 && yarn run --silent build && \
-cd /app/mlcraft/services/client/build && \
-npx serve -s -l 5000
+cd mlcraft/services/client-v2 && npx serve -s -l 5000

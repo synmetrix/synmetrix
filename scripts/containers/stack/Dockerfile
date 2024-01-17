@@ -2,6 +2,7 @@ FROM node:lts-bookworm-slim
 
 ARG DATABRICKS_JDBC_URL=https://databricks-bi-artifacts.s3.us-east-2.amazonaws.com/simbaspark-drivers/jdbc/2.6.32/DatabricksJDBC42-2.6.32.1054.zip
 ARG HASURA_VERSION=v2.36.0
+ARG CLIENT_VERSION=v1.3.3
 ARG BRANCH=feature/mlcraft-to-synmetrix
 
 RUN yarn global add pm2@5.3.0 wait-on@7.2.0
@@ -36,8 +37,10 @@ RUN git clone --depth 1 https://github.com/nhost/hasura-backend-plus /app/hasura
 # mlcraft
 RUN git clone --recurse-submodules --depth 1 --branch $BRANCH https://github.com/mlcraft-io/mlcraft /app/mlcraft && \
     cd /app/mlcraft && \
-    git pull && \
+    git pull origin $BRANCH && \
     git submodule update --init --recursive
+
+RUN curl https://github.com/mlcraft-io/client-v2/releases/download/$CLIENT_VERSION/dist.tar.gz -L | tar -xz -C /app/mlcraft/services/ && mv /app/mlcraft/services/dist /app/mlcraft/services/client-v2
 
 COPY . /app/
 

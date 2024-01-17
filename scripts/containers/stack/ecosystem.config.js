@@ -22,7 +22,7 @@ const ACTIONS_URL =
   process.env.ACTIONS_URL || `http://localhost:${ACTIONS_PORT}`;
 
 // internal hasura plus url
-const HASURA_PLUS_PORT = process.env.HASURA_PLUS_PORT || 3030;
+const HASURA_PLUS_PORT = process.env.HASURA_PLUS_PORT || 8081;
 const HASURA_PLUS_ENDPOINT =
   process.env.HASURA_PLUS_ENDPOINT || `http://localhost:${HASURA_PLUS_PORT}`;
 // internal hasura url
@@ -74,13 +74,6 @@ module.exports = {
       name: "client",
       script: "./run_client.sh",
       out_file: null,
-      env: {
-        GRAPHQL_SERVER_URL: "/v1/graphql",
-        GRAPHQL_WS_URL: "/v1/graphql",
-        GRAPHQL_PLUS_SERVER_URL: "",
-        CUBEJS_PG_API_URL,
-        CUBEJS_MYSQL_API_URL,
-      },
     },
     {
       name: "hasura",
@@ -182,6 +175,14 @@ module.exports = {
     {
       name: "nginx",
       out_file: null,
+      env: {
+        HASURA_GRAPHQL_ENDPOINT: "/v1/graphql",
+        HASURA_WS_ENDPOINT: "/v1/graphql",
+        GRAPHQL_PLUS_SERVER_URL: "/",
+        CUBEJS_PG_API_URL,
+        CUBEJS_MYSQL_API_URL,
+        CUBEJS_REST_API_URL: CUBEJS_URL,
+      },
       script:
         'envsubst < /app/nginx/default.conf.template > /etc/nginx/sites-enabled/default && nginx -g "daemon off;"',
     },

@@ -1,12 +1,25 @@
 server {
   listen 8888;
+  gzip_static off;
 
   location / {
+    proxy_set_header Accept-Encoding "";
     proxy_pass http://localhost:5000;
+    sub_filter <head>
+            '<head><script language="javascript">
+            window.GRAPHQL_WS_URL = "$GRAPHQL_WS_URL";
+            window.GRAPHQL_SERVER_URL = "$GRAPHQL_SERVER_URL";
+            window.GRAPHQL_PLUS_SERVER_URL = "$GRAPHQL_PLUS_SERVER_URL";
+            window.CUBEJS_MYSQL_API_URL = "$CUBEJS_MYSQL_API_URL";
+            window.CUBEJS_PG_API_URL = "$CUBEJS_PG_API_URL";
+            window.CUBEJS_REST_API_URL = "$CUBEJS_REST_API_URL";
+            </script>';
+    sub_filter_types *;
+    sub_filter_once on;
   }
 
   location ~ ^/auth {
-    proxy_pass http://localhost:3030;
+    proxy_pass http://localhost:8081;
   }
 
   location ~ ^/v1 {
