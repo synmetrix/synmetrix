@@ -3,6 +3,11 @@ const CUBEJS_PORT = process.env.CUBEJS_PORT || 4000;
 const CUBEJS_URL = process.env.CUBEJS_URL || `http://localhost:${CUBEJS_PORT}`;
 // cubejs JWT secret
 const CUBEJS_SECRET = process.env.CUBEJS_SECRET || "cubejsSecret";
+// cubejs db settings
+const CUBEJS_DB_CLICKHOUSE_READONLY =
+  process.env.CUBEJS_DB_CLICKHOUSE_READONLY !== undefined
+    ? process.env.CUBEJS_DB_CLICKHOUSE_READONLY
+    : true;
 
 // cubestore
 const CUBEJS_CUBESTORE_PORT = process.env.CUBEJS_CUBESTORE_PORT || 3030;
@@ -169,6 +174,7 @@ module.exports = {
         CUBEJS_CUBESTORE_PORT,
         CUBEJS_SQL_PORT,
         CUBEJS_PG_SQL_PORT,
+        CUBEJS_DB_CLICKHOUSE_READONLY,
         JWT_EXPIRES_IN,
         JWT_ALGORITHM,
         JWT_CLAIMS_NAMESPACE,
