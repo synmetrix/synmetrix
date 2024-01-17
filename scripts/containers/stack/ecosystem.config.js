@@ -27,11 +27,11 @@ const HASURA_PLUS_ENDPOINT =
   process.env.HASURA_PLUS_ENDPOINT || `http://localhost:${HASURA_PLUS_PORT}`;
 // internal hasura url
 const HASURA_ENDPOINT =
-  process.env.HASURA_ENDPOINT || "http://localhost:8080/v1/graphql";
+  process.env.HASURA_ENDPOINT || "http://localhost:8888/v1/graphql";
 
 // hasura metadata url
 const HASURA_METADATA_ENDPOINT =
-  process.env.HASURA_METADATA_ENDPOINT || "http://localhost:8080/v1/metadata";
+  process.env.HASURA_METADATA_ENDPOINT || "http://localhost:8888/v1/metadata";
 
 // public hasura plus url
 const HASURA_PLUS_SERVER_URL =
