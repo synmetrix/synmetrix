@@ -9,8 +9,6 @@ import redisClient from "./redis.js";
  * @param {string} event.requestId - The ID of the request.
  * @param {string} event.path - The path of the request.
  * @param {Object} event.securityContext - The security context of the request.
- * @param {string} event.securityContext.userId - The ID of the user.
- * @param {string} event.securityContext.dataSourceId - The ID of the data source.
  * @returns {Promise} - A promise that resolves when the logging is complete.
  *
  * @throws {Error} - Throws an error if the Redis client is not ready or if the Redis command fails.
@@ -45,8 +43,9 @@ export const logging = async (message, event) => {
   data.timestamp = new Date().toISOString();
 
   if (data?.securityContext) {
-    data.userId = data.securityContext.userId;
-    data.dataSourceId = data.securityContext.dataSourceId;
+    data.userId = data.securityContext?.userId;
+    data.dataSourceId =
+      data.securityContext?.userScope?.dataSource?.dataSourceId;
 
     delete data.securityContext;
   }
