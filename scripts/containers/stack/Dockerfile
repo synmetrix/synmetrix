@@ -3,7 +3,11 @@ FROM node:lts-bookworm-slim
 ARG DATABRICKS_JDBC_URL=https://databricks-bi-artifacts.s3.us-east-2.amazonaws.com/simbaspark-drivers/jdbc/2.6.32/DatabricksJDBC42-2.6.32.1054.zip
 ARG HASURA_VERSION=v2.36.0
 ARG CLIENT_VERSION=v1.5.0
-ARG BRANCH=feature/mlcraft-to-synmetrix
+ARG BRANCH=main
+
+ARG WORK_DIR=/app
+ARG STACK_DIR=$WORK_DIR/stack
+ARG SERVICES_DIR=$STACK_DIR/services
 
 RUN yarn global add pm2@5.3.0 wait-on@7.2.0
 
@@ -20,7 +24,7 @@ RUN apt-get update -y \
   --no-install-recommends \
   && rm -rf /var/lib/apt/lists/*
 
-WORKDIR /app
+WORKDIR $WORK_DIR
 
 # hasura engine binary WORKS ONLY WITH AMD64 ARCHITECTURE
 RUN curl -o graphql-engine https://graphql-engine-cdn.hasura.io/server/latest/linux-amd64 \
@@ -31,21 +35,21 @@ RUN curl -o graphql-engine https://graphql-engine-cdn.hasura.io/server/latest/li
 RUN export VERSION=${HASURA_VERSION} \
     && curl -L https://github.com/hasura/graphql-engine/raw/stable/cli/get.sh | bash
 
-# hasura backend plus
-RUN git clone --depth 1 https://github.com/nhost/hasura-backend-plus /app/hasura-backend-plus
-
-# mlcraft
-RUN git clone --recurse-submodules --depth 1 --branch $BRANCH https://github.com/mlcraft-io/mlcraft /app/mlcraft && \
-    cd /app/mlcraft && \
+# application
+RUN git clone --recurse-submodules --depth 1 --branch $BRANCH https://github.com/mlcraft-io/mlcraft $STACK_DIR && \
+    cd $STACK_DIR && \
     git pull origin $BRANCH && \
     git submodule update --init --recursive
 
-RUN curl https://github.com/mlcraft-io/client-v2/releases/download/$CLIENT_VERSION/dist.tar.gz -L | tar -xz -C /app/mlcraft/services/ && mv /app/mlcraft/services/dist /app/mlcraft/services/client-v2
+# hasura backend plus
+RUN git clone --depth 1 https://github.com/nhost/hasura-backend-plus $SERVICES_DIR/hasura-backend-plus
 
-COPY . /app/
+RUN curl https://github.com/mlcraft-io/client-v2/releases/download/$CLIENT_VERSION/dist.tar.gz -L | tar -xz -C $SERVICES_DIR && mv $SERVICES_DIR/dist $SERVICES_DIR/client-v2
+
+COPY . $WORK_DIR
 
 RUN wget -q -O /tmp/DatabricksJDBC.zip "${DATABRICKS_JDBC_URL}" \
-    && unzip /tmp/DatabricksJDBC.zip -d /app/mlcraft/services/cubejs/ \
+    && unzip /tmp/DatabricksJDBC.zip -d $SERVICES_DIR/cubejs/ \
     && rm /tmp/DatabricksJDBC.zip
 
 CMD [ "pm2-runtime", "ecosystem.config.js" ]

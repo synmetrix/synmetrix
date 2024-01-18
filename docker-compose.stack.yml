@@ -22,11 +22,14 @@ services:
     volumes:
       - cube_store_data:/cube/data
 
-  synmetrix_stack:
-    image: synmetrix/synmetrix-stack:${SYNMETRIX_VERSION:-latest}
+  stack:
+    image: synmetrix/stack:${SYNMETRIX_VERSION:-latest}
     restart: always
     build:
       context: ./scripts/containers/stack
+      args:
+        CLIENT_VERSION: v1.5.0
+        BRANCH: feature/mlcraft-to-synmetrix
     ports:
       - 80:8888 # nginx app
       - 4000:4000 # cubejs app

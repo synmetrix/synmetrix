@@ -1,3 +1,8 @@
+// workdir
+const WORK_DIR = process.env.WORK_DIR || "/app";
+const STACK_DIR = process.env.STACK_DIR || `${WORK_DIR}/stack`;
+const SERVICES_DIR = process.env.SERVICES_DIR || `${STACK_DIR}/services`;
+
 // internal cubejs server url
 const CUBEJS_PORT = process.env.CUBEJS_PORT || 4000;
 const CUBEJS_URL = process.env.CUBEJS_URL || `http://localhost:${CUBEJS_PORT}`;
@@ -58,7 +63,7 @@ const AWS_S3_ENDPOINT = process.env.AWS_S3_ENDPOINT;
 const AWS_S3_REGION = process.env.AWS_S3_REGION || "us-east-1";
 const AWS_S3_BUCKET_NAME =
   process.env.AWS_S3_BUCKET_NAME ||
-  `mlcraft-explorations-${defaultBucketNameSuffix(12)}`;
+  `data-explorations-${defaultBucketNameSuffix(12)}`;
 
 // auth JWT algo
 const JWT_ALGORITHM = process.env.JWT_ALGORITHM || "HS256";
@@ -77,7 +82,7 @@ module.exports = {
   apps: [
     {
       name: "client",
-      script: "./run_client.sh",
+      script: `cd ${SERVICES_DIR}/client-v2 && npx serve -s -l 5000`,
       out_file: null,
     },
     {
@@ -99,26 +104,22 @@ module.exports = {
     },
     {
       name: "hasura_migrations",
-      script:
-        "wait-on http-get://localhost:8080 && cd mlcraft/services/hasura && hasura migrate apply --skip-update-check --disable-interactive --all-databases",
+      script: `wait-on http-get://localhost:8080 && cd ${SERVICES_DIR}/hasura && hasura migrate apply --skip-update-check --disable-interactive --all-databases`,
       autorestart: false,
     },
     {
       name: "hasura_metadata",
-      script:
-        "wait-on --delay 10000 http-get://localhost:8080 && cd mlcraft/services/hasura && hasura metadata apply --skip-update-check",
+      script: `wait-on --delay 10000 http-get://localhost:8080 && cd ${SERVICES_DIR}/hasura && hasura metadata apply --skip-update-check`,
       autorestart: false,
     },
     {
       name: "hasura_seeds",
-      script:
-        "wait-on --delay 10000 http-get://localhost:8080 && cd mlcraft/services/hasura && hasura seeds apply --skip-update-check --all-databases",
+      script: `wait-on --delay 10000 http-get://localhost:8080 && cd ${SERVICES_DIR}/hasura && hasura seeds apply --skip-update-check --all-databases`,
       autorestart: false,
     },
     {
       name: "hasura_plus",
-      script:
-        "wait-on http-get://localhost:8080 && cd hasura-backend-plus && npm install --loglevel=error && npm run --loglevel=error build && npm start",
+      script: `wait-on http-get://localhost:8080 && cd ${SERVICES_DIR}/hasura-backend-plus && npm install --loglevel=error && npm run --loglevel=error build && npm start`,
       out_file: null,
       env: {
         PORT: HASURA_PLUS_PORT,
@@ -137,8 +138,7 @@ module.exports = {
     },
     {
       name: "actions",
-      script:
-        "cd mlcraft/services/actions && npm install --loglevel=error && npm start",
+      script: `cd ${SERVICES_DIR}/actions && npm install --loglevel=error && npm start`,
       out_file: null,
       env: {
         NODE_ENV: "production",
@@ -164,8 +164,7 @@ module.exports = {
     },
     {
       name: "cubejs",
-      script:
-        "cd mlcraft/services/cubejs && npm install --loglevel=error && npm start",
+      script: `cd ${SERVICES_DIR}/cubejs && npm install --loglevel=error && npm start`,
       env: {
         PORT: CUBEJS_PORT,
         HASURA_ENDPOINT,
