@@ -2,7 +2,7 @@ FROM node:lts-bookworm-slim
 
 ARG DATABRICKS_JDBC_URL=https://databricks-bi-artifacts.s3.us-east-2.amazonaws.com/simbaspark-drivers/jdbc/2.6.32/DatabricksJDBC42-2.6.32.1054.zip
 ARG HASURA_VERSION=v2.36.0
-ARG CLIENT_VERSION=v1.3.5
+ARG CLIENT_VERSION=v1.5.0
 ARG BRANCH=feature/mlcraft-to-synmetrix
 
 RUN yarn global add pm2@5.3.0 wait-on@7.2.0
