@@ -6,6 +6,12 @@ const SERVICES_DIR = process.env.SERVICES_DIR || `${STACK_DIR}/services`;
 // internal cubejs server url
 const CUBEJS_PORT = process.env.CUBEJS_PORT || 4000;
 const CUBEJS_URL = process.env.CUBEJS_URL || `http://localhost:${CUBEJS_PORT}`;
+const CUBEJS_REST_API_URL =
+  process.env.CUBEJS_REST_API_URL || `http://localhost/api/v1/load`;
+
+const CUBEJS_API_DOCS_URL =
+  process.env.CUBEJS_API_DOCS_URL || `http://localhost:4000/docs`;
+
 // cubejs JWT secret
 const CUBEJS_SECRET = process.env.CUBEJS_SECRET || "cubejsSecret";
 // cubejs db settings
@@ -190,7 +196,8 @@ module.exports = {
         GRAPHQL_PLUS_SERVER_URL: "",
         CUBEJS_PG_API_URL,
         CUBEJS_MYSQL_API_URL,
-        CUBEJS_REST_API_URL: CUBEJS_URL,
+        CUBEJS_REST_API_URL,
+        CUBEJS_API_DOCS_URL,
       },
       script:
         'envsubst < /app/nginx/default.conf.template > /etc/nginx/sites-enabled/default && nginx -g "daemon off;"',

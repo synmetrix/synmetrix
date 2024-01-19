@@ -13,6 +13,7 @@ server {
               window.CUBEJS_MYSQL_API_URL = "$CUBEJS_MYSQL_API_URL";
               window.CUBEJS_PG_API_URL = "$CUBEJS_PG_API_URL";
               window.CUBEJS_REST_API_URL = "$CUBEJS_REST_API_URL";
+              window.CUBEJS_API_DOCS_URL = "$CUBEJS_API_DOCS_URL";
               </script>';
       sub_filter_types *;
       sub_filter_once on;
