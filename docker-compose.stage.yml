@@ -60,6 +60,9 @@ services:
     image: ${REGISTRY_HOST}/mlcraft/cubejs:latest
     deploy:
       labels:
+        - traefik.http.routers.cubejs.rule=Host(`cube.${DOMAIN}`)
+        - traefik.http.routers.cubejs.entrypoints=websecure
+        - traefik.http.routers.cubejs.tls=true
         # pg api
         - traefik.enable=true
         - traefik.tcp.routers.pg_api.rule=HostSNI(`*`)
@@ -92,13 +95,13 @@ services:
     build:
       context: ./services/client/
       args:
-        NODE_ENV: test
-    environment:
-      GRAPHQL_SERVER_URL: ${PROTOCOL:-http}://api.${DOMAIN}/v1/graphql
-      GRAPHQL_WS_URL: ${WS_PROTOCOL:-ws}://api.${DOMAIN}/v1/graphql
-      GRAPHQL_PLUS_SERVER_URL: ${PROTOCOL:-http}://api-plus.${DOMAIN}
-      CUBEJS_MYSQL_API_URL: tcp://sql-api.${DOMAIN}:13306
-      CUBEJS_PG_API_URL: tcp://sql-api.${DOMAIN}:15432
+        CLIENT_VERSION: ${CLIENT_VERSION}
+        HASURA_GRAPHQL_ENDPOINT: ${PROTOCOL:-http}://api.${DOMAIN}/v1/graphql
+        HASURA_WS_ENDPOINT: ${WS_PROTOCOL:-ws}://api.${DOMAIN}/v1/graphql
+        GRAPHQL_PLUS_SERVER_URL: ${PROTOCOL:-http}://auth.${DOMAIN}
+        CUBEJS_MYSQL_API_URL: tcp://cube.${DOMAIN}:13306
+        CUBEJS_PG_API_URL: tcp://sql-api.${DOMAIN}:15432
+        CUBEJS_REST_API_URL: http://cube.${DOMAIN}/api/v1/load
     networks:
       - mlcraft_default
 
@@ -122,7 +125,7 @@ services:
     deploy:
       labels:
         - traefik.enable=true
-        - traefik.http.routers.hasura_plus.rule=Host(`api-plus.${DOMAIN}`)
+        - traefik.http.routers.hasura_plus.rule=Host(`auth.${DOMAIN}`)
         - traefik.http.routers.hasura_plus.entrypoints=websecure
         - traefik.http.routers.hasura_plus.tls=true
         - traefik.http.services.hasura_plus.loadbalancer.server.port=3000
@@ -130,7 +133,7 @@ services:
       - .env
       - .stage.env
     environment:
-      SERVER_URL: ${PROTOCOL:-http}://api-plus.${DOMAIN}
+      SERVER_URL: ${PROTOCOL:-http}://auth.${DOMAIN}
       REDIRECT_URL_SUCCESS: ${PROTOCOL:-http}://app.${DOMAIN}/callback
       REDIRECT_URL_ERROR: ${PROTOCOL:-http}://app.${DOMAIN}/callback
 

@@ -1,1 +1,1 @@
-docker-compose -f docker-compose.stack.yml build && docker-compose -f docker-compose.stack.yml up -d --force-recreate
+docker-compose -f docker-compose.stack.yml build --no-cache && docker-compose -f docker-compose.stack.yml up -d --force-recreate
