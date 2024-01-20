@@ -1,6 +1,17 @@
 version: '3.8'
 
+networks:
+  mlcraft_default:
+    external: true
+
 services:
+  redis:
+    image: redis:7.0.0
+    ports:
+      - 6379:6379
+    networks:
+      - mlcraft_default
+
   postgres:
     image: postgres:${POSTGRES_VERSION}
     ports:
@@ -15,6 +26,8 @@ services:
       - mlcraft_default
 
   actions:
+    build:
+      context: ./services/actions/
     restart: always
     command: yarn start.dev
     volumes:
@@ -27,6 +40,8 @@ services:
       - .dev.env
 
   cubejs:
+    build:
+      context: ./services/cubejs
     restart: always
     command: yarn start.dev
     volumes:
@@ -79,9 +94,11 @@ services:
       - redis
 
   hasura_plus:
-    restart: always
     build:
       context: ./scripts/containers/hasura-backend-plus
+    restart: always
+    volumes:
+      - ./scripts/containers/hasura-backend-plus/storage-rules/rules.yaml:/app/custom/storage-rules/rules.yaml
     ports:
       - 8081:3000
     env_file:
@@ -138,6 +155,7 @@ services:
         CUBEJS_MYSQL_API_URL: tcp://localhost:13306
         CUBEJS_PG_API_URL: tcp://localhost:15432
         CUBEJS_REST_API_URL: http://localhost/api/v1/load
+        CUBEJS_API_DOCS_URL: http://localhost:4000/docs
     ports:
       - 80:80
     networks:
