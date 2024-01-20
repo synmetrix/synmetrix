@@ -4,12 +4,6 @@ from cli.docker import commands as docker_commands
 
 import click
 
-def load_services_context(ctx, env):
-    # TODO: set config network name
-    ctx.obj["network_name"] = "mlcraft_default"
-    ctx.obj["docker_compose_file"] = "docker-compose.%s.yml" % env
-
-    console.log("Runtime Environment: ", env)
 
 @click.group("test")
 @click.pass_context
@@ -17,6 +11,7 @@ def commands_group(ctx):
     ctx.ensure_object(dict)
     env = ctx.obj["runtime_env"]
     services_commands.load_services_context(ctx, env)
+
 
 @commands_group.command()
 @click.pass_context

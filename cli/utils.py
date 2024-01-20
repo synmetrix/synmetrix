@@ -1,4 +1,3 @@
-import subprocess
 import os
 import pipes
 
@@ -6,7 +5,6 @@ import os.path
 from yaml import load, dump
 
 from rich.console import Console
-from rich.table import Table
 from rich.panel import Panel
 
 try:
@@ -52,26 +50,24 @@ def call_system(cmd):
 
 
 def call_docker(ctx, cmd):
-    call_command = f"docker {cmd}"
+    call_command = "docker %s" % cmd
     call_system(call_command)
 
 
 def call_service(ctx, cmd):
-    call_command = f"docker service {cmd}"
+    call_command = "docker service %s" % cmd
     call_system(call_command)
 
 
 def call_compose(ctx, cmd):
-    args = ["-f", "docker-compose.yml", "-f", ctx.obj["docker_compose_file"]]
+    args = " ".join(["-f", ctx.obj["docker_compose_file"]])
 
-    call_command = f'docker-compose {" ".join(args)} {cmd}'
+    call_command = "docker-compose %s %s" % (args, cmd)
     call_system(call_command)
 
 
 def call_swarm(ctx, cmd):
-    compose_args = " ".join(
-        ["-f", "docker-compose.yml", "-f", ctx.obj["docker_compose_file"]]
-    )
+    compose_args = " ".join(["-f", ctx.obj["docker_compose_file"]])
 
     args = " ".join(
         [
