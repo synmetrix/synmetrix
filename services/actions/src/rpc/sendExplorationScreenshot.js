@@ -91,7 +91,7 @@ const getDataAndScreenshot = async (exploration) => {
     id: explorationId,
   } = exploration;
 
-  const explorationTableURL = `${APP_FRONTEND_URL}/~/explore/${datasourceId}/${explorationId}/?screenshot=1`;
+  const explorationTableURL = `${APP_FRONTEND_URL}/explore/${datasourceId}/${explorationId}/?screenshot=1`;
 
   const accessToken = await generateUserAccessToken(userId);
 
