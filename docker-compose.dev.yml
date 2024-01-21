@@ -38,6 +38,8 @@ services:
     env_file:
       - .env
       - .dev.env
+    networks:
+      - mlcraft_default
 
   cubejs:
     build:
@@ -55,12 +57,14 @@ services:
     env_file:
       - .env
       - .dev.env
+    networks:
+      - mlcraft_default
 
   hasura_cli:
-    restart: always
-    command: ./start.sh
     build:
       context: ./scripts/containers/hasura-cli
+    restart: always
+    command: ./start.sh
     ports:
       - 9693:9693
       - 9695:9695
@@ -80,18 +84,26 @@ services:
       - mlcraft_default
 
   hasura:
+    build:
+      context: ./services/hasura
     restart: always
     ports:
       - 8080:8080
     env_file:
       - .env
       - .dev.env
+    volumes:
+      - ./services/hasura/migrations:/hasura-migrations
+      - ./services/hasura/metadata:/hasura-metadata
+      - ./services/hasura/seeds:/seeds
     environment:
       ENABLE_TELEMETRY: "false"
       CONSOLE_MODE: server
     depends_on:
       - postgres
       - redis
+    networks:
+      - mlcraft_default
 
   hasura_plus:
     build:
@@ -106,6 +118,8 @@ services:
       - .dev.env
     depends_on:
       - postgres
+    networks:
+      - mlcraft_default
 
   minio:
     image: minio/minio:latest
@@ -119,8 +133,6 @@ services:
     env_file:
       - .env
       - .dev.env
-    networks:
-      - mlcraft_default
     healthcheck:
       test:
         [
@@ -132,6 +144,8 @@ services:
       interval: 30s
       timeout: 20s
       retries: 3
+    networks:
+      - mlcraft_default
 
   mailhog:
     image: mailhog/mailhog

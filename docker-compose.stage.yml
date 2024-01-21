@@ -91,6 +91,8 @@ services:
     env_file:
       - .env
       - .stage.env
+    networks:
+      - mlcraft_default
 
   client:
     image: ${REGISTRY_HOST}/mlcraft/app-client:latest
@@ -133,6 +135,8 @@ services:
       - .stage.env
     environment:
       HASURA_GRAPHQL_ENABLE_CONSOLE: "true"
+    networks:
+      - mlcraft_default
 
   hasura_plus:
     image: ${REGISTRY_HOST}/mlcraft/hasura-plus:latest
@@ -152,6 +156,8 @@ services:
       SERVER_URL: ${PROTOCOL:-http}://auth.${DOMAIN}
       REDIRECT_URL_SUCCESS: ${PROTOCOL:-http}://app.${DOMAIN}/callback
       REDIRECT_URL_ERROR: ${PROTOCOL:-http}://app.${DOMAIN}/callback
+    networks:
+      - mlcraft_default
 
   actions:
     image: ${REGISTRY_HOST}/mlcraft/hasura-actions:latest
@@ -161,6 +167,8 @@ services:
     env_file:
       - .env
       - .stage.env
+    networks:
+      - mlcraft_default
 
   cubestore:
     image: cubejs/cubestore:${CUBESTORE_VERSION}
@@ -179,8 +187,6 @@ services:
     env_file:
       - .env
       - .stage.env
-    networks:
-      - mlcraft_default
     healthcheck:
       test:
         [
@@ -192,6 +198,8 @@ services:
       interval: 30s
       timeout: 20s
       retries: 3
+    networks:
+      - mlcraft_default
 
 volumes:
   pgstorage-data:
