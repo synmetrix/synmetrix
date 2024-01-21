@@ -1,6 +1,6 @@
-<p align="center"><a href="https://mlcraft.io"><img src="https://i.imgur.com/lVUNQtT.png" alt="Cube.js" width="300px"></a></p>
+<p align="center"><a href="https://synmetrix.org"><img src="https://raw.githubusercontent.com/mlcraft-io/client-v2/master/src/assets/logo_with_text.png" alt="Synmetrix" width="300px"></a></p>
 
-[Website](https://mlcraft.io) • [Docs](./docs/README.md) • [Cube.js Models docs](https://cube.dev/docs/schema/getting-started) • [Docker Hub](https://hub.docker.com/u/mlcraft) • [Slack community](https://join.slack.com/t/mlcraft/shared_invite/zt-1x2gxwn37-J3tTvCR5xSFVfxwUU_YKtg)
+[Website](https://synmetrix.org) • [Docs](https://docs.synmetrix.org) • [Cube.js Models docs](https://cube.dev/docs/schema/getting-started) • [Docker Hub](https://hub.docker.com/u/mlcraft) • [Slack community](https://join.slack.com/t/mlcraft/shared_invite/zt-1x2gxwn37-J3tTvCR5xSFVfxwUU_YKtg)
 
 
 # MLCraft
@@ -69,15 +69,17 @@ c8f342d086f3 mlcraft/mlcraft-stack ... 1m ago  Up 1m  80->8888/tcp ...
 It will take about 2-5 minutes to install all dependencies, wait until `MLCraft Stack is ready` message.
 Read logs by `docker-compose logs -f` to understand if it's finished.
 
-### Step 3: Try out MLCraft
+### Step 3: Explore MLCraft
 
-MLCraft itself will be available on `http://localhost/`
+* You can access MLCraft at [http://localhost/](http://localhost/)
 
-GraphQL endpoint will be `http://localhost/v1/graphql`
+* The GraphQL endpoint is located at [http://localhost/v1/graphql](http://localhost/v1/graphql)
 
-Admin Console (Hasura Console) will be available on `http://localhost/console`
+* The Admin Console (Hasura Console) can be found at [http://localhost/console](http://localhost/console)
 
-NOTE: check out `HASURA_GRAPHQL_ADMIN_SECRET` in the `docker-compose` file. You'll need it to enter the Admin Console.
+* The Cube Swagger API can be found at [http://localhost:4000/docs](http://localhost:4000/docs)
+
+IMPORTANT: Remember to look at HASURA_GRAPHQL_ADMIN_SECRET in the docker-compose file. This is required to access the Admin Console.
 
 
 ## Documentation
