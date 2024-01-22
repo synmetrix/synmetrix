@@ -128,6 +128,14 @@ By leveraging Cube Store and Cube together, Synmetrix benefits from excellent an
 
 ---
 
+## Ecosystem
+
+Repository | Description
+--- | ---
+[mlcraft-io/mlcraft](https://github.com/mlcraft-io/mlcraft) | Synmetrix Monorepo
+[mlcraft-io/client-v2](https://github.com/mlcraft-io/client-v2) | Synmetrix Client
+[mlcraft-io/docs](https://github.com/mlcraft-io/docs) | Synmetrix Docs
+
 ## Community support
 
 For general help using Synmetrix, please refer to the official Synmetrix documentation. For additional help, you can use one of these channels to ask a question:
@@ -147,8 +155,4 @@ All **other contents** are available under the [MIT License](LICENSE-community).
 
 ## Authors
 
-[@ifokeev](https://github.com/ifokeev)
-
-[@Libertonius](https://github.com/Libertonius)
-
-[@ilyozzz](https://github.com/ilyozzz)
+[@ifokeev](https://github.com/ifokeev), [@Libertonius](https://github.com/Libertonius), [@ilyozzz](https://github.com/ilyozzz)
