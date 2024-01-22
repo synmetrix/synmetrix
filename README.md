@@ -2,10 +2,9 @@
 
 [Website](https://synmetrix.org) • [Docs](https://docs.synmetrix.org) • [Cube.js Models docs](https://cube.dev/docs/schema/getting-started) • [Docker Hub](https://hub.docker.com/u/mlcraft) • [Slack community](https://join.slack.com/t/mlcraft/shared_invite/zt-1x2gxwn37-J3tTvCR5xSFVfxwUU_YKtg)
 
+# Synmetrix
 
-# MLCraft
-
-MLCraft is an open source data engineering platform and semantic layer for centralized metrics management. It provides a complete framework for modeling, integrating, transforming, aggregating, and distributing metrics data at scale.
+Synmetrix (prev. MLCraft) is an open source data engineering platform and semantic layer for centralized metrics management. It provides a complete framework for modeling, integrating, transforming, aggregating, and distributing metrics data at scale.
 
 ## Key Features
 
@@ -18,13 +17,15 @@ MLCraft is an open source data engineering platform and semantic layer for centr
 -   **Caching**: Optimize performance using pre-aggregations and caching from [Cube](https://github.com/cube-js/cube).
 -   **Teams**: Collaborate on metrics modeling across your organization.
 
+![Synmetrix – Open Source Semantic Layer](https://synmetrix.org/assets/6542558ce0ae954c7fb97894_Open%20Graph-min.webp)
+
 ## Overview
 
-MLCraft leverages [Cube (Cube.js)](https://github.com/cube-js/cube) to implement flexible data models that can consolidate metrics from across warehouses, databases, APIs and more. This unified semantic layer eliminates differences in definitions and calculations, providing a single source of truth.
+Synmetrix leverages [Cube (Cube.js)](https://github.com/cube-js/cube) to implement flexible data models that can consolidate metrics from across warehouses, databases, APIs and more. This unified semantic layer eliminates differences in definitions and calculations, providing a single source of truth.
 
 The metrics data model can then be distributed downstream to any consumer via a SQL API, allowing integration into BI tools, reporting, dashboards, data science, and more.
 
-By combining best practices from data engineering, like caching, orchestration, and transformation, with self-service analytics capabilities, MLCraft speeds up data-driven workflows from metrics definition to consumption.
+By combining best practices from data engineering, like caching, orchestration, and transformation, with self-service analytics capabilities, Synmetrix speeds up data-driven workflows from metrics definition to consumption.
 
 ## Getting Started
 
@@ -34,44 +35,43 @@ By combining best practices from data engineering, like caching, orchestration, 
 - [Docker Compose](https://docs.docker.com/compose/install)
 
 
-### Step 1: Get the docker-compose file
 
-The [mlcraft-io/mlcraft/install-manifests](https://github.com/mlcraft-io/mlcraft/tree/main/install-manifests) repo
-contains all installation manifests required to deploy MLCraft anywhere. Get the docker compose file from there:
+### Step 1: Download the docker-compose file
+
+The repository [mlcraft-io/mlcraft/install-manifests](https://github.com/mlcraft-io/mlcraft/tree/main/install-manifests) houses all the necessary installation manifests for deploying Synmetrix anywhere. You can download the docker compose file from this repository:
 
 ```
-# in a new directory run
+# Execute this in a new directory
 wget https://raw.githubusercontent.com/mlcraft-io/mlcraft/main/install-manifests/docker-compose/docker-compose.yml
-# or run
+# Alternatively, you can use curl
 curl https://raw.githubusercontent.com/mlcraft-io/mlcraft/main/install-manifests/docker-compose/docker-compose.yml -o docker-compose.yml
 ```
 
-NOTE: Please check environment variables in the `docker-compose.yml` file. You can change them if needed.
+NOTE: Ensure to review the environment variables in the docker-compose.yml file. Modify them as necessary.
 
-### Step 2: Run MLCraft
+### Step 2: Launch Synmetrix
 
-The following command will run MLCraft along with a Postgres database to store its data.
+Execute the following command to start Synmetrix along with a Postgres database for data storage.
 
 ```
 $ docker-compose up -d
 ```
 
-Check if the containers are running:
+Verify if the containers are operational:
 
 ```
 $ docker ps
 
 CONTAINER ID IMAGE                 ... CREATED STATUS PORTS          ...
-c8f342d086f3 mlcraft/mlcraft-stack ... 1m ago  Up 1m  80->8888/tcp ...
+c8f342d086f3 synmetrix/stack       ... 1m ago  Up 1m  80->8888/tcp ...
 30ea14ddaa5e postgres:12           ... 1m ago  Up 1m  5432/tcp    
 ```
 
-It will take about 2-5 minutes to install all dependencies, wait until `MLCraft Stack is ready` message.
-Read logs by `docker-compose logs -f` to understand if it's finished.
+The installation of all dependencies will take approximately 5-7 minutes. Wait until you see the `Synmetrix Stack is ready` message. You can view the logs using `docker-compose logs -f` to confirm if the process has completed.
 
-### Step 3: Explore MLCraft
+### Step 3: Explore Synmetrix
 
-* You can access MLCraft at [http://localhost/](http://localhost/)
+* You can access Synmetrix at [http://localhost/](http://localhost/)
 
 * The GraphQL endpoint is located at [http://localhost/v1/graphql](http://localhost/v1/graphql)
 
@@ -79,7 +79,7 @@ Read logs by `docker-compose logs -f` to understand if it's finished.
 
 * The Cube Swagger API can be found at [http://localhost:4000/docs](http://localhost:4000/docs)
 
-IMPORTANT: Remember to look at HASURA_GRAPHQL_ADMIN_SECRET in the docker-compose file. This is required to access the Admin Console.
+IMPORTANT: Remember to look at `HASURA_GRAPHQL_ADMIN_SECRET` in the docker-compose file. This is required to access the Admin Console. Default value: `adminsecret`
 
 
 ## Documentation
@@ -99,7 +99,7 @@ Demo: [app.mlcraft.org](https://app.mlcraft.org)
 
 ## Data Modeling
 
-MLCraft leverages Cube for flexible data modeling and transformations.
+Synmetrix leverages Cube for flexible data modeling and transformations.
 
 Cube implements a multi-stage SQL data modeling architecture:
 
@@ -115,7 +115,7 @@ The unified data model can consolidate metrics from across different databases a
 
 ## Cube Store
 
-For production workloads, MLCraft uses Cube Store as the caching and query execution layer.
+For production workloads, Synmetrix uses Cube Store as the caching and query execution layer.
 
 Cube Store is a purpose-built database for operational analytics, optimized for fast aggregations and time series data. It provides:
 
@@ -124,15 +124,15 @@ Cube Store is a purpose-built database for operational analytics, optimized for 
 -   columnar storage for analytics performance
 -   Integration with Cube for modeling
 
-By leveraging Cube Store and Cube together, MLCraft benefits from excellent analytics performance and flexibility in modeling metrics.
+By leveraging Cube Store and Cube together, Synmetrix benefits from excellent analytics performance and flexibility in modeling metrics.
 
 ---
 
 ## Community support
 
-For general help using MLCraft, please refer to the official MLCraft documentation. For additional help, you can use one of these channels to ask a question:
+For general help using Synmetrix, please refer to the official Synmetrix documentation. For additional help, you can use one of these channels to ask a question:
 
-* [Slack](https://join.slack.com/t/mlcraft/shared_invite/zt-1x2gxwn37-J3tTvCR5xSFVfxwUU_YKtg) / For live discussion with the Community and MLCraft team
+* [Slack](https://join.slack.com/t/mlcraft/shared_invite/zt-1x2gxwn37-J3tTvCR5xSFVfxwUU_YKtg) / For live discussion with the Community and Synmetrix team
 * [GitHub](https://github.com/mlcraft-io/mlcraft) / Bug reports, Contributions
 
 ## Roadmap
@@ -141,7 +141,7 @@ Check out our [roadmap](https://github.com/mlcraft-io/mlcraft/projects) to get i
 
 ## License
 
-The core MLCraft is available under the [Apache License 2.0](https://github.com/mlcraft-io/mlcraft/blob/main/LICENSE) (Apache-2.0).
+The core Synmetrix is available under the [Apache License 2.0](https://github.com/mlcraft-io/mlcraft/blob/main/LICENSE) (Apache-2.0).
 
 All **other contents** are available under the [MIT License](LICENSE-community).
 
