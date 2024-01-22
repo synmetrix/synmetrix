@@ -29,7 +29,6 @@ services:
       context: ./scripts/containers/stack
       args:
         CLIENT_VERSION: ${CLIENT_VERSION}
-        BRANCH: feature/mlcraft-to-synmetrix
     ports:
       - 80:8888 # nginx app
       - 4000:4000 # cubejs app
