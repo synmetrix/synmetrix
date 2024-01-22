@@ -163,15 +163,20 @@ services:
       args:
         CLIENT_VERSION: ${CLIENT_VERSION}
         ENABLE_MINIO_PROXY: 'true'
-        HASURA_GRAPHQL_ENDPOINT: http://localhost:8080/v1/graphql
-        HASURA_WS_ENDPOINT: ws://localhost:8080/v1/graphql
-        GRAPHQL_PLUS_SERVER_URL: http://localhost:8081
+        HASURA_GRAPHQL_ENDPOINT: /v1/graphql
+        HASURA_WS_ENDPOINT: /v1/graphql
+        GRAPHQL_PLUS_SERVER_URL: 
         CUBEJS_MYSQL_API_URL: tcp://localhost:13306
         CUBEJS_PG_API_URL: tcp://localhost:15432
         CUBEJS_REST_API_URL: http://localhost/api/v1/load
         CUBEJS_API_DOCS_URL: http://localhost:4000/docs
     ports:
-      - 80:80
+      - 80:8888
+    depends_on:
+      - hasura
+      - hasura_plus
+      - cubejs
+      - actions
     networks:
       - synmetrix_default
 
