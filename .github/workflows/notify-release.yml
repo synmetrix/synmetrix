@@ -2,8 +2,7 @@ name: Notify Slack on Release
 
 on:
   release:
-    types:
-      - created
+    types: [published]
 
 jobs:
   notify_slack:

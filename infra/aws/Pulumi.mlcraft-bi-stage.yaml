@@ -3,10 +3,10 @@ config:
   cluster:workerTokenPath: /tmp/swarm/worker_token
   aws:profile: default
   aws:region: us-east-1
-  s3:exchangeBucket: mlcraft-bi-exchange-bucket
+  s3:exchangeBucket: synmetrix-exchange-bucket
 
   # https://cloud-images.ubuntu.com/locator/ec2/
-  ec2:projectName: mlcraft-bi-stage
+  ec2:projectName: synmetrix-stage
   ec2:masters: 1
   ec2:slaves: 0
   ec2:default/ami: ami-0d777ad7d8b566f8c # ubuntu 20.04 x86
@@ -18,7 +18,7 @@ config:
 
   ec2:master0/machineType: t2.xlarge
 
-  route53:domainName: mlcraft.org.
+  route53:domainName: synmetrix.org.
   rds:allocatedStorage: 30
   rds:maxAllocatedStorage: 100
   rds:engine: postgres
@@ -33,5 +33,5 @@ config:
   rds:backupWindow: 03:00-04:00
   rds:deleteAutomatedBackups: false
   rds:deletionProtection: false
-  rds:finalSnapshotIdentifier: mlcraft-bi-rds-final-snapshot
+  rds:finalSnapshotIdentifier: rds-final-snapshot
   rds:skipFinalSnapshot: true

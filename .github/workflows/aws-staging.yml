@@ -2,10 +2,10 @@ name: aws-staging
 
 env:
   ARTIFACT_LOCAL_PATH: /tmp/staging.tar.gz
-  ARTIFACT_BUCKET_PATH: s3://mlcraft-bi-exchange-bucket/staging.tar.gz
+  ARTIFACT_BUCKET_PATH: s3://synmetrix-exchange-bucket/staging.tar.gz
   PROJECT_ROOT_PATH: /project
   PROJECT_DIR: app
-  PRIMARY_DOMAIN: mlcraft.org
+  PRIMARY_DOMAIN: synmetrix.org
 
 on:
   push:
@@ -127,8 +127,8 @@ jobs:
           export PROTOCOL=https
           export WS_PROTOCOL=wss
 
-          bash -i create-overlay-network.sh
-          bash -i run-registry.sh
+          bash -i ./scripts/create-overlay-network.sh
+          bash -i ./scripts/run-registry.sh
 
           # build images and push
           export ENV=stage
@@ -137,7 +137,7 @@ jobs:
           python3 cli.py services push
 
           # up the stack
-          python3 cli.py services up mlcraft_bi
+          python3 cli.py services up synmetrix
           EOL
 
       - name: Prepare migration script

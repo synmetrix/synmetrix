@@ -1,4 +1,4 @@
-name: Build and push
+name: Build and push stack
 
 on:
   push:
@@ -20,11 +20,7 @@ jobs:
           username: ${{ secrets.DOCKER_USER }}
           password: ${{ secrets.DOCKER_PASS }}
 
-      - name: Build services docker images and push to Docker Hub registry
-        run: |
-          REGISTRY_HOST=index.docker.io ANONYMOUS_ID=GITHUB_ACTIONS python cli.py --env stage services push
-
-      - name: Build and push mlcraft stack image
+      - name: Build and push stack image
         run: |
           docker-compose -f docker-compose.stack.yml build && \
           docker-compose -f docker-compose.stack.yml push
