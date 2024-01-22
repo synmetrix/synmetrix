@@ -39,7 +39,7 @@ services:
       # postgres database used by Hasura as a data source and to store Hasura metadata
       HASURA_GRAPHQL_DATABASE_URL: postgres://synmetrix_stack:pg_pass@postgres:5432/synmetrix_stack
       # secure your Hasura console via admin secret
-      HASURA_GRAPHQL_ADMIN_SECRET: synmetrix
+      HASURA_GRAPHQL_ADMIN_SECRET: adminsecret
       # SMTP credentials to send emails from synmetrix
       SMTP_HOST: ${SECRETS_SMTP_HOST}
       SMTP_PORT: ${SECRETS_SMTP_PORT}
