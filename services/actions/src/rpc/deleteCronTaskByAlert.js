@@ -1,15 +1,15 @@
-import { fetchMetadataAPI } from '../utils/hasuraMetadataApi';
-import logger from '../utils/logger';
-import apiError from '../utils/apiError';
+import apiError from "../utils/apiError.js";
+import { fetchMetadataAPI } from "../utils/hasuraMetadataApi.js";
+import logger from "../utils/logger.js";
 
-export default async (session, input) => {
+export default async (_, input) => {
   const id = input?.event?.data?.old?.id;
 
   const cronTaskParams = {
-    type : 'delete_cron_trigger',
-    args : {
-      name: id
-    }
+    type: "delete_cron_trigger",
+    args: {
+      name: id,
+    },
   };
 
   try {

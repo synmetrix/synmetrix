@@ -1,21 +1,17 @@
-import { SignJWT } from 'jose';
+import { SignJWT } from "jose";
 
-import logger from '../utils/logger';
+import logger from "../utils/logger.js";
 
-const {
-  JWT_EXPIRES_IN,
-  JWT_ALGORITHM,
-  JWT_CLAIMS_NAMESPACE,
-  JWT_KEY
-} = process.env
+const { JWT_EXPIRES_IN, JWT_ALGORITHM, JWT_CLAIMS_NAMESPACE, JWT_KEY } =
+  process.env;
 
 const generateUserAccessToken = async (userId) => {
   const hasuraCompatibleJwtPayload = {
     [JWT_CLAIMS_NAMESPACE]: {
-      ['x-hasura-user-id']: userId,
-      ['x-hasura-allowed-roles']: ['user'],
-      ['x-hasura-default-role']: 'user',
-    }
+      ["x-hasura-user-id"]: userId,
+      ["x-hasura-allowed-roles"]: ["user"],
+      ["x-hasura-default-role"]: "user",
+    },
   };
 
   try {
@@ -23,11 +19,11 @@ const generateUserAccessToken = async (userId) => {
     const accessToken = await new SignJWT(hasuraCompatibleJwtPayload)
       .setProtectedHeader({ alg: JWT_ALGORITHM })
       .setIssuedAt()
-      .setIssuer('mlcraft:actions')
-      .setAudience('mlcraft:hasura')
+      .setIssuer("services:actions")
+      .setAudience("services:hasura")
       .setExpirationTime(`${JWT_EXPIRES_IN}m`)
       .setSubject(userId)
-      .sign(secret)
+      .sign(secret);
 
     return accessToken;
   } catch (error) {

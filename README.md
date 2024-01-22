@@ -1,162 +1,147 @@
-<p align="center"><a href="https://mlcraft.io"><img src="https://i.imgur.com/lVUNQtT.png" alt="Cube.js" width="300px"></a></p>
+<p align="center"><a href="https://synmetrix.org"><img src="https://raw.githubusercontent.com/mlcraft-io/client-v2/master/src/assets/logo_with_text.png" alt="Synmetrix" width="300px"></a></p>
 
-[Website](https://mlcraft.io) • [Docs](./docs/README.md) • [Cube.js Models docs](https://cube.dev/docs/schema/getting-started) • [Docker Hub](https://hub.docker.com/u/mlcraft) • [Slack community](https://join.slack.com/t/mlcraft/shared_invite/zt-1x2gxwn37-J3tTvCR5xSFVfxwUU_YKtg)
+[Website](https://synmetrix.org) • [Docs](https://docs.synmetrix.org) • [Cube.js Models docs](https://cube.dev/docs/schema/getting-started) • [Docker Hub](https://hub.docker.com/u/mlcraft) • [Slack community](https://join.slack.com/t/mlcraft/shared_invite/zt-1x2gxwn37-J3tTvCR5xSFVfxwUU_YKtg)
 
+# Synmetrix
 
-__MLCraft is a low-code metrics layer and a modern open-source alternative to Looker.__ 
+Synmetrix (prev. MLCraft) is an open source data engineering platform and semantic layer for centralized metrics management. It provides a complete framework for modeling, integrating, transforming, aggregating, and distributing metrics data at scale.
 
-MLCraft (Metrics Layer Craft) originally was designed to extract and transform the data from several data warehouses and run machine learning experiments. [Cube.js](https://github.com/cube-js/cube) is used as a primary query layer and makes it suitable for handling
-trillions of data points.
+## Key Features
 
-We offer a new way of working with data – it's called metrics store.
+-   **Data modeling and transformations**: Flexibly define metrics and dimensions using SQL and [Cube](https://github.com/cube-js/cube) data models. Apply transformations and aggregations.
+-   **Semantic layer**: Consolidate metrics from across sources into a unified, governed data model. Eliminate metric definition differences.
+-   **Scheduled reports and alerts**: Monitor metrics and get notified of changes via configurable reports and alerts.
+-   **Versioning**: Track schema changes over time for transparency and auditability.
+-   **Role-based access control**: Manage permissions for data models and metrics access.
+-   **Data exploration**: Analyze metrics through the UI, or integrate with any BI tool via the SQL API.
+-   **Caching**: Optimize performance using pre-aggregations and caching from [Cube](https://github.com/cube-js/cube).
+-   **Teams**: Collaborate on metrics modeling across your organization.
 
-* Access insights with confidence, keep teams up-to-date on metrics changes, build institutional knowledge with stakeholders to empower your decision-making
+![Synmetrix – Open Source Semantic Layer](https://synmetrix.org/assets/6542558ce0ae954c7fb97894_Open%20Graph-min.webp)
 
-* Take advantage of an enterprise-level metrics platform that allows you to visualize key insights via an easy GraphQL API or JDBC client
+## Overview
 
-* Create individual dashboards for different roles and teams or stakeholder groups, and track changes across multiple data sources with a unified dashboard
+Synmetrix leverages [Cube (Cube.js)](https://github.com/cube-js/cube) to implement flexible data models that can consolidate metrics from across warehouses, databases, APIs and more. This unified semantic layer eliminates differences in definitions and calculations, providing a single source of truth.
 
-## Features
-* **Data modeling**: a [Cube.js](https://github.com/cube-js/cube) Data Schema is used to model raw data into meaningful business metrics, transform and pre-aggregate data for optimal results.
-* **Version control**: manage schema changes with version control, rollback fast to the valid one.
-* **Auto testing and documentation**: good documentation and data testing will help downstream consumers curate the datasets.
-* **Metrics Governance**: keep an eye on metrics changes, know data owners and contributors, understand the context rapidly.
-* **Multitenancy and row-level security**: collaborate on the metrics and warehouses together with your team.
-* **Query orchestration and multi-level caching**: any production-ready analytics solution requires key components such as analytic SQL generation, query results caching and execution orchestration.
+The metrics data model can then be distributed downstream to any consumer via a SQL API, allowing integration into BI tools, reporting, dashboards, data science, and more.
 
-note: not all features are deployed yet. Please, sync with our [roadmap](https://github.com/mlcraft-io/mlcraft/projects). Leave your email in the newsletter form on [mlcraft.io](https://mlcraft.io) if you would know about new features.
+By combining best practices from data engineering, like caching, orchestration, and transformation, with self-service analytics capabilities, Synmetrix speeds up data-driven workflows from metrics definition to consumption.
 
-<div align="center">
-  <a href="https://youtu.be/-ivNme3sfGs"><img src="https://i.imgur.com/RW7wKI9.png" alt="MLCraft BI Demo"></a>
-</div>
-
-## Use cases
-
-* Team Business Intelligence
-* Events collection & Event analytics
-* Machine Learning
-* Reverse ETL (as a single source of truth)
-* Business Metrics governance
-* Metrics metadata management
-
-------
-
-## Demo
-
-Demo: [app.mlcraft.org](https://app.mlcraft.org)
-
-Login: `demo@mlcraft.io`
-
-Password: `demodemo`
-
-## Quick start
+## Getting Started
 
 ### Prerequisites
 
 - [Docker](https://docs.docker.com/install)
 - [Docker Compose](https://docs.docker.com/compose/install)
 
-### Step 1: Get the docker-compose file
 
-The [mlcraft-io/mlcraft/install-manifests](https://github.com/mlcraft-io/mlcraft/tree/main/install-manifests) repo
-contains all installation manifests required to deploy MLCraft anywhere. Get the docker compose file from there:
+
+### Step 1: Download the docker-compose file
+
+The repository [mlcraft-io/mlcraft/install-manifests](https://github.com/mlcraft-io/mlcraft/tree/main/install-manifests) houses all the necessary installation manifests for deploying Synmetrix anywhere. You can download the docker compose file from this repository:
 
 ```
-# in a new directory run
+# Execute this in a new directory
 wget https://raw.githubusercontent.com/mlcraft-io/mlcraft/main/install-manifests/docker-compose/docker-compose.yml
-# or run
+# Alternatively, you can use curl
 curl https://raw.githubusercontent.com/mlcraft-io/mlcraft/main/install-manifests/docker-compose/docker-compose.yml -o docker-compose.yml
 ```
 
-### Step 2: Run MLCraft
+NOTE: Ensure to review the environment variables in the docker-compose.yml file. Modify them as necessary.
 
-The following command will run MLCraft along with a Postgres database to store its data.
+### Step 2: Launch Synmetrix
+
+Execute the following command to start Synmetrix along with a Postgres database for data storage.
 
 ```
 $ docker-compose up -d
 ```
 
-Check if the containers are running:
+Verify if the containers are operational:
 
 ```
 $ docker ps
 
 CONTAINER ID IMAGE                 ... CREATED STATUS PORTS          ...
-c8f342d086f3 mlcraft/mlcraft-stack ... 1m ago  Up 1m  80->8888/tcp ...
+c8f342d086f3 synmetrix/stack       ... 1m ago  Up 1m  80->8888/tcp ...
 30ea14ddaa5e postgres:12           ... 1m ago  Up 1m  5432/tcp    
 ```
 
-It will take about 2-5 minutes to install all dependencies, wait until `MLCraft Stack is ready` message.
-Read logs by `docker-compose logs -f` to understand if it's finished.
+The installation of all dependencies will take approximately 5-7 minutes. Wait until you see the `Synmetrix Stack is ready` message. You can view the logs using `docker-compose logs -f` to confirm if the process has completed.
 
-### Step 3: Try out MLCraft
+### Step 3: Explore Synmetrix
 
-MLCraft itself will be available on `http://localhost/`
+* You can access Synmetrix at [http://localhost/](http://localhost/)
 
-GraphQL endpoint will be `http://localhost/v1/graphql`
+* The GraphQL endpoint is located at [http://localhost/v1/graphql](http://localhost/v1/graphql)
 
-Admin Console (Hasura Console) will be available on `http://localhost/console`
+* The Admin Console (Hasura Console) can be found at [http://localhost/console](http://localhost/console)
 
-NOTE: check out `HASURA_GRAPHQL_ADMIN_SECRET` in the `docker-compose` file. You'll need it to enter the Admin Console.
+* The Cube Swagger API can be found at [http://localhost:4000/docs](http://localhost:4000/docs)
 
-## Local development 
+IMPORTANT: Remember to look at `HASURA_GRAPHQL_ADMIN_SECRET` in the docker-compose file. This is required to access the Admin Console. Default value: `adminsecret`
 
-### Prerequisites
 
-- [Docker](https://docs.docker.com/install)
-- [Docker Compose](https://docs.docker.com/compose/install)
-- Python3 (with pip3)
-- Node.js 8.9+ with `yarn` installed
+## Documentation
 
-```
-git clone https://github.com/mlcraft-io/mlcraft.git
-cd mlcraft
-bash init.sh
-```
+-   [Official Documentation](https://docs.synmetrix.org/)
+-   [Cube Documentation](https://cube.dev/docs)
 
-To start UI in dev mode:
+## Demo
 
-```
-python3 cli.py ui
-```
+Demo: [app.mlcraft.org](https://app.mlcraft.org)
+* Login: `demo@mlcraft.io`
+* Password: `demodemo`
 
-Then visit [http://localhost:3000](http://localhost:3000)
+
+----
+
+
+## Data Modeling
+
+Synmetrix leverages Cube for flexible data modeling and transformations.
+
+Cube implements a multi-stage SQL data modeling architecture:
+
+-   Raw data sits in a source database such as Postgres, MySQL, etc.
+-   The raw data is modeled into reusable data marts using Cube Data Models files. These models files allow defining metrics, dimensions, granularities and relationships.
+-   The models act as an abstraction layer between the raw data and application code.
+-   Cube then generates optimized analytical SQL queries against the raw data based on the model.
+-   The Cube Store distributed cache optimizes query performance by caching query results.
+
+This modeling architecture makes it simple to create fast and complex analytical queries with Cube that are optimized to run against large datasets.
+
+The unified data model can consolidate metrics from across different databases and systems, providing a consistent semantic layer for end users.
+
+## Cube Store
+
+For production workloads, Synmetrix uses Cube Store as the caching and query execution layer.
+
+Cube Store is a purpose-built database for operational analytics, optimized for fast aggregations and time series data. It provides:
+
+-   Distributed querying for scalability
+-   Advanced caching for fast queries
+-   columnar storage for analytics performance
+-   Integration with Cube for modeling
+
+By leveraging Cube Store and Cube together, Synmetrix benefits from excellent analytics performance and flexibility in modeling metrics.
 
 ---
 
-To start containers manually:
+## Ecosystem
 
-```
-python3 cli.py services up
-```
-
-To destroy all services (volumes will still present):
-
-```
-python3 cli.py services destroy
-```
-
-Also check:
-
-```
-python3 cli.py --help
-```
-
-### ngrok tunells
-  
-[Ngrok](https://ngrok.com/) is a tool for allow you to instantly open access to remote systems. We use it for proxying requests from dockerized apps to frontend part in development mode.
-
-After installing the tool you need to obtain your authtoken in ngrok dashboard and update the variable in `ngrok.yml` file. Then run `bash ngrok.sh` command.
-It opens tunnels for backend, frontend and object storage services. Don't forget to change default routes by ngrok-generated ones.
-
-It's necessary to test such features as scheduled reports and alerts locally.
+Repository | Description
+--- | ---
+[mlcraft-io/mlcraft](https://github.com/mlcraft-io/mlcraft) | Synmetrix Monorepo
+[mlcraft-io/client-v2](https://github.com/mlcraft-io/client-v2) | Synmetrix Client
+[mlcraft-io/docs](https://github.com/mlcraft-io/docs) | Synmetrix Docs
 
 ## Community support
 
-For general help using MLCraft, please refer to the official MLCraft documentation. For additional help, you can use one of these channels to ask a question:
+For general help using Synmetrix, please refer to the official Synmetrix documentation. For additional help, you can use one of these channels to ask a question:
 
-* [Slack](https://join.slack.com/t/mlcraft/shared_invite/zt-1x2gxwn37-J3tTvCR5xSFVfxwUU_YKtg) \(For live discussion with the Community and MLCraft team\)
-* [GitHub](https://github.com/mlcraft-io/mlcraft) \(Bug reports, Contributions\)
+* [Slack](https://join.slack.com/t/mlcraft/shared_invite/zt-1x2gxwn37-J3tTvCR5xSFVfxwUU_YKtg) / For live discussion with the Community and Synmetrix team
+* [GitHub](https://github.com/mlcraft-io/mlcraft) / Bug reports, Contributions
 
 ## Roadmap
 
@@ -164,14 +149,10 @@ Check out our [roadmap](https://github.com/mlcraft-io/mlcraft/projects) to get i
 
 ## License
 
-The core MLCraft is available under the [Apache License 2.0](https://github.com/mlcraft-io/mlcraft/blob/main/LICENSE) (Apache-2.0).
+The core Synmetrix is available under the [Apache License 2.0](https://github.com/mlcraft-io/mlcraft/blob/main/LICENSE) (Apache-2.0).
 
 All **other contents** are available under the [MIT License](LICENSE-community).
 
 ## Authors
 
-[@ifokeev](https://github.com/ifokeev)
-
-[@ilyozzz](https://github.com/ilyozzz)
-
-[@Libertonius](https://github.com/Libertonius)
+[@ifokeev](https://github.com/ifokeev), [@Libertonius](https://github.com/Libertonius), [@ilyozzz](https://github.com/ilyozzz)

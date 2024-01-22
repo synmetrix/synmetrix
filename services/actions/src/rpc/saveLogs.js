@@ -1,7 +1,7 @@
-import { fetchGraphQL } from '../utils/graphql';
-import apiError from '../utils/apiError';
-import redisClient from '../utils/redis';
-import createMd5Hex from '../utils/md5Hex';
+import apiError from "../utils/apiError.js";
+import { fetchGraphQL } from "../utils/graphql.js";
+import createMd5Hex from "../utils/md5Hex.js";
+import redisClient from "../utils/redis.js";
 
 const createEventLogsMutation = `
   mutation ($requests: [request_logs_insert_input!]!, $events: [request_event_logs_insert_input!]!){
@@ -21,27 +21,27 @@ const createEventLogsMutation = `
   }
 `;
 
-const streamName = 'streams:cubejs-logs-stream';
+const streamName = "streams:cubejs-logs-stream";
 
 export default async () => {
   let streamData;
 
   try {
-    streamData = await redisClient.xread('STREAMS', streamName, 0);
+    streamData = await redisClient.xread("STREAMS", streamName, 0);
   } catch (e) {
     console.error(e);
   }
 
   let data = streamData?.[0]?.[1];
   if (!data?.length) {
-    return 'No logs, skipped.';
+    return "No logs, skipped.";
   }
 
   let lastId = data.pop()?.[0];
   lastId = parseInt(lastId) + 1;
 
   try {
-    await redisClient.xtrim(streamName, 'MINID', lastId);
+    await redisClient.xtrim(streamName, "MINID", lastId);
   } catch (e) {
     console.error(e);
   }
@@ -51,7 +51,7 @@ export default async () => {
       .map(([_, val]) => JSON.parse(val?.[1]))
       .filter((d) => d?.requestId);
   } catch (e) {
-    return apiError('Parse data error!');
+    return apiError("Parse data error!");
   }
 
   const input = data.reduce(
@@ -93,7 +93,7 @@ export default async () => {
       let query;
       let querySql;
       if (event?.query) {
-        if (typeof event.query === 'object') {
+        if (typeof event.query === "object") {
           query = JSON.stringify(event.query);
         }
       }

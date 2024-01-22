@@ -1,8 +1,19 @@
 version: "3.8"
 
+networks:
+  synmetrix_default:
+    external: true
+
 services:
+  redis:
+    image: redis:7.0.0
+    ports:
+      - 6379:6379
+    networks:
+      - synmetrix_default
+
   postgres:
-    image: postgres:12.2
+    image: postgres:${POSTGRES_VERSION}
     deploy:
       placement:
         constraints: [node.role == manager]
@@ -15,7 +26,7 @@ services:
       - .env
       - .stage.env
     networks:
-      - mlcraft_default
+      - synmetrix_default
 
   traefik:
     image: traefik:v2.5.5
@@ -54,12 +65,15 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - ./etc/acme.json:/acme.json
     networks:
-      - mlcraft_default
+      - synmetrix_default
 
   cubejs:
-    image: ${REGISTRY_HOST}/mlcraft/cubejs:latest
+    image: ${REGISTRY_HOST}/synmetrix/cubejs:latest
     deploy:
       labels:
+        - traefik.http.routers.cubejs.rule=Host(`cube.${DOMAIN}`)
+        - traefik.http.routers.cubejs.entrypoints=websecure
+        - traefik.http.routers.cubejs.tls=true
         # pg api
         - traefik.enable=true
         - traefik.tcp.routers.pg_api.rule=HostSNI(`*`)
@@ -71,13 +85,17 @@ services:
         - traefik.tcp.routers.mysql_api.entrypoints=mysql_port
         - traefik.tcp.routers.mysql_api.service=mysql_api
         - traefik.tcp.services.mysql_api.loadbalancer.server.port=13306
+    build:
+      context: ./services/cubejs
     command: yarn start
     env_file:
       - .env
       - .stage.env
+    networks:
+      - synmetrix_default
 
   client:
-    image: ${REGISTRY_HOST}/mlcraft/app-client:latest
+    image: ${REGISTRY_HOST}/synmetrix/app-client:latest
     deploy:
       placement:
         constraints: [node.role == manager]
@@ -92,18 +110,19 @@ services:
     build:
       context: ./services/client/
       args:
-        NODE_ENV: test
-    environment:
-      GRAPHQL_SERVER_URL: ${PROTOCOL:-http}://api.${DOMAIN}/v1/graphql
-      GRAPHQL_WS_URL: ${WS_PROTOCOL:-ws}://api.${DOMAIN}/v1/graphql
-      GRAPHQL_PLUS_SERVER_URL: ${PROTOCOL:-http}://api-plus.${DOMAIN}
-      CUBEJS_MYSQL_API_URL: tcp://sql-api.${DOMAIN}:13306
-      CUBEJS_PG_API_URL: tcp://sql-api.${DOMAIN}:15432
+        CLIENT_VERSION: ${CLIENT_VERSION}
+        HASURA_GRAPHQL_ENDPOINT: ${PROTOCOL:-http}://api.${DOMAIN}/v1/graphql
+        HASURA_WS_ENDPOINT: ${WS_PROTOCOL:-ws}://api.${DOMAIN}/v1/graphql
+        GRAPHQL_PLUS_SERVER_URL: ${PROTOCOL:-http}://auth.${DOMAIN}
+        CUBEJS_MYSQL_API_URL: tcp://cube.${DOMAIN}:13306
+        CUBEJS_PG_API_URL: tcp://sql-api.${DOMAIN}:15432
+        CUBEJS_REST_API_URL: http://cube.${DOMAIN}/api/v1/load
+        CUBEJS_API_DOCS_URL: http://cube.${DOMAIN}/docs
     networks:
-      - mlcraft_default
+      - synmetrix_default
 
   hasura:
-    image: ${REGISTRY_HOST}/mlcraft/hasura:latest
+    image: ${REGISTRY_HOST}/synmetrix/hasura:latest
     deploy:
       labels:
         - traefik.enable=true
@@ -116,38 +135,71 @@ services:
       - .stage.env
     environment:
       HASURA_GRAPHQL_ENABLE_CONSOLE: "true"
+    networks:
+      - synmetrix_default
 
   hasura_plus:
-    image: ${REGISTRY_HOST}/mlcraft/hasura-plus:latest
+    image: ${REGISTRY_HOST}/synmetrix/hasura-plus:latest
     deploy:
       labels:
         - traefik.enable=true
-        - traefik.http.routers.hasura_plus.rule=Host(`api-plus.${DOMAIN}`)
+        - traefik.http.routers.hasura_plus.rule=Host(`auth.${DOMAIN}`)
         - traefik.http.routers.hasura_plus.entrypoints=websecure
         - traefik.http.routers.hasura_plus.tls=true
         - traefik.http.services.hasura_plus.loadbalancer.server.port=3000
+    build:
+      context: ./scripts/containers/hasura-backend-plus
     env_file:
       - .env
       - .stage.env
     environment:
-      SERVER_URL: ${PROTOCOL:-http}://api-plus.${DOMAIN}
+      SERVER_URL: ${PROTOCOL:-http}://auth.${DOMAIN}
       REDIRECT_URL_SUCCESS: ${PROTOCOL:-http}://app.${DOMAIN}/callback
       REDIRECT_URL_ERROR: ${PROTOCOL:-http}://app.${DOMAIN}/callback
+    networks:
+      - synmetrix_default
 
   actions:
-    image: ${REGISTRY_HOST}/mlcraft/hasura-actions:latest
+    image: ${REGISTRY_HOST}/synmetrix/hasura-actions:latest
+    build:
+      context: ./services/actions/
+    command: yarn start
     env_file:
       - .env
       - .stage.env
+    networks:
+      - synmetrix_default
 
   cubestore:
-    image: cubejs/cubestore:${CUBESTORE_VERSION:-v0.32.4}
+    image: cubejs/cubestore:${CUBESTORE_VERSION}
     environment:
       - CUBESTORE_REMOTE_DIR=/cube/data
     volumes:
       - cubestore:/cube/data
     networks:
-      - mlcraft_default
+      - synmetrix_default
+
+  minio:
+    image: minio/minio:latest
+    command: server --console-address ":9001" /data
+    volumes:
+      - minio-data:/data
+    env_file:
+      - .env
+      - .stage.env
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "curl",
+          "-f",
+          "http://localhost:9000/minio/health/live"
+        ]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+    networks:
+      - synmetrix_default
 
 volumes:
   pgstorage-data:

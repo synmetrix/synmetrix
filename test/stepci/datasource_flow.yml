@@ -323,7 +323,7 @@ tests:
             variables:
               datasource_id: ${{captures.datasourceId}}
               tables: [{"name":"default/cell_towers"}, {"name":"default/checks"}]
-              branch_id: "main"
+              branch_id: ${{captures.branchId}}
           check:
             status: 200
             jsonpath:

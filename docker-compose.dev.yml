@@ -1,8 +1,19 @@
 version: '3.8'
 
+networks:
+  synmetrix_default:
+    external: true
+
 services:
+  redis:
+    image: redis:7.0.0
+    ports:
+      - 6379:6379
+    networks:
+      - synmetrix_default
+
   postgres:
-    image: postgres:12.2
+    image: postgres:${POSTGRES_VERSION}
     ports:
       - 5435:5432
     volumes:
@@ -12,9 +23,11 @@ services:
       - .env
       - .dev.env
     networks:
-      - mlcraft_default
+      - synmetrix_default
 
   actions:
+    build:
+      context: ./services/actions/
     restart: always
     command: yarn start.dev
     volumes:
@@ -25,8 +38,12 @@ services:
     env_file:
       - .env
       - .dev.env
+    networks:
+      - synmetrix_default
 
   cubejs:
+    build:
+      context: ./services/cubejs
     restart: always
     command: yarn start.dev
     volumes:
@@ -40,12 +57,14 @@ services:
     env_file:
       - .env
       - .dev.env
+    networks:
+      - synmetrix_default
 
   hasura_cli:
-    restart: always
-    command: ./start.sh
     build:
       context: ./scripts/containers/hasura-cli
+    restart: always
+    command: ./start.sh
     ports:
       - 9693:9693
       - 9695:9695
@@ -62,26 +81,36 @@ services:
     depends_on:
       - hasura
     networks:
-      - mlcraft_default
+      - synmetrix_default
 
   hasura:
+    build:
+      context: ./services/hasura
     restart: always
     ports:
       - 8080:8080
     env_file:
       - .env
       - .dev.env
+    volumes:
+      - ./services/hasura/migrations:/hasura-migrations
+      - ./services/hasura/metadata:/hasura-metadata
+      - ./services/hasura/seeds:/seeds
     environment:
       ENABLE_TELEMETRY: "false"
       CONSOLE_MODE: server
     depends_on:
       - postgres
       - redis
+    networks:
+      - synmetrix_default
 
   hasura_plus:
-    restart: always
     build:
       context: ./scripts/containers/hasura-backend-plus
+    restart: always
+    volumes:
+      - ./scripts/containers/hasura-backend-plus/storage-rules/rules.yaml:/app/custom/storage-rules/rules.yaml
     ports:
       - 8081:3000
     env_file:
@@ -89,6 +118,8 @@ services:
       - .dev.env
     depends_on:
       - postgres
+    networks:
+      - synmetrix_default
 
   minio:
     image: minio/minio:latest
@@ -102,8 +133,6 @@ services:
     env_file:
       - .env
       - .dev.env
-    networks:
-      - mlcraft_default
     healthcheck:
       test:
         [
@@ -115,6 +144,8 @@ services:
       interval: 30s
       timeout: 20s
       retries: 3
+    networks:
+      - synmetrix_default
 
   mailhog:
     image: mailhog/mailhog
@@ -124,27 +155,33 @@ services:
       - 1025:1025 # smtp server
       - 8025:8025 # web ui
     networks:
-      - mlcraft_default
+      - synmetrix_default
 
   client:
     build:
       context: ./services/client/
       args:
-        NODE_ENV:
+        CLIENT_VERSION: ${CLIENT_VERSION}
         ENABLE_MINIO_PROXY: 'true'
-    environment:
-      GRAPHQL_SERVER_URL: http://hasura:8080/v1/graphql
-      GRAPHQL_WS_URL: ws://hasura:8080/v1/graphql
-      GRAPHQL_PLUS_SERVER_URL: http://hasura_plus:8080
-      CUBEJS_MYSQL_API_URL: tcp://cubejs:13306
-      CUBEJS_PG_API_URL: tcp://cubejs:15432
+        HASURA_GRAPHQL_ENDPOINT: /v1/graphql
+        HASURA_WS_ENDPOINT: /v1/graphql
+        GRAPHQL_PLUS_SERVER_URL: 
+        CUBEJS_MYSQL_API_URL: tcp://localhost:13306
+        CUBEJS_PG_API_URL: tcp://localhost:15432
+        CUBEJS_REST_API_URL: http://localhost/api/v1/load
+        CUBEJS_API_DOCS_URL: http://localhost:4000/docs
     ports:
-      - 9055:9055
+      - 80:8888
+    depends_on:
+      - hasura
+      - hasura_plus
+      - cubejs
+      - actions
     networks:
-      - mlcraft_default
+      - synmetrix_default
 
   cubestore:
-    image: cubejs/cubestore:${CUBESTORE_VERSION:-v0.32.4}
+    image: cubejs/cubestore:${CUBESTORE_VERSION}
     ports:
       - 3030:3030
     environment:
@@ -152,7 +189,7 @@ services:
     volumes:
       - .cubestore:/cube/data
     networks:
-      - mlcraft_default
+      - synmetrix_default
 
 volumes:
   pgstorage-data:

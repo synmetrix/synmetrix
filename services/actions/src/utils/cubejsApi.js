@@ -1,10 +1,10 @@
 import cubejsClientCore from "@cubejs-client/core";
-import timeoutSignal from "timeout-signal";
 import fetch from "node-fetch";
+import timeoutSignal from "timeout-signal";
 
-import pickKeys from "./pickKeys.js";
+import { fetchGraphQL } from "../utils/graphql.js";
 import dateParser from "./dateParser.js";
-import { fetchGraphQL } from "../utils/graphql";
+import pickKeys from "./pickKeys.js";
 import { DEFAULT_CATEGORIES } from "./playgroundState.js";
 
 const accessListQuery = `

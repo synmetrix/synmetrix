@@ -1,12 +1,12 @@
-import fetch from "node-fetch";
-import puppeteer from "puppeteer";
 import moment from "moment-timezone";
+import fetch from "node-fetch";
 import nodemailer from "nodemailer";
+import puppeteer from "puppeteer";
 
-import apiError from "../utils/apiError";
-import logger from "../utils/logger";
-import { putFileToBucket } from "../utils/s3";
-import generateUserAccessToken from "../utils/jwt";
+import apiError from "../utils/apiError.js";
+import generateUserAccessToken from "../utils/jwt.js";
+import logger from "../utils/logger.js";
+import { putFileToBucket } from "../utils/s3.js";
 
 const {
   SMTP_HOST,
@@ -91,7 +91,7 @@ const getDataAndScreenshot = async (exploration) => {
     id: explorationId,
   } = exploration;
 
-  const explorationTableURL = `${APP_FRONTEND_URL}/~/explore/${datasourceId}/${explorationId}/?screenshot=1`;
+  const explorationTableURL = `${APP_FRONTEND_URL}/explore/${datasourceId}/${explorationId}/?screenshot=1`;
 
   const accessToken = await generateUserAccessToken(userId);
 
@@ -183,22 +183,24 @@ const getDataAndScreenshot = async (exploration) => {
 };
 
 const sendToSlack = async ({ header, jsonUrl, screenshotUrl, webhookUrl }) => {
-  const defaultBlocks = [{
-    type: 'section',
-    text: {
-      type: 'mrkdwn',
-      text: `*${header}* \n\n<${jsonUrl}|Download JSON>`
+  const defaultBlocks = [
+    {
+      type: "section",
+      text: {
+        type: "mrkdwn",
+        text: `*${header}* \n\n<${jsonUrl}|Download JSON>`,
+      },
     },
-  }];
-  
+  ];
+
   const screenshotBlock = {
-    type: 'image',
+    type: "image",
     image_url: screenshotUrl,
     alt_text: header,
   };
 
   const body = {
-    username: 'MLCraft Notifications',
+    username: "Notifications",
     blocks: [...defaultBlocks, screenshotBlock],
   };
 

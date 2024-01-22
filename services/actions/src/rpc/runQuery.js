@@ -1,9 +1,14 @@
-import cubejsApi from '../utils/cubejsApi';
-import apiError from '../utils/apiError';
+import apiError from "../utils/apiError.js";
+import cubejsApi from "../utils/cubejsApi.js";
 
 export default async (session, input, headers) => {
-  const { datasource_id: dataSourceId, branch_id: branchId, query, limit } = input || {};
-  const userId = session?.['x-hasura-user-id'];
+  const {
+    datasource_id: dataSourceId,
+    branch_id: branchId,
+    query,
+    limit,
+  } = input || {};
+  const userId = session?.["x-hasura-user-id"];
 
   try {
     const result = await cubejsApi({
