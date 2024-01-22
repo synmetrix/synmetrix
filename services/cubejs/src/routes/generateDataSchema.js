@@ -63,7 +63,7 @@ export default async (req, res, cubejs) => {
     const {
       tables = [],
       overwrite = false,
-      branchId = "main",
+      branchId,
       format = "yaml",
     } = req.body || {};
 
