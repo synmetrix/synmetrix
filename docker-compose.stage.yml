@@ -1,7 +1,7 @@
 version: "3.8"
 
 networks:
-  mlcraft_default:
+  synmetrix_default:
     external: true
 
 services:
@@ -10,7 +10,7 @@ services:
     ports:
       - 6379:6379
     networks:
-      - mlcraft_default
+      - synmetrix_default
 
   postgres:
     image: postgres:${POSTGRES_VERSION}
@@ -26,7 +26,7 @@ services:
       - .env
       - .stage.env
     networks:
-      - mlcraft_default
+      - synmetrix_default
 
   traefik:
     image: traefik:v2.5.5
@@ -65,10 +65,10 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - ./etc/acme.json:/acme.json
     networks:
-      - mlcraft_default
+      - synmetrix_default
 
   cubejs:
-    image: ${REGISTRY_HOST}/mlcraft/cubejs:latest
+    image: ${REGISTRY_HOST}/synmetrix/cubejs:latest
     deploy:
       labels:
         - traefik.http.routers.cubejs.rule=Host(`cube.${DOMAIN}`)
@@ -92,10 +92,10 @@ services:
       - .env
       - .stage.env
     networks:
-      - mlcraft_default
+      - synmetrix_default
 
   client:
-    image: ${REGISTRY_HOST}/mlcraft/app-client:latest
+    image: ${REGISTRY_HOST}/synmetrix/app-client:latest
     deploy:
       placement:
         constraints: [node.role == manager]
@@ -119,10 +119,10 @@ services:
         CUBEJS_REST_API_URL: http://cube.${DOMAIN}/api/v1/load
         CUBEJS_API_DOCS_URL: http://cube.${DOMAIN}/docs
     networks:
-      - mlcraft_default
+      - synmetrix_default
 
   hasura:
-    image: ${REGISTRY_HOST}/mlcraft/hasura:latest
+    image: ${REGISTRY_HOST}/synmetrix/hasura:latest
     deploy:
       labels:
         - traefik.enable=true
@@ -136,10 +136,10 @@ services:
     environment:
       HASURA_GRAPHQL_ENABLE_CONSOLE: "true"
     networks:
-      - mlcraft_default
+      - synmetrix_default
 
   hasura_plus:
-    image: ${REGISTRY_HOST}/mlcraft/hasura-plus:latest
+    image: ${REGISTRY_HOST}/synmetrix/hasura-plus:latest
     deploy:
       labels:
         - traefik.enable=true
@@ -157,10 +157,10 @@ services:
       REDIRECT_URL_SUCCESS: ${PROTOCOL:-http}://app.${DOMAIN}/callback
       REDIRECT_URL_ERROR: ${PROTOCOL:-http}://app.${DOMAIN}/callback
     networks:
-      - mlcraft_default
+      - synmetrix_default
 
   actions:
-    image: ${REGISTRY_HOST}/mlcraft/hasura-actions:latest
+    image: ${REGISTRY_HOST}/synmetrix/hasura-actions:latest
     build:
       context: ./services/actions/
     command: yarn start
@@ -168,7 +168,7 @@ services:
       - .env
       - .stage.env
     networks:
-      - mlcraft_default
+      - synmetrix_default
 
   cubestore:
     image: cubejs/cubestore:${CUBESTORE_VERSION}
@@ -177,7 +177,7 @@ services:
     volumes:
       - cubestore:/cube/data
     networks:
-      - mlcraft_default
+      - synmetrix_default
 
   minio:
     image: minio/minio:latest
@@ -199,7 +199,7 @@ services:
       timeout: 20s
       retries: 3
     networks:
-      - mlcraft_default
+      - synmetrix_default
 
 volumes:
   pgstorage-data:

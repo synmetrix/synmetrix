@@ -22,11 +22,12 @@ services:
     volumes:
       - cube_store_data:/cube/data
 
-  synmetrix_stack:
-    image: synmetrix/synmetrix-stack:${SYNMETRIX_VERSION:-latest}
+  stack:
+    image: synmetrix/stack:${STACK_VERSION:-latest}
     restart: always
     ports:
       - 80:8888 # nginx app
+      - 4000:4000 # cubejs app
       - 15432:15432 # pg api
       - 13306:13306 # mysql api
     environment:

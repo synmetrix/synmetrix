@@ -1,7 +1,7 @@
 version: '3.8'
 
 networks:
-  mlcraft_default:
+  synmetrix_default:
     external: true
 
 services:
@@ -10,7 +10,7 @@ services:
     ports:
       - 6379:6379
     networks:
-      - mlcraft_default
+      - synmetrix_default
 
   postgres:
     image: postgres:${POSTGRES_VERSION}
@@ -23,7 +23,7 @@ services:
       - .env
       - .dev.env
     networks:
-      - mlcraft_default
+      - synmetrix_default
 
   actions:
     build:
@@ -39,7 +39,7 @@ services:
       - .env
       - .dev.env
     networks:
-      - mlcraft_default
+      - synmetrix_default
 
   cubejs:
     build:
@@ -58,7 +58,7 @@ services:
       - .env
       - .dev.env
     networks:
-      - mlcraft_default
+      - synmetrix_default
 
   hasura_cli:
     build:
@@ -81,7 +81,7 @@ services:
     depends_on:
       - hasura
     networks:
-      - mlcraft_default
+      - synmetrix_default
 
   hasura:
     build:
@@ -103,7 +103,7 @@ services:
       - postgres
       - redis
     networks:
-      - mlcraft_default
+      - synmetrix_default
 
   hasura_plus:
     build:
@@ -119,7 +119,7 @@ services:
     depends_on:
       - postgres
     networks:
-      - mlcraft_default
+      - synmetrix_default
 
   minio:
     image: minio/minio:latest
@@ -145,7 +145,7 @@ services:
       timeout: 20s
       retries: 3
     networks:
-      - mlcraft_default
+      - synmetrix_default
 
   mailhog:
     image: mailhog/mailhog
@@ -155,7 +155,7 @@ services:
       - 1025:1025 # smtp server
       - 8025:8025 # web ui
     networks:
-      - mlcraft_default
+      - synmetrix_default
 
   client:
     build:
@@ -173,7 +173,7 @@ services:
     ports:
       - 80:80
     networks:
-      - mlcraft_default
+      - synmetrix_default
 
   cubestore:
     image: cubejs/cubestore:${CUBESTORE_VERSION}
@@ -184,7 +184,7 @@ services:
     volumes:
       - .cubestore:/cube/data
     networks:
-      - mlcraft_default
+      - synmetrix_default
 
 volumes:
   pgstorage-data:
