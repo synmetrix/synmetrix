@@ -19,8 +19,8 @@ const generateUserAccessToken = async (userId) => {
     const accessToken = await new SignJWT(hasuraCompatibleJwtPayload)
       .setProtectedHeader({ alg: JWT_ALGORITHM })
       .setIssuedAt()
-      .setIssuer("mlcraft:actions")
-      .setAudience("mlcraft:hasura")
+      .setIssuer("services:actions")
+      .setAudience("services:hasura")
       .setExpirationTime(`${JWT_EXPIRES_IN}m`)
       .setSubject(userId)
       .sign(secret);

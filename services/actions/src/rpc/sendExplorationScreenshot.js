@@ -200,7 +200,7 @@ const sendToSlack = async ({ header, jsonUrl, screenshotUrl, webhookUrl }) => {
   };
 
   const body = {
-    username: "MLCraft Notifications",
+    username: "Notifications",
     blocks: [...defaultBlocks, screenshotBlock],
   };
 
