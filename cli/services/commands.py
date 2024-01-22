@@ -4,7 +4,7 @@ from cli.utils import console, call_compose, call_swarm, call_service, call_syst
 
 def load_services_context(ctx, env):
     # TODO: set config network name
-    ctx.obj["network_name"] = "mlcraft_default"
+    ctx.obj["network_name"] = "synmetrix_default"
     ctx.obj["docker_compose_file"] = "docker-compose.%s.yml" % env
 
     console.log("Runtime Environment: ", env)
