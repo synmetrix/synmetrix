@@ -123,6 +123,8 @@ services:
 
   hasura:
     image: ${REGISTRY_HOST}/synmetrix/hasura:latest
+    build:
+      context: ./services/hasura/
     deploy:
       labels:
         - traefik.enable=true
@@ -204,3 +206,4 @@ services:
 volumes:
   pgstorage-data:
   cubestore:
+  minio-data:
