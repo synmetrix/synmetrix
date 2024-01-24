@@ -23,6 +23,3 @@
 -- CREATE TRIGGER prevent_duplicate_active_branch_trigger
 -- BEFORE INSERT ON branches
 -- FOR EACH ROW EXECUTE FUNCTION prevent_duplicate_active_branch();
-
--- DROP FUNCTION IF EXISTS prevent_last_or_active_branch_deletion() CASCADE;
--- DROP TRIGGER IF EXISTS prevent_last_or_active_branch_deletion_trigger ON branches;
