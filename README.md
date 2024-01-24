@@ -91,8 +91,8 @@ IMPORTANT: Remember to look at `HASURA_GRAPHQL_ADMIN_SECRET` in the docker-compo
 
 ## Demo
 
-Demo: [app.mlcraft.org](https://app.mlcraft.org)
-* Login: `demo@mlcraft.io`
+Demo: [app.synmetrix.org](https://app.synmetrix.org)
+* Login: `demo@synmetrix.org`
 * Password: `demodemo`
 
 
