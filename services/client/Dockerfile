@@ -1,5 +1,5 @@
 # build environment
-FROM nginx:1.19.0
+FROM nginx:1.25.3
 
 ARG ENABLE_MINIO_PROXY
 ARG APP_DIR=/app
