@@ -1,30 +1,23 @@
-import {Args, Command, Flags} from '@oclif/core'
+import { Args } from '@oclif/core';
 
-export default class ServicesRestart extends Command {
-  static description = 'describe the command here'
+import BaseCommand from '../../BaseCommand.js';
+import { callCompose } from '../../utils.js';
 
-  static examples = [
-    '<%= config.bin %> <%= command.id %>',
-  ]
-
-  static flags = {
-    // flag with a value (-n, --name=VALUE)
-    name: Flags.string({char: 'n', description: 'name to print'}),
-    // flag with no value (-f, --force)
-    force: Flags.boolean({char: 'f'}),
-  }
-
+export default class ServicesRestart extends BaseCommand {
   static args = {
-    file: Args.string({description: 'file to read'}),
+    name: Args.string({description: 'Container name to restart'}),
   }
+
+  static description = "Restart the running container(s)";
 
   public async run(): Promise<void> {
-    const {args, flags} = await this.parse(ServicesRestart)
+    const { args } = await this.parse(ServicesRestart)
 
-    const name = flags.name ?? 'world'
-    this.log(`hello ${name} from /home/liberty/code/mlcraft/smcli/src/commands/services/restart.ts`)
-    if (args.file && flags.force) {
-      this.log(`you input --force and --file: ${args.file}`)
+    const commandArgs = [];
+    if (args.name) {
+      commandArgs.push(args.name);
     }
+
+    callCompose(this.context, `restart ${commandArgs.join(" ")}`);
   }
 }

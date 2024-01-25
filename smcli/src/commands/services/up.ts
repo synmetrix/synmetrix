@@ -1,30 +1,29 @@
-import {Args, Command, Flags} from '@oclif/core'
+import { Args } from '@oclif/core';
 
-export default class ServicesUp extends Command {
-  static description = 'describe the command here'
+import BaseCommand from '../../BaseCommand.js';
+import { callCompose, callService } from '../../utils.js';
 
-  static examples = [
-    '<%= config.bin %> <%= command.id %>',
-  ]
-
-  static flags = {
-    // flag with a value (-n, --name=VALUE)
-    name: Flags.string({char: 'n', description: 'name to print'}),
-    // flag with no value (-f, --force)
-    force: Flags.boolean({char: 'f'}),
-  }
-
+export default class ServicesUp extends BaseCommand {
   static args = {
-    file: Args.string({description: 'file to read'}),
+    name: Args.string({description: 'Container name to up'}),
   }
+
+  static description = 'Up docker compose stack'
 
   public async run(): Promise<void> {
-    const {args, flags} = await this.parse(ServicesUp)
+    const { args } = await this.parse(ServicesUp);
 
-    const name = flags.name ?? 'world'
-    this.log(`hello ${name} from /home/liberty/code/mlcraft/smcli/src/commands/services/up.ts`)
-    if (args.file && flags.force) {
-      this.log(`you input --force and --file: ${args.file}`)
+    const commandArgs = [];
+    if (args.name) {
+      commandArgs.push(args.name);
+    }
+
+    const env = this.context.runtimeEnv;
+    if (env === "dev") {
+      commandArgs.push('-d --build');
+      callCompose(this.context, `up ${commandArgs.join(' ')}`)
+    } else {
+      callService(this.context, `up ${commandArgs.join(' ')}`)
     }
   }
 }

@@ -1,30 +1,32 @@
-import {Args, Command, Flags} from '@oclif/core'
+import { Args } from '@oclif/core';
+import 'zx/globals';
 
-export default class ServicesDestroy extends Command {
-  static description = 'describe the command here'
+import BaseCommand from '../../BaseCommand.js';
+import { callCompose } from '../../utils.js';
 
-  static examples = [
-    '<%= config.bin %> <%= command.id %>',
-  ]
-
-  static flags = {
-    // flag with a value (-n, --name=VALUE)
-    name: Flags.string({char: 'n', description: 'name to print'}),
-    // flag with no value (-f, --force)
-    force: Flags.boolean({char: 'f'}),
-  }
-
+export default class ServicesDestroy extends BaseCommand {
   static args = {
-    file: Args.string({description: 'file to read'}),
+    name: Args.string({description: 'Container name to destroy'}),
   }
+
+  static description = "DESTROY Docker Compose stack";
 
   public async run(): Promise<void> {
-    const {args, flags} = await this.parse(ServicesDestroy)
+    const {args} = await this.parse(ServicesDestroy)
 
-    const name = flags.name ?? 'world'
-    this.log(`hello ${name} from /home/liberty/code/mlcraft/smcli/src/commands/services/destroy.ts`)
-    if (args.file && flags.force) {
-      this.log(`you input --force and --file: ${args.file}`)
+    const commandArgs = [];
+    const env = this.context.runtimeEnv;
+    if (env === "dev") {
+      commandArgs.push("-s", "-f");
+
+      callCompose(this.context, `rm ${commandArgs.join(" ")}`)
+    } else {
+
+      if (args.name) {
+        commandArgs.push(args.name);
+      }
+
+      $`docker stack rm ${commandArgs.join(" ")}`;
     }
   }
 }

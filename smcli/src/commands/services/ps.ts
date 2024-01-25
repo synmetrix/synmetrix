@@ -1,30 +1,31 @@
-import {Args, Command, Flags} from '@oclif/core'
+import { Args } from '@oclif/core';
+import 'zx/globals';
 
-export default class ServicesPs extends Command {
-  static description = 'describe the command here'
+import BaseCommand from '../../BaseCommand.js';
+import { callCompose } from '../../utils.js';
 
-  static examples = [
-    '<%= config.bin %> <%= command.id %>',
-  ]
-
-  static flags = {
-    // flag with a value (-n, --name=VALUE)
-    name: Flags.string({char: 'n', description: 'name to print'}),
-    // flag with no value (-f, --force)
-    force: Flags.boolean({char: 'f'}),
-  }
-
+export default class ServicesPs extends BaseCommand {
   static args = {
-    file: Args.string({description: 'file to read'}),
+    name: Args.string(),
   }
+
+  static description = "PS all containers";
 
   public async run(): Promise<void> {
-    const {args, flags} = await this.parse(ServicesPs)
+    const { args } = await this.parse(ServicesPs)
 
-    const name = flags.name ?? 'world'
-    this.log(`hello ${name} from /home/liberty/code/mlcraft/smcli/src/commands/services/ps.ts`)
-    if (args.file && flags.force) {
-      this.log(`you input --force and --file: ${args.file}`)
+    const env = this.context.runtimeEnv;
+
+    if (env === "dev") {
+      callCompose(this.context, "ps")
+    } else {
+      const commandArgs = [];
+
+      if (args.name) {
+        commandArgs.push(args.name);
+      }
+
+      $`docker stack ps --no-trunc ${commandArgs.join(" ")}`;
     }
   }
 }

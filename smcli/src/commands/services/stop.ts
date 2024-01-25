@@ -1,18 +1,12 @@
-import { Command, Flags } from '@oclif/core';
+import { Args } from '@oclif/core';
 
-import { callCompose } from "../../utils.js";
+import BaseCommand from '../../BaseCommand.js';
+import { callCompose } from '../../utils.js';
 
-interface CustomContext {
-  obj: {
-    docker_compose_file: string;
-  };
-}
-
-export default class Stop extends Command {
-  static description = 'Stop container(s)';
-
-  static flags = {
-    name: Flags.string({
+export default class Stop extends BaseCommand {
+  static args = {
+    ...BaseCommand.args,
+    name: Args.string({
       char: 'n',
       default: '',
       description: 'Container name',
@@ -20,9 +14,20 @@ export default class Stop extends Command {
     }),
   };
 
+  static description = 'Stop container(s)';
+
+  static flags = {
+    ...BaseCommand.flags,
+  };
+
   async run(): Promise<void> {
-    // const { flags } = this.parse(Stop);
-    this.log(`Running tag command: ${process.env}`);
-    await callCompose({} as CustomContext, `stop`);
+    const { args } = await this.parse(Stop);
+
+    const commandArgs = [];
+    if (args.name) {
+      commandArgs.push(args.name);
+    }
+
+    await callCompose(this.context, `stop ${commandArgs.join(' ')}`);
   }
 }

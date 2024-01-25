@@ -1,30 +1,34 @@
-import {Args, Command, Flags} from '@oclif/core'
+import { Args, Flags } from '@oclif/core';
 
-export default class ServicesLogs extends Command {
-  static description = 'describe the command here'
+import BaseCommand from '../../BaseCommand.js';
+import { callCompose, callService } from '../../utils.js';
 
-  static examples = [
-    '<%= config.bin %> <%= command.id %>',
-  ]
-
-  static flags = {
-    // flag with a value (-n, --name=VALUE)
-    name: Flags.string({char: 'n', description: 'name to print'}),
-    // flag with no value (-f, --force)
-    force: Flags.boolean({char: 'f'}),
+export default class ServicesLogs extends BaseCommand {
+  static args = {
+    ...BaseCommand.args,
+    name: Args.string({ char: 'n', description: 'Name of the container to print logs for' }),
   }
 
-  static args = {
-    file: Args.string({description: 'file to read'}),
+  static description = 'Print logs for a Docker containers'
+
+  static flags = {
+    ...BaseCommand.flags,
+    tail: Flags.integer({ default: 100, description: 'Number of last rows to show' }),
   }
 
   public async run(): Promise<void> {
-    const {args, flags} = await this.parse(ServicesLogs)
+    const { args, flags } = await this.parse(ServicesLogs)
 
-    const name = flags.name ?? 'world'
-    this.log(`hello ${name} from /home/liberty/code/mlcraft/smcli/src/commands/services/logs.ts`)
-    if (args.file && flags.force) {
-      this.log(`you input --force and --file: ${args.file}`)
+    const commandArgs = [`-f --tail ${flags.tail}`];
+    if (args.name) {
+      commandArgs.push(args.name);
+    }
+
+    const env = this.context.runtimeEnv;
+    if (env === "dev") {
+      callCompose(this.context, `logs ${commandArgs.join(' ')}`)
+    } else {
+      callService(this.context, `logs ${commandArgs.join(' ')}`)
     }
   }
 }
