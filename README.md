@@ -1,6 +1,8 @@
 <p align="center"><a href="https://synmetrix.org"><img src="https://raw.githubusercontent.com/mlcraft-io/client-v2/master/src/assets/logo_with_text.png" alt="Synmetrix" width="300px"></a></p>
 
-[Website](https://synmetrix.org) • [Docs](https://docs.synmetrix.org) • [Cube.js Models docs](https://cube.dev/docs/schema/getting-started) • [Docker Hub](https://hub.docker.com/u/mlcraft) • [Slack community](https://join.slack.com/t/mlcraft/shared_invite/zt-1x2gxwn37-J3tTvCR5xSFVfxwUU_YKtg)
+<p align="center">
+<a href="https://synmetrix.org">Website</a> • <a href="https://docs.synmetrix.org">Docs</a> • <a href="https://cube.dev/docs/schema/getting-started">Cube.js Models docs</a> • <a href="https://hub.docker.com/u/synmetrix">Docker Hub</a> • <a href="https://join.slack.com/t/mlcraft/shared_invite/zt-1x2gxwn37-J3tTvCR5xSFVfxwUU_YKtg">Slack community</a>
+</p>
 
 # Synmetrix
 
@@ -89,8 +91,8 @@ IMPORTANT: Remember to look at `HASURA_GRAPHQL_ADMIN_SECRET` in the docker-compo
 
 ## Demo
 
-Demo: [app.mlcraft.org](https://app.mlcraft.org)
-* Login: `demo@mlcraft.io`
+Demo: [app.synmetrix.org](https://app.synmetrix.org)
+* Login: `demo@synmetrix.org`
 * Password: `demodemo`
 
 

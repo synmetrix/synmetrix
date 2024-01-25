@@ -1,6 +1,4 @@
 import { fetchGraphQL } from "./graphql.js";
-import { getDataSourceAccessList } from "./defineUserScope.js";
-import buildSecurityContext from "./buildSecurityContext.js";
 
 const sourceFragment = `
   id

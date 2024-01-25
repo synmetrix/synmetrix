@@ -9,6 +9,9 @@ services:
     image: redis:7.0.0
     ports:
       - 6379:6379
+    env_file:
+      - .env
+      - .stage.env
     networks:
       - synmetrix_default
 
@@ -39,6 +42,7 @@ services:
         - traefik.http.routers.traefik.entrypoints=websecure
         - traefik.http.routers.traefik.service=api@internal
         - traefik.http.routers.traefik.tls=true
+        - traefik.http.routers.traefik.tls.certresolver=myresolver
         - traefik.http.services.traefik.loadbalancer.server.port=888
     command:
       - --entrypoints.web.address=:80
@@ -55,7 +59,11 @@ services:
       - --api=true
       - --api.dashboard=true
       - --accesslog=true
-      # - --log.level=DEBUG
+      - --certificatesresolvers.myresolver.acme.email=${LETSENCRYPT_EMAIL}
+      - --certificatesresolvers.myresolver.acme.storage=/acme.json
+      # used during the challenge
+      - --certificatesresolvers.myresolver.acme.httpchallenge.entrypoint=web
+      - --log.level=DEBUG
     ports:
       - 80:80
       - 443:443
@@ -64,6 +72,9 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - ./etc/acme.json:/acme.json
+    env_file:
+      - .env
+      - .stage.env
     networks:
       - synmetrix_default
 
@@ -74,6 +85,8 @@ services:
         - traefik.http.routers.cubejs.rule=Host(`cube.${DOMAIN}`)
         - traefik.http.routers.cubejs.entrypoints=websecure
         - traefik.http.routers.cubejs.tls=true
+        - traefik.http.routers.cubejs.tls.certresolver=myresolver
+        - traefik.http.services.cubejs.loadbalancer.server.port=4000
         # pg api
         - traefik.enable=true
         - traefik.tcp.routers.pg_api.rule=HostSNI(`*`)
@@ -104,18 +117,19 @@ services:
         - traefik.http.routers.client.rule=Host(`app.${DOMAIN}`)
         - traefik.http.routers.client.entrypoints=websecure
         - traefik.http.routers.client.tls=true
-        - traefik.http.services.client.loadbalancer.server.port=80
+        - traefik.http.routers.client.tls.certresolver=myresolver
+        - traefik.http.services.client.loadbalancer.server.port=8888
         - traefik.http.middlewares.client_compress.compress=true
         - traefik.http.routers.client.middlewares=client_compress
     build:
       context: ./services/client/
       args:
         CLIENT_VERSION: ${CLIENT_VERSION}
-        HASURA_GRAPHQL_ENDPOINT: ${PROTOCOL:-http}://api.${DOMAIN}/v1/graphql
-        HASURA_WS_ENDPOINT: ${WS_PROTOCOL:-ws}://api.${DOMAIN}/v1/graphql
-        GRAPHQL_PLUS_SERVER_URL: ${PROTOCOL:-http}://auth.${DOMAIN}
+        HASURA_GRAPHQL_ENDPOINT: /v1/graphql
+        HASURA_WS_ENDPOINT: /v1/graphql
+        GRAPHQL_PLUS_SERVER_URL: 
         CUBEJS_MYSQL_API_URL: tcp://cube.${DOMAIN}:13306
-        CUBEJS_PG_API_URL: tcp://sql-api.${DOMAIN}:15432
+        CUBEJS_PG_API_URL: tcp://cube.${DOMAIN}:15432
         CUBEJS_REST_API_URL: http://cube.${DOMAIN}/api/v1/load
         CUBEJS_API_DOCS_URL: http://cube.${DOMAIN}/docs
     networks:
@@ -131,6 +145,7 @@ services:
         - traefik.http.routers.hasura.rule=Host(`api.${DOMAIN}`)
         - traefik.http.routers.hasura.entrypoints=websecure
         - traefik.http.routers.hasura.tls=true
+        - traefik.http.routers.hasura.tls.certresolver=myresolver
         - traefik.http.services.hasura.loadbalancer.server.port=8080
     env_file:
       - .env
@@ -148,6 +163,7 @@ services:
         - traefik.http.routers.hasura_plus.rule=Host(`auth.${DOMAIN}`)
         - traefik.http.routers.hasura_plus.entrypoints=websecure
         - traefik.http.routers.hasura_plus.tls=true
+        - traefik.http.routers.hasura_plus.tls.certresolver=myresolver
         - traefik.http.services.hasura_plus.loadbalancer.server.port=3000
     build:
       context: ./scripts/containers/hasura-backend-plus
