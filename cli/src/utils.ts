@@ -1,6 +1,6 @@
-import 'zx/globals';
+import "zx/globals";
 
-import type * as BaseCommandJs from './BaseCommand.js';
+import type * as BaseCommandJs from "./BaseCommand.js";
 
 export const callSystem = (cmd: string) => {
   console.log(`Command: ${cmd}`);

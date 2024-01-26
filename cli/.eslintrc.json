@@ -1,6 +1,7 @@
 {
   "extends": ["oclif", "oclif-typescript", "prettier"],
   "rules": {
+    "quotes": ["error", "double"],
     "unicorn/import-style": "off",
     "perfectionist/sort-objects": "off",
     "unicorn/filename-case": "off",

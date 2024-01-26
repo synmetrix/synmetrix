@@ -1,19 +1,19 @@
-import { Args, Flags } from '@oclif/core';
+import { Args, Flags } from "@oclif/core";
 
-import BaseCommand from '../../BaseCommand.js';
-import { callCompose, callService } from '../../utils.js';
+import BaseCommand from "../../BaseCommand.js";
+import { callCompose, callService } from "../../utils.js";
 
 export default class ServicesLogs extends BaseCommand {
   static args = {
     ...BaseCommand.args,
-    name: Args.string({ char: 'n', description: 'Name of the container to print logs for' }),
+    name: Args.string({ char: "n", description: "Name of the container to print logs for" }),
   }
 
-  static description = 'Print logs for a Docker containers'
+  static description = "Print logs for a Docker containers"
 
   static flags = {
     ...BaseCommand.flags,
-    tail: Flags.integer({ default: 100, description: 'Number of last rows to show' }),
+    tail: Flags.integer({ default: 100, description: "Number of last rows to show" }),
   }
 
   public async run(): Promise<void> {
@@ -26,9 +26,9 @@ export default class ServicesLogs extends BaseCommand {
 
     const env = this.context.runtimeEnv;
     if (env === "dev") {
-      callCompose(this.context, `logs ${commandArgs.join(' ')}`)
+      callCompose(this.context, `logs ${commandArgs.join(" ")}`)
     } else {
-      callService(this.context, `logs ${commandArgs.join(' ')}`)
+      callService(this.context, `logs ${commandArgs.join(" ")}`)
     }
   }
 }

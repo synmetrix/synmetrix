@@ -1,20 +1,20 @@
-import { Args } from '@oclif/core';
+import { Args } from "@oclif/core";
 
-import BaseCommand from '../../BaseCommand.js';
-import { callCompose } from '../../utils.js';
+import BaseCommand from "../../BaseCommand.js";
+import { callCompose } from "../../utils.js";
 
 export default class Stop extends BaseCommand {
   static args = {
     ...BaseCommand.args,
     name: Args.string({
-      char: 'n',
-      default: '',
-      description: 'Container name',
-      metavar: '<name>',
+      char: "n",
+      default: "",
+      description: "Container name",
+      metavar: "<name>",
     }),
   };
 
-  static description = 'Stop container(s)';
+  static description = "Stop container(s)";
 
   static flags = {
     ...BaseCommand.flags,
@@ -28,6 +28,6 @@ export default class Stop extends BaseCommand {
       commandArgs.push(args.name);
     }
 
-    await callCompose(this.context, `stop ${commandArgs.join(' ')}`);
+    await callCompose(this.context, `stop ${commandArgs.join(" ")}`);
   }
 }

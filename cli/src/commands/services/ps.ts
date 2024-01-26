@@ -1,7 +1,7 @@
-import { Args } from '@oclif/core';
+import { Args } from "@oclif/core";
 
-import BaseCommand from '../../BaseCommand.js';
-import { callCompose, callSystem } from '../../utils.js';
+import BaseCommand from "../../BaseCommand.js";
+import { callCompose, callSystem } from "../../utils.js";
 
 export default class ServicesPs extends BaseCommand {
   static args = {

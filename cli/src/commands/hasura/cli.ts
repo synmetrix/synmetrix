@@ -1,8 +1,8 @@
-import {Args, Flags} from '@oclif/core';
-import {URL} from 'node:url';
+import {Args, Flags} from "@oclif/core";
+import {URL} from "node:url";
 
-import BaseCommand from '../../BaseCommand.js';
-import { callSystem } from '../../utils.js';
+import BaseCommand from "../../BaseCommand.js";
+import { callSystem } from "../../utils.js";
 
 export default class Hasura extends BaseCommand {
   static args = {
@@ -13,13 +13,13 @@ export default class Hasura extends BaseCommand {
     })
   };
 
-  static description = 'Manage Hasura service';
+  static description = "Manage Hasura service";
 
   static flags = {
     ...BaseCommand.flags,
-    adminSecret: Flags.string({env: 'HASURA_GRAPHQL_ADMIN_SECRET'}),
-    hasuraAddr: Flags.string({default: 'http://hasura:8080'}),
-    hasuraDir: Flags.string({default: './services/hasura'}),
+    adminSecret: Flags.string({env: "HASURA_GRAPHQL_ADMIN_SECRET"}),
+    hasuraAddr: Flags.string({default: "http://hasura:8080"}),
+    hasuraDir: Flags.string({default: "./services/hasura"}),
   };
 
   async run(): Promise<void> {

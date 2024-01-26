@@ -1,6 +1,6 @@
-import { Command, Flags } from '@oclif/core';
-import { config } from 'dotenv';
-import path from 'path';
+import { Command, Flags } from "@oclif/core";
+import { config } from "dotenv";
+import path from "path";
 
 const NETWORK_NAME = "synmetrix_default";
 
@@ -17,15 +17,15 @@ export default class BaseCommand extends Command {
 
   static flags = {
     ...Command.flags,
-    networkName: Flags.string({ char: 'n', description: 'Docker network name' }),
-    stage: Flags.boolean({ char: 'p', description: 'Run in stage environment' }),
+    networkName: Flags.string({ char: "n", description: "Docker network name" }),
+    stage: Flags.boolean({ char: "p", description: "Run in stage environment" }),
   };
   
   context: CustomContext = {};
 
   protected async init(): Promise<void> {
     const { flags } = await this.parse(this.constructor as typeof Command);
-    const env = flags.stage ? 'stage' : 'dev';
+    const env = flags.stage ? "stage" : "dev";
 
     const envFiles = [".env", `.${env}.env`];
     for (const envFile of envFiles) {
@@ -42,7 +42,7 @@ export default class BaseCommand extends Command {
   }
 
   run(): Promise<unknown> {
-    throw new Error('Method not implemented.');
+    throw new Error("Method not implemented.");
   }
 
   public async runCommand(Comm: typeof BaseCommand, argv: string[]): Promise<void> {

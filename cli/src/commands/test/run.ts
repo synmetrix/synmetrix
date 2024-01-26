@@ -1,8 +1,8 @@
-import { Flags } from '@oclif/core';
+import { Flags } from "@oclif/core";
 
-import BaseCommand from '../../BaseCommand.js';
-import DockerBuild from '../docker/build.js';
-import DockerRun from '../docker/run.js';
+import BaseCommand from "../../BaseCommand.js";
+import DockerBuild from "../docker/build.js";
+import DockerRun from "../docker/run.js";
 
 export default class TestRun extends BaseCommand {
   static description = "Test project with stepci";

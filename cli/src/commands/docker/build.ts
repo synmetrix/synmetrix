@@ -1,10 +1,10 @@
-import { Args, Flags } from '@oclif/core';
-import fsPromises from 'fs/promises';
-import { basename, dirname, join } from 'path';
+import { Args, Flags } from "@oclif/core";
+import fsPromises from "fs/promises";
+import { basename, dirname, join } from "path";
 
-import BaseCommand from '../../BaseCommand.js';
-import { callSystem } from '../../utils.js';
-import DockerRun from './run.js';
+import BaseCommand from "../../BaseCommand.js";
+import { callSystem } from "../../utils.js";
+import DockerRun from "./run.js";
 
 export default class DockerBuild extends BaseCommand {
   static args = {
@@ -22,8 +22,8 @@ export default class DockerBuild extends BaseCommand {
 
   static flags = {
     ...BaseCommand.flags,
-    pull: Flags.boolean({description: 'Pull the image'}),
-    push: Flags.boolean({description: 'Push the image'}),
+    pull: Flags.boolean({description: "Pull the image"}),
+    push: Flags.boolean({description: "Push the image"}),
   } as const;
 
   public async run(): Promise<void> {
@@ -46,10 +46,10 @@ export default class DockerBuild extends BaseCommand {
     }
 
     if (pull) {
-      additionalArgs.push('--pull');
+      additionalArgs.push("--pull");
     }
 
-    const buildCmd = `docker build ${additionalArgs.join(' ')} -t ${name} ${buildPath}`;
+    const buildCmd = `docker build ${additionalArgs.join(" ")} -t ${name} ${buildPath}`;
 
     callSystem(buildCmd);
     
