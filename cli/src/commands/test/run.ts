@@ -1,8 +1,7 @@
-import { Flags } from "@oclif/core";
+import { Flags } from '@oclif/core';
 
-import BaseCommand from "../../BaseCommand.js";
-import DockerBuild from "../docker/build.js";
-import DockerRun from "../docker/run.js";
+import BaseCommand from '../../BaseCommand.js';
+import { callSystem } from '../../utils.js';
 
 export default class TestRun extends BaseCommand {
   static description = "Test project with stepci";
@@ -10,28 +9,30 @@ export default class TestRun extends BaseCommand {
   static flags = {
     ...BaseCommand.flags,
     "testDir": Flags.string({ default: `${process.cwd()}/test/stepci` }),
-    "ymlFile": Flags.string({ default: "workflow.yml" }),
+    "ymlFile": Flags.string({ default: "tests/workflow.yml" }),
   };
 
   public async run(): Promise<void> {
     const { flags } = await this.parse(TestRun);
     const { testDir, ymlFile } = flags;
 
-    await this.runCommand(DockerBuild, ["stepci-test", "./scripts/containers/stepci"]);
+    await callSystem("docker build -t stepci-test ./scripts/containers/stepci");
 
     const env = this.context.runtimeEnv;
     const envFiles = [".env", `.${env}.env`];
 
     const runCommand = [
-      "stepci-test",
-      "stepci-test",
-      `tests/${ymlFile}`,
-      "--tty",
-      "--volume", `${testDir}:/tests`,
-      ...envFiles.flatMap(e => ["--envFile", e]),
-      "--registry", "",
+      "--rm",
+      "--network", this.context.networkName,
+      "--name", "stepci-test",
+      "--network-alias", "stepci-test",
+      "-v", `${testDir}:/tests`,
+      "-i",
+      ...envFiles.flatMap(e => ["--env-file", e]),
+      "stepci-test:latest",
+      ymlFile,
     ];
 
-    await this.runCommand(DockerRun, runCommand);
+    await callSystem(`docker run ${runCommand.join(" ")}`);
   }
 }

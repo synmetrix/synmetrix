@@ -1,5 +1,5 @@
 {
-  "author": "@Libertonius",
+  "author": "mlcraft.io",
   "bin": {
     "smcli": "./bin/run.js"
   },
@@ -45,6 +45,7 @@
     "bin": "smcli",
     "dirname": "smcli",
     "commands": "./dist/commands",
+    "topicSeparator": " ",
     "plugins": [
       "@oclif/plugin-help",
       "@oclif/plugin-plugins"
