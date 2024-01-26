@@ -1,6 +1,8 @@
 **/.DS_Store
 *-debug.log
 *-error.log
+.github
+.vscode
 /.idea
 /.nyc_output
 /dist
