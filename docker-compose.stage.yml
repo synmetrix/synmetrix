@@ -130,7 +130,7 @@ services:
         GRAPHQL_PLUS_SERVER_URL: 
         CUBEJS_MYSQL_API_URL: tcp://cube.${DOMAIN}:13306
         CUBEJS_PG_API_URL: tcp://cube.${DOMAIN}:15432
-        CUBEJS_REST_API_URL: http://cube.${DOMAIN}/api/v1/load
+        CUBEJS_REST_API_URL: /api/v1/load
         CUBEJS_API_DOCS_URL: http://cube.${DOMAIN}/docs
     networks:
       - synmetrix_default
