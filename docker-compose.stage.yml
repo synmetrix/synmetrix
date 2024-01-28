@@ -128,8 +128,8 @@ services:
         HASURA_GRAPHQL_ENDPOINT: /v1/graphql
         HASURA_WS_ENDPOINT: /v1/graphql
         GRAPHQL_PLUS_SERVER_URL: 
-        CUBEJS_MYSQL_API_URL: tcp://cube.${DOMAIN}:13306
-        CUBEJS_PG_API_URL: tcp://cube.${DOMAIN}:15432
+        CUBEJS_MYSQL_API_URL: cube.${DOMAIN}:13306
+        CUBEJS_PG_API_URL: cube.${DOMAIN}:15432
         CUBEJS_REST_API_URL: /api/v1/load
         CUBEJS_API_DOCS_URL: http://cube.${DOMAIN}/docs
     networks:
