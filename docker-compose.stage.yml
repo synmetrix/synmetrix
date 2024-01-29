@@ -157,14 +157,6 @@ services:
 
   hasura_plus:
     image: ${REGISTRY_HOST}/synmetrix/hasura-plus:latest
-    deploy:
-      labels:
-        - traefik.enable=true
-        - traefik.http.routers.hasura_plus.rule=Host(`auth.${DOMAIN}`)
-        - traefik.http.routers.hasura_plus.entrypoints=websecure
-        - traefik.http.routers.hasura_plus.tls=true
-        - traefik.http.routers.hasura_plus.tls.certresolver=myresolver
-        - traefik.http.services.hasura_plus.loadbalancer.server.port=3000
     build:
       context: ./scripts/containers/hasura-backend-plus
     env_file:
