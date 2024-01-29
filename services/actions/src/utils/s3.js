@@ -16,13 +16,12 @@ const {
   AWS_S3_SECRET_ACCESS_KEY,
   AWS_S3_REGION,
   MINIO_DEV_PROXY,
-  NODE_ENV,
+  AWS_S3_PRESIGNED_URL_EXPIRES_IN: AWS_S3_PRESIGNED_URL_EXPIRES_IN_RAW,
 } = process.env;
 
-const dev = NODE_ENV !== "production";
-
 // 7 days
-const AWS_S3_PRESIGNED_URL_EXPIRES_IN = 7 * 24 * 60 * 60;
+const AWS_S3_PRESIGNED_URL_EXPIRES_IN =
+  AWS_S3_PRESIGNED_URL_EXPIRES_IN_RAW || 7 * 24 * 60 * 60;
 
 const s3ClientConfig = {
   forcePathStyle: true,
@@ -122,7 +121,7 @@ export const putFileToBucket = async ({
   }
 
   let resultUrl = url;
-  if (dev) {
+  if (MINIO_DEV_PROXY) {
     resultUrl = resultUrl.replace(AWS_S3_ENDPOINT, MINIO_DEV_PROXY);
   }
 

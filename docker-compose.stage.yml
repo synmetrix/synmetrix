@@ -60,7 +60,7 @@ services:
       - --api.dashboard=true
       - --accesslog=true
       - --certificatesresolvers.myresolver.acme.email=${LETSENCRYPT_EMAIL}
-      - --certificatesresolvers.myresolver.acme.storage=/acme.json
+      - --certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json
       # used during the challenge
       - --certificatesresolvers.myresolver.acme.httpchallenge.entrypoint=web
       - --log.level=DEBUG
@@ -71,7 +71,7 @@ services:
       - 13306:13306
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
-      - ./etc/acme.json:/acme.json
+      - ./letsencrypt:/letsencrypt
     env_file:
       - .env
       - .stage.env
@@ -199,6 +199,14 @@ services:
 
   minio:
     image: minio/minio:latest
+    deploy:
+      labels:
+        - traefik.enable=true
+        - traefik.http.routers.minio.rule=Host(`s3.${DOMAIN}`)
+        - traefik.http.routers.minio.entrypoints=websecure
+        - traefik.http.routers.minio.tls=true
+        - traefik.http.routers.minio.tls.certresolver=myresolver
+        - traefik.http.services.minio.loadbalancer.server.port=9001
     command: server --console-address ":9001" /data
     volumes:
       - minio-data:/data
