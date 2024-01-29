@@ -198,7 +198,7 @@ services:
         - traefik.http.routers.minio.entrypoints=websecure
         - traefik.http.routers.minio.tls=true
         - traefik.http.routers.minio.tls.certresolver=myresolver
-        - traefik.http.services.minio.loadbalancer.server.port=9001
+        - traefik.http.services.minio.loadbalancer.server.port=9000
     command: server --console-address ":9001" /data
     volumes:
       - minio-data:/data
@@ -206,16 +206,10 @@ services:
       - .env
       - .stage.env
     healthcheck:
-      test:
-        [
-          "CMD",
-          "curl",
-          "-f",
-          "http://localhost:9000/minio/health/live"
-        ]
-      interval: 30s
-      timeout: 20s
-      retries: 3
+      test: ["CMD", "mc", "ready", "local"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
     networks:
       - synmetrix_default
 
