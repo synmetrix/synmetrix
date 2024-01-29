@@ -1,17 +1,19 @@
-import {expect, test} from '@oclif/test'
+import {expect, test} from '@oclif/test';
 
 describe('services:restart', () => {
   test
-  .stdout()
-  .command(['services:restart'])
-  .it('runs hello', ctx => {
-    expect(ctx.stdout).to.contain('hello world')
-  })
+    .stdout()
+    .stderr()
+    .command(['services:restart'])
+    .it('runs services:restart without arguments', async (ctx) => {
+      expect(ctx.stdout + ctx.stderr).to.contain('Started');
+    });
 
   test
-  .stdout()
-  .command(['services:restart', '--name', 'jeff'])
-  .it('runs hello --name jeff', ctx => {
-    expect(ctx.stdout).to.contain('hello jeff')
-  })
-})
+    .stdout()
+    .stderr()
+    .command(['services:restart', 'actions'])
+    .it('runs services:restart with a container name argument', (ctx) => {
+      expect(ctx.stdout + ctx.stderr).to.contain('Started');
+    });
+});

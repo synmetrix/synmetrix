@@ -10,7 +10,7 @@ export default class ServicesRestart extends BaseCommand {
 
   static description = "Restart the running container(s)";
 
-  public async run(): Promise<void> {
+  public async run(): Promise<ProcessOutput> {
     const { args } = await this.parse(ServicesRestart)
 
     const commandArgs = [];
@@ -18,6 +18,6 @@ export default class ServicesRestart extends BaseCommand {
       commandArgs.push(args.name);
     }
 
-    callCompose(this.context, `restart ${commandArgs.join(" ")}`);
+    return await callCompose(this.context, `restart ${commandArgs.join(" ")}`);
   }
 }

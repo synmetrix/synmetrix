@@ -56,10 +56,9 @@
     "build": "shx rm -rf dist && tsc -b",
     "lint": "eslint . --ext .ts",
     "postpack": "shx rm -f oclif.manifest.json",
-    "posttest": "yarn lint",
     "prepack": "yarn build && oclif manifest && oclif readme",
     "prepare": "yarn build",
-    "test": "mocha --forbid-only \"test/**/*.test.ts\"",
+    "test": "TEST_OUTPUT=1 mocha --no-warnings --require ./test/setup.js --forbid-only \"./cli/test/**/*.test.ts\"",
     "version": "oclif readme && git add README.md"
   },
   "version": "0.0.0",
