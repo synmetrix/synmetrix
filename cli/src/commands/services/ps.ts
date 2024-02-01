@@ -6,17 +6,17 @@ import { callCompose, callSystem } from "../../utils.js";
 export default class ServicesPs extends BaseCommand {
   static args = {
     name: Args.string(),
-  }
+  };
 
   static description = "PS all containers";
 
   public async run(): Promise<void> {
-    const { args } = await this.parse(ServicesPs)
+    const { args } = await this.parse(ServicesPs);
 
     const env = this.context.runtimeEnv;
 
     if (env === "dev") {
-      await callCompose(this.context, "ps")
+      await callCompose(this.context, "ps");
     } else {
       const commandArgs = [];
 

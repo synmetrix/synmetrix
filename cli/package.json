@@ -7,6 +7,7 @@
     "@oclif/core": "^3",
     "@oclif/plugin-help": "^6",
     "@oclif/plugin-plugins": "^4",
+    "@umijs/fabric": "^4.0.1",
     "dotenv": "^16.4.1",
     "eslint-plugin-oclif": "^0.1.0",
     "js-yaml": "^4.1.0",

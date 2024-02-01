@@ -1,11 +1,11 @@
-import {expect, test} from '@oclif/test';
+import { expect, test } from "@oclif/test";
 
-describe('services:ex', () => {
+describe("hasura:cli", () => {
   test
-    .command('services:up')
+    .command("services:up")
     .stderr()
-    .command(['services:ex', 'actions', 'ls'])
-    .it('runs services:ex', (ctx) => {
-      expect(ctx.stderr).to.contain('node_modules');
+    .command(["hasura:cli", "actions"])
+    .it("runs hasura:cli", (ctx) => {
+      expect(ctx.stderr).to.contain("GraphQL commands");
     });
 });

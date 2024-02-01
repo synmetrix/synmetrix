@@ -17,10 +17,17 @@ export default class BaseCommand extends Command {
 
   static flags = {
     ...Command.flags,
-    networkName: Flags.string({ char: "n", description: "Docker network name", default: NETWORK_NAME }),
-    stage: Flags.boolean({ char: "p", description: "Run in stage environment" }),
+    networkName: Flags.string({
+      char: "n",
+      description: "Docker network name",
+      default: NETWORK_NAME,
+    }),
+    stage: Flags.boolean({
+      char: "p",
+      description: "Run in stage environment",
+    }),
   };
-  
+
   context: CustomContext = {};
 
   protected async init(): Promise<void> {
@@ -38,17 +45,20 @@ export default class BaseCommand extends Command {
       networkName: flags.networkName,
     };
 
-    console.log("Runtime Environment:", env)
+    console.log("Runtime Environment:", env);
   }
 
   run(): Promise<unknown> {
     throw new Error("Method not implemented.");
   }
 
-  public async runCommand(Comm: typeof BaseCommand, argv: string[]): Promise<unknown> {
+  public async runCommand(
+    Comm: typeof BaseCommand,
+    argv: string[],
+  ): Promise<unknown> {
     const cmd = await new Comm(argv, this.config);
     cmd.context = this.context;
 
-    return await cmd.run() as unknown;
+    return (await cmd.run()) as unknown;
   }
 }

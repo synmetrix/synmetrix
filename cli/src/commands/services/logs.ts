@@ -6,18 +6,24 @@ import { callCompose, callService } from "../../utils.js";
 export default class ServicesLogs extends BaseCommand {
   static args = {
     ...BaseCommand.args,
-    name: Args.string({ char: "n", description: "Name of the container to print logs for" }),
-  }
+    name: Args.string({
+      char: "n",
+      description: "Name of the container to print logs for",
+    }),
+  };
 
-  static description = "Print logs for a Docker containers"
+  static description = "Print logs for a Docker containers";
 
   static flags = {
     ...BaseCommand.flags,
-    tail: Flags.integer({ default: 100, description: "Number of last rows to show" }),
-  }
+    tail: Flags.integer({
+      default: 100,
+      description: "Number of last rows to show",
+    }),
+  };
 
   public async run(): Promise<void> {
-    const { args, flags } = await this.parse(ServicesLogs)
+    const { args, flags } = await this.parse(ServicesLogs);
 
     const commandArgs = [`-f --tail ${flags.tail}`];
     if (args.name) {
@@ -26,9 +32,9 @@ export default class ServicesLogs extends BaseCommand {
 
     const env = this.context.runtimeEnv;
     if (env === "dev") {
-      await callCompose(this.context, `logs ${commandArgs.join(" ")}`)
+      await callCompose(this.context, `logs ${commandArgs.join(" ")}`);
     } else {
-      await callService(this.context, `logs ${commandArgs.join(" ")}`)
+      await callService(this.context, `logs ${commandArgs.join(" ")}`);
     }
   }
 }

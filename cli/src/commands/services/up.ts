@@ -5,10 +5,10 @@ import { callCompose, callService } from "../../utils.js";
 
 export default class ServicesUp extends BaseCommand {
   static args = {
-    name: Args.string({description: "Container name to up"}),
-  }
+    name: Args.string({ description: "Container name to up" }),
+  };
 
-  static description = "Up docker compose stack"
+  static description = "Up docker compose stack";
 
   public async run(): Promise<ProcessOutput> {
     const { args } = await this.parse(ServicesUp);
@@ -21,9 +21,9 @@ export default class ServicesUp extends BaseCommand {
     const env = this.context.runtimeEnv;
     if (env === "dev") {
       commandArgs.push("-d --build");
-      return await callCompose(this.context, `up ${commandArgs.join(" ")}`)
+      return await callCompose(this.context, `up ${commandArgs.join(" ")}`);
     } else {
-      return await callService(this.context, `up ${commandArgs.join(" ")}`)
+      return await callService(this.context, `up ${commandArgs.join(" ")}`);
     }
   }
 }

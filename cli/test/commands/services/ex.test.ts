@@ -1,11 +1,11 @@
-import {expect, test} from '@oclif/test';
+import { expect, test } from "@oclif/test";
 
-describe('services:ex', () => {
+describe("services:ex", () => {
   test
-    .command('services:up')
+    .command("services:up")
     .stderr()
-    .command(['services:ex', 'actions', 'ls'])
-    .it('runs services:ex', (ctx) => {
-      expect(ctx.stderr).to.contain('node_modules');
+    .command(["services:ex", "actions", "ls"])
+    .it("runs services:ex", (ctx) => {
+      expect(ctx.stderr).to.contain("node_modules");
     });
 });

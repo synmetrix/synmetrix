@@ -5,9 +5,12 @@ import { callCompose } from "../../utils.js";
 
 export default class ServicesEx extends BaseCommand {
   static args = {
-    name: Args.string({ description: "Container name for command", required: true }),
+    name: Args.string({
+      description: "Container name for command",
+      required: true,
+    }),
     cmd: Args.string({ description: "Command to execute", required: true }),
-  }
+  };
 
   static description = "Exec command in container";
 

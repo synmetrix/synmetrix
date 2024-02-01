@@ -10,7 +10,7 @@ export default class Hasura extends BaseCommand {
     cmd: Args.string({
       description: "Command, what will provided to Hasura",
       required: true,
-    })
+    }),
   };
 
   static description = "Manage Hasura service";
@@ -29,10 +29,17 @@ export default class Hasura extends BaseCommand {
     const endpoint = `${parsedUrl.hostname}:${parsedUrl.port}`;
     const argsStr = `--endpoint http://${endpoint} --admin-secret ${flags.adminSecret}`;
 
-    await callSystem("docker build -t hasura_cli ./scripts/containers/hasura-cli");
+    await callSystem(
+      "docker build -t hasura_cli ./scripts/containers/hasura-cli",
+    );
 
     const cliCmd = `hasura-cli ${args.cmd} ${argsStr}`;
 
-    return await callSystem(`docker run --rm --name hasura-cli-tool -v ${flags.hasuraDir}:/config -v ${flags.hasuraDir}/migrations:/migrations -v ${flags.hasuraDir}/metadata:/metadata -v ${flags.hasuraDir}/seeds:/seeds hasura_cli sh -c "${cliCmd}"`);
+    return await callSystem(`docker run --rm --network ${flags.networkName} \
+      --name hasura-cli-tool --network-alias hasura-cli-tool -v \
+      ${flags.hasuraDir}/config.yaml:/config.yaml -v \
+      ${flags.hasuraDir}/migrations:/migrations -v \
+      ${flags.hasuraDir}/metadata:/metadata -v \
+      ${flags.hasuraDir}/seeds:/seeds -i --entrypoint sh hasura_cli:latest -c ${cliCmd}`);
   }
 }

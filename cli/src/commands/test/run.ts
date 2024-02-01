@@ -1,15 +1,15 @@
-import { Flags } from '@oclif/core';
+import { Flags } from "@oclif/core";
 
-import BaseCommand from '../../BaseCommand.js';
-import { callSystem } from '../../utils.js';
+import BaseCommand from "../../BaseCommand.js";
+import { callSystem } from "../../utils.js";
 
 export default class TestRun extends BaseCommand {
   static description = "Test project with stepci";
 
   static flags = {
     ...BaseCommand.flags,
-    "testDir": Flags.string({ default: `${process.cwd()}/test/stepci` }),
-    "ymlFile": Flags.string({ default: "tests/workflow.yml" }),
+    testDir: Flags.string({ default: `${process.cwd()}/test/stepci` }),
+    ymlFile: Flags.string({ default: "tests/workflow.yml" }),
   };
 
   public async run(): Promise<void> {
@@ -23,12 +23,16 @@ export default class TestRun extends BaseCommand {
 
     const runCommand = [
       "--rm",
-      "--network", this.context.networkName,
-      "--name", "stepci-test",
-      "--network-alias", "stepci-test",
-      "-v", `${testDir}:/tests`,
+      "--network",
+      this.context.networkName,
+      "--name",
+      "stepci-test",
+      "--network-alias",
+      "stepci-test",
+      "-v",
+      `${testDir}:/tests`,
       "-i",
-      ...envFiles.flatMap(e => ["--env-file", e]),
+      ...envFiles.flatMap((e) => ["--env-file", e]),
       "stepci-test:latest",
       ymlFile,
     ];
