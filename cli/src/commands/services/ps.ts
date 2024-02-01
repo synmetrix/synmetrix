@@ -16,7 +16,7 @@ export default class ServicesPs extends BaseCommand {
     const env = this.context.runtimeEnv;
 
     if (env === "dev") {
-      callCompose(this.context, "ps")
+      await callCompose(this.context, "ps")
     } else {
       const commandArgs = [];
 
@@ -24,7 +24,7 @@ export default class ServicesPs extends BaseCommand {
         commandArgs.push(args.name);
       }
 
-      callSystem(`docker stack ps --no-trunc ${commandArgs.join(" ")}`);
+      await callSystem(`docker stack ps --no-trunc ${commandArgs.join(" ")}`);
     }
   }
 }

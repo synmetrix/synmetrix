@@ -1,5 +1,5 @@
-import {Args, Flags} from "@oclif/core";
-import {URL} from "node:url";
+import { Args, Flags } from "@oclif/core";
+import { URL } from "node:url";
 
 import BaseCommand from "../../BaseCommand.js";
 import { callSystem } from "../../utils.js";
@@ -17,12 +17,12 @@ export default class Hasura extends BaseCommand {
 
   static flags = {
     ...BaseCommand.flags,
-    adminSecret: Flags.string({env: "HASURA_GRAPHQL_ADMIN_SECRET"}),
-    hasuraAddr: Flags.string({default: "http://hasura:8080"}),
-    hasuraDir: Flags.string({default: "./services/hasura"}),
+    adminSecret: Flags.string({ env: "HASURA_GRAPHQL_ADMIN_SECRET" }),
+    hasuraAddr: Flags.string({ default: "http://hasura:8080" }),
+    hasuraDir: Flags.string({ default: "./services/hasura" }),
   };
 
-  async run(): Promise<void> {
+  async run(): Promise<ProcessOutput> {
     const { args, flags } = await this.parse(Hasura);
     const parsedUrl = new URL(flags.hasuraAddr);
 
@@ -33,6 +33,6 @@ export default class Hasura extends BaseCommand {
 
     const cliCmd = `hasura-cli ${args.cmd} ${argsStr}`;
 
-    await callSystem(`docker run --rm --name hasura-cli-tool -v ${flags.hasuraDir}:/config -v ${flags.hasuraDir}/migrations:/migrations -v ${flags.hasuraDir}/metadata:/metadata -v ${flags.hasuraDir}/seeds:/seeds hasura_cli sh -c "${cliCmd}"`);
+    return await callSystem(`docker run --rm --name hasura-cli-tool -v ${flags.hasuraDir}:/config -v ${flags.hasuraDir}/migrations:/migrations -v ${flags.hasuraDir}/metadata:/metadata -v ${flags.hasuraDir}/seeds:/seeds hasura_cli sh -c "${cliCmd}"`);
   }
 }

@@ -11,9 +11,9 @@ export default class ServicesEx extends BaseCommand {
 
   static description = "Exec command in container";
 
-  public async run(): Promise<ProcessOutput> {
+  public async run(): Promise<void> {
     const { args } = await this.parse(ServicesEx);
 
-    return callCompose(this.context, `exec ${args.name} ${args.cmd}`);
+    await callCompose(this.context, `exec ${args.name} ${args.cmd}`);
   }
 }

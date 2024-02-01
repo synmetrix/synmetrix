@@ -8,6 +8,7 @@
     "@oclif/plugin-help": "^6",
     "@oclif/plugin-plugins": "^4",
     "dotenv": "^16.4.1",
+    "eslint-plugin-oclif": "^0.1.0",
     "js-yaml": "^4.1.0",
     "zx": "^7.2.3"
   },
@@ -25,6 +26,7 @@
     "eslint-config-oclif-typescript": "^3",
     "mocha": "^10",
     "oclif": "^4.3.6",
+    "prettier": "^3.2.4",
     "shx": "^0.3.4",
     "ts-node": "^10.9.2",
     "typescript": "^5"
@@ -58,7 +60,7 @@
     "postpack": "shx rm -f oclif.manifest.json",
     "prepack": "yarn build && oclif manifest && oclif readme",
     "prepare": "yarn build",
-    "test": "TEST_OUTPUT=1 mocha --no-warnings --require ./test/setup.js --forbid-only \"./cli/test/**/*.test.ts\"",
+    "test": "mocha --no-warnings --require ./test/setup.js \"./cli/test/**/*.test.ts\"",
     "version": "oclif readme && git add README.md"
   },
   "version": "0.0.0",

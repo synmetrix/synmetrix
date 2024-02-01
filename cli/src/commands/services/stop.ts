@@ -20,7 +20,7 @@ export default class Stop extends BaseCommand {
     ...BaseCommand.flags,
   };
 
-  async run(): Promise<void> {
+  async run(): Promise<ProcessOutput> {
     const { args } = await this.parse(Stop);
 
     const commandArgs = [];
@@ -28,6 +28,6 @@ export default class Stop extends BaseCommand {
       commandArgs.push(args.name);
     }
 
-    await callCompose(this.context, `stop ${commandArgs.join(" ")}`);
+    return await callCompose(this.context, `stop ${commandArgs.join(" ")}`);
   }
 }

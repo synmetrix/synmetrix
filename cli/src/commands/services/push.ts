@@ -18,7 +18,7 @@ export default class ServicesPush extends BaseCommand {
       commandArgs.push(args.name);
     }
 
-    callCompose(this.context, `build ${commandArgs.join(" ")}`);
-    callCompose(this.context, `push ${commandArgs.join(" ")}`);
+    await callCompose(this.context, `build ${commandArgs.join(" ")}`);
+    await callCompose(this.context, `push ${commandArgs.join(" ")}`);
   }
 }

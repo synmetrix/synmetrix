@@ -16,7 +16,7 @@ export default class ServicesLogs extends BaseCommand {
     tail: Flags.integer({ default: 100, description: "Number of last rows to show" }),
   }
 
-  public async run(): Promise<ProcessOutput> {
+  public async run(): Promise<void> {
     const { args, flags } = await this.parse(ServicesLogs)
 
     const commandArgs = [`-f --tail ${flags.tail}`];
@@ -26,9 +26,9 @@ export default class ServicesLogs extends BaseCommand {
 
     const env = this.context.runtimeEnv;
     if (env === "dev") {
-      return await callCompose(this.context, `logs ${commandArgs.join(" ")}`)
+      await callCompose(this.context, `logs ${commandArgs.join(" ")}`)
     } else {
-      return await callService(this.context, `logs ${commandArgs.join(" ")}`)
+      await callService(this.context, `logs ${commandArgs.join(" ")}`)
     }
   }
 }
