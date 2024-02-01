@@ -134,16 +134,10 @@ services:
       - .env
       - .dev.env
     healthcheck:
-      test:
-        [
-          "CMD",
-          "curl",
-          "-f",
-          "http://localhost:9000/minio/health/live"
-        ]
-      interval: 30s
-      timeout: 20s
-      retries: 3
+      test: ["CMD", "mc", "ready", "local"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
     networks:
       - synmetrix_default
 
@@ -166,12 +160,13 @@ services:
         HASURA_GRAPHQL_ENDPOINT: /v1/graphql
         HASURA_WS_ENDPOINT: /v1/graphql
         GRAPHQL_PLUS_SERVER_URL: 
-        CUBEJS_MYSQL_API_URL: tcp://localhost:13306
-        CUBEJS_PG_API_URL: tcp://localhost:15432
-        CUBEJS_REST_API_URL: http://localhost/api/v1/load
+        CUBEJS_MYSQL_API_URL: localhost:13306
+        CUBEJS_PG_API_URL: localhost:15432
+        CUBEJS_REST_API_URL: /api/v1/load
         CUBEJS_API_DOCS_URL: http://localhost:4000/docs
     ports:
       - 80:8888
+      - 9055:9055
     depends_on:
       - hasura
       - hasura_plus

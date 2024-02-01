@@ -5,6 +5,8 @@ import {
   PutObjectCommand,
   S3Client,
 } from "@aws-sdk/client-s3";
+import { NodeHttpHandler } from "@aws-sdk/node-http-handler";
+import * as https from "https";
 
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 
@@ -16,13 +18,13 @@ const {
   AWS_S3_SECRET_ACCESS_KEY,
   AWS_S3_REGION,
   MINIO_DEV_PROXY,
-  NODE_ENV,
+  AWS_S3_PRESIGNED_URL_EXPIRES_IN: AWS_S3_PRESIGNED_URL_EXPIRES_IN_RAW,
+  AWS_S3_REJECT_UNAUTHORIZED,
 } = process.env;
 
-const dev = NODE_ENV !== "production";
-
 // 7 days
-const AWS_S3_PRESIGNED_URL_EXPIRES_IN = 7 * 24 * 60 * 60;
+const AWS_S3_PRESIGNED_URL_EXPIRES_IN =
+  AWS_S3_PRESIGNED_URL_EXPIRES_IN_RAW || 7 * 24 * 60 * 60;
 
 const s3ClientConfig = {
   forcePathStyle: true,
@@ -31,6 +33,14 @@ const s3ClientConfig = {
     accessKeyId: AWS_S3_ACCESS_KEY_ID,
     secretAccessKey: AWS_S3_SECRET_ACCESS_KEY,
   },
+  requestHandler: new NodeHttpHandler({
+    httpsAgent: new https.Agent({
+      rejectUnauthorized:
+        AWS_S3_REJECT_UNAUTHORIZED !== undefined
+          ? AWS_S3_REJECT_UNAUTHORIZED
+          : true,
+    }),
+  }),
 };
 
 if (AWS_S3_ENDPOINT) {
@@ -122,7 +132,7 @@ export const putFileToBucket = async ({
   }
 
   let resultUrl = url;
-  if (dev) {
+  if (MINIO_DEV_PROXY) {
     resultUrl = resultUrl.replace(AWS_S3_ENDPOINT, MINIO_DEV_PROXY);
   }
 
