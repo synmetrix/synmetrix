@@ -1,4 +1,4 @@
-Synmetrix CLI Documentation
+# Synmetrix CLI Documentation
 
 **Introduction**
 
@@ -9,17 +9,19 @@ The Synmetrix Command Line Interface (CLI) provides a convenient way to manage t
 The Synmetrix CLI is executed using the `./cli.sh` script in the project's root directory. The following commands are available:
 
 <!-- commands -->
-* [`smcli hasura cli CMD`](#smcli-hasura-cli-cmd)
-* [`smcli help [COMMANDS]`](#smcli-help-commands)
-* [`smcli services destroy [NAME]`](#smcli-services-destroy-name)
-* [`smcli services ex NAME CMD`](#smcli-services-ex-name-cmd)
-* [`smcli services logs [NAME]`](#smcli-services-logs-name)
-* [`smcli services ps [NAME]`](#smcli-services-ps-name)
-* [`smcli services push [NAME]`](#smcli-services-push-name)
-* [`smcli services restart [NAME]`](#smcli-services-restart-name)
-* [`smcli services stop [NAME]`](#smcli-services-stop-name)
-* [`smcli services up [NAME]`](#smcli-services-up-name)
-* [`smcli test run`](#smcli-test-run)
+- [Synmetrix CLI Documentation](#synmetrix-cli-documentation)
+  - [`smcli hasura cli CMD`](#smcli-hasura-cli-cmd)
+  - [`smcli help [COMMANDS]`](#smcli-help-commands)
+  - [`smcli services destroy [NAME]`](#smcli-services-destroy-name)
+  - [`smcli services ex NAME CMD`](#smcli-services-ex-name-cmd)
+  - [`smcli services logs [NAME]`](#smcli-services-logs-name)
+  - [`smcli services ps [NAME]`](#smcli-services-ps-name)
+  - [`smcli services push [NAME]`](#smcli-services-push-name)
+  - [`smcli services restart [NAME]`](#smcli-services-restart-name)
+  - [`smcli services stop [NAME]`](#smcli-services-stop-name)
+  - [`smcli services up [NAME]`](#smcli-services-up-name)
+  - [`smcli test run`](#smcli-test-run)
+  - [To test the Synmetrix CLI, you can use the following command:](#to-test-the-synmetrix-cli-you-can-use-the-following-command)
 
 ## `smcli hasura cli CMD`
 
