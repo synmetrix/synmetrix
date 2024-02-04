@@ -33,7 +33,7 @@
     "typescript": "^5"
   },
   "engines": {
-    "node": ">=21.0.0"
+    "node": ">=20.8.1"
   },
   "files": [
     "/bin",
@@ -50,8 +50,7 @@
     "commands": "./dist/commands",
     "topicSeparator": " ",
     "plugins": [
-      "@oclif/plugin-help",
-      "@oclif/plugin-plugins"
+      "@oclif/plugin-help"
     ]
   },
   "repository": "mlcraft-io/mlcraft",
@@ -64,7 +63,7 @@
     "test": "mocha --no-warnings --require ./test/setup.js \"./cli/test/**/*.test.ts\"",
     "version": "oclif readme && git add README.md"
   },
-  "version": "0.0.0",
+  "version": "1.0.0",
   "bugs": "https://github.com/mlcraft-io/mlcraft/issues",
   "keywords": [
     "oclif"
