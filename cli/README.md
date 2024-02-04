@@ -8,111 +8,250 @@ The Synmetrix Command Line Interface (CLI) provides a convenient way to manage t
 
 The Synmetrix CLI is executed using the `./cli.sh` script in the project's root directory. The following commands are available:
 
-1. **services up**
+<!-- commands -->
+* [`smcli hasura cli CMD`](#smcli-hasura-cli-cmd)
+* [`smcli help [COMMANDS]`](#smcli-help-commands)
+* [`smcli services destroy [NAME]`](#smcli-services-destroy-name)
+* [`smcli services ex NAME CMD`](#smcli-services-ex-name-cmd)
+* [`smcli services logs [NAME]`](#smcli-services-logs-name)
+* [`smcli services ps [NAME]`](#smcli-services-ps-name)
+* [`smcli services push [NAME]`](#smcli-services-push-name)
+* [`smcli services restart [NAME]`](#smcli-services-restart-name)
+* [`smcli services stop [NAME]`](#smcli-services-stop-name)
+* [`smcli services up [NAME]`](#smcli-services-up-name)
+* [`smcli test run`](#smcli-test-run)
 
-   - **Description:** Start the containers of the stack.
-   - **Parameters:**
-     - `name` (optional): Specify the name of a particular container to start.
-   - **Command:**
-     ```bash
-     ./cli.sh services up [name]
-     ```
+## `smcli hasura cli CMD`
 
-2. **services stop**
+Manage Hasura service
 
-   - **Description:** Stop the containers of the stack.
-   - **Arguments:**
-     - `name` (optional): Specify the name of a particular container to stop.
-   - **Command:**
-     ```bash
-     ./cli.sh services stop [name]
-     ```
+```
+USAGE
+  $ smcli hasura cli CMD [-n <value>] [-p] [--adminSecret <value>] [--hasuraAddr <value>] [--hasuraDir <value>]
 
-3. **services restart**
+ARGUMENTS
+  CMD  Command, what will provided to Hasura
 
-   - **Description:** Restart the containers of the stack.
-   - **Arguments:**
-     - `name` (optional): Specify the name of a particular container to restart.
-   - **Command:**
-     ```bash
-     ./cli.sh services restart [name]
-     ```
+FLAGS
+  -n, --networkName=<value>  [default: synmetrix_default] Docker network name
+  -p, --stage                Run in stage environment
+  --adminSecret=<value>
+      --hasuraAddr=<value>   [default: http://hasura:8080]
+      --hasuraDir=<value>    [default: ./services/hasura]
 
-4. **services destroy**
+DESCRIPTION
+  Manage Hasura service
+```
 
-   - **Description:** Destroy (remove) the containers of the stack.
-   - **Arguments:**
-     - `name` (optional): Specify the name of a particular container to destroy.
-   - **Command:**
-     ```bash
-     ./cli.sh services destroy [name]
-     ```
+_See code: [src/commands/hasura/cli.ts](https://github.com/mlcraft-io/mlcraft/blob/v1.0.0/src/commands/hasura/cli.ts)_
 
-5. **services ex**
+## `smcli help [COMMANDS]`
 
-   - **Description:** Execute a command within a container.
-   - **Arguments:**
-     - `name`: Specify the name of the container where the command will be executed.
-     - `cmd`: Specify the command to be executed within the container.
-   - **Command:**
-     ```bash
-     ./cli.sh services ex [name] [cmd]
-     ```
+Display help for smcli.
 
-6. **services run**
+```
+USAGE
+  $ smcli help [COMMANDS] [-n]
 
-   - **Description:** Run the Docker Compose stack.
-   - **Arguments:**
-     - `name` (optional): Specify the name of a particular container.
-   - **Command:**
-     ```bash
-     ./cli.sh services run [name]
-     ```
+ARGUMENTS
+  COMMANDS  Command to show help for.
 
-7. **services push**
+FLAGS
+  -n, --nested-commands  Include all nested commands in the output.
 
-   - **Description:** Push Docker Compose images.
-   - **Arguments:**
-     - `name` (optional): Specify the name of a particular container.
-   - **Command:**
-     ```bash
-     ./cli.sh services push [name]
-     ```
+DESCRIPTION
+  Display help for smcli.
+```
 
-8. **services ps**
+_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v6.0.11/src/commands/help.ts)_
 
-   - **Description:** Display the status of containers.
-   - **Command:**
-     ```bash
-     ./cli.sh services ps
-     ```
+## `smcli services destroy [NAME]`
 
-9. **services logs**
+DESTROY Docker Compose stack
 
-   - **Description:** View logs of all containers or logs of a specific container.
-   - **Arguments:**
-     - `name` (optional): Specify the name of a particular container.
-   - **Command:**
-     ```bash
-     ./cli.sh services logs [name]
-     ```
+```
+USAGE
+  $ smcli services destroy [NAME] [-n <value>] [-p]
 
-10. **hasura cli cmd**
+ARGUMENTS
+  NAME  Container name to destroy
 
-    - **Description:** Execute a command in Hasura.
-    - **Examples:**
-      - View possible actions:
-        ```bash
-        ./cli.sh hasura cli actions
-        ```
+FLAGS
+  -n, --networkName=<value>  [default: synmetrix_default] Docker network name
+  -p, --stage                Run in stage environment
 
-11. **test run**
+DESCRIPTION
+  DESTROY Docker Compose stack
+```
 
-    - **Description:** Run project tests using StepCI.
-    - **Command:**
-      ```bash
-      ./cli.sh test run
-      ```
+_See code: [src/commands/services/destroy.ts](https://github.com/mlcraft-io/mlcraft/blob/v1.0.0/src/commands/services/destroy.ts)_
+
+## `smcli services ex NAME CMD`
+
+Exec command in container
+
+```
+USAGE
+  $ smcli services ex NAME CMD [-n <value>] [-p]
+
+ARGUMENTS
+  NAME  Container name for command
+  CMD   Command to execute
+
+FLAGS
+  -n, --networkName=<value>  [default: synmetrix_default] Docker network name
+  -p, --stage                Run in stage environment
+
+DESCRIPTION
+  Exec command in container
+```
+
+_See code: [src/commands/services/ex.ts](https://github.com/mlcraft-io/mlcraft/blob/v1.0.0/src/commands/services/ex.ts)_
+
+## `smcli services logs [NAME]`
+
+Print logs for a Docker containers
+
+```
+USAGE
+  $ smcli services logs [NAME] [-n <value>] [-p] [--tail <value>]
+
+ARGUMENTS
+  NAME  Name of the container to print logs for
+
+FLAGS
+  -n, --networkName=<value>  [default: synmetrix_default] Docker network name
+  -p, --stage                Run in stage environment
+      --tail=<value>         [default: 100] Number of last rows to show
+
+DESCRIPTION
+  Print logs for a Docker containers
+```
+
+_See code: [src/commands/services/logs.ts](https://github.com/mlcraft-io/mlcraft/blob/v1.0.0/src/commands/services/logs.ts)_
+
+## `smcli services ps [NAME]`
+
+PS all containers
+
+```
+USAGE
+  $ smcli services ps [NAME] [-n <value>] [-p]
+
+FLAGS
+  -n, --networkName=<value>  [default: synmetrix_default] Docker network name
+  -p, --stage                Run in stage environment
+
+DESCRIPTION
+  PS all containers
+```
+
+_See code: [src/commands/services/ps.ts](https://github.com/mlcraft-io/mlcraft/blob/v1.0.0/src/commands/services/ps.ts)_
+
+## `smcli services push [NAME]`
+
+Push Docker Compose images
+
+```
+USAGE
+  $ smcli services push [NAME] [-n <value>] [-p]
+
+ARGUMENTS
+  NAME  Container name to push
+
+FLAGS
+  -n, --networkName=<value>  [default: synmetrix_default] Docker network name
+  -p, --stage                Run in stage environment
+
+DESCRIPTION
+  Push Docker Compose images
+```
+
+_See code: [src/commands/services/push.ts](https://github.com/mlcraft-io/mlcraft/blob/v1.0.0/src/commands/services/push.ts)_
+
+## `smcli services restart [NAME]`
+
+Restart the running container(s)
+
+```
+USAGE
+  $ smcli services restart [NAME] [-n <value>] [-p]
+
+ARGUMENTS
+  NAME  Container name to restart
+
+FLAGS
+  -n, --networkName=<value>  [default: synmetrix_default] Docker network name
+  -p, --stage                Run in stage environment
+
+DESCRIPTION
+  Restart the running container(s)
+```
+
+_See code: [src/commands/services/restart.ts](https://github.com/mlcraft-io/mlcraft/blob/v1.0.0/src/commands/services/restart.ts)_
+
+## `smcli services stop [NAME]`
+
+Stop container(s)
+
+```
+USAGE
+  $ smcli services stop [NAME] [-n <value>] [-p]
+
+ARGUMENTS
+  NAME  Container name
+
+FLAGS
+  -n, --networkName=<value>  [default: synmetrix_default] Docker network name
+  -p, --stage                Run in stage environment
+
+DESCRIPTION
+  Stop container(s)
+```
+
+_See code: [src/commands/services/stop.ts](https://github.com/mlcraft-io/mlcraft/blob/v1.0.0/src/commands/services/stop.ts)_
+
+## `smcli services up [NAME]`
+
+Up docker compose stack
+
+```
+USAGE
+  $ smcli services up [NAME] [-n <value>] [-p]
+
+ARGUMENTS
+  NAME  Container name to up
+
+FLAGS
+  -n, --networkName=<value>  [default: synmetrix_default] Docker network name
+  -p, --stage                Run in stage environment
+
+DESCRIPTION
+  Up docker compose stack
+```
+
+_See code: [src/commands/services/up.ts](https://github.com/mlcraft-io/mlcraft/blob/v1.0.0/src/commands/services/up.ts)_
+
+## `smcli test run`
+
+Test project with stepci
+
+```
+USAGE
+  $ smcli test run [-n <value>] [-p] [--testDir <value>] [--ymlFile <value>]
+
+FLAGS
+  -n, --networkName=<value>  [default: synmetrix_default] Docker network name
+  -p, --stage                Run in stage environment
+      --testDir=<value>      [default: /Users/user/Code/mlcraft_bi/cli/test/stepci]
+      --ymlFile=<value>      [default: tests/workflow.yml]
+
+DESCRIPTION
+  Test project with stepci
+```
+
+_See code: [src/commands/test/run.ts](https://github.com/mlcraft-io/mlcraft/blob/v1.0.0/src/commands/test/run.ts)_
+<!-- commandsstop -->
 
 ## To test the Synmetrix CLI, you can use the following command:
 

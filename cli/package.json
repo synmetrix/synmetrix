@@ -47,7 +47,7 @@
   "oclif": {
     "bin": "smcli",
     "dirname": "smcli",
-    "commands": "./dist/commands",
+    "commands": "./dist/src/commands",
     "topicSeparator": " ",
     "plugins": [
       "@oclif/plugin-help"
