@@ -15,7 +15,7 @@ export const callCompose = async (
 ): Promise<ProcessOutput> => {
   const dockerFile = ["-f", ctx.dockerComposeFile];
 
-  return await $`docker compose ${[...dockerFile, ...args]}`;
+  return await $`docker-compose ${[...dockerFile, ...args]}`;
 };
 
 export const callSwarm = async (
@@ -27,7 +27,7 @@ export const callSwarm = async (
   const stackArgs = [
     ...args,
     "-c",
-    `<(echo -e "version: \'3.9\'"; docker compose ${composeArgs} config | (sed "/published:/s/\\"//g") | (sed "/^name:/d"))`,
+    `<(echo -e "version: \'3.9\'"; docker-compose ${composeArgs} config | (sed "/published:/s/\\"//g") | (sed "/^name:/d"))`,
   ];
 
   return await $`docker stack ${stackArgs}`;
