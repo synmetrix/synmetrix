@@ -1,7 +1,7 @@
 import { Args } from "@oclif/core";
 
 import BaseCommand from "../../BaseCommand.js";
-import { callCompose, callService } from "../../utils.js";
+import { callCompose, callSwarm } from "../../utils.js";
 
 export default class ServicesUp extends BaseCommand {
   static args = {
@@ -23,7 +23,7 @@ export default class ServicesUp extends BaseCommand {
       commandArgs.push("-d", "--build");
       return await callCompose(this.context, commandArgs);
     } else {
-      return await callService(this.context, commandArgs);
+      return await callSwarm(this.context, commandArgs);
     }
   }
 }

@@ -19,7 +19,7 @@ export default class Hasura extends BaseCommand {
     ...BaseCommand.flags,
     adminSecret: Flags.string({ env: "HASURA_GRAPHQL_ADMIN_SECRET" }),
     hasuraAddr: Flags.string({ default: "http://hasura:8080" }),
-    hasuraDir: Flags.string({ default: "./services/hasura" }),
+    hasuraDir: Flags.string({ default: `${process.cwd()}/services/hasura` }),
   };
 
   async run(): Promise<ProcessOutput> {
@@ -31,7 +31,7 @@ export default class Hasura extends BaseCommand {
 
     await $`docker build ${["-t", "hasura_cli", "./scripts/containers/hasura-cli"]}`;
 
-    const cliCmd = ["hasura-cli", `"${args.cmd.split(' ')}"`, ...argsStr];
+    const cliCmd = ["hasura-cli", args.cmd, ...argsStr];
 
     const mainArgs = [
       "--rm", "--network", `${flags.networkName}`,
@@ -39,10 +39,9 @@ export default class Hasura extends BaseCommand {
       `${flags.hasuraDir}/config.yaml:/config.yaml`, "-v",
       `${flags.hasuraDir}/migrations:/migrations`, "-v",
       `${flags.hasuraDir}/metadata:/metadata`, "-v",
-      `${flags.hasuraDir}/seeds:/seeds`, "-i", "--entrypoint", "sh", "hasura_cli:latest", "-c", ...cliCmd
+      `${flags.hasuraDir}/seeds:/seeds`, "-i", "--entrypoint", "sh", "hasura_cli:latest", "-c", `${cliCmd.join(' ')}`
     ]
 
-    console.log(mainArgs);
     return await $`docker run ${mainArgs}`;
   }
 }
