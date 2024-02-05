@@ -11,19 +11,18 @@ export default class ServicesUp extends BaseCommand {
   static description = "Up docker compose stack";
 
   public async run(): Promise<ProcessOutput> {
-    const { args } = await this.parse(ServicesUp);
+    const { args, flags } = await this.parse(ServicesUp);
 
     const commandArgs = ["up"];
     if (args.name) {
       commandArgs.push(args.name);
     }
 
-    const env = this.context.runtimeEnv;
-    if (env === "dev") {
+    if (flags.swarm) {
+      return await callSwarm(this.context, commandArgs);
+    } else {
       commandArgs.push("-d", "--build");
       return await callCompose(this.context, commandArgs);
-    } else {
-      return await callSwarm(this.context, commandArgs);
     }
   }
 }

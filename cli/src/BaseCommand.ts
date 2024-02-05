@@ -1,5 +1,6 @@
 import { Command, Flags } from "@oclif/core";
 import { config } from "dotenv";
+import { pathExists } from "fs-extra";
 import path from "path";
 import "zx/globals";
 
@@ -18,14 +19,23 @@ export default class BaseCommand extends Command {
 
   static flags = {
     ...Command.flags,
-    shell: Flags.string({ description: "Shell for exec commands" }),
+    shell: Flags.string({
+      char: "s",
+      description: "Shell for exec commands",
+    }),
     networkName: Flags.string({
       char: "n",
       description: "Docker network name",
       default: NETWORK_NAME,
     }),
+    env: Flags.string({
+      char: "e",
+      default: "dev",
+      description: "Environment",
+    }),
     swarm: Flags.boolean({
-      char: "p",
+      char: "s",
+      default: false,
       description: "Run in swarm mode",
     }),
   };
@@ -34,14 +44,26 @@ export default class BaseCommand extends Command {
 
   protected async init(): Promise<void> {
     const { flags } = await this.parse(this.constructor as typeof Command);
-    const env = flags.swarm ? "stage" : "dev";
+    const env = flags.env;
 
     const envFiles = [".env", `.${env}.env`];
     for (const envFile of envFiles) {
+      const envExists = await pathExists(envFile);
+
+      if (!envExists) {
+        throw new Error(`Env file ${envFile} is not exists`);
+      }
+
       config({ path: path.resolve(envFile) });
     }
 
     if (flags.shell) {
+      const shellExists = await pathExists(flags.shell);
+
+      if (!shellExists) {
+        throw new Error("Shell is not exists, please check \"--shell=\" flag");
+      }
+
       $.shell = flags.shell;
     }
 
