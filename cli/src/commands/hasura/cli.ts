@@ -35,11 +35,12 @@ export default class Hasura extends BaseCommand {
 
     const mainArgs = [
       "--rm", "--network", `${flags.networkName}`,
-      "--name", "hasura-cli-tool", "--network-alias", "hasura-cli-tool", "-v",
-      `${flags.hasuraDir}/config.yaml:/config.yaml`, "-v",
-      `${flags.hasuraDir}/migrations:/migrations`, "-v",
-      `${flags.hasuraDir}/metadata:/metadata`, "-v",
-      `${flags.hasuraDir}/seeds:/seeds`, "-i", "--entrypoint", "sh", "hasura_cli:latest", "-c", `${cliCmd.join(' ')}`
+      "--name", "hasura-cli-tool", "--network-alias", "hasura-cli-tool",
+      "-v", `${flags.hasuraDir}/config.yaml:/config.yaml`,
+      "-v", `${flags.hasuraDir}/migrations:/migrations`,
+      "-v", `${flags.hasuraDir}/metadata:/metadata`,
+      "-v", `${flags.hasuraDir}/seeds:/seeds`,
+       "-i", "--entrypoint", "sh", "hasura_cli:latest", "-c", `${cliCmd.join(' ')}`
     ]
 
     return await $`docker run ${mainArgs}`;
