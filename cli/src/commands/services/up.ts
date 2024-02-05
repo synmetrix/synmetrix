@@ -13,17 +13,17 @@ export default class ServicesUp extends BaseCommand {
   public async run(): Promise<ProcessOutput> {
     const { args } = await this.parse(ServicesUp);
 
-    const commandArgs = [];
+    const commandArgs = ["up"];
     if (args.name) {
       commandArgs.push(args.name);
     }
 
     const env = this.context.runtimeEnv;
     if (env === "dev") {
-      commandArgs.push("-d --build");
-      return await callCompose(this.context, `up ${commandArgs.join(" ")}`);
+      commandArgs.push("-d", "--build");
+      return await callCompose(this.context, commandArgs);
     } else {
-      return await callService(this.context, `up ${commandArgs.join(" ")}`);
+      return await callService(this.context, commandArgs);
     }
   }
 }

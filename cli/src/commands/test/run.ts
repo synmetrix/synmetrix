@@ -1,7 +1,7 @@
 import { Flags } from "@oclif/core";
 
 import BaseCommand from "../../BaseCommand.js";
-import { callSystem } from "../../utils.js";
+import "zx/globals";
 
 export default class TestRun extends BaseCommand {
   static description = "Test project with stepci";
@@ -16,7 +16,7 @@ export default class TestRun extends BaseCommand {
     const { flags } = await this.parse(TestRun);
     const { testDir, ymlFile } = flags;
 
-    await callSystem("docker build -t stepci-test ./scripts/containers/stepci");
+    await $`docker build -t stepci-test ./scripts/containers/stepci`;
 
     const env = this.context.runtimeEnv;
     const envFiles = [".env", `.${env}.env`];
@@ -37,6 +37,6 @@ export default class TestRun extends BaseCommand {
       ymlFile,
     ];
 
-    await callSystem(`docker run ${runCommand.join(" ")}`);
+    await $`docker run ${runCommand}`;
   }
 }

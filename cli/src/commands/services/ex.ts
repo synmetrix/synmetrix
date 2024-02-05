@@ -17,6 +17,6 @@ export default class ServicesEx extends BaseCommand {
   public async run(): Promise<void> {
     const { args } = await this.parse(ServicesEx);
 
-    await callCompose(this.context, `exec ${args.name} ${args.cmd}`);
+    await callCompose(this.context, ["exec", args.name, args.cmd]);
   }
 }

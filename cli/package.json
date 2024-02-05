@@ -60,7 +60,7 @@
     "postpack": "shx rm -f oclif.manifest.json",
     "prepack": "yarn build && oclif manifest && oclif readme",
     "prepare": "yarn build",
-    "test": "mocha --no-warnings --require ./test/setup.js \"./cli/test/**/*.test.ts\"",
+    "test": "TEST_OUTPUT=1 mocha --no-warnings --require ./test/setup.js \"./cli/test/**/*.test.ts\"",
     "version": "oclif readme && git add README.md"
   },
   "version": "1.0.0",

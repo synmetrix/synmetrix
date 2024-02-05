@@ -1,7 +1,8 @@
 import { Args } from "@oclif/core";
 
 import BaseCommand from "../../BaseCommand.js";
-import { callCompose, callSystem } from "../../utils.js";
+import { callCompose } from "../../utils.js";
+import "zx/globals";
 
 export default class ServicesPs extends BaseCommand {
   static args = {
@@ -16,7 +17,7 @@ export default class ServicesPs extends BaseCommand {
     const env = this.context.runtimeEnv;
 
     if (env === "dev") {
-      await callCompose(this.context, "ps");
+      await callCompose(this.context, ["ps"]);
     } else {
       const commandArgs = [];
 
@@ -24,7 +25,7 @@ export default class ServicesPs extends BaseCommand {
         commandArgs.push(args.name);
       }
 
-      await callSystem(`docker stack ps --no-trunc ${commandArgs.join(" ")}`);
+      await $`docker stack ps --no-trunc ${commandArgs}`;
     }
   }
 }

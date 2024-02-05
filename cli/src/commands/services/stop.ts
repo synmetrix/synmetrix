@@ -28,6 +28,6 @@ export default class Stop extends BaseCommand {
       commandArgs.push(args.name);
     }
 
-    return await callCompose(this.context, `stop ${commandArgs.join(" ")}`);
+    return await callCompose(this.context, ["stop", ...commandArgs]);
   }
 }

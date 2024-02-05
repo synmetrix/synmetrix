@@ -22,9 +22,9 @@ export default class BaseCommand extends Command {
       description: "Docker network name",
       default: NETWORK_NAME,
     }),
-    stage: Flags.boolean({
+    swarm: Flags.boolean({
       char: "p",
-      description: "Run in stage environment",
+      description: "Run in swarm mode",
     }),
   };
 
@@ -32,7 +32,7 @@ export default class BaseCommand extends Command {
 
   protected async init(): Promise<void> {
     const { flags } = await this.parse(this.constructor as typeof Command);
-    const env = flags.stage ? "stage" : "dev";
+    const env = flags.swarm ? "stage" : "dev";
 
     const envFiles = [".env", `.${env}.env`];
     for (const envFile of envFiles) {

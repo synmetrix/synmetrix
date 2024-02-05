@@ -18,6 +18,6 @@ export default class ServicesRestart extends BaseCommand {
       commandArgs.push(args.name);
     }
 
-    await callCompose(this.context, `restart ${commandArgs.join(" ")}`);
+    await callCompose(this.context, ["restart", ...commandArgs]);
   }
 }
