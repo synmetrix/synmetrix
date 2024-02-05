@@ -2,6 +2,8 @@ import "zx/globals";
 
 import type { CustomContext } from "./BaseCommand.js";
 
+export const PROJECT_DIR = process.cwd();
+
 export const callService = async (
   ctx: CustomContext,
   args: string[],

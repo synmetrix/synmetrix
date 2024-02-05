@@ -11,13 +11,13 @@ export default class ServicesPs extends BaseCommand {
 
   static description = "PS all containers";
 
-  public async run(): Promise<void> {
+  public async run(): Promise<ProcessOutput> {
     const { args } = await this.parse(ServicesPs);
 
     const env = this.context.runtimeEnv;
 
     if (env === "dev") {
-      await callCompose(this.context, ["ps"]);
+      return await callCompose(this.context, ["ps"]);
     } else {
       const commandArgs = [];
 
@@ -25,7 +25,7 @@ export default class ServicesPs extends BaseCommand {
         commandArgs.push(args.name);
       }
 
-      await $`docker stack ps --no-trunc ${commandArgs}`;
+      return await $`docker stack ps --no-trunc ${commandArgs}`;
     }
   }
 }

@@ -6,6 +6,6 @@ describe("services:ps", () => {
     .stderr()
     .command(["services:ps"])
     .it("runs services:ps", (ctx) => {
-      expect(ctx.stderr).to.contain("mailhog/mailhog");
+      expect(ctx.stderr).to.contain("0.0.0.0:9000");
     });
 });

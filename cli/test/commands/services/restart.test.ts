@@ -5,13 +5,13 @@ describe("services:restart", () => {
     .stderr()
     .command(["services:restart"])
     .it("runs services:restart without arguments", (ctx) => {
-      expect(ctx.stderr).to.contain("hasura-1  Restarting");
+      expect(ctx.stderr).to.match(/hasura_1.+done/);
     });
 
   test
     .stderr()
     .command(["services:restart", "actions"])
     .it("runs services:restart with a container name argument", (ctx) => {
-      expect(ctx.stderr).to.contain("actions-1  Restarting");
+      expect(ctx.stderr).to.match(/actions_1.+done/);
     });
 });

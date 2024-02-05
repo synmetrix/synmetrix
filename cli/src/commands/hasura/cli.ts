@@ -1,8 +1,9 @@
+import "zx/globals";
 import { Args, Flags } from "@oclif/core";
 import { URL } from "node:url";
 
 import BaseCommand from "../../BaseCommand.js";
-import "zx/globals";
+import { PROJECT_DIR } from "../../utils.js";
 
 export default class Hasura extends BaseCommand {
   static args = {
@@ -19,7 +20,7 @@ export default class Hasura extends BaseCommand {
     ...BaseCommand.flags,
     adminSecret: Flags.string({ env: "HASURA_GRAPHQL_ADMIN_SECRET" }),
     hasuraAddr: Flags.string({ default: "http://hasura:8080" }),
-    hasuraDir: Flags.string({ default: `${process.cwd()}/services/hasura` }),
+    hasuraDir: Flags.string({ default: `${PROJECT_DIR}/services/hasura` }),
   };
 
   async run(): Promise<ProcessOutput> {

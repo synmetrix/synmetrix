@@ -14,6 +14,11 @@ export default class ServicesUp extends BaseCommand {
     const { args, flags } = await this.parse(ServicesUp);
 
     const commandArgs = ["up"];
+
+    if (flags.env === "dev") {
+      commandArgs.push("-d", "--build");
+    }
+
     if (args.name) {
       commandArgs.push(args.name);
     }
@@ -21,7 +26,6 @@ export default class ServicesUp extends BaseCommand {
     if (flags.swarm) {
       return await callSwarm(this.context, commandArgs);
     } else {
-      commandArgs.push("-d", "--build");
       return await callCompose(this.context, commandArgs);
     }
   }

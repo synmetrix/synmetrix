@@ -12,20 +12,22 @@ export default class ServicesDestroy extends BaseCommand {
   static description = "DESTROY Docker Compose stack";
 
   public async run() {
-    const { args } = await this.parse(ServicesDestroy);
+    const { args, flags } = await this.parse(ServicesDestroy);
 
     const commandArgs = [];
     const env = this.context.runtimeEnv;
     if (env === "dev") {
       commandArgs.push("rm", "-s", "-f");
+    }
 
-      return await callCompose(this.context, commandArgs);
+    if (args.name) {
+      commandArgs.push(args.name);
+    }
+
+    if (flags.swarm) {
+      return await $`docker stack rm ${commandArgs}`.pipe(process.stdout);
     } else {
-      if (args.name) {
-        commandArgs.push(args.name);
-      }
-
-      return await $`docker stack rm ${commandArgs}`;
+      return await callCompose(this.context, commandArgs);
     }
   }
 }

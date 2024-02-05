@@ -1,5 +1,4 @@
 import { expect, test } from "@oclif/test";
-import "zx/globals";
 
 describe("test:run", () => {
   test

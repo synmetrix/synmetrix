@@ -6,7 +6,7 @@ describe("services:destroy", () => {
     .stderr()
     .command(["services:destroy", "actions"])
     .it("runs services:destroy with a container name argument", (ctx) => {
-      expect(ctx.stderr).to.contain("Removed");
+      expect(ctx.stderr).to.match(/actions.+done/);
     });
 
   test
@@ -14,6 +14,6 @@ describe("services:destroy", () => {
     .stderr()
     .command(["services:destroy"])
     .it("runs services:destroy without arguments", (ctx) => {
-      expect(ctx.stderr).to.contain("cubejs-1  Removed");
+      expect(ctx.stderr).to.match(/cubejs_1.+done/);
     });
 });

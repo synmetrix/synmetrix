@@ -1,7 +1,7 @@
 import { Command, Flags } from "@oclif/core";
 import { config } from "dotenv";
 import { pathExists } from "fs-extra";
-import path from "path";
+import { PROJECT_DIR } from "./utils.js";
 import "zx/globals";
 
 const NETWORK_NAME = "synmetrix_default";
@@ -48,7 +48,7 @@ export default class BaseCommand extends Command {
 
     const envFiles = [".env", `.${env}.env`];
     for (const envFile of envFiles) {
-      const envPath = path.resolve(envFile);
+      const envPath = `${PROJECT_DIR}/${envFile}`;
       const envExists = await pathExists(envPath);
 
       if (!envExists) {
@@ -69,7 +69,7 @@ export default class BaseCommand extends Command {
     }
 
     this.context = {
-      dockerComposeFile: `docker-compose.${env}.yml`,
+      dockerComposeFile: `${PROJECT_DIR}/docker-compose.${env}.yml`,
       runtimeEnv: env,
       networkName: flags.networkName,
     };

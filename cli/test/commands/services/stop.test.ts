@@ -6,7 +6,7 @@ describe("services:stop", () => {
     .stderr()
     .command("services:stop")
     .it("runs services:up without arguments", (ctx) => {
-      expect(ctx.stderr).to.contain("hasura-1  Stopped");
+      expect(ctx.stderr).to.match(/Stopping mlcraft_redis_1.+done/);
     });
 
   test
@@ -14,6 +14,6 @@ describe("services:stop", () => {
     .stderr()
     .command(["services:stop", "actions"])
     .it("runs services:stop with a container name argument", (ctx) => {
-      expect(ctx.stderr).to.contain("actions-1  Stopped");
+      expect(ctx.stderr).to.match(/Stopping mlcraft_actions_1.+done/);
     });
 });

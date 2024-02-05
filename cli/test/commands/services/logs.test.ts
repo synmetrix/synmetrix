@@ -12,7 +12,7 @@ describe("services:logs", async () => {
         ctx.config.runCommand("services:logs", ["actions"]);
         await wait(5000);
 
-        expect(ctx.stderr).to.contain("actions-1");
+        expect(ctx.stderr).to.contain("actions_1");
         done();
       },
     );
@@ -24,7 +24,7 @@ describe("services:logs", async () => {
       ctx.config.runCommand("services:logs");
       await wait(5000);
 
-      expect(ctx.stderr).to.contain("cubejs-1");
+      expect(ctx.stderr).to.contain("cubejs_1");
       done();
     });
 });
