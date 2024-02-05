@@ -1,6 +1,7 @@
 import { Command, Flags } from "@oclif/core";
 import { config } from "dotenv";
 import path from "path";
+import "zx/globals";
 
 const NETWORK_NAME = "synmetrix_default";
 
@@ -17,6 +18,7 @@ export default class BaseCommand extends Command {
 
   static flags = {
     ...Command.flags,
+    shell: Flags.string({ description: "Shell for exec commands" }),
     networkName: Flags.string({
       char: "n",
       description: "Docker network name",
@@ -37,6 +39,10 @@ export default class BaseCommand extends Command {
     const envFiles = [".env", `.${env}.env`];
     for (const envFile of envFiles) {
       config({ path: path.resolve(envFile) });
+    }
+
+    if (flags.shell) {
+      $.shell = flags.shell;
     }
 
     this.context = {
