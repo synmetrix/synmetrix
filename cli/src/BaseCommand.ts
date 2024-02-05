@@ -48,13 +48,14 @@ export default class BaseCommand extends Command {
 
     const envFiles = [".env", `.${env}.env`];
     for (const envFile of envFiles) {
-      const envExists = await pathExists(envFile);
+      const envPath = path.resolve(envFile);
+      const envExists = await pathExists(envPath);
 
       if (!envExists) {
         throw new Error(`Env file ${envFile} is not exists`);
       }
 
-      config({ path: path.resolve(envFile) });
+      config({ path: envPath });
     }
 
     if (flags.shell) {
