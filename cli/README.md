@@ -40,7 +40,7 @@ FLAGS
   -s, --swarm                Run in swarm mode
   --adminSecret=<value>
       --hasuraAddr=<value>   [default: http://hasura:8080]
-      --hasuraDir=<value>    [default: /home/liberty/code/mlcraft/cli/services/hasura]
+      --hasuraDir=<value>    Default: "./services/hasura"
 
 DESCRIPTION
   Manage Hasura service

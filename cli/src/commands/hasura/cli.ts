@@ -20,12 +20,13 @@ export default class Hasura extends BaseCommand {
     ...BaseCommand.flags,
     adminSecret: Flags.string({ env: "HASURA_GRAPHQL_ADMIN_SECRET" }),
     hasuraAddr: Flags.string({ default: "http://hasura:8080" }),
-    hasuraDir: Flags.string({ default: `${PROJECT_DIR}/services/hasura` }),
+    hasuraDir: Flags.string({ description: 'Default: "./services/hasura"' }),
   };
 
   async run(): Promise<ProcessOutput> {
     const { args, flags } = await this.parse(Hasura);
     const parsedUrl = new URL(flags.hasuraAddr);
+    const hasuraDir = flags?.hasuraDir || `${PROJECT_DIR}/services/hasura`;
 
     const endpoint = `${parsedUrl.hostname}:${parsedUrl.port}`;
     const argsStr = ["--endpoint", `http://${endpoint}`, "--admin-secret", flags.adminSecret];
@@ -37,10 +38,10 @@ export default class Hasura extends BaseCommand {
     const mainArgs = [
       "--rm", "--network", `${flags.networkName}`,
       "--name", "hasura-cli-tool", "--network-alias", "hasura-cli-tool",
-      "-v", `${flags.hasuraDir}/config.yaml:/config.yaml`,
-      "-v", `${flags.hasuraDir}/migrations:/migrations`,
-      "-v", `${flags.hasuraDir}/metadata:/metadata`,
-      "-v", `${flags.hasuraDir}/seeds:/seeds`,
+      "-v", `${hasuraDir}/config.yaml:/config.yaml`,
+      "-v", `${hasuraDir}/migrations:/migrations`,
+      "-v", `${hasuraDir}/metadata:/metadata`,
+      "-v", `${hasuraDir}/seeds:/seeds`,
        "-i", "--entrypoint", "sh", "hasura_cli:latest", "-c", `${cliCmd.join(' ')}`
     ]
 
