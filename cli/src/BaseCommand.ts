@@ -68,7 +68,7 @@ export default class BaseCommand extends Command {
     }
 
     this.context = {
-      dockerComposeFile: `${PROJECT_DIR}/docker-compose.${flags.swarm ? "stack" : env}.yml`,
+      dockerComposeFile: `${PROJECT_DIR}/docker-compose.${env}.yml`,
       runtimeEnv: env,
       networkName: flags.networkName,
     };

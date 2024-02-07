@@ -8,13 +8,14 @@ export default class TestRun extends BaseCommand {
 
   static flags = {
     ...BaseCommand.flags,
-    testDir: Flags.string({ default: `${process.cwd()}/test/stepci` }),
+    testDir: Flags.string({ description: 'Default: "./test/stepci"' }),
     ymlFile: Flags.string({ default: "tests/workflow.yml" }),
   };
 
   public async run(): Promise<void> {
     const { flags } = await this.parse(TestRun);
-    const { testDir, ymlFile } = flags;
+    const { ymlFile } = flags;
+    const testDir = flags.testDir || `${process.cwd()}/test/stepci`;
 
     await $`docker build -t stepci-test ./scripts/containers/stepci`;
 
