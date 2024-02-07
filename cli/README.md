@@ -27,7 +27,7 @@ Manage Hasura service
 
 ```
 USAGE
-  $ smcli hasura cli CMD [-s <value>] [-n <value>] [-e <value>] [-s] [--adminSecret <value>] [--hasuraAddr
+  $ smcli hasura cli CMD [--shell <value>] [-n <value>] [-e <value>] [-s] [--adminSecret <value>] [--hasuraAddr
     <value>] [--hasuraDir <value>]
 
 ARGUMENTS
@@ -36,11 +36,11 @@ ARGUMENTS
 FLAGS
   -e, --env=<value>          [default: dev] Environment
   -n, --networkName=<value>  [default: synmetrix_default] Docker network name
-  -s, --shell=<value>        Shell for exec commands
-  -s, --swarm                Run in swarm mode
+  -s, --swarm                Run in Docker Swarm mode
   --adminSecret=<value>
       --hasuraAddr=<value>   [default: http://hasura:8080]
       --hasuraDir=<value>    Default: "./services/hasura"
+      --shell=<value>        Shell for exec commands (default: /bin/bash)
 
 DESCRIPTION
   Manage Hasura service
@@ -74,7 +74,7 @@ DESTROY Docker Compose stack
 
 ```
 USAGE
-  $ smcli services destroy [NAME] [-s <value>] [-n <value>] [-e <value>] [-s]
+  $ smcli services destroy [NAME] [--shell <value>] [-n <value>] [-e <value>] [-s]
 
 ARGUMENTS
   NAME  Container name to destroy
@@ -82,8 +82,8 @@ ARGUMENTS
 FLAGS
   -e, --env=<value>          [default: dev] Environment
   -n, --networkName=<value>  [default: synmetrix_default] Docker network name
-  -s, --shell=<value>        Shell for exec commands
-  -s, --swarm                Run in swarm mode
+  -s, --swarm                Run in Docker Swarm mode
+      --shell=<value>        Shell for exec commands (default: /bin/bash)
 
 DESCRIPTION
   DESTROY Docker Compose stack
@@ -97,7 +97,7 @@ Exec command in container
 
 ```
 USAGE
-  $ smcli services ex NAME CMD [-s <value>] [-n <value>] [-e <value>] [-s]
+  $ smcli services ex NAME CMD [--shell <value>] [-n <value>] [-e <value>] [-s]
 
 ARGUMENTS
   NAME  Container name for command
@@ -106,8 +106,8 @@ ARGUMENTS
 FLAGS
   -e, --env=<value>          [default: dev] Environment
   -n, --networkName=<value>  [default: synmetrix_default] Docker network name
-  -s, --shell=<value>        Shell for exec commands
-  -s, --swarm                Run in swarm mode
+  -s, --swarm                Run in Docker Swarm mode
+      --shell=<value>        Shell for exec commands (default: /bin/bash)
 
 DESCRIPTION
   Exec command in container
@@ -121,7 +121,7 @@ Print logs for a Docker containers
 
 ```
 USAGE
-  $ smcli services logs [NAME] [-s <value>] [-n <value>] [-e <value>] [-s] [--tail <value>]
+  $ smcli services logs [NAME] [--shell <value>] [-n <value>] [-e <value>] [-s] [--tail <value>]
 
 ARGUMENTS
   NAME  Name of the container to print logs for
@@ -129,8 +129,8 @@ ARGUMENTS
 FLAGS
   -e, --env=<value>          [default: dev] Environment
   -n, --networkName=<value>  [default: synmetrix_default] Docker network name
-  -s, --shell=<value>        Shell for exec commands
-  -s, --swarm                Run in swarm mode
+  -s, --swarm                Run in Docker Swarm mode
+      --shell=<value>        Shell for exec commands (default: /bin/bash)
       --tail=<value>         [default: 100] Number of last rows to show
 
 DESCRIPTION
@@ -145,13 +145,13 @@ PS all containers
 
 ```
 USAGE
-  $ smcli services ps [NAME] [-s <value>] [-n <value>] [-e <value>] [-s]
+  $ smcli services ps [NAME] [--shell <value>] [-n <value>] [-e <value>] [-s]
 
 FLAGS
   -e, --env=<value>          [default: dev] Environment
   -n, --networkName=<value>  [default: synmetrix_default] Docker network name
-  -s, --shell=<value>        Shell for exec commands
-  -s, --swarm                Run in swarm mode
+  -s, --swarm                Run in Docker Swarm mode
+      --shell=<value>        Shell for exec commands (default: /bin/bash)
 
 DESCRIPTION
   PS all containers
@@ -165,7 +165,7 @@ Push Docker Compose images
 
 ```
 USAGE
-  $ smcli services push [NAME] [-s <value>] [-n <value>] [-e <value>] [-s]
+  $ smcli services push [NAME] [--shell <value>] [-n <value>] [-e <value>] [-s]
 
 ARGUMENTS
   NAME  Container name to push
@@ -173,8 +173,8 @@ ARGUMENTS
 FLAGS
   -e, --env=<value>          [default: dev] Environment
   -n, --networkName=<value>  [default: synmetrix_default] Docker network name
-  -s, --shell=<value>        Shell for exec commands
-  -s, --swarm                Run in swarm mode
+  -s, --swarm                Run in Docker Swarm mode
+      --shell=<value>        Shell for exec commands (default: /bin/bash)
 
 DESCRIPTION
   Push Docker Compose images
@@ -188,7 +188,7 @@ Restart the running container(s)
 
 ```
 USAGE
-  $ smcli services restart [NAME] [-s <value>] [-n <value>] [-e <value>] [-s]
+  $ smcli services restart [NAME] [--shell <value>] [-n <value>] [-e <value>] [-s]
 
 ARGUMENTS
   NAME  Container name to restart
@@ -196,8 +196,8 @@ ARGUMENTS
 FLAGS
   -e, --env=<value>          [default: dev] Environment
   -n, --networkName=<value>  [default: synmetrix_default] Docker network name
-  -s, --shell=<value>        Shell for exec commands
-  -s, --swarm                Run in swarm mode
+  -s, --swarm                Run in Docker Swarm mode
+      --shell=<value>        Shell for exec commands (default: /bin/bash)
 
 DESCRIPTION
   Restart the running container(s)
@@ -211,7 +211,7 @@ Stop container(s)
 
 ```
 USAGE
-  $ smcli services stop [NAME] [-s <value>] [-n <value>] [-e <value>] [-s]
+  $ smcli services stop [NAME] [--shell <value>] [-n <value>] [-e <value>] [-s]
 
 ARGUMENTS
   NAME  Container name
@@ -219,8 +219,8 @@ ARGUMENTS
 FLAGS
   -e, --env=<value>          [default: dev] Environment
   -n, --networkName=<value>  [default: synmetrix_default] Docker network name
-  -s, --shell=<value>        Shell for exec commands
-  -s, --swarm                Run in swarm mode
+  -s, --swarm                Run in Docker Swarm mode
+      --shell=<value>        Shell for exec commands (default: /bin/bash)
 
 DESCRIPTION
   Stop container(s)
@@ -234,16 +234,18 @@ Up docker compose stack
 
 ```
 USAGE
-  $ smcli services up [NAME] [-s <value>] [-n <value>] [-e <value>] [-s]
+  $ smcli services up [NAME] [--shell <value>] [-n <value>] [-e <value>] [-s] [-b] [-i]
 
 ARGUMENTS
-  NAME  Container name to up
+  NAME  Container name or Stack name in swarm mode
 
 FLAGS
+  -b, --build                Build images
   -e, --env=<value>          [default: dev] Environment
+  -i, --init                 Init docker swarm (only swarm mode)
   -n, --networkName=<value>  [default: synmetrix_default] Docker network name
-  -s, --shell=<value>        Shell for exec commands
-  -s, --swarm                Run in swarm mode
+  -s, --swarm                Run in Docker Swarm mode
+      --shell=<value>        Shell for exec commands (default: /bin/bash)
 
 DESCRIPTION
   Up docker compose stack
@@ -257,13 +259,13 @@ Test project with stepci
 
 ```
 USAGE
-  $ smcli test run [-s <value>] [-n <value>] [-e <value>] [-s] [--testDir <value>] [--ymlFile <value>]
+  $ smcli test run [--shell <value>] [-n <value>] [-e <value>] [-s] [--testDir <value>] [--ymlFile <value>]
 
 FLAGS
   -e, --env=<value>          [default: dev] Environment
   -n, --networkName=<value>  [default: synmetrix_default] Docker network name
-  -s, --shell=<value>        Shell for exec commands
-  -s, --swarm                Run in swarm mode
+  -s, --swarm                Run in Docker Swarm mode
+      --shell=<value>        Shell for exec commands (default: /bin/bash)
       --testDir=<value>      [default: /home/liberty/code/mlcraft/cli/test/stepci]
       --ymlFile=<value>      [default: tests/workflow.yml]
 

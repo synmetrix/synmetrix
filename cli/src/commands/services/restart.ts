@@ -1,3 +1,4 @@
+import "zx/globals";
 import { Args } from "@oclif/core";
 
 import BaseCommand from "../../BaseCommand.js";
@@ -10,14 +11,29 @@ export default class ServicesRestart extends BaseCommand {
 
   static description = "Restart the running container(s)";
 
-  public async run(): Promise<void> {
-    const { args } = await this.parse(ServicesRestart);
+  static examples: [
+    {
+      description: 'Restart containers in development mode',
+      command: 'services restart',
+    },
+    {
+      description: 'Restart containers in swarm mode',
+      command: 'services restart %stack_services_name% -s',
+    }
+  ];
+
+  public async run(): Promise<ProcessOutput> {
+    const { args, flags } = await this.parse(ServicesRestart);
 
     const commandArgs = [];
     if (args.name) {
       commandArgs.push(args.name);
     }
 
-    await callCompose(this.context, ["restart", ...commandArgs]);
+    if (flags.swarm) {
+      return await $`docker service update --force ${commandArgs}`;
+    } else {
+      return await callCompose(this.context, ["restart", ...commandArgs]);
+    }
   }
 }

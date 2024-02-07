@@ -20,7 +20,6 @@ export default class BaseCommand extends Command {
   static flags = {
     ...Command.flags,
     shell: Flags.string({
-      char: "s",
       description: "Shell for exec commands (default: /bin/bash)",
     }),
     networkName: Flags.string({
@@ -69,7 +68,7 @@ export default class BaseCommand extends Command {
     }
 
     this.context = {
-      dockerComposeFile: `${PROJECT_DIR}/docker-compose.${env}.yml`,
+      dockerComposeFile: `${PROJECT_DIR}/docker-compose.${flags.swarm ? "stack" : env}.yml`,
       runtimeEnv: env,
       networkName: flags.networkName,
     };

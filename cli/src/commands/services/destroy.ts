@@ -1,8 +1,8 @@
+import "zx/globals";
 import { Args } from "@oclif/core";
 
 import BaseCommand from "../../BaseCommand.js";
 import { callCompose } from "../../utils.js";
-import "zx/globals";
 
 export default class ServicesDestroy extends BaseCommand {
   static args = {
@@ -10,6 +10,17 @@ export default class ServicesDestroy extends BaseCommand {
   };
 
   static description = "DESTROY Docker Compose stack";
+
+  static examples: [
+    {
+      description: 'Destroy containers in development mode',
+      command: 'services destroy',
+    },
+    {
+      description: 'Destroy container in swarm mode',
+      command: 'services destroy %stack_services_name% -s',
+    }
+  ];
 
   public async run() {
     const { args, flags } = await this.parse(ServicesDestroy);
@@ -25,7 +36,7 @@ export default class ServicesDestroy extends BaseCommand {
     }
 
     if (flags.swarm) {
-      return await $`docker stack rm ${commandArgs}`.pipe(process.stdout);
+      return await $`docker service rm ${args.name}`;
     } else {
       return await callCompose(this.context, commandArgs);
     }

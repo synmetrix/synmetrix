@@ -20,17 +20,22 @@ export const callCompose = async (
   return await $`docker-compose ${[...dockerFile, ...args]}`;
 };
 
+export const callBuild = async(
+  ctx: CustomContext,
+): Promise<ProcessOutput> => {
+  const buildArgs = ["-f", ctx.dockerComposeFile, "build", "--no-cache"];
+
+  return await $`docker-compose ${buildArgs}`;
+};
+
 export const callSwarm = async (
   ctx: CustomContext,
   args: string[],
 ): Promise<ProcessOutput> => {
   const composeArgs = ["-f", ctx.dockerComposeFile];
 
-  const stackArgs = [
-    ...args,
-    "-c",
-    `<(echo -e "version: \'3.9\'"; docker-compose ${composeArgs} config | (sed "/published:/s/\\"//g") | (sed "/^name:/d"))`,
-  ];
+  const processedConfig = await $`docker-compose ${composeArgs} config`
+    .pipe($`docker stack ${args} -c -`);
 
-  return await $`docker stack ${stackArgs}`;
+  return processedConfig;
 };
