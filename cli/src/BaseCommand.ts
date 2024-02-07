@@ -21,7 +21,7 @@ export default class BaseCommand extends Command {
     ...Command.flags,
     shell: Flags.string({
       char: "s",
-      description: "Shell for exec commands",
+      description: "Shell for exec commands (default: /bin/bash)",
     }),
     networkName: Flags.string({
       char: "n",
@@ -36,7 +36,7 @@ export default class BaseCommand extends Command {
     swarm: Flags.boolean({
       char: "s",
       default: false,
-      description: "Run in swarm mode",
+      description: "Run in Docker Swarm mode",
     }),
   };
 
@@ -62,7 +62,7 @@ export default class BaseCommand extends Command {
       const shellExists = await pathExists(flags.shell);
 
       if (!shellExists) {
-        throw new Error("Shell is not exists, please check \"--shell=\" flag");
+        throw new Error('Shell is not exists, please check "--shell=" flag');
       }
 
       $.shell = flags.shell;
