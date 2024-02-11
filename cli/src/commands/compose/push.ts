@@ -3,15 +3,17 @@ import { Args } from "@oclif/core";
 import BaseCommand from "../../BaseCommand.js";
 import { callCompose } from "../../utils.js";
 
-export default class ServicesPush extends BaseCommand {
+export default class Push extends BaseCommand {
   static args = {
-    name: Args.string({ description: "Container name to push" }),
+    name: Args.string({
+      description: "Container name",
+    }),
   };
 
-  static description = "Push Docker Compose images";
+  static description = "Push Docker images";
 
   public async run(): Promise<void> {
-    const { args } = await this.parse(ServicesPush);
+    const { args } = await this.parse(Push);
 
     const commandArgs = [];
     if (args.name) {

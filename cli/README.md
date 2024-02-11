@@ -9,17 +9,199 @@ The Synmetrix Command Line Interface (CLI) provides a convenient way to manage t
 The Synmetrix CLI is executed using the `./cli.sh` script in the project's root directory. The following commands are available:
 
 <!-- commands -->
+* [`smcli compose destroy [NAME]`](#smcli-compose-destroy-name)
+* [`smcli compose logs [NAME]`](#smcli-compose-logs-name)
+* [`smcli compose ps`](#smcli-compose-ps)
+* [`smcli compose push [NAME]`](#smcli-compose-push-name)
+* [`smcli compose restart [NAME]`](#smcli-compose-restart-name)
+* [`smcli compose stop [NAME]`](#smcli-compose-stop-name)
+* [`smcli compose up [NAME]`](#smcli-compose-up-name)
+* [`smcli docker ex NAME CMD`](#smcli-docker-ex-name-cmd)
 * [`smcli hasura cli CMD`](#smcli-hasura-cli-cmd)
 * [`smcli help [COMMANDS]`](#smcli-help-commands)
-* [`smcli services destroy [NAME]`](#smcli-services-destroy-name)
-* [`smcli services ex NAME CMD`](#smcli-services-ex-name-cmd)
-* [`smcli services logs [NAME]`](#smcli-services-logs-name)
-* [`smcli services ps [NAME]`](#smcli-services-ps-name)
-* [`smcli services push [NAME]`](#smcli-services-push-name)
-* [`smcli services restart [NAME]`](#smcli-services-restart-name)
-* [`smcli services stop [NAME]`](#smcli-services-stop-name)
-* [`smcli services up [NAME]`](#smcli-services-up-name)
+* [`smcli swarm destroy NAME`](#smcli-swarm-destroy-name)
+* [`smcli swarm logs NAME`](#smcli-swarm-logs-name)
+* [`smcli swarm ps NAME`](#smcli-swarm-ps-name)
+* [`smcli swarm restart NAME`](#smcli-swarm-restart-name)
+* [`smcli swarm stop NAME`](#smcli-swarm-stop-name)
+* [`smcli swarm up NAME`](#smcli-swarm-up-name)
 * [`smcli test run`](#smcli-test-run)
+
+## `smcli compose destroy [NAME]`
+
+DESTROY Docker Compose stack
+
+```
+USAGE
+  $ smcli compose destroy [NAME] [--shell <value>] [-n <value>] [-e <value>]
+
+ARGUMENTS
+  NAME  Container name
+
+FLAGS
+  -e, --env=<value>          [default: dev] Environment
+  -n, --networkName=<value>  [default: synmetrix_default] Docker network name
+      --shell=<value>        Shell for exec commands (default: /bin/bash)
+
+DESCRIPTION
+  DESTROY Docker Compose stack
+```
+
+_See code: [src/commands/compose/destroy.ts](https://github.com/mlcraft-io/mlcraft/blob/v1.0.0/src/commands/compose/destroy.ts)_
+
+## `smcli compose logs [NAME]`
+
+Print logs for Docker containers
+
+```
+USAGE
+  $ smcli compose logs [NAME] [--shell <value>] [-n <value>] [-e <value>] [--tail <value>]
+
+ARGUMENTS
+  NAME  Container name
+
+FLAGS
+  -e, --env=<value>          [default: dev] Environment
+  -n, --networkName=<value>  [default: synmetrix_default] Docker network name
+      --shell=<value>        Shell for exec commands (default: /bin/bash)
+      --tail=<value>         [default: 500] Number of last rows to show
+
+DESCRIPTION
+  Print logs for Docker containers
+```
+
+_See code: [src/commands/compose/logs.ts](https://github.com/mlcraft-io/mlcraft/blob/v1.0.0/src/commands/compose/logs.ts)_
+
+## `smcli compose ps`
+
+PS all containers
+
+```
+USAGE
+  $ smcli compose ps [--shell <value>] [-n <value>] [-e <value>]
+
+FLAGS
+  -e, --env=<value>          [default: dev] Environment
+  -n, --networkName=<value>  [default: synmetrix_default] Docker network name
+      --shell=<value>        Shell for exec commands (default: /bin/bash)
+
+DESCRIPTION
+  PS all containers
+```
+
+_See code: [src/commands/compose/ps.ts](https://github.com/mlcraft-io/mlcraft/blob/v1.0.0/src/commands/compose/ps.ts)_
+
+## `smcli compose push [NAME]`
+
+Push Docker images
+
+```
+USAGE
+  $ smcli compose push [NAME] [--shell <value>] [-n <value>] [-e <value>]
+
+ARGUMENTS
+  NAME  Container name
+
+FLAGS
+  -e, --env=<value>          [default: dev] Environment
+  -n, --networkName=<value>  [default: synmetrix_default] Docker network name
+      --shell=<value>        Shell for exec commands (default: /bin/bash)
+
+DESCRIPTION
+  Push Docker images
+```
+
+_See code: [src/commands/compose/push.ts](https://github.com/mlcraft-io/mlcraft/blob/v1.0.0/src/commands/compose/push.ts)_
+
+## `smcli compose restart [NAME]`
+
+Restart the running container(s)
+
+```
+USAGE
+  $ smcli compose restart [NAME] [--shell <value>] [-n <value>] [-e <value>]
+
+ARGUMENTS
+  NAME  Container name
+
+FLAGS
+  -e, --env=<value>          [default: dev] Environment
+  -n, --networkName=<value>  [default: synmetrix_default] Docker network name
+      --shell=<value>        Shell for exec commands (default: /bin/bash)
+
+DESCRIPTION
+  Restart the running container(s)
+```
+
+_See code: [src/commands/compose/restart.ts](https://github.com/mlcraft-io/mlcraft/blob/v1.0.0/src/commands/compose/restart.ts)_
+
+## `smcli compose stop [NAME]`
+
+Stop container(s)
+
+```
+USAGE
+  $ smcli compose stop [NAME] [--shell <value>] [-n <value>] [-e <value>]
+
+ARGUMENTS
+  NAME  Container name
+
+FLAGS
+  -e, --env=<value>          [default: dev] Environment
+  -n, --networkName=<value>  [default: synmetrix_default] Docker network name
+      --shell=<value>        Shell for exec commands (default: /bin/bash)
+
+DESCRIPTION
+  Stop container(s)
+```
+
+_See code: [src/commands/compose/stop.ts](https://github.com/mlcraft-io/mlcraft/blob/v1.0.0/src/commands/compose/stop.ts)_
+
+## `smcli compose up [NAME]`
+
+Up docker compose stack
+
+```
+USAGE
+  $ smcli compose up [NAME] [--shell <value>] [-n <value>] [-e <value>] [-b]
+
+ARGUMENTS
+  NAME  Container name
+
+FLAGS
+  -b, --build                Build images
+  -e, --env=<value>          [default: dev] Environment
+  -n, --networkName=<value>  [default: synmetrix_default] Docker network name
+      --shell=<value>        Shell for exec commands (default: /bin/bash)
+
+DESCRIPTION
+  Up docker compose stack
+```
+
+_See code: [src/commands/compose/up.ts](https://github.com/mlcraft-io/mlcraft/blob/v1.0.0/src/commands/compose/up.ts)_
+
+## `smcli docker ex NAME CMD`
+
+Exec command in container
+
+```
+USAGE
+  $ smcli docker ex NAME CMD [--shell <value>] [-n <value>] [-e <value>]
+
+ARGUMENTS
+  NAME  Container name
+  CMD   Command to execute
+
+FLAGS
+  -e, --env=<value>          [default: dev] Environment
+  -n, --networkName=<value>  [default: synmetrix_default] Docker network name
+      --shell=<value>        Shell for exec commands (default: /bin/bash)
+
+DESCRIPTION
+  Exec command in container
+```
+
+_See code: [src/commands/docker/ex.ts](https://github.com/mlcraft-io/mlcraft/blob/v1.0.0/src/commands/docker/ex.ts)_
 
 ## `smcli hasura cli CMD`
 
@@ -27,7 +209,7 @@ Manage Hasura service
 
 ```
 USAGE
-  $ smcli hasura cli CMD [--shell <value>] [-n <value>] [-e <value>] [-s] [--adminSecret <value>] [--hasuraAddr
+  $ smcli hasura cli CMD [--shell <value>] [-n <value>] [-e <value>] [--adminSecret <value>] [--hasuraAddr
     <value>] [--hasuraDir <value>]
 
 ARGUMENTS
@@ -36,7 +218,6 @@ ARGUMENTS
 FLAGS
   -e, --env=<value>          [default: dev] Environment
   -n, --networkName=<value>  [default: synmetrix_default] Docker network name
-  -s, --swarm                Run in Docker Swarm mode
   --adminSecret=<value>
       --hasuraAddr=<value>   [default: http://hasura:8080]
       --hasuraDir=<value>    Default: "./services/hasura"
@@ -68,190 +249,140 @@ DESCRIPTION
 
 _See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v6.0.11/src/commands/help.ts)_
 
-## `smcli services destroy [NAME]`
+## `smcli swarm destroy NAME`
 
-DESTROY Docker Compose stack
+DESTROY Docker Swarm stack
 
 ```
 USAGE
-  $ smcli services destroy [NAME] [--shell <value>] [-n <value>] [-e <value>] [-s]
+  $ smcli swarm destroy NAME [--shell <value>] [-n <value>] [-e <value>]
 
 ARGUMENTS
-  NAME  Container name to destroy
+  NAME  Stack name
 
 FLAGS
   -e, --env=<value>          [default: dev] Environment
   -n, --networkName=<value>  [default: synmetrix_default] Docker network name
-  -s, --swarm                Run in Docker Swarm mode
       --shell=<value>        Shell for exec commands (default: /bin/bash)
 
 DESCRIPTION
-  DESTROY Docker Compose stack
+  DESTROY Docker Swarm stack
 ```
 
-_See code: [src/commands/services/destroy.ts](https://github.com/mlcraft-io/mlcraft/blob/v1.0.0/src/commands/services/destroy.ts)_
+_See code: [src/commands/swarm/destroy.ts](https://github.com/mlcraft-io/mlcraft/blob/v1.0.0/src/commands/swarm/destroy.ts)_
 
-## `smcli services ex NAME CMD`
+## `smcli swarm logs NAME`
 
-Exec command in container
+Print logs for Docker Swarm services
 
 ```
 USAGE
-  $ smcli services ex NAME CMD [--shell <value>] [-n <value>] [-e <value>] [-s]
+  $ smcli swarm logs NAME [--shell <value>] [-n <value>] [-e <value>] [--tail <value>]
 
 ARGUMENTS
-  NAME  Container name for command
-  CMD   Command to execute
+  NAME  Service name
 
 FLAGS
   -e, --env=<value>          [default: dev] Environment
   -n, --networkName=<value>  [default: synmetrix_default] Docker network name
-  -s, --swarm                Run in Docker Swarm mode
       --shell=<value>        Shell for exec commands (default: /bin/bash)
+      --tail=<value>         [default: 500] Number of last rows to show
 
 DESCRIPTION
-  Exec command in container
+  Print logs for Docker Swarm services
 ```
 
-_See code: [src/commands/services/ex.ts](https://github.com/mlcraft-io/mlcraft/blob/v1.0.0/src/commands/services/ex.ts)_
+_See code: [src/commands/swarm/logs.ts](https://github.com/mlcraft-io/mlcraft/blob/v1.0.0/src/commands/swarm/logs.ts)_
 
-## `smcli services logs [NAME]`
+## `smcli swarm ps NAME`
 
-Print logs for a Docker containers
+PS all services
 
 ```
 USAGE
-  $ smcli services logs [NAME] [--shell <value>] [-n <value>] [-e <value>] [-s] [--tail <value>]
+  $ smcli swarm ps NAME [--shell <value>] [-n <value>] [-e <value>]
 
 ARGUMENTS
-  NAME  Name of the container to print logs for
+  NAME  Stack name
 
 FLAGS
   -e, --env=<value>          [default: dev] Environment
   -n, --networkName=<value>  [default: synmetrix_default] Docker network name
-  -s, --swarm                Run in Docker Swarm mode
       --shell=<value>        Shell for exec commands (default: /bin/bash)
-      --tail=<value>         [default: 100] Number of last rows to show
 
 DESCRIPTION
-  Print logs for a Docker containers
+  PS all services
 ```
 
-_See code: [src/commands/services/logs.ts](https://github.com/mlcraft-io/mlcraft/blob/v1.0.0/src/commands/services/logs.ts)_
+_See code: [src/commands/swarm/ps.ts](https://github.com/mlcraft-io/mlcraft/blob/v1.0.0/src/commands/swarm/ps.ts)_
 
-## `smcli services ps [NAME]`
+## `smcli swarm restart NAME`
 
-PS all containers
+Restart the running service(s)
 
 ```
 USAGE
-  $ smcli services ps [NAME] [--shell <value>] [-n <value>] [-e <value>] [-s]
+  $ smcli swarm restart NAME [--shell <value>] [-n <value>] [-e <value>]
+
+ARGUMENTS
+  NAME  Service name
 
 FLAGS
   -e, --env=<value>          [default: dev] Environment
   -n, --networkName=<value>  [default: synmetrix_default] Docker network name
-  -s, --swarm                Run in Docker Swarm mode
       --shell=<value>        Shell for exec commands (default: /bin/bash)
 
 DESCRIPTION
-  PS all containers
+  Restart the running service(s)
 ```
 
-_See code: [src/commands/services/ps.ts](https://github.com/mlcraft-io/mlcraft/blob/v1.0.0/src/commands/services/ps.ts)_
+_See code: [src/commands/swarm/restart.ts](https://github.com/mlcraft-io/mlcraft/blob/v1.0.0/src/commands/swarm/restart.ts)_
 
-## `smcli services push [NAME]`
+## `smcli swarm stop NAME`
 
-Push Docker Compose images
+Stop service(s)
 
 ```
 USAGE
-  $ smcli services push [NAME] [--shell <value>] [-n <value>] [-e <value>] [-s]
+  $ smcli swarm stop NAME [--shell <value>] [-n <value>] [-e <value>]
 
 ARGUMENTS
-  NAME  Container name to push
+  NAME  Service name
 
 FLAGS
   -e, --env=<value>          [default: dev] Environment
   -n, --networkName=<value>  [default: synmetrix_default] Docker network name
-  -s, --swarm                Run in Docker Swarm mode
       --shell=<value>        Shell for exec commands (default: /bin/bash)
 
 DESCRIPTION
-  Push Docker Compose images
+  Stop service(s)
 ```
 
-_See code: [src/commands/services/push.ts](https://github.com/mlcraft-io/mlcraft/blob/v1.0.0/src/commands/services/push.ts)_
+_See code: [src/commands/swarm/stop.ts](https://github.com/mlcraft-io/mlcraft/blob/v1.0.0/src/commands/swarm/stop.ts)_
 
-## `smcli services restart [NAME]`
+## `smcli swarm up NAME`
 
-Restart the running container(s)
-
-```
-USAGE
-  $ smcli services restart [NAME] [--shell <value>] [-n <value>] [-e <value>] [-s]
-
-ARGUMENTS
-  NAME  Container name to restart
-
-FLAGS
-  -e, --env=<value>          [default: dev] Environment
-  -n, --networkName=<value>  [default: synmetrix_default] Docker network name
-  -s, --swarm                Run in Docker Swarm mode
-      --shell=<value>        Shell for exec commands (default: /bin/bash)
-
-DESCRIPTION
-  Restart the running container(s)
-```
-
-_See code: [src/commands/services/restart.ts](https://github.com/mlcraft-io/mlcraft/blob/v1.0.0/src/commands/services/restart.ts)_
-
-## `smcli services stop [NAME]`
-
-Stop container(s)
+Up docker Stack
 
 ```
 USAGE
-  $ smcli services stop [NAME] [--shell <value>] [-n <value>] [-e <value>] [-s]
+  $ smcli swarm up NAME [--shell <value>] [-n <value>] [-e <value>] [-b] [-i]
 
 ARGUMENTS
-  NAME  Container name
-
-FLAGS
-  -e, --env=<value>          [default: dev] Environment
-  -n, --networkName=<value>  [default: synmetrix_default] Docker network name
-  -s, --swarm                Run in Docker Swarm mode
-      --shell=<value>        Shell for exec commands (default: /bin/bash)
-
-DESCRIPTION
-  Stop container(s)
-```
-
-_See code: [src/commands/services/stop.ts](https://github.com/mlcraft-io/mlcraft/blob/v1.0.0/src/commands/services/stop.ts)_
-
-## `smcli services up [NAME]`
-
-Up docker compose stack
-
-```
-USAGE
-  $ smcli services up [NAME] [--shell <value>] [-n <value>] [-e <value>] [-s] [-b] [-i]
-
-ARGUMENTS
-  NAME  Container name or Stack name in swarm mode
+  NAME  Stack name
 
 FLAGS
   -b, --build                Build images
   -e, --env=<value>          [default: dev] Environment
   -i, --init                 Init docker swarm (only swarm mode)
   -n, --networkName=<value>  [default: synmetrix_default] Docker network name
-  -s, --swarm                Run in Docker Swarm mode
       --shell=<value>        Shell for exec commands (default: /bin/bash)
 
 DESCRIPTION
-  Up docker compose stack
+  Up docker Stack
 ```
 
-_See code: [src/commands/services/up.ts](https://github.com/mlcraft-io/mlcraft/blob/v1.0.0/src/commands/services/up.ts)_
+_See code: [src/commands/swarm/up.ts](https://github.com/mlcraft-io/mlcraft/blob/v1.0.0/src/commands/swarm/up.ts)_
 
 ## `smcli test run`
 
@@ -259,12 +390,11 @@ Test project with stepci
 
 ```
 USAGE
-  $ smcli test run [--shell <value>] [-n <value>] [-e <value>] [-s] [--testDir <value>] [--ymlFile <value>]
+  $ smcli test run [--shell <value>] [-n <value>] [-e <value>] [--testDir <value>] [--ymlFile <value>]
 
 FLAGS
   -e, --env=<value>          [default: dev] Environment
   -n, --networkName=<value>  [default: synmetrix_default] Docker network name
-  -s, --swarm                Run in Docker Swarm mode
       --shell=<value>        Shell for exec commands (default: /bin/bash)
       --testDir=<value>      Default: "./test/stepci"
       --ymlFile=<value>      [default: tests/workflow.yml]

@@ -5,16 +5,13 @@ import { callCompose } from "../../utils.js";
 
 export default class Stop extends BaseCommand {
   static args = {
-    ...BaseCommand.args,
     name: Args.string({
-      char: "n",
-      default: "",
-      description: "Container name",
-      metavar: "<name>",
+      description: "Service name",
+      required: true,
     }),
   };
 
-  static description = "Stop container(s)";
+  static description = "Stop service(s)";
 
   static flags = {
     ...BaseCommand.flags,

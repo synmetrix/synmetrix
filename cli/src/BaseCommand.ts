@@ -32,11 +32,6 @@ export default class BaseCommand extends Command {
       default: "dev",
       description: "Environment",
     }),
-    swarm: Flags.boolean({
-      char: "s",
-      default: false,
-      description: "Run in Docker Swarm mode",
-    }),
   };
 
   context: CustomContext = {};

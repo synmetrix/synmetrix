@@ -1,11 +1,11 @@
 import { expect, test } from "@oclif/test";
 
-describe("services:ps", () => {
+describe("compose:ps", () => {
   test
-    .command(["services:up"])
+    .command(["compose:up"])
     .stderr()
-    .command(["services:ps"])
-    .it("runs services:ps", (ctx) => {
+    .command(["compose:ps"])
+    .it("runs compose:ps", (ctx) => {
       expect(ctx.stderr).to.contain("0.0.0.0:9000");
     });
 });

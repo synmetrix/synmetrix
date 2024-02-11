@@ -17,15 +17,13 @@ export const callCompose = async (
 ): Promise<ProcessOutput> => {
   const dockerFile = ["-f", ctx.dockerComposeFile];
 
-  return await $`docker-compose ${[...dockerFile, ...args]}`;
+  return await $`docker compose ${[...dockerFile, ...args]}`;
 };
 
-export const callBuild = async(
-  ctx: CustomContext,
-): Promise<ProcessOutput> => {
+export const callBuild = async (ctx: CustomContext): Promise<ProcessOutput> => {
   const buildArgs = ["-f", ctx.dockerComposeFile, "build", "--no-cache"];
 
-  return await $`docker-compose ${buildArgs}`;
+  return await $`docker compose ${buildArgs}`;
 };
 
 export const callSwarm = async (
@@ -34,8 +32,10 @@ export const callSwarm = async (
 ): Promise<ProcessOutput> => {
   const composeArgs = ["-f", ctx.dockerComposeFile];
 
-  const processedConfig = await $`docker-compose ${composeArgs} config`
-    .pipe($`docker stack ${args} -c -`);
+  const processedConfig =
+    await $`(echo -e "version: \'3.9\'"; docker compose ${composeArgs} config| (sed "/published:/s/\\"//g") | (sed "/^name:/d"))`.pipe(
+      $`docker stack ${args} -c -`,
+    );
 
   return processedConfig;
 };

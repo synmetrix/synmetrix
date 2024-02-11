@@ -1,20 +1,20 @@
 import { expect, test } from "@oclif/test";
 
-describe("services:stop", () => {
+describe("compose:stop", () => {
   test
-    .command("services:up")
+    .command("compose:up")
     .stderr()
-    .command("services:stop")
-    .it("runs services:stop without arguments", (ctx) => {
+    .command("compose:stop")
+    .it("runs compose:stop without arguments", (ctx) => {
       expect(ctx.stderr).to.match(/hasura.+Stopping/);
       expect(ctx.stderr).to.match(/hasura.+Stopped/);
     });
 
   test
-    .command("services:up")
+    .command("compose:up")
     .stderr()
-    .command(["services:stop", "actions"])
-    .it("runs services:stop with a container name argument", (ctx) => {
+    .command(["compose:stop", "actions"])
+    .it("runs compose:stop with a container name argument", (ctx) => {
       expect(ctx.stderr).to.match(/actions.+Stopping/);
       expect(ctx.stderr).to.match(/actions.+Stopped/);
     });
