@@ -16,12 +16,8 @@ export default class ServicesEx extends BaseCommand {
   static description = "Exec command in container";
 
   public async run(): Promise<ProcessOutput> {
-    const { args, flags } = await this.parse(ServicesEx);
-    const commandArgs = ["exec", args.name, args.cmd];
+    const { args } = await this.parse(ServicesEx);
 
-    if (flags.swarm) {
-      return await $`docker service exec ${commandArgs}`;
-    }
-    return await callCompose(this.context, commandArgs);
+    return await $`docker exec -it $(docker ps -q -f name=${args.name} | head -1) ${args.cmd}`;
   }
 }

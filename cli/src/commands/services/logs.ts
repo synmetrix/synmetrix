@@ -22,7 +22,7 @@ export default class ServicesLogs extends BaseCommand {
     }),
   };
 
-  public async run(): Promise<void> {
+  public async run(): Promise<ProcessOutput> {
     const { args, flags } = await this.parse(ServicesLogs);
 
     const commandArgs = ["logs", "-f", "--tail", `${flags.tail}`];
@@ -30,11 +30,10 @@ export default class ServicesLogs extends BaseCommand {
       commandArgs.push(args.name);
     }
 
-    const env = this.context.runtimeEnv;
-    if (env === "dev") {
-      await callCompose(this.context, commandArgs);
-    } else {
-      await callService(this.context, commandArgs);
+    if (flags.swarm) {
+      return await callService(this.context, commandArgs);
     }
+
+    return await callCompose(this.context, commandArgs);
   }
 }

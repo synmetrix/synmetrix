@@ -5,26 +5,30 @@ const wait = (ms = 10) => new Promise((resolve) => setTimeout(resolve, ms));
 describe("services:logs", async () => {
   test
     .loadConfig()
+    .timeout(5000)
     .stderr()
     .it(
       "runs services:logs with a container name argument",
       async (ctx, done) => {
         ctx.config.runCommand("services:logs", ["actions"]);
-        await wait(5000);
+        await wait(1000);
 
-        expect(ctx.stderr).to.contain("actions_1");
+        expect(ctx.stderr).to.contain("actions");
+
         done();
       },
     );
 
   test
     .loadConfig()
+    .timeout(5000)
     .stderr()
     .it("runs services:logs without arguments", async (ctx, done) => {
       ctx.config.runCommand("services:logs");
-      await wait(5000);
+      await wait(1000);
 
-      expect(ctx.stderr).to.contain("cubejs_1");
+      expect(ctx.stderr).to.contain("hasura");
+
       done();
     });
 });

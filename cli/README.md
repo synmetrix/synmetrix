@@ -266,7 +266,7 @@ FLAGS
   -n, --networkName=<value>  [default: synmetrix_default] Docker network name
   -s, --swarm                Run in Docker Swarm mode
       --shell=<value>        Shell for exec commands (default: /bin/bash)
-      --testDir=<value>      [default: /home/liberty/code/mlcraft/cli/test/stepci]
+      --testDir=<value>      Default: "./test/stepci"
       --ymlFile=<value>      [default: tests/workflow.yml]
 
 DESCRIPTION

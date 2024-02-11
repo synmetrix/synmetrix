@@ -13,32 +13,30 @@ export default class ServicesDestroy extends BaseCommand {
 
   static examples: [
     {
-      description: 'Destroy containers in development mode',
-      command: 'services destroy',
+      description: "Destroy containers in development mode";
+      command: "services destroy";
     },
     {
-      description: 'Destroy container in swarm mode',
-      command: 'services destroy %stack_services_name% -s',
-    }
+      description: "Destroy container in swarm mode";
+      command: "services destroy %stack_services_name% -s";
+    },
   ];
 
   public async run() {
     const { args, flags } = await this.parse(ServicesDestroy);
 
-    const commandArgs = [];
-    const env = this.context.runtimeEnv;
-    if (env === "dev") {
-      commandArgs.push("rm", "-s", "-f");
+    if (flags.swarm) {
+      return await $`docker service rm ${args.name}`;
     }
+
+    const commandArgs = [];
+
+    commandArgs.push("rm", "-s", "-f");
 
     if (args.name) {
       commandArgs.push(args.name);
     }
 
-    if (flags.swarm) {
-      return await $`docker service rm ${args.name}`;
-    } else {
-      return await callCompose(this.context, commandArgs);
-    }
+    return await callCompose(this.context, commandArgs);
   }
 }

@@ -13,27 +13,28 @@ export default class ServicesRestart extends BaseCommand {
 
   static examples: [
     {
-      description: 'Restart containers in development mode',
-      command: 'services restart',
+      description: "Restart containers in development mode";
+      command: "services restart";
     },
     {
-      description: 'Restart containers in swarm mode',
-      command: 'services restart %stack_services_name% -s',
-    }
+      description: "Restart containers in swarm mode";
+      command: "services restart %stack_services_name% -s";
+    },
   ];
 
   public async run(): Promise<ProcessOutput> {
     const { args, flags } = await this.parse(ServicesRestart);
 
+    if (flags.swarm) {
+      return await $`docker service update --force ${args.name}`;
+    }
+
     const commandArgs = [];
+
     if (args.name) {
       commandArgs.push(args.name);
     }
 
-    if (flags.swarm) {
-      return await $`docker service update --force ${commandArgs}`;
-    } else {
-      return await callCompose(this.context, ["restart", ...commandArgs]);
-    }
+    return await callCompose(this.context, ["restart", ...commandArgs]);
   }
 }
