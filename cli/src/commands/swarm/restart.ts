@@ -1,8 +1,7 @@
-import "zx/globals";
 import { Args } from "@oclif/core";
 
 import BaseCommand from "../../BaseCommand.js";
-import { callCompose } from "../../utils.js";
+import { callService } from "../../utils.js";
 
 export default class Restart extends BaseCommand {
   static args = {
@@ -17,6 +16,8 @@ export default class Restart extends BaseCommand {
   public async run(): Promise<ProcessOutput> {
     const { args } = await this.parse(Restart);
 
-    return await $`docker service update --force ${args.name}`;
+    const commandArgs = ["update", "--force", args.name];
+
+    return await callService(this.context, commandArgs);
   }
 }

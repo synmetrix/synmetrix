@@ -1,4 +1,4 @@
-import "zx/globals";
+import { $ } from "zx";
 import { Args } from "@oclif/core";
 
 import BaseCommand from "../../BaseCommand.js";

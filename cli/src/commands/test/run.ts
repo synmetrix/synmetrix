@@ -1,3 +1,4 @@
+import { $ } from "zx";
 import { Flags } from "@oclif/core";
 
 import BaseCommand from "../../BaseCommand.js";

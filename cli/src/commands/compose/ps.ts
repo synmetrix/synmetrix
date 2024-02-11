@@ -1,5 +1,3 @@
-import { Args } from "@oclif/core";
-
 import BaseCommand from "../../BaseCommand.js";
 import { callCompose } from "../../utils.js";
 

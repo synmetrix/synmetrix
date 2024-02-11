@@ -1,8 +1,7 @@
-import "zx/globals";
 import { Args, Flags } from "@oclif/core";
 
 import BaseCommand from "../../BaseCommand.js";
-import { callCompose, callSwarm, callBuild } from "../../utils.js";
+import { callCompose } from "../../utils.js";
 
 export default class Up extends BaseCommand {
   static args = {

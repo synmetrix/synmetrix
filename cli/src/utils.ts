@@ -1,5 +1,4 @@
-import "zx/globals";
-
+import { $ } from "zx";
 import type { CustomContext } from "./BaseCommand.js";
 
 export const PROJECT_DIR = process.cwd();

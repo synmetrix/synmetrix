@@ -1,7 +1,7 @@
-import "zx/globals";
 import { Args } from "@oclif/core";
 
 import BaseCommand from "../../BaseCommand.js";
+import { callService } from "../../utils.js";
 
 export default class Destroy extends BaseCommand {
   static args = {
@@ -16,6 +16,8 @@ export default class Destroy extends BaseCommand {
   public async run() {
     const { args } = await this.parse(Destroy);
 
-    return await $`docker service rm ${args.name}`;
+    const commandArgs = ["rm", args.name];
+
+    return await callService(this.context, commandArgs);
   }
 }
