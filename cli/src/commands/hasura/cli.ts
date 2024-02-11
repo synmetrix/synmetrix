@@ -36,7 +36,7 @@ export default class Hasura extends BaseCommand {
       flags.adminSecret,
     ];
 
-    await $`docker build ${["-t", "hasura_cli", "./scripts/containers/hasura-cli"]}`;
+    await $`docker build -q ${["-t", "hasura_cli", "./scripts/containers/hasura-cli"]}`;
 
     const cliCmd = ["hasura-cli", args.cmd, ...argsStr];
 
