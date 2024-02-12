@@ -26,6 +26,7 @@ export default class BaseCommand extends Command {
     }),
     networkName: Flags.string({
       char: "n",
+      aliases: ["network"],
       description: "Docker network name",
       default: NETWORK_NAME,
     }),

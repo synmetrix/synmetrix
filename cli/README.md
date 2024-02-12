@@ -23,6 +23,7 @@ The Synmetrix CLI is executed using the `./cli.sh` script in the project's root 
 * [`smcli swarm logs NAME`](#smcli-swarm-logs-name)
 * [`smcli swarm ps NAME`](#smcli-swarm-ps-name)
 * [`smcli swarm restart NAME`](#smcli-swarm-restart-name)
+* [`smcli swarm stop NAME`](#smcli-swarm-stop-name)
 * [`smcli swarm up NAME`](#smcli-swarm-up-name)
 * [`smcli test run`](#smcli-test-run)
 
@@ -337,6 +338,28 @@ DESCRIPTION
 ```
 
 _See code: [src/commands/swarm/restart.ts](https://github.com/mlcraft-io/mlcraft/blob/v1.0.0/src/commands/swarm/restart.ts)_
+
+## `smcli swarm stop NAME`
+
+DESTROY Docker Swarm stack
+
+```
+USAGE
+  $ smcli swarm stop NAME [--shell <value>] [-n <value>] [-e <value>]
+
+ARGUMENTS
+  NAME  Service name
+
+FLAGS
+  -e, --env=<value>          [default: dev] Environment
+  -n, --networkName=<value>  [default: synmetrix_default] Docker network name
+      --shell=<value>        Shell for exec commands (default: /bin/bash)
+
+DESCRIPTION
+  DESTROY Docker Swarm stack
+```
+
+_See code: [src/commands/swarm/stop.ts](https://github.com/mlcraft-io/mlcraft/blob/v1.0.0/src/commands/swarm/stop.ts)_
 
 ## `smcli swarm up NAME`
 
