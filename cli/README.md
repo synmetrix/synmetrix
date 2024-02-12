@@ -187,16 +187,11 @@ Exec command in container
 
 ```
 USAGE
-  $ smcli docker ex NAME CMD [--shell <value>] [-n <value>] [-e <value>]
+  $ smcli docker ex NAME CMD
 
 ARGUMENTS
   NAME  Container name
   CMD   Command to execute
-
-FLAGS
-  -e, --env=<value>          [default: dev] Environment
-  -n, --networkName=<value>  [default: synmetrix_default] Docker network name
-      --shell=<value>        Shell for exec commands (default: /bin/bash)
 
 DESCRIPTION
   Exec command in container
@@ -210,19 +205,17 @@ Manage Hasura service
 
 ```
 USAGE
-  $ smcli hasura cli CMD [--shell <value>] [-n <value>] [-e <value>] [--adminSecret <value>] [--hasuraAddr
-    <value>] [--hasuraDir <value>]
+  $ smcli hasura cli CMD [-n <value>] [--adminSecret <value>] [--hasuraAddr <value>] [--hasuraDir <value>] [-b]
 
 ARGUMENTS
   CMD  Command, what will provided to Hasura
 
 FLAGS
-  -e, --env=<value>          [default: dev] Environment
+  -b, --build                Build CLI image
   -n, --networkName=<value>  [default: synmetrix_default] Docker network name
   --adminSecret=<value>
       --hasuraAddr=<value>   [default: http://hasura:8080]
       --hasuraDir=<value>    Default: "./services/hasura"
-      --shell=<value>        Shell for exec commands (default: /bin/bash)
 
 DESCRIPTION
   Manage Hasura service

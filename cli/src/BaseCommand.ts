@@ -2,9 +2,7 @@ import { $, echo, chalk } from "zx";
 import { Command, Flags } from "@oclif/core";
 import { config } from "dotenv";
 import { pathExists } from "fs-extra";
-import { PROJECT_DIR } from "./utils.js";
-
-const NETWORK_NAME = "synmetrix_default";
+import { PROJECT_DIR, NETWORK_NAME } from "./utils.js";
 
 export interface CustomContext {
   dockerComposeFile?: string;

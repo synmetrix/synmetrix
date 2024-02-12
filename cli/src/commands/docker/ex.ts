@@ -1,9 +1,7 @@
 import { $ } from "zx";
-import { Args } from "@oclif/core";
+import { Command, Args } from "@oclif/core";
 
-import BaseCommand from "../../BaseCommand.js";
-
-export default class Ex extends BaseCommand {
+export default class Ex extends Command {
   static args = {
     name: Args.string({
       description: "Container name",

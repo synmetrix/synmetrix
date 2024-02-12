@@ -1,6 +1,7 @@
 import { $ } from "zx";
 import type { CustomContext } from "./BaseCommand.js";
 
+export const NETWORK_NAME = "synmetrix_default";
 export const PROJECT_DIR = process.cwd();
 
 export const callCompose = async (
