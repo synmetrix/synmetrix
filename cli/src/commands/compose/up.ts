@@ -19,6 +19,11 @@ export default class Up extends BaseCommand {
       description: "Build images",
       default: false,
     }),
+    init: Flags.boolean({
+      char: "i",
+      description: "Init network",
+      default: false,
+    }),
   };
 
   public async run(): Promise<ProcessOutput> {
@@ -32,6 +37,11 @@ export default class Up extends BaseCommand {
     }
 
     commandArgs.push("-d", args.name || "");
+
+    if (flags.init) {
+      await $`docker network rm ${flags.networkName}`.nothrow();
+      await $`docker network create --attachable ${flags.networkName}`.nothrow();
+    }
 
     return await callCompose(this.context, commandArgs);
   }

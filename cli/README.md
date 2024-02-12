@@ -162,7 +162,7 @@ Up docker compose stack
 
 ```
 USAGE
-  $ smcli compose up [NAME] [--shell <value>] [-n <value>] [-e <value>] [-b]
+  $ smcli compose up [NAME] [--shell <value>] [-n <value>] [-e <value>] [-b] [-i]
 
 ARGUMENTS
   NAME  Container name
@@ -170,6 +170,7 @@ ARGUMENTS
 FLAGS
   -b, --build                Build images
   -e, --env=<value>          [default: dev] Environment
+  -i, --init                 Init network
   -n, --networkName=<value>  [default: synmetrix_default] Docker network name
       --shell=<value>        Shell for exec commands (default: /bin/bash)
 
@@ -351,7 +352,7 @@ ARGUMENTS
 FLAGS
   -b, --build                Build images
   -e, --env=<value>          [default: dev] Environment
-  -i, --init                 Init docker swarm (only swarm mode)
+  -i, --init                 Init Docker Swarm mode and setup network
   -n, --networkName=<value>  [default: synmetrix_default] Docker network name
       --shell=<value>        Shell for exec commands (default: /bin/bash)
 

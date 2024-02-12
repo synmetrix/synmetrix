@@ -23,7 +23,7 @@ export default class Up extends BaseCommand {
     }),
     init: Flags.boolean({
       char: "i",
-      description: "Init docker swarm (only swarm mode)",
+      description: "Init Docker Swarm mode and setup network",
       default: false,
     }),
   };
@@ -42,7 +42,10 @@ export default class Up extends BaseCommand {
     }
 
     if (flags.init) {
-      await $`docker swarm init`;
+      await $`docker swarm init`.nothrow();
+
+      await $`docker network rm ${flags.networkName}`.nothrow();
+      await $`docker network create --driver=overlay --attachable ${flags.networkName}`.nothrow();
     }
 
     return await callSwarm(this.context, commandArgs);
