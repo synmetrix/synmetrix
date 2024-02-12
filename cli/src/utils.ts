@@ -12,12 +12,6 @@ export const callCompose = async (
   return await $`docker compose ${[...dockerFile, ...args]}`;
 };
 
-export const callBuild = async (ctx: CustomContext): Promise<ProcessOutput> => {
-  const buildArgs = ["-f", ctx.dockerComposeFile, "build", "--no-cache"];
-
-  return await $`docker compose ${buildArgs}`;
-};
-
 export const callSwarm = async (
   ctx: CustomContext,
   args: string[],
