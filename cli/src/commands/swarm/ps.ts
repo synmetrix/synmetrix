@@ -1,9 +1,7 @@
 import { $ } from "zx";
-import { Args } from "@oclif/core";
+import { Args, Command } from "@oclif/core";
 
-import BaseCommand from "../../BaseCommand.js";
-
-export default class Ps extends BaseCommand {
+export default class Ps extends Command {
   static args = {
     name: Args.string({
       description: "Stack name",

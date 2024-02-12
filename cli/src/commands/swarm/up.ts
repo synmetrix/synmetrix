@@ -2,7 +2,7 @@ import { $ } from "zx";
 import { Args, Flags } from "@oclif/core";
 
 import BaseCommand from "../../BaseCommand.js";
-import { callSwarm, callBuild } from "../../utils.js";
+import { callSwarm } from "../../utils.js";
 
 export default class Up extends BaseCommand {
   static args = {
@@ -19,7 +19,6 @@ export default class Up extends BaseCommand {
     build: Flags.boolean({
       char: "b",
       description: "Build images",
-      default: false,
       dependsOn: ["registry"],
     }),
     init: Flags.boolean({
@@ -37,18 +36,12 @@ export default class Up extends BaseCommand {
   public async run(): Promise<ProcessOutput> {
     const { args, flags } = await this.parse(Up);
 
-    const commandArgs = ["up"];
-
     if (flags.registry) {
       process.env.REGISTRY_HOST = flags.registry;
     }
 
     if (flags.build) {
-      await callBuild(this.context);
-    }
-
-    if (args.name) {
-      commandArgs.push(args.name);
+      await this.config.runCommand("compose:push", ["--env", flags.env]);
     }
 
     if (flags.init) {
@@ -56,6 +49,12 @@ export default class Up extends BaseCommand {
 
       await $`docker network rm ${flags.networkName}`.nothrow();
       await $`docker network create --driver=overlay --attachable ${flags.networkName}`.nothrow();
+    }
+
+    const commandArgs = ["up"];
+
+    if (args.name) {
+      commandArgs.push(args.name);
     }
 
     return await callSwarm(this.context, commandArgs);

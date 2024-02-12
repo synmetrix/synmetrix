@@ -3,13 +3,6 @@ import type { CustomContext } from "./BaseCommand.js";
 
 export const PROJECT_DIR = process.cwd();
 
-export const callService = async (
-  ctx: CustomContext,
-  args: string[],
-): Promise<ProcessOutput> => {
-  return await $`docker service ${args}`;
-};
-
 export const callCompose = async (
   ctx: CustomContext,
   args: string[],

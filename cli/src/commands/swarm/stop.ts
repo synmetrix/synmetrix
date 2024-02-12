@@ -1,9 +1,7 @@
-import { Args } from "@oclif/core";
+import { $ } from "zx";
+import { Args, Command } from "@oclif/core";
 
-import BaseCommand from "../../BaseCommand.js";
-import { callService } from "../../utils.js";
-
-export default class Stop extends BaseCommand {
+export default class Stop extends Command {
   static args = {
     name: Args.string({
       description: "Service name",
@@ -18,6 +16,6 @@ export default class Stop extends BaseCommand {
 
     const commandArgs = ["rm", args.name];
 
-    return await callService(this.context, commandArgs);
+    return await $`docker service ${commandArgs}`;
   }
 }

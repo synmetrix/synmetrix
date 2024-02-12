@@ -1,9 +1,7 @@
-import { Args, Flags } from "@oclif/core";
+import { $ } from "zx";
+import { Args, Flags, Command } from "@oclif/core";
 
-import BaseCommand from "../../BaseCommand.js";
-import { callService } from "../../utils.js";
-
-export default class Logs extends BaseCommand {
+export default class Logs extends Command {
   static args = {
     name: Args.string({
       description: "Service name",
@@ -14,7 +12,6 @@ export default class Logs extends BaseCommand {
   static description = "Print logs for Docker Swarm services";
 
   static flags = {
-    ...BaseCommand.flags,
     tail: Flags.integer({
       default: 500,
       description: "Number of last rows to show",
@@ -30,6 +27,6 @@ export default class Logs extends BaseCommand {
       commandArgs.push(args.name);
     }
 
-    return await callService(this.context, commandArgs);
+    return await $`docker service ${commandArgs}`;
   }
 }

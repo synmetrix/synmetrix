@@ -256,15 +256,10 @@ DESTROY Docker Swarm stack
 
 ```
 USAGE
-  $ smcli swarm destroy NAME [--shell <value>] [-n <value>] [-e <value>]
+  $ smcli swarm destroy NAME
 
 ARGUMENTS
   NAME  Stack name
-
-FLAGS
-  -e, --env=<value>          [default: dev] Environment
-  -n, --networkName=<value>  [default: synmetrix_default] Docker network name
-      --shell=<value>        Shell for exec commands (default: /bin/bash)
 
 DESCRIPTION
   DESTROY Docker Swarm stack
@@ -278,16 +273,13 @@ Print logs for Docker Swarm services
 
 ```
 USAGE
-  $ smcli swarm logs NAME [--shell <value>] [-n <value>] [-e <value>] [--tail <value>]
+  $ smcli swarm logs NAME [--tail <value>]
 
 ARGUMENTS
   NAME  Service name
 
 FLAGS
-  -e, --env=<value>          [default: dev] Environment
-  -n, --networkName=<value>  [default: synmetrix_default] Docker network name
-      --shell=<value>        Shell for exec commands (default: /bin/bash)
-      --tail=<value>         [default: 500] Number of last rows to show
+  --tail=<value>  [default: 500] Number of last rows to show
 
 DESCRIPTION
   Print logs for Docker Swarm services
@@ -301,15 +293,10 @@ PS all services
 
 ```
 USAGE
-  $ smcli swarm ps NAME [--shell <value>] [-n <value>] [-e <value>]
+  $ smcli swarm ps NAME
 
 ARGUMENTS
   NAME  Stack name
-
-FLAGS
-  -e, --env=<value>          [default: dev] Environment
-  -n, --networkName=<value>  [default: synmetrix_default] Docker network name
-      --shell=<value>        Shell for exec commands (default: /bin/bash)
 
 DESCRIPTION
   PS all services
@@ -323,15 +310,10 @@ Restart the running service(s)
 
 ```
 USAGE
-  $ smcli swarm restart NAME [--shell <value>] [-n <value>] [-e <value>]
+  $ smcli swarm restart NAME
 
 ARGUMENTS
   NAME  Service name
-
-FLAGS
-  -e, --env=<value>          [default: dev] Environment
-  -n, --networkName=<value>  [default: synmetrix_default] Docker network name
-      --shell=<value>        Shell for exec commands (default: /bin/bash)
 
 DESCRIPTION
   Restart the running service(s)
@@ -345,15 +327,10 @@ DESTROY Docker Swarm stack
 
 ```
 USAGE
-  $ smcli swarm stop NAME [--shell <value>] [-n <value>] [-e <value>]
+  $ smcli swarm stop NAME
 
 ARGUMENTS
   NAME  Service name
-
-FLAGS
-  -e, --env=<value>          [default: dev] Environment
-  -n, --networkName=<value>  [default: synmetrix_default] Docker network name
-      --shell=<value>        Shell for exec commands (default: /bin/bash)
 
 DESCRIPTION
   DESTROY Docker Swarm stack
