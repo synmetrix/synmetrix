@@ -20,11 +20,17 @@ export default class Up extends BaseCommand {
       char: "b",
       description: "Build images",
       default: false,
+      dependsOn: ["registry"],
     }),
     init: Flags.boolean({
       char: "i",
       description: "Init Docker Swarm mode and setup network",
       default: false,
+    }),
+    registry: Flags.string({
+      char: "r",
+      description: "Specify docker registry",
+      env: "REGISTRY_HOST",
     }),
   };
 
@@ -32,6 +38,10 @@ export default class Up extends BaseCommand {
     const { args, flags } = await this.parse(Up);
 
     const commandArgs = ["up"];
+
+    if (flags.registry) {
+      process.env.REGISTRY_HOST = flags.registry;
+    }
 
     if (flags.build) {
       await callBuild(this.context);

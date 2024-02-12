@@ -367,7 +367,7 @@ Up docker Stack
 
 ```
 USAGE
-  $ smcli swarm up NAME [--shell <value>] [-n <value>] [-e <value>] [-b] [-i]
+  $ smcli swarm up NAME [--shell <value>] [-n <value>] [-e <value>] [-b -r <value>] [-i]
 
 ARGUMENTS
   NAME  Stack name
@@ -377,6 +377,7 @@ FLAGS
   -e, --env=<value>          [default: dev] Environment
   -i, --init                 Init Docker Swarm mode and setup network
   -n, --networkName=<value>  [default: synmetrix_default] Docker network name
+  -r, --registry=<value>     Specify docker registry
       --shell=<value>        Shell for exec commands (default: /bin/bash)
 
 DESCRIPTION
