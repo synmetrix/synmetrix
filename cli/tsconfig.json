@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "declaration": true,
+    "module": "Node16",
+    "outDir": "dist",
+    "rootDir": "./",
+    "strict": true,
+    "target": "es2022",
+    "moduleResolution": "node16"
+  },
+  "include": ["./src", "./test"],
+  "ts-node": {
+    "esm": true
+  }
+}

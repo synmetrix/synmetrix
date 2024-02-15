@@ -105,3 +105,4 @@ __pycache__
 /.history
 /.cubestore
 /infra/aws/.pulumi-passphrase
+/letsencrypt/acme.json

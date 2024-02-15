@@ -1,0 +1,6 @@
+*.lock
+.prettierignore
+LICENSE
+/dist
+*.svg
+.DS_Store

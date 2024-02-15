@@ -1,0 +1,75 @@
+{
+  "author": "mlcraft.io",
+  "bin": {
+    "smcli": "./bin/run.js"
+  },
+  "dependencies": {
+    "@oclif/core": "^3",
+    "@oclif/plugin-help": "^6",
+    "@oclif/plugin-plugins": "^4",
+    "@umijs/fabric": "^4.0.1",
+    "dotenv": "^16.4.1",
+    "eslint-plugin-oclif": "^0.1.0",
+    "js-yaml": "^4.1.0",
+    "zx": "^7.2.3"
+  },
+  "description": "Synmetrix CLI",
+  "devDependencies": {
+    "@oclif/prettier-config": "^0.2.1",
+    "@oclif/test": "^3",
+    "@types/chai": "^4",
+    "@types/js-yaml": "^4.0.9",
+    "@types/mocha": "^10",
+    "@types/node": "^18",
+    "chai": "^4",
+    "eslint": "^8",
+    "eslint-config-oclif": "^5",
+    "eslint-config-oclif-typescript": "^3",
+    "mocha": "^10",
+    "oclif": "^4.3.6",
+    "prettier": "^3.2.4",
+    "shx": "^0.3.4",
+    "ts-node": "^10.9.2",
+    "typescript": "^5"
+  },
+  "engines": {
+    "node": ">=20.8.1"
+  },
+  "files": [
+    "/bin",
+    "/dist",
+    "/oclif.manifest.json"
+  ],
+  "homepage": "https://github.com/mlcraft-io/mlcraft",
+  "license": "MIT",
+  "main": "",
+  "name": "smcli",
+  "oclif": {
+    "bin": "smcli",
+    "dirname": "smcli",
+    "commands": "./dist/src/commands",
+    "topicSeparator": " ",
+    "plugins": [
+      "@oclif/plugin-help"
+    ]
+  },
+  "repository": "mlcraft-io/mlcraft",
+  "scripts": {
+    "build": "shx rm -rf dist && tsc -b",
+    "lint": "eslint . --ext .ts",
+    "postpack": "shx rm -f oclif.manifest.json",
+    "prepack": "yarn build && oclif manifest && oclif readme",
+    "prepare": "yarn build",
+    "test": "TEST_OUTPUT=1 mocha --exit --no-warnings --require ./test/setup.js",
+    "tests": "TEST_OUTPUT=1 mocha --exit --no-warnings --require ./test/setup.js \"./cli/test/**/*.test.ts\"",
+    "version": "oclif readme && git add README.md"
+  },
+  "version": "1.0.0",
+  "bugs": "https://github.com/mlcraft-io/mlcraft/issues",
+  "keywords": [
+    "oclif"
+  ],
+  "types": "dist/index.d.ts",
+  "exports": "./lib/index.js",
+  "type": "module"
+}

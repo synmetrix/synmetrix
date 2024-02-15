@@ -1,0 +1,30 @@
+extends:
+  # https://github.com/umijs/fabric/blob/master/src/eslint.ts
+  - ./node_modules/@umijs/fabric/dist/eslint
+  - plugin:import/recommended
+  - plugin:import/typescript
+  - prettier
+
+plugins: [import, oclif]
+parserOptions:
+  project: 
+    "./tsconfig.json"
+  sourceType:
+    "module"
+settings:
+  import/parsers:
+    '@typescript-eslint/parser': [.ts, .tsx]
+  import/resolver:
+    typescript:
+      project: './'
+
+rules:
+  import/named: 2
+  import/namespace: 2
+  import/default: 2
+  import/export: 2
+  '@typescript-eslint/no-empty-interface':
+    [0, { import/no-named-as-default-member: 0 }]
+  '@typescript-eslint/triple-slash-reference':
+    [0, { no-unused-expressions: off }]
+  '@typescript-eslint/array-type': 0
