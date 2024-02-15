@@ -163,7 +163,7 @@ Up docker compose stack
 
 ```
 USAGE
-  $ smcli compose up [NAME] [--shell <value>] [-n <value>] [-e <value>] [-b] [-i]
+  $ smcli compose up [NAME] [--shell <value>] [-n <value>] [-e <value>] [-b] [--pull] [-i]
 
 ARGUMENTS
   NAME  Container name
@@ -173,6 +173,7 @@ FLAGS
   -e, --env=<value>          [default: dev] Environment
   -i, --init                 Init network
   -n, --networkName=<value>  [default: synmetrix_default] Docker network name
+      --pull                 Force pulling images
       --shell=<value>        Shell for exec commands (default: /bin/bash)
 
 DESCRIPTION
@@ -381,5 +382,5 @@ _See code: [src/commands/test/run.ts](https://github.com/mlcraft-io/mlcraft/blob
 ## To test the Synmetrix CLI, you can use the following command:
 
 ```bash
-yarn test
+yarn tests
 ```

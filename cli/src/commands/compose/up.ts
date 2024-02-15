@@ -1,3 +1,4 @@
+import { $ } from "zx";
 import { Args, Flags } from "@oclif/core";
 
 import BaseCommand from "../../BaseCommand.js";
@@ -19,6 +20,10 @@ export default class Up extends BaseCommand {
       description: "Build images",
       default: false,
     }),
+    pull: Flags.boolean({
+      description: "Force pulling images",
+      default: false,
+    }),
     init: Flags.boolean({
       char: "i",
       description: "Init network",
@@ -33,6 +38,9 @@ export default class Up extends BaseCommand {
 
     if (flags.build) {
       commandArgs.push("--build");
+    }
+
+    if (flags.pull) {
       commandArgs.push("--pull");
     }
 
