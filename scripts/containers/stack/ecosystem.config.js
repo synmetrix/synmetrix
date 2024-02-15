@@ -84,6 +84,8 @@ const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || 10800;
 // Redis
 const REDIS_ADDR = process.env.REDIS_ADDR || "redis://redis:6379";
 
+process.env.FORCE_COLOR = 1;
+
 module.exports = {
   apps: [
     {
@@ -110,22 +112,22 @@ module.exports = {
     },
     {
       name: "hasura_migrations",
-      script: `wait-on http-get://localhost:8080 && cd ${SERVICES_DIR}/hasura && hasura migrate apply --skip-update-check --disable-interactive --all-databases`,
+      script: `npx wait-on http-get://localhost:8080 && cd ${SERVICES_DIR}/hasura && hasura migrate apply --skip-update-check --disable-interactive --all-databases`,
       autorestart: false,
     },
     {
       name: "hasura_metadata",
-      script: `wait-on --delay 10000 http-get://localhost:8080 && cd ${SERVICES_DIR}/hasura && hasura metadata apply --skip-update-check`,
+      script: `npx wait-on --delay 10000 http-get://localhost:8080 && cd ${SERVICES_DIR}/hasura && hasura metadata apply --skip-update-check`,
       autorestart: false,
     },
     {
       name: "hasura_seeds",
-      script: `wait-on --delay 10000 http-get://localhost:8080 && cd ${SERVICES_DIR}/hasura && hasura seeds apply --skip-update-check --all-databases`,
+      script: `npx wait-on --delay 10000 http-get://localhost:8080 && cd ${SERVICES_DIR}/hasura && hasura seeds apply --skip-update-check --all-databases`,
       autorestart: false,
     },
     {
       name: "hasura_plus",
-      script: `wait-on http-get://localhost:8080 && cd ${SERVICES_DIR}/hasura-backend-plus && npm install --loglevel=error && npm run --loglevel=error build && npm start`,
+      script: `npx wait-on http-get://localhost:8080 && cd ${SERVICES_DIR}/hasura-backend-plus && npm install --loglevel=error && npm run --loglevel=error build && npm start`,
       out_file: null,
       env: {
         PORT: HASURA_PLUS_PORT,
@@ -204,7 +206,7 @@ module.exports = {
     },
     {
       name: "wait_ready",
-      script: "./wait_ready.sh",
+      script: `node ${WORK_DIR}/wait-on.js`,
       autorestart: false,
     },
   ],

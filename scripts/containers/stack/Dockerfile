@@ -9,8 +9,6 @@ ARG WORK_DIR=/app
 ARG STACK_DIR=$WORK_DIR/stack
 ARG SERVICES_DIR=$STACK_DIR/services
 
-RUN yarn global add pm2@5.3.0 wait-on@7.2.0
-
 RUN apt-get update -y \
   && apt-get install -y wget gnupg curl git unixodbc-dev nginx gettext-base apt-transport-https ca-certificates gnupg unzip lsb-release \
   && wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - \
@@ -46,10 +44,12 @@ RUN git clone --depth 1 https://github.com/nhost/hasura-backend-plus $SERVICES_D
 
 RUN curl https://github.com/mlcraft-io/client-v2/releases/download/$CLIENT_VERSION/dist.tar.gz -L | tar -xz -C $SERVICES_DIR && mv $SERVICES_DIR/dist $SERVICES_DIR/client-v2
 
-COPY . $WORK_DIR
-
 RUN wget -q -O /tmp/DatabricksJDBC.zip "${DATABRICKS_JDBC_URL}" \
     && unzip /tmp/DatabricksJDBC.zip -d $SERVICES_DIR/cubejs/ \
     && rm /tmp/DatabricksJDBC.zip
 
-CMD [ "pm2-runtime", "ecosystem.config.js" ]
+RUN yarn add pm2@5.3.0 wait-on@7.2.0 axios@1.6.7 chalk@4.1.2 serve@14.2.1
+
+COPY . $WORK_DIR
+
+CMD [ "npx", "pm2-runtime", "ecosystem.config.js" ]
