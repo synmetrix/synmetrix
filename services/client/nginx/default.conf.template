@@ -1,6 +1,10 @@
 server {
   listen 8888;
 
+  location ~ ^/auth {
+    proxy_pass http://hasura_plus:3000;
+  }
+
   location / {
     root   /usr/share/nginx/html;
     try_files $uri /index.html =404;
@@ -17,10 +21,6 @@ server {
             window.CUBEJS_API_DOCS_URL = "$CUBEJS_API_DOCS_URL";
             </script>';
     sub_filter_once on;
-  }
-
-  location ~ ^/auth {
-    proxy_pass http://hasura_plus:3000;
   }
 
   location ~ ^/v1 {
