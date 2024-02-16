@@ -163,7 +163,7 @@ services:
       - .env
       - .stage.env
     environment:
-      SERVER_URL: ${PROTOCOL:-http}://auth.${DOMAIN}
+      SERVER_URL: ${PROTOCOL:-http}://app.${DOMAIN}
       REDIRECT_URL_SUCCESS: ${PROTOCOL:-http}://app.${DOMAIN}/callback
       REDIRECT_URL_ERROR: ${PROTOCOL:-http}://app.${DOMAIN}/callback
     networks:
