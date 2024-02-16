@@ -124,7 +124,7 @@ export const createTeamMember = async ({ userId, teamId, role }) => {
 
 export const OWNER_ROLE = "owner";
 const hasAccess = (members, userId) => {
-  const teamMember = members.find((member) => member.user_id === userId);
+  const teamMember = members.find((member) => member?.user_id === userId);
 
   return teamMember?.member_roles?.find(
     (role) => role.team_role === OWNER_ROLE
@@ -151,8 +151,12 @@ export default async (session, input, headers) => {
 
     [userAccount, newUser] = await createUserAccount({ email });
 
+    if (!userAccount?.user_id) {
+      throw new Error("User account was not created, something went wrong");
+    }
+
     teamMember = await createTeamMember({
-      userId: userAccount.user_id,
+      userId: userAccount?.user_id,
       teamId,
       role,
     });
