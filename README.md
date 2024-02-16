@@ -4,6 +4,12 @@
 <a href="https://synmetrix.org">Website</a> • <a href="https://docs.synmetrix.org">Docs</a> • <a href="https://cube.dev/docs/schema/getting-started">Cube.js Models docs</a> • <a href="https://hub.docker.com/u/synmetrix">Docker Hub</a> • <a href="https://join.slack.com/t/mlcraft/shared_invite/zt-1x2gxwn37-J3tTvCR5xSFVfxwUU_YKtg">Slack community</a>
 </p>
 
+<div align="center">
+  <a href="README.md">Readme in English</a> • 
+  <a href="README_CN.md">Readme in Chinese</a> • 
+  <a href="README_RU.md">Readme in Russian</a>
+</div>
+
 # Synmetrix
 
 Synmetrix (prev. MLCraft) is an open source data engineering platform and semantic layer for centralized metrics management. It provides a complete framework for modeling, integrating, transforming, aggregating, and distributing metrics data at scale.
@@ -31,12 +37,12 @@ By combining best practices from data engineering, like caching, orchestration, 
 
 ## Getting Started
 
-### Prerequisites
+### Prerequisite Software
+
+Ensure the following software is installed before proceeding:
 
 - [Docker](https://docs.docker.com/install)
 - [Docker Compose](https://docs.docker.com/compose/install)
-
-
 
 ### Step 1: Download the docker-compose file
 
@@ -81,20 +87,35 @@ The installation of all dependencies will take approximately 5-7 minutes. Wait u
 
 * The Cube Swagger API can be found at [http://localhost:4000/docs](http://localhost:4000/docs)
 
-IMPORTANT: Remember to look at `HASURA_GRAPHQL_ADMIN_SECRET` in the docker-compose file. This is required to access the Admin Console. Default value: `adminsecret`
+#### Important Notes
 
+1. **Admin Console Access**: Ensure to check `HASURA_GRAPHQL_ADMIN_SECRET` in the docker-compose file. This is mandatory for accessing the Admin Console. The default value is `adminsecret`. Remember to modify this in a production environment.
+
+2. **Environment Variables**: Set up all necessary environment variables. Synmetrix will function with the default values, but certain features might not perform as anticipated.
+
+3. **Default Seed Data**: The project comes with default seed data. Use the following credentials to log in:
+    - Email: `demo@synmetrix.org`
+    - Password: `demodemo`
 
 ## Documentation
 
 -   [Official Documentation](https://docs.synmetrix.org/)
 -   [Cube Documentation](https://cube.dev/docs)
 
-## Demo
+---- 
+
+## Demo online
 
 Demo: [app.synmetrix.org](https://app.synmetrix.org)
 * Login: `demo@synmetrix.org`
 * Password: `demodemo`
 
+### Demo credentials
+
+| Database type | Host                   | Port | Database | User | Password    | SSL   |
+|---------------|------------------------|------|----------|------|-------------|-------|
+| ClickHouse    | gh-api.clickhouse.tech | 443  | default  | play | no password | true  |
+| PostgreSQL    | demo-db.cube.dev       | 5432 | ecom     | cube | 12345       | false |
 
 ----
 
@@ -154,6 +175,15 @@ Check out our [roadmap](https://github.com/mlcraft-io/mlcraft/projects) to get i
 The core Synmetrix is available under the [Apache License 2.0](https://github.com/mlcraft-io/mlcraft/blob/main/LICENSE) (Apache-2.0).
 
 All **other contents** are available under the [MIT License](LICENSE-community).
+
+## Hardware requirements
+
+| Component   | Requirement |
+|-------------|-------------|
+| Processor (CPU) | 3.2 GHz or higher, modern processor with multi-threading and virtualization support. |
+| RAM | 8 GB or more to handle computational tasks and data processing. |
+| Disk Space | At least 30 GB of free space for software installation and storing working data. |
+| Network | Internet connectivity is required for cloud services and software updates. |
 
 ## Authors
 
