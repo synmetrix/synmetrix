@@ -7,7 +7,6 @@ import preAggregationPreview from "./preAggregationPreview.js";
 import preAggregations from "./preAggregations.js";
 import runSql from "./runSql.js";
 import testConnection from "./testConnection.js";
-import validateCode from "./validateCode.js";
 
 const router = express.Router();
 
@@ -29,12 +28,6 @@ export default ({ basePath, cubejs }) => {
     `${basePath}/v1/generate-models`,
     checkAuthMiddleware,
     async (req, res) => generateDataSchema(req, res, cubejs)
-  );
-
-  router.post(
-    `${basePath}/v1/validate-code`,
-    checkAuthMiddleware,
-    async (req, res) => validateCode(req, res, cubejs)
   );
 
   router.post(

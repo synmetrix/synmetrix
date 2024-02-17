@@ -99,12 +99,6 @@ type Mutation {
   ): SendTestAlertOutput
 }
 
-type Mutation {
-  validate_datasource(
-    id: uuid!
-  ): ValidateSourceOutput
-}
-
 input SourceTable {
   name: String!
 }
@@ -136,21 +130,6 @@ type SourceMetaOutput {
 
 type RunSourceQueryOutput {
   result: json
-}
-
-type ValidateSourceSchemaOutput {
-  code: String!
-  message: String
-}
-
-type ValidateSourceSchemasOutput {
-  code: String!
-  message: String
-}
-
-type ValidateSourceOutput {
-  code: String!
-  message: String
 }
 
 type CheckConnectionOutput {

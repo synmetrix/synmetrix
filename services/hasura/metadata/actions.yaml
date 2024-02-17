@@ -98,13 +98,6 @@ actions:
       forward_client_headers: true
     permissions:
       - role: user
-  - name: validate_datasource
-    definition:
-      kind: synchronous
-      handler: '{{ACTIONS_URL}}/rpc/validate_source'
-      forward_client_headers: true
-    permissions:
-      - role: user
 custom_types:
   enums: []
   input_objects:
@@ -116,9 +109,6 @@ custom_types:
     - name: SourceTablesOutput
     - name: SourceMetaOutput
     - name: RunSourceQueryOutput
-    - name: ValidateSourceSchemaOutput
-    - name: ValidateSourceSchemasOutput
-    - name: ValidateSourceOutput
     - name: CheckConnectionOutput
     - name: FetchDatasetOutput
     - name: InviteTeamMemberOutput
