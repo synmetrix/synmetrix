@@ -12,7 +12,7 @@ export default class Stop extends BaseCommand {
 
   static description = "Stop container(s)";
 
-  async run(): Promise<ProcessOutput> {
+  async run(): Promise<any> {
     const { args } = await this.parse(Stop);
 
     const commandArgs = [];

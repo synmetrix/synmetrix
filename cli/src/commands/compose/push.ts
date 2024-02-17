@@ -12,7 +12,7 @@ export default class Push extends BaseCommand {
 
   static description = "Push Docker images";
 
-  public async run(): Promise<void> {
+  public async run(): Promise<any> {
     const { args } = await this.parse(Push);
 
     const commandArgs = [];

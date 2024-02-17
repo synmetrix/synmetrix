@@ -1,6 +1,5 @@
 import { expect, test } from "@oclif/test";
-
-const wait = (ms = 10) => new Promise((resolve) => setTimeout(resolve, ms));
+import { wait } from "../../helpers.js";
 
 describe("compose:logs", async () => {
   test

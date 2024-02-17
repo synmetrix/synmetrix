@@ -7,16 +7,16 @@ export const PROJECT_DIR = process.cwd();
 export const callCompose = async (
   ctx: CustomContext,
   args: string[],
-): Promise<ProcessOutput> => {
+): Promise<any> => {
   const dockerFile = ["-f", ctx.dockerComposeFile];
 
-  return await $`docker compose ${[...dockerFile, ...args]}`;
+  return await $`docker-compose ${[...dockerFile, ...args]}`;
 };
 
 export const callSwarm = async (
   ctx: CustomContext,
   args: string[],
-): Promise<ProcessOutput> => {
+): Promise<any> => {
   const composeArgs = ["-f", ctx.dockerComposeFile];
 
   const processedConfig =

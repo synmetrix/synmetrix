@@ -33,7 +33,7 @@ export default class Up extends BaseCommand {
     }),
   };
 
-  public async run(): Promise<ProcessOutput> {
+  public async run(): Promise<any> {
     const { args, flags } = await this.parse(Up);
 
     if (flags.registry) {

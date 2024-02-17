@@ -454,3 +454,145 @@ tests:
             jsonpath:
               $.data.run_query.result[0].count(check_name):
                 - isString: true
+      - name: create_sql_credentials
+        http:
+          url: ${{env.HASURA_ENDPOINT}}
+          method: POST
+          headers:
+            Content-Type: application/json
+            Authorization: Bearer ${{captures.accessToken}}
+          graphql:
+            query: |
+              mutation ($object: sql_credentials_insert_input!) {
+                insert_sql_credentials_one(object: $object) {
+                  username
+                }
+              }
+            variables:
+              object:
+                user_id: ${{captures.userId}}
+                username: "user"
+                password: "pass"
+                datasource_id: ${{captures.datasourceId}}
+          captures:
+            sql_username:
+              jsonpath: $.data.insert_sql_credentials_one.username
+            sql_password:
+              jsonpath: "pass"
+          check:
+            status: 200
+            jsonpath:
+              $.data.insert_sql_credentials_one.username:
+                - isString: true
+      - name: create_alert
+        http:
+          url: ${{env.HASURA_ENDPOINT}}
+          method: POST
+          headers:
+            Content-Type: application/json
+            Authorization: Bearer ${{captures.accessToken}}
+          graphql:
+            query: |
+              mutation ($object: alerts_insert_input!) {
+                insert_alerts_one(object: $object) {
+                  id
+                }
+              }
+            variables:
+              object:
+                exploration_id: ${{captures.explorationId}}
+                team_id: ${{captures.teamId}}
+                name: "Test Alert"
+                delivery_type: "WEBHOOK"
+                delivery_config:
+                  url: "https://testwebhook.com"
+                trigger_config:
+                  measures:
+                    CellTowers:count:
+                      lowerBound: 0
+                      upperBound: 100
+                schedule: "* * * * *"
+          check:
+            status: 200
+            jsonpath:
+              $.data.insert_alerts_one.id:
+                - isString: true
+      - name: create_report
+        http:
+          url: ${{env.HASURA_ENDPOINT}}
+          method: POST
+          headers:
+            Content-Type: application/json
+            Authorization: Bearer ${{captures.accessToken}}
+          graphql:
+            query: |
+              mutation ($object: reports_insert_input!) {
+                insert_reports_one(object: $object) {
+                  id
+                }
+              }
+            variables:
+              object:
+                exploration_id: ${{captures.explorationId}}
+                team_id: ${{captures.teamId}}
+                name: "Test Report"
+                delivery_type: "WEBHOOK"
+                delivery_config:
+                  url: "https://testwebhook.com"
+                schedule: "* * * * *"
+          check:
+            status: 200
+            jsonpath:
+              $.data.insert_reports_one.id:
+                - isString: true
+      - name: generate_sql
+        http:
+          url: ${{env.HASURA_ENDPOINT}}
+          method: POST
+          headers:
+            Content-Type: application/json
+            Authorization: Bearer ${{captures.accessToken}}
+          graphql:
+            query: |
+              mutation ($exploration_id: uuid!) {
+                gen_sql(exploration_id: $exploration_id) {
+                  result
+                }
+              }
+            variables:
+              exploration_id: ${{captures.explorationId}}
+          check:
+            status: 200
+            jsonpath:
+              $.data.gen_sql.result.sql:
+                - isString: true
+      - name: create_version
+        http:
+          url: ${{env.HASURA_ENDPOINT}}
+          method: POST
+          headers:
+            Content-Type: application/json
+            Authorization: Bearer ${{captures.accessToken}}
+          graphql:
+            query: |
+              mutation ($object: versions_insert_input!) {
+                insert_versions_one(object: $object) {
+                  id
+                }
+              }
+            variables:
+              object:
+                checksum: "46f0c126790289d004d5c6dd82734cef"
+                user_id: ${{captures.userId}}
+                branch_id: ${{captures.branchId}}
+                dataschemas:
+                  data:
+                    name: "Checks.yml"
+                    code: "cubes:\n  - name: Checks\n    sql: SELECT * FROM default.checks\n    joins: []\n\n    dimensions:\n      - name: commitSha\n        sql: commit_sha\n        type: string\n\n    measures:\n      - name: count\n        type: count"
+                    user_id: ${{captures.userId}}
+                    datasource_id: ${{captures.datasourceId}}
+          check:
+            status: 200
+            jsonpath:
+              $.data.insert_versions_one.id:
+                - isString: true

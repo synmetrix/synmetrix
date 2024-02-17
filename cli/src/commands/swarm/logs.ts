@@ -18,7 +18,7 @@ export default class Logs extends Command {
     }),
   };
 
-  public async run(): Promise<ProcessOutput> {
+  public async run(): Promise<any> {
     const { args, flags } = await this.parse(Logs);
 
     const commandArgs = ["logs", "-f", "--tail", `${flags.tail}`];

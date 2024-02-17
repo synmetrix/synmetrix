@@ -11,7 +11,7 @@ export default class Restart extends Command {
 
   static description = "Restart the running service(s)";
 
-  public async run(): Promise<ProcessOutput> {
+  public async run(): Promise<any> {
     const { args } = await this.parse(Restart);
 
     const commandArgs = ["update", "--force", args.name];
