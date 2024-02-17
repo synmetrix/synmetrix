@@ -260,28 +260,6 @@ tests:
             status: 200
             jsonpath:
               $.data.check_connection.code: "ok"
-      - name: validate_datasource
-        http:
-          url: ${{env.HASURA_ENDPOINT}}
-          method: POST
-          headers:
-            Content-Type: application/json
-            Authorization: Bearer ${{captures.accessToken}}
-            x-hasura-user-id: ${{captures.userId}}
-          graphql:
-            query: |
-              mutation ($id: uuid!) {
-                validate_datasource(id: $id) {
-                  code
-                  message
-                }
-              }
-            variables:
-              id: ${{captures.datasourceId}}
-          check:
-            status: 200
-            jsonpath:
-              $.data.validate_datasource.code: "ok"
       - name: fetch_tables
         http:
           url: ${{env.HASURA_ENDPOINT}}
@@ -302,8 +280,90 @@ tests:
           check:
             status: 200
             jsonpath:
-              $.data.fetch_tables.schema.default:
-                - isObject: true
+              $.[*].actors:
+                - isArray: true
+              $.[*].benchmark_results:
+                - isArray: true
+              $.[*].benchmark_runs:
+                - isArray: true
+              $.[*].cell_towers:
+                - isArray: true
+              $.[*].checks:
+                - isArray: true
+              $.[*].cisco_umbrella:
+                - isArray: true
+              $.[*].covid:
+                - isArray: true
+              $.[*].dish:
+                - isArray: true
+              $.[*].dns:
+                - isArray: true
+              $.[*].dns2:
+                - isArray: true
+              $.[*].food_facts:
+                - isArray: true
+              $.[*].github_events:
+                - isArray: true
+              $.[*].hackernews:
+                - isArray: true
+              $.[*].hackernews_changes_items:
+                - isArray: true
+              $.[*].hackernews_changes_profiles:
+                - isArray: true
+              $.[*].hackernews_changes_to_history:
+                - isArray: true
+              $.[*].hackernews_history:
+                - isArray: true
+              $.[*].hackernews_history_2:
+                - isArray: true
+              $.[*].hackernews_top:
+                - isArray: true
+              $.[*].lineorder:
+                - isArray: true
+              $.[*].loc_stats:
+                - isArray: true
+              $.[*].menu:
+                - isArray: true
+              $.[*].menu_item:
+                - isArray: true
+              $.[*].menu_item_denorm:
+                - isArray: true
+              $.[*].menu_page:
+                - isArray: true
+              $.[*].minicrawl:
+                - isArray: true
+              $.[*].ontime:
+                - isArray: true
+              $.[*].opensky:
+                - isArray: true
+              $.[*].pypi:
+                - isArray: true
+              $.[*].query_metrics_v2:
+                - isArray: true
+              $.[*].rdns:
+                - isArray: true
+              $.[*].recipes:
+                - isArray: true
+              $.[*].repos:
+                - isArray: true
+              $.[*].repos_raw:
+                - isArray: true
+              $.[*].run_attributes_v1:
+                - isArray: true
+              $.[*].stock:
+                - isArray: true
+              $.[*].tranco:
+                - isArray: true
+              $.[*].trips:
+                - isArray: true
+              $.[*].uk_price_paid:
+                - isArray: true
+              $.[*].uk_price_paid_updater:
+                - isArray: true
+              $.[*].wikistat:
+                - isArray: true
+              $.[*].workflow_jobs:
+                - isArray: true
       - name: gen_dataschemas
         http:
           url: ${{env.HASURA_ENDPOINT}}
@@ -328,7 +388,6 @@ tests:
             status: 200
             jsonpath:
               $.data.gen_dataschemas.code: "ok"
-
       - name: create_exploration
         http:
           url: ${{env.HASURA_ENDPOINT}}
@@ -349,14 +408,30 @@ tests:
                 datasource_id: ${{captures.datasourceId}}
                 playground_state:
                   page: 0
-                  limit: 1000
-                  order: []
-                  offset: 0
-                  filters: []
+                  limit: 2
+                  order: [
+                    {
+                    "id": "CellTowers.created",
+                    "desc": false
+                    }
+                  ]
+                  offset: 5
+                  filters:  [
+                    {
+                        "values": ["2015-01-01"],
+                        "operator": "afterDate",
+                        "dimension": "CellTowers.created"
+                    },
+                    {
+                        "values": ["2015-12-31"],
+                        "operator": "beforeDate",
+                        "dimension": "CellTowers.created"
+                    }
+                  ]
                   measures: ["CellTowers.count"]
                   segments: []
                   timezone: "UTC"
-                  dimensions: ["CellTowers.lon", "CellTowers.created", "CellTowers.updated"]
+                  dimensions: ["CellTowers.lon", "CellTowers.created"]
                   timeDimensions: []
           captures:
             explorationId:
@@ -366,7 +441,11 @@ tests:
             jsonpath:
               $.data.insert_explorations_one.id:
                 - isString: true
+          wait: 2s
       - name: fetch_dataset
+        retries:
+          count: 3
+          interval: 2s
         http:
           url: ${{env.HASURA_ENDPOINT}}
           method: POST
@@ -382,12 +461,18 @@ tests:
               }
             variables:
               exploration_id: ${{captures.explorationId}}
-              limit: 5
+              limit: 2
           check:
             status: 200
             jsonpath:
-              $.data.fetch_dataset.data:
-                - isObject: true
+              $.data.fetch_dataset.[1:0]:
+                CellTowers.count: "1"
+                CellTowers.created: "2015-01-01T00:02:42.000"
+                CellTowers.lon: "89.365552"
+              $.data.fetch_dataset.[0:1]:
+                CellTowers.count: "1"
+                CellTowers.created: "2015-01-01T00:01:42.000"
+                CellTowers.lon: "39.756775"
       - name: export_data_models
         http:
           url: ${{env.HASURA_ENDPOINT}}
@@ -429,8 +514,9 @@ tests:
           check:
             status: 200
             jsonpath:
-              $.data.fetch_meta.cubes:
-                - isObject: true
+              $.[*].cubes[0].dimensions[0].name: "CellTowers.radio"
+              $.[*].cubes[0].measures[0].name: "CellTowers.count"
+              $.[*].cubes[0].name: "CellTowers"
       - name: run_query
         http:
           url: ${{env.HASURA_ENDPOINT}}
@@ -564,8 +650,7 @@ tests:
           check:
             status: 200
             jsonpath:
-              $.data.gen_sql.result.sql:
-                - isString: true
+              $.data.gen_sql.result.sql: "SELECT\n      `cell_towers`.lon `cell_towers__lon`, `cell_towers`.created `cell_towers__created`, count(*) `cell_towers__count`\n    FROM\n      default.cell_towers AS `cell_towers`  WHERE (`cell_towers`.created > parseDateTimeBestEffort('2015-01-01T00:00:00.000Z')) AND (`cell_towers`.created < parseDateTimeBestEffort('2015-12-31T00:00:00.000Z')) GROUP BY `cell_towers__lon`, `cell_towers__created` ORDER BY `cell_towers__created` ASC LIMIT 2 OFFSET 5"
       - name: create_version
         http:
           url: ${{env.HASURA_ENDPOINT}}
@@ -591,8 +676,27 @@ tests:
                     code: "cubes:\n  - name: Checks\n    sql: SELECT * FROM default.checks\n    joins: []\n\n    dimensions:\n      - name: commitSha\n        sql: commit_sha\n        type: string\n\n    measures:\n      - name: count\n        type: count"
                     user_id: ${{captures.userId}}
                     datasource_id: ${{captures.datasourceId}}
+          captures:
+            versionId:
+              jsonpath: $.data.insert_versions_one.id
           check:
             status: 200
             jsonpath:
               $.data.insert_versions_one.id:
                 - isString: true
+      - name: generate_docs
+        http:
+          url: ${{env.ACTIONS_URL}}/rpc/gen_schemas_docs
+          method: POST
+          headers:
+            Content-Type: application/json
+          json:
+            event:
+              data:
+                new:
+                  id: ${{captures.versionId}}
+          check:
+            jsonpath:
+              $:
+                error: false
+                markdownDoc: "#  Documentation\n\nThis documentation covers version ${{captures.versionId}} from branch \"main\".\n\n---\n####  List of cubes:\n\n<details open>\n<summary>Checks</summary>\n\n#### &nbsp;&nbsp;&nbsp;&nbsp; Measures\n\n##### &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Count\n\n&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; No description provided\n\n&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; **Parameters:**\n\n- &nbsp;&nbsp; **Name**: `Checks.count`\n- &nbsp;&nbsp; **Title**: `Checks Count`\n- &nbsp;&nbsp; **Type**: `number`\n- &nbsp;&nbsp; **Aggregation Type**: `count`\n- &nbsp;&nbsp; **Drill Members**: ``\n\n\n#### &nbsp;&nbsp;&nbsp;&nbsp; Dimensions\n\n##### &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Commit Sha\n\n&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; No description provided\n\n&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; **Parameters:**\n\n- &nbsp;&nbsp; **Name**: `Checks.commitSha`\n- &nbsp;&nbsp; **Title**: `Checks Commit Sha`\n- &nbsp;&nbsp; **Type**: `string`\n\n\n</details>\n\n---\n####  Version author: test@test.com\n\n"

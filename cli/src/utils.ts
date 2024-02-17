@@ -10,7 +10,7 @@ export const callCompose = async (
 ): Promise<any> => {
   const dockerFile = ["-f", ctx.dockerComposeFile];
 
-  return await $`docker-compose ${[...dockerFile, ...args]}`;
+  return await $`docker compose ${[...dockerFile, ...args]}`;
 };
 
 export const callSwarm = async (
