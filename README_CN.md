@@ -114,7 +114,7 @@ c8f342d086f3 synmetrix/stack       ... 1分钟前  运行中 1分钟 80->8888/tc
 | 数据库类型 | 主机                   | 端口 | 数据库  | 用户 | 密码   | SSL   |
 | ---------- | ---------------------- | ---- | ------- | ---- | ------ | ----- |
 | ClickHouse | gh-api.clickhouse.tech | 443  | default | play | 无密码 | true  |
-| PostgreSQL | demo-db.cube.dev       | 5432 | ecom    | cube | 12345  | false |
+| PostgreSQL | demo-db-examples.cube.dev       | 5432 | ecom    | cube | 12345  | false |
 
 ---
 
