@@ -94,7 +94,7 @@ The installation of all dependencies will take approximately 5-7 minutes. Wait u
     - Email:  `demo@synmetrix.org`
     - Password:  `demodemo`
 
-    This account is pre-configured with two demo datasources and their respective SQL API access. For SQL operations, you can use the following credentials with any SQL client tool such as DBeaver or TablePlus:
+    This account is pre-configured with two demo datasources and their respective SQL API access. For SQL operations, you can use the following credentials with any PostgreSQL client tool such as DBeaver or TablePlus:
 
     | Host      | Port  | Database | User                 | Password              |
     |-----------|-------|----------|----------------------|-----------------------|
