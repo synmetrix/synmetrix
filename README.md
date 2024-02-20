@@ -16,14 +16,14 @@ Synmetrix (prev. MLCraft) is an open source data engineering platform and semant
 
 ## Key Features
 
--   **Data modeling and transformations**: Flexibly define metrics and dimensions using SQL and [Cube](https://github.com/cube-js/cube) data models. Apply transformations and aggregations.
--   **Semantic layer**: Consolidate metrics from across sources into a unified, governed data model. Eliminate metric definition differences.
--   **Scheduled reports and alerts**: Monitor metrics and get notified of changes via configurable reports and alerts.
--   **Versioning**: Track schema changes over time for transparency and auditability.
--   **Role-based access control**: Manage permissions for data models and metrics access.
--   **Data exploration**: Analyze metrics through the UI, or integrate with any BI tool via the SQL API.
--   **Caching**: Optimize performance using pre-aggregations and caching from [Cube](https://github.com/cube-js/cube).
--   **Teams**: Collaborate on metrics modeling across your organization.
+- **Data modeling and transformations**: Flexibly define metrics and dimensions using SQL and [Cube](https://github.com/cube-js/cube) data models. Apply transformations and aggregations.
+- **Semantic layer**: Consolidate metrics from across sources into a unified, governed data model. Eliminate metric definition differences.
+- **Scheduled reports and alerts**: Monitor metrics and get notified of changes via configurable reports and alerts.
+- **Versioning**: Track schema changes over time for transparency and auditability.
+- **Role-based access control**: Manage permissions for data models and metrics access.
+- **Data exploration**: Analyze metrics through the UI, or integrate with any BI tool via the SQL API.
+- **Caching**: Optimize performance using pre-aggregations and caching from [Cube](https://github.com/cube-js/cube).
+- **Teams**: Collaborate on metrics modeling across your organization.
 
 ![Synmetrix – Open Source Semantic Layer](https://synmetrix.org/assets/6542558ce0ae954c7fb97894_Open%20Graph-min.webp)
 
@@ -62,7 +62,7 @@ NOTE: Ensure to review the environment variables in the docker-compose.yml file.
 Execute the following command to start Synmetrix along with a Postgres database for data storage.
 
 ```
-$ docker-compose up -d
+$ docker-compose pull stack && docker-compose up -d
 ```
 
 Verify if the containers are operational:
@@ -72,7 +72,7 @@ $ docker ps
 
 CONTAINER ID IMAGE                 ... CREATED STATUS PORTS          ...
 c8f342d086f3 synmetrix/stack       ... 1m ago  Up 1m  80->8888/tcp ...
-30ea14ddaa5e postgres:12           ... 1m ago  Up 1m  5432/tcp    
+30ea14ddaa5e postgres:12           ... 1m ago  Up 1m  5432/tcp  
 ```
 
 The installation of all dependencies will take approximately 5-7 minutes. Wait until you see the `Synmetrix Stack is ready` message. You can view the logs using `docker-compose logs -f` to confirm if the process has completed.
@@ -80,11 +80,8 @@ The installation of all dependencies will take approximately 5-7 minutes. Wait u
 ### Step 3: Explore Synmetrix
 
 * You can access Synmetrix at [http://localhost/](http://localhost/)
-
 * The GraphQL endpoint is located at [http://localhost/v1/graphql](http://localhost/v1/graphql)
-
 * The Admin Console (Hasura Console) can be found at [http://localhost/console](http://localhost/console)
-
 * The Cube Swagger API can be found at [http://localhost:4000/docs](http://localhost:4000/docs)
 
 #### Important Notes
@@ -93,32 +90,39 @@ The installation of all dependencies will take approximately 5-7 minutes. Wait u
 
 2. **Environment Variables**: Set up all necessary environment variables. Synmetrix will function with the default values, but certain features might not perform as anticipated.
 
-3. **Default Seed Data**: The project comes with default seed data. Use the following credentials to log in:
-    - Email: `demo@synmetrix.org`
-    - Password: `demodemo`
+3. **Preloaded Seed Data**: The project is equipped with preloaded seed data. Use the credentials below to sign in:
+    - Email:  `demo@synmetrix.org`
+    - Password:  `demodemo`
+
+    This account is pre-configured with two demo datasources and their respective SQL API access. For SQL operations, you can use the following credentials with any SQL client tool such as DBeaver or TablePlus:
+
+    | Host      | Port  | Database | User                 | Password              |
+    |-----------|-------|----------|----------------------|-----------------------|
+    | localhost | 15432 | db       | demo_pg_user         | demo_pg_pass          |
+    | localhost | 15432 | db       | demo_clickhouse_user | demo_clickhouse_pass  |
 
 ## Documentation
 
--   [Official Documentation](https://docs.synmetrix.org/)
--   [Cube Documentation](https://cube.dev/docs)
+- [Official Documentation](https://docs.synmetrix.org/)
+- [Cube Documentation](https://cube.dev/docs)
 
----- 
+---
 
 ## Demo online
 
 Demo: [app.synmetrix.org](https://app.synmetrix.org)
+
 * Login: `demo@synmetrix.org`
 * Password: `demodemo`
 
-### Demo credentials
+### Database demo credentials
 
-| Database type | Host                   | Port | Database | User | Password    | SSL   |
-|---------------|------------------------|------|----------|------|-------------|-------|
-| ClickHouse    | gh-api.clickhouse.tech | 443  | default  | play | no password | true  |
-| PostgreSQL    | demo-db.cube.dev       | 5432 | ecom     | cube | 12345       | false |
+| Database type | Host                        | Port | Database | User | Password    | SSL   |
+| ------------- | --------------------------- | ---- | -------- | ---- | ----------- | ----- |
+| ClickHouse    | gh-api.clickhouse.tech      | 443  | default  | play | no password | true  |
+| PostgreSQL    | demo-db-examples.cube.dev   | 5432 | ecom     | cube | 12345       | false |
 
-----
-
+---
 
 ## Data Modeling
 
@@ -126,11 +130,11 @@ Synmetrix leverages Cube for flexible data modeling and transformations.
 
 Cube implements a multi-stage SQL data modeling architecture:
 
--   Raw data sits in a source database such as Postgres, MySQL, etc.
--   The raw data is modeled into reusable data marts using Cube Data Models files. These models files allow defining metrics, dimensions, granularities and relationships.
--   The models act as an abstraction layer between the raw data and application code.
--   Cube then generates optimized analytical SQL queries against the raw data based on the model.
--   The Cube Store distributed cache optimizes query performance by caching query results.
+- Raw data sits in a source database such as Postgres, MySQL, etc.
+- The raw data is modeled into reusable data marts using Cube Data Models files. These models files allow defining metrics, dimensions, granularities and relationships.
+- The models act as an abstraction layer between the raw data and application code.
+- Cube then generates optimized analytical SQL queries against the raw data based on the model.
+- The Cube Store distributed cache optimizes query performance by caching query results.
 
 This modeling architecture makes it simple to create fast and complex analytical queries with Cube that are optimized to run against large datasets.
 
@@ -142,10 +146,10 @@ For production workloads, Synmetrix uses Cube Store as the caching and query exe
 
 Cube Store is a purpose-built database for operational analytics, optimized for fast aggregations and time series data. It provides:
 
--   Distributed querying for scalability
--   Advanced caching for fast queries
--   columnar storage for analytics performance
--   Integration with Cube for modeling
+- Distributed querying for scalability
+- Advanced caching for fast queries
+- columnar storage for analytics performance
+- Integration with Cube for modeling
 
 By leveraging Cube Store and Cube together, Synmetrix benefits from excellent analytics performance and flexibility in modeling metrics.
 
@@ -153,11 +157,11 @@ By leveraging Cube Store and Cube together, Synmetrix benefits from excellent an
 
 ## Ecosystem
 
-Repository | Description
---- | ---
-[mlcraft-io/mlcraft](https://github.com/mlcraft-io/mlcraft) | Synmetrix Monorepo
-[mlcraft-io/client-v2](https://github.com/mlcraft-io/client-v2) | Synmetrix Client
-[mlcraft-io/docs](https://github.com/mlcraft-io/docs) | Synmetrix Docs
+| Repository                                                   | Description        |
+| ------------------------------------------------------------ | ------------------ |
+| [mlcraft-io/mlcraft](https://github.com/mlcraft-io/mlcraft)     | Synmetrix Monorepo |
+| [mlcraft-io/client-v2](https://github.com/mlcraft-io/client-v2) | Synmetrix Client   |
+| [mlcraft-io/docs](https://github.com/mlcraft-io/docs)           | Synmetrix Docs     |
 
 ## Community support
 
@@ -178,12 +182,12 @@ All **other contents** are available under the [MIT License](LICENSE-community).
 
 ## Hardware requirements
 
-| Component   | Requirement |
-|-------------|-------------|
+| Component       | Requirement                                                                          |
+| --------------- | ------------------------------------------------------------------------------------ |
 | Processor (CPU) | 3.2 GHz or higher, modern processor with multi-threading and virtualization support. |
-| RAM | 8 GB or more to handle computational tasks and data processing. |
-| Disk Space | At least 30 GB of free space for software installation and storing working data. |
-| Network | Internet connectivity is required for cloud services and software updates. |
+| RAM             | 8 GB or more to handle computational tasks and data processing.                      |
+| Disk Space      | At least 30 GB of free space for software installation and storing working data.     |
+| Network         | Internet connectivity is required for cloud services and software updates.           |
 
 ## Authors
 
