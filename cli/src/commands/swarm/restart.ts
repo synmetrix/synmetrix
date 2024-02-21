@@ -9,7 +9,7 @@ export default class Restart extends Command {
     }),
   };
 
-  static description = "Restart the running service(s)";
+  static description = "Restart the running service";
 
   public async run(): Promise<any> {
     const { args } = await this.parse(Restart);

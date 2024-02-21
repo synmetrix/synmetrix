@@ -9,7 +9,7 @@ export default class Stop extends Command {
     }),
   };
 
-  static description = "DESTROY Docker Swarm stack";
+  static description = "Remove Swarm service";
 
   public async run() {
     const { args } = await this.parse(Stop);

@@ -9,7 +9,7 @@ export default class Logs extends Command {
     }),
   };
 
-  static description = "Print logs for Docker Swarm services";
+  static description = "Print logs for Docker Swarm service";
 
   static flags = {
     tail: Flags.integer({

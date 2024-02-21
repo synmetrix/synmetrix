@@ -4,8 +4,8 @@ import { Flags } from "@oclif/core";
 import BaseCommand from "../../BaseCommand.js";
 import "zx/globals";
 
-export default class TestRun extends BaseCommand {
-  static description = "Test project with stepci";
+export default class Run extends BaseCommand {
+  static description = "Run integration tests";
 
   static flags = {
     ...BaseCommand.flags,
@@ -14,7 +14,7 @@ export default class TestRun extends BaseCommand {
   };
 
   public async run(): Promise<void> {
-    const { flags } = await this.parse(TestRun);
+    const { flags } = await this.parse(Run);
     const { ymlFile } = flags;
     const testDir = flags.testDir || `${process.cwd()}/test/stepci`;
 

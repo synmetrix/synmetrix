@@ -25,7 +25,7 @@ The Synmetrix CLI is executed using the `./cli.sh` script in the project's root 
 * [`smcli swarm restart NAME`](#smcli-swarm-restart-name)
 * [`smcli swarm stop NAME`](#smcli-swarm-stop-name)
 * [`smcli swarm up NAME`](#smcli-swarm-up-name)
-* [`smcli test run`](#smcli-test-run)
+* [`smcli tests run`](#smcli-tests-run)
 
 ## `smcli compose destroy [NAME]`
 
@@ -263,7 +263,7 @@ _See code: [src/commands/swarm/destroy.ts](https://github.com/mlcraft-io/mlcraft
 
 ## `smcli swarm logs NAME`
 
-Print logs for Docker Swarm services
+Print logs for Docker Swarm service
 
 ```
 USAGE
@@ -276,14 +276,14 @@ FLAGS
   --tail=<value>  [default: 500] Number of last rows to show
 
 DESCRIPTION
-  Print logs for Docker Swarm services
+  Print logs for Docker Swarm service
 ```
 
 _See code: [src/commands/swarm/logs.ts](https://github.com/mlcraft-io/mlcraft/blob/v1.0.0/src/commands/swarm/logs.ts)_
 
 ## `smcli swarm ps NAME`
 
-PS all services
+Show running services in a stack
 
 ```
 USAGE
@@ -293,14 +293,14 @@ ARGUMENTS
   NAME  Stack name
 
 DESCRIPTION
-  PS all services
+  Show running services in a stack
 ```
 
 _See code: [src/commands/swarm/ps.ts](https://github.com/mlcraft-io/mlcraft/blob/v1.0.0/src/commands/swarm/ps.ts)_
 
 ## `smcli swarm restart NAME`
 
-Restart the running service(s)
+Restart the running service
 
 ```
 USAGE
@@ -310,14 +310,14 @@ ARGUMENTS
   NAME  Service name
 
 DESCRIPTION
-  Restart the running service(s)
+  Restart the running service
 ```
 
 _See code: [src/commands/swarm/restart.ts](https://github.com/mlcraft-io/mlcraft/blob/v1.0.0/src/commands/swarm/restart.ts)_
 
 ## `smcli swarm stop NAME`
 
-DESTROY Docker Swarm stack
+Remove Swarm service
 
 ```
 USAGE
@@ -327,14 +327,14 @@ ARGUMENTS
   NAME  Service name
 
 DESCRIPTION
-  DESTROY Docker Swarm stack
+  Remove Swarm service
 ```
 
 _See code: [src/commands/swarm/stop.ts](https://github.com/mlcraft-io/mlcraft/blob/v1.0.0/src/commands/swarm/stop.ts)_
 
 ## `smcli swarm up NAME`
 
-Up docker Stack
+Deploy Docker Stack
 
 ```
 USAGE
@@ -352,18 +352,18 @@ FLAGS
       --shell=<value>        Shell for exec commands (default: /bin/bash)
 
 DESCRIPTION
-  Up docker Stack
+  Deploy Docker Stack
 ```
 
 _See code: [src/commands/swarm/up.ts](https://github.com/mlcraft-io/mlcraft/blob/v1.0.0/src/commands/swarm/up.ts)_
 
-## `smcli test run`
+## `smcli tests run`
 
-Test project with stepci
+Run integration tests
 
 ```
 USAGE
-  $ smcli test run [--shell <value>] [-n <value>] [-e <value>] [--testDir <value>] [--ymlFile <value>]
+  $ smcli tests run [--shell <value>] [-n <value>] [-e <value>] [--testDir <value>] [--ymlFile <value>]
 
 FLAGS
   -e, --env=<value>          [default: dev] Environment
@@ -373,10 +373,10 @@ FLAGS
       --ymlFile=<value>      [default: tests/workflow.yml]
 
 DESCRIPTION
-  Test project with stepci
+  Run integration tests
 ```
 
-_See code: [src/commands/test/run.ts](https://github.com/mlcraft-io/mlcraft/blob/v1.0.0/src/commands/test/run.ts)_
+_See code: [src/commands/tests/run.ts](https://github.com/mlcraft-io/mlcraft/blob/v1.0.0/src/commands/tests/run.ts)_
 <!-- commandsstop -->
 
 ## To test the Synmetrix CLI, you can use the following command:
