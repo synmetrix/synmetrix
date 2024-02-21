@@ -1,5 +1,5 @@
 import { Flags } from "@oclif/core";
-import { $, sleep } from "zx";
+import { $ } from "zx";
 
 import BaseCommand from "../../BaseCommand.js";
 
@@ -17,7 +17,7 @@ export default class StepCI extends BaseCommand {
     const { ymlFile } = flags;
     const testDir = flags.testDir || `${process.cwd()}/tests/stepci`;
 
-    await $`docker build -t stepci-test ./scripts/containers/stepci`;
+    await $`docker build -qt stepci-test ./scripts/containers/stepci`;
 
     const env = this.context.runtimeEnv;
     const envFiles = [".env", `.${env}.env`];
@@ -39,6 +39,12 @@ export default class StepCI extends BaseCommand {
     ];
 
     await $`docker run ${runCommand}`;
-    await $`PGPASSWORD=pass psql --host localhost --port 15432 --username user --dbname default --command "\\d"`;
+    const runPsql =
+      await $`PGPASSWORD=pass psql --host localhost --port 15432 --username user --dbname default --command "\\d"`;
+
+    console.assert(
+      runPsql.stdout.includes("Checks"),
+      'Expected "Checks" table in psql output',
+    );
   }
 }
