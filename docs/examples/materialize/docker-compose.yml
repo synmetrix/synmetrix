@@ -1,8 +1,0 @@
-version: "3.9"
-
-services:
-  materialized:
-    image: materialize/materialized:latest
-    ports:
-      - 6876:6876
-      - 6875:6875
