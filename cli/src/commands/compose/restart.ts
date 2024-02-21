@@ -12,7 +12,7 @@ export default class Restart extends BaseCommand {
 
   static description = "Restart the running container(s)";
 
-  public async run(): Promise<ProcessOutput> {
+  public async run(): Promise<any> {
     const { args } = await this.parse(Restart);
 
     const commandArgs = [];

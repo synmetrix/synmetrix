@@ -9,7 +9,7 @@ export default class Logs extends Command {
     }),
   };
 
-  static description = "Print logs for Docker Swarm services";
+  static description = "Print logs for Docker Swarm service";
 
   static flags = {
     tail: Flags.integer({
@@ -18,7 +18,7 @@ export default class Logs extends Command {
     }),
   };
 
-  public async run(): Promise<ProcessOutput> {
+  public async run(): Promise<any> {
     const { args, flags } = await this.parse(Logs);
 
     const commandArgs = ["logs", "-f", "--tail", `${flags.tail}`];

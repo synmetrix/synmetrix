@@ -12,7 +12,7 @@ export default class Ex extends Command {
 
   static description = "Exec command in container";
 
-  public async run(): Promise<ProcessOutput> {
+  public async run(): Promise<any> {
     const { args } = await this.parse(Ex);
 
     return await $`docker exec -it $(docker ps -q -f name=${args.name} | head -1) ${args.cmd}`;

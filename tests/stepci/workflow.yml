@@ -12,4 +12,4 @@ env:
   INVITE_USER_EMAIL: invite@test.com
   TEST_TEAM_NAME: Test team
 include:
-  - datasource_flow.yml
+  - owner_flow.yml

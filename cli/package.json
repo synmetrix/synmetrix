@@ -51,7 +51,24 @@
     "topicSeparator": " ",
     "plugins": [
       "@oclif/plugin-help"
-    ]
+    ],
+    "topics": {
+      "swarm": {
+        "description": "Commands for Docker Swarm management"
+      },
+      "compose": {
+        "description": "Commands for Docker Compose management"
+      },
+      "tests": {
+        "description": "Commands for integration tests management"
+      },
+      "docker": {
+        "description": "Commands for Docker Containers management"
+      },
+      "hasura": {
+        "description": "Commands for Hasura CLI management"
+      }
+    }
   },
   "repository": "mlcraft-io/mlcraft",
   "scripts": {

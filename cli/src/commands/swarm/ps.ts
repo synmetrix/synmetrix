@@ -9,9 +9,9 @@ export default class Ps extends Command {
     }),
   };
 
-  static description = "PS all services";
+  static description = "Show running services in a stack";
 
-  public async run(): Promise<ProcessOutput> {
+  public async run(): Promise<any> {
     const { args } = await this.parse(Ps);
 
     return await $`docker stack ps ${args.name} --no-trunc`;

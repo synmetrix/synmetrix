@@ -30,7 +30,7 @@ export default class Hasura extends Command {
     }),
   };
 
-  async run(): Promise<ProcessOutput> {
+  async run(): Promise<any> {
     const { args, flags } = await this.parse(Hasura);
     const parsedUrl = new URL(flags.hasuraAddr);
     const hasuraDir = flags?.hasuraDir || `${PROJECT_DIR}/services/hasura`;

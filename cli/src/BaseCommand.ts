@@ -10,8 +10,6 @@ export interface CustomContext {
   runtimeEnv?: string;
 }
 
-process.env.FORCE_COLOR = "1";
-
 export default class BaseCommand extends Command {
   static args = {
     ...Command.args,
