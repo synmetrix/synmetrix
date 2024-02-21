@@ -1,5 +1,5 @@
 import { expect, test } from "@oclif/test";
-import { wait } from "../../helpers.js";
+import { sleep } from "zx";
 
 describe("compose:logs", async () => {
   test
@@ -9,7 +9,7 @@ describe("compose:logs", async () => {
       "runs compose:logs with a container name argument",
       async (ctx, done) => {
         ctx.config.runCommand("compose:logs", ["actions"]);
-        await wait(1000);
+        await sleep(1000);
 
         expect(ctx.stderr).to.contain("actions");
 
@@ -22,7 +22,7 @@ describe("compose:logs", async () => {
     .stderr()
     .it("runs compose:logs without arguments", async (ctx, done) => {
       ctx.config.runCommand("compose:logs");
-      await wait(1000);
+      await sleep(1000);
 
       expect(ctx.stderr).to.match(/hasura|actions|postgres|cubejs|redis/);
 

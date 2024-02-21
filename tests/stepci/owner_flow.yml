@@ -1,5 +1,5 @@
 tests:
-  datasource_flow:
+  owner_flow:
     steps:
       - name: delete_test_data
         http:

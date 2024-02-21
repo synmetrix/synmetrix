@@ -25,7 +25,7 @@ The Synmetrix CLI is executed using the `./cli.sh` script in the project's root 
 * [`smcli swarm restart NAME`](#smcli-swarm-restart-name)
 * [`smcli swarm stop NAME`](#smcli-swarm-stop-name)
 * [`smcli swarm up NAME`](#smcli-swarm-up-name)
-* [`smcli tests run`](#smcli-tests-run)
+* [`smcli tests stepci`](#smcli-tests-stepci)
 
 ## `smcli compose destroy [NAME]`
 
@@ -357,26 +357,26 @@ DESCRIPTION
 
 _See code: [src/commands/swarm/up.ts](https://github.com/mlcraft-io/mlcraft/blob/v1.0.0/src/commands/swarm/up.ts)_
 
-## `smcli tests run`
+## `smcli tests stepci`
 
-Run integration tests
+Run StepCI integration tests
 
 ```
 USAGE
-  $ smcli tests run [--shell <value>] [-n <value>] [-e <value>] [--testDir <value>] [--ymlFile <value>]
+  $ smcli tests stepci [--shell <value>] [-n <value>] [-e <value>] [--testDir <value>] [--ymlFile <value>]
 
 FLAGS
   -e, --env=<value>          [default: dev] Environment
   -n, --networkName=<value>  [default: synmetrix_default] Docker network name
       --shell=<value>        Shell for exec commands (default: /bin/bash)
-      --testDir=<value>      Default: "./test/stepci"
+      --testDir=<value>      Default: "./tests/stepci"
       --ymlFile=<value>      [default: tests/workflow.yml]
 
 DESCRIPTION
-  Run integration tests
+  Run StepCI integration tests
 ```
 
-_See code: [src/commands/tests/run.ts](https://github.com/mlcraft-io/mlcraft/blob/v1.0.0/src/commands/tests/run.ts)_
+_See code: [src/commands/tests/stepci.ts](https://github.com/mlcraft-io/mlcraft/blob/v1.0.0/src/commands/tests/stepci.ts)_
 <!-- commandsstop -->
 
 ## To test the Synmetrix CLI, you can use the following command:

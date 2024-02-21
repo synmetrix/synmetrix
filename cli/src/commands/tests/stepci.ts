@@ -1,22 +1,21 @@
-import { $ } from "zx";
 import { Flags } from "@oclif/core";
+import { $, sleep } from "zx";
 
 import BaseCommand from "../../BaseCommand.js";
-import "zx/globals";
 
-export default class Run extends BaseCommand {
-  static description = "Run integration tests";
+export default class StepCI extends BaseCommand {
+  static description = "Run StepCI integration tests";
 
   static flags = {
     ...BaseCommand.flags,
-    testDir: Flags.string({ description: 'Default: "./test/stepci"' }),
+    testDir: Flags.string({ description: 'Default: "./tests/stepci"' }),
     ymlFile: Flags.string({ default: "tests/workflow.yml" }),
   };
 
-  public async run(): Promise<void> {
-    const { flags } = await this.parse(Run);
+  public async run(): Promise<any> {
+    const { flags } = await this.parse(StepCI);
     const { ymlFile } = flags;
-    const testDir = flags.testDir || `${process.cwd()}/test/stepci`;
+    const testDir = flags.testDir || `${process.cwd()}/tests/stepci`;
 
     await $`docker build -t stepci-test ./scripts/containers/stepci`;
 
@@ -28,9 +27,9 @@ export default class Run extends BaseCommand {
       "--network",
       this.context.networkName,
       "--name",
-      "stepci-test",
+      "stepci-tests",
       "--network-alias",
-      "stepci-test",
+      "stepci-tests",
       "-v",
       `${testDir}:/tests`,
       "-i",
@@ -40,5 +39,6 @@ export default class Run extends BaseCommand {
     ];
 
     await $`docker run ${runCommand}`;
+    await $`PGPASSWORD=pass psql --host localhost --port 15432 --username user --dbname default --command "\\d"`;
   }
 }
