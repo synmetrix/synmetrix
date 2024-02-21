@@ -3,9 +3,9 @@ INSERT INTO public.users (id, created_at, updated_at, display_name, avatar_url) 
 INSERT INTO auth.accounts (id, created_at, updated_at, user_id, active, email, new_email, password_hash, default_role, is_anonymous, custom_register_data, otp_secret, mfa_enabled, ticket, ticket_expires_at) VALUES ('aa5bcd9a-d827-4031-8a26-05b01a4145d6', '2024-02-15 22:46:43.475355+00', '2024-02-15 22:46:43.475355+00', 'bd254cd6-ada3-4803-88ec-a47749459169', true, 'demo@synmetrix.org', NULL, '$2a$10$GUjaAaECotHVnd3UKFqmjerLzwtLQ.7Wov3l4dIAsFlBm8d0DFA4q', 'user', false, NULL, NULL, false, 'a91f003d-499b-416e-aa2d-00668e5c57d9', '2024-02-15 23:46:43.354+00');
 INSERT INTO public.teams (id, name, created_at, updated_at, user_id) VALUES ('02db13fa-37ad-4a15-a237-e4a9f400797a', 'Default team', '2024-02-15 22:46:43.914448+00', '2024-02-15 22:46:43.914448+00', 'bd254cd6-ada3-4803-88ec-a47749459169');
 INSERT INTO public.datasources (id, created_at, updated_at, user_id, name, db_type, db_params, team_id) VALUES ('715dfae1-1044-42ec-ac48-dd4cefa567e6', '2024-02-15 22:47:00.593649+00', '2024-02-15 22:47:00.593649+00', 'bd254cd6-ada3-4803-88ec-a47749459169', 'gh-api.clickhouse.tech', 'CLICKHOUSE', '{"ssl": true, "host": "gh-api.clickhouse.tech", "port": "443", "user": "play", "database": "default"}', '02db13fa-37ad-4a15-a237-e4a9f400797a');
-INSERT INTO public.datasources (id, created_at, updated_at, user_id, name, db_type, db_params, team_id) VALUES ('17bbf032-2e25-4b17-aa61-1d3db0a99d57', '2024-02-15 22:48:59.94719+00', '2024-02-15 22:48:59.94719+00', 'bd254cd6-ada3-4803-88ec-a47749459169', 'demo-db.cube.dev', 'POSTGRES', '{"host": "demo-db.cube.dev", "port": "5432", "user": "cube", "database": "ecom", "password": "12345"}', '02db13fa-37ad-4a15-a237-e4a9f400797a');
+INSERT INTO public.datasources (id, created_at, updated_at, user_id, name, db_type, db_params, team_id) VALUES ('f9401258-4630-4005-8d47-1a682ae94cf3', '2024-02-20 20:50:58.78422+00', '2024-02-20 20:50:58.78422+00', 'bd254cd6-ada3-4803-88ec-a47749459169', 'demo-db-examples.cube.dev', 'POSTGRES', '{"host": "demo-db-examples.cube.dev", "port": "5432", "user": "cube", "database": "ecom", "password": "12345"}', '02db13fa-37ad-4a15-a237-e4a9f400797a');
 INSERT INTO public.branches (id, created_at, updated_at, name, user_id, datasource_id, status) VALUES ('ad1cec32-dfd4-4b5c-9bad-5f18b4ec2048', '2024-02-15 22:47:00.593649+00', '2024-02-15 22:47:00.593649+00', 'main', 'bd254cd6-ada3-4803-88ec-a47749459169', '715dfae1-1044-42ec-ac48-dd4cefa567e6', 'active');
-INSERT INTO public.branches (id, created_at, updated_at, name, user_id, datasource_id, status) VALUES ('9db82eca-59df-494c-a54f-18a92b22e2f4', '2024-02-15 22:48:59.94719+00', '2024-02-15 22:48:59.94719+00', 'main', 'bd254cd6-ada3-4803-88ec-a47749459169', '17bbf032-2e25-4b17-aa61-1d3db0a99d57', 'active');
+INSERT INTO public.branches (id, created_at, updated_at, name, user_id, datasource_id, status) VALUES ('4709c40a-9c6f-4b7d-ab41-c1f9c003975f', '2024-02-20 20:50:58.78422+00', '2024-02-20 20:50:58.78422+00', 'main', 'bd254cd6-ada3-4803-88ec-a47749459169', 'f9401258-4630-4005-8d47-1a682ae94cf3', 'active');
 INSERT INTO public.versions (id, created_at, updated_at, branch_id, checksum, user_id, markdown_doc) VALUES ('cb87a34d-87e6-45b7-9339-248c18d951e8', '2024-02-15 22:47:16.524155+00', '2024-02-15 22:47:16.524155+00', 'ad1cec32-dfd4-4b5c-9bad-5f18b4ec2048', '31a27e596010ad20174355b37d07ce2d', 'bd254cd6-ada3-4803-88ec-a47749459169', NULL);
 INSERT INTO public.versions (id, created_at, updated_at, branch_id, checksum, user_id, markdown_doc) VALUES ('3c0301b4-6735-40d7-b4cc-0bfe5221d4c8', '2024-02-15 22:47:42.855225+00', '2024-02-15 22:47:45.816942+00', 'ad1cec32-dfd4-4b5c-9bad-5f18b4ec2048', '6c8159b836f2ce61976d6dd980de20fb', 'bd254cd6-ada3-4803-88ec-a47749459169', '#  Documentation
 This documentation covers version 3c0301b4-6735-40d7-b4cc-0bfe5221d4c8 from branch "main".
@@ -2938,50 +2938,34 @@ This documentation covers version 3c0301b4-6735-40d7-b4cc-0bfe5221d4c8 from bran
 </details>
 ####  Version author: demo@synmetrix.org
 ');
-INSERT INTO public.versions (id, created_at, updated_at, branch_id, checksum, user_id, markdown_doc) VALUES ('ab116697-5fa3-4cda-ac5a-f4bca5742ead', '2024-02-15 22:49:18.03242+00', '2024-02-15 22:49:18.03242+00', '9db82eca-59df-494c-a54f-18a92b22e2f4', '373552da9bd1a656a4bd42aa2271f3a9', 'bd254cd6-ada3-4803-88ec-a47749459169', NULL);
-INSERT INTO public.versions (id, created_at, updated_at, branch_id, checksum, user_id, markdown_doc) VALUES ('1c71cc4f-6db9-4ae4-8530-10f4c44b81ea', '2024-02-15 22:50:34.328636+00', '2024-02-15 22:50:34.328636+00', '9db82eca-59df-494c-a54f-18a92b22e2f4', 'c712f95776f8505999b9dd3f4f71e2b5', 'bd254cd6-ada3-4803-88ec-a47749459169', NULL);
-INSERT INTO public.versions (id, created_at, updated_at, branch_id, checksum, user_id, markdown_doc) VALUES ('813d5960-c531-494d-9850-5384934fefc5', '2024-02-15 22:51:03.984451+00', '2024-02-15 22:51:03.984451+00', '9db82eca-59df-494c-a54f-18a92b22e2f4', '7880279f6183d7d8669b6cc5640c432b', 'bd254cd6-ada3-4803-88ec-a47749459169', NULL);
-INSERT INTO public.versions (id, created_at, updated_at, branch_id, checksum, user_id, markdown_doc) VALUES ('89bdb46a-53d1-4a98-b49d-0175bc9105a0', '2024-02-15 22:51:14.766779+00', '2024-02-15 22:51:14.766779+00', '9db82eca-59df-494c-a54f-18a92b22e2f4', 'c712f95776f8505999b9dd3f4f71e2b5', 'bd254cd6-ada3-4803-88ec-a47749459169', NULL);
-INSERT INTO public.versions (id, created_at, updated_at, branch_id, checksum, user_id, markdown_doc) VALUES ('76e900ad-a007-440a-8dd6-4cf8952e45a4', '2024-02-15 22:53:53.656866+00', '2024-02-15 22:53:53.656866+00', '9db82eca-59df-494c-a54f-18a92b22e2f4', '84042c3b0fbbea6df0021c6a54e4bf0f', 'bd254cd6-ada3-4803-88ec-a47749459169', NULL);
-INSERT INTO public.versions (id, created_at, updated_at, branch_id, checksum, user_id, markdown_doc) VALUES ('665de544-e30d-4769-8073-5d65fd2d03b6', '2024-02-15 22:54:44.919089+00', '2024-02-15 22:54:49.367062+00', '9db82eca-59df-494c-a54f-18a92b22e2f4', 'a35588f54e390926c199e99027378573', 'bd254cd6-ada3-4803-88ec-a47749459169', '#  Documentation
-This documentation covers version 665de544-e30d-4769-8073-5d65fd2d03b6 from branch "main".
+INSERT INTO public.versions (id, created_at, updated_at, branch_id, checksum, user_id, markdown_doc) VALUES ('8ac5b66e-aca9-4845-b009-74127cbb6c00', '2024-02-20 20:51:08.458633+00', '2024-02-20 20:51:09.855315+00', '4709c40a-9c6f-4b7d-ab41-c1f9c003975f', 'a3aa4c400773b0e8ce899590065689d8', 'bd254cd6-ada3-4803-88ec-a47749459169', '#  Documentation
+This documentation covers version 8ac5b66e-aca9-4845-b009-74127cbb6c00 from branch "main".
 ####  List of cubes:
 <details open>
-<summary>Companies</summary>
+<summary>ActiveWorkspaceDetails</summary>
+#### &nbsp;&nbsp;&nbsp;&nbsp; Active Workspace Details
 #### &nbsp;&nbsp;&nbsp;&nbsp; Measures
 ##### &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Count
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; No description provided
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; **Parameters:**
-- &nbsp;&nbsp; **Name**: `Companies.count`
-- &nbsp;&nbsp; **Title**: `Companies Count`
+- &nbsp;&nbsp; **Name**: `ActiveWorkspaceDetails.count`
+- &nbsp;&nbsp; **Title**: `Active Workspace Details Count`
 - &nbsp;&nbsp; **Type**: `number`
 - &nbsp;&nbsp; **Aggregation Type**: `count`
 - &nbsp;&nbsp; **Drill Members**: ``
 #### &nbsp;&nbsp;&nbsp;&nbsp; Dimensions
-##### &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Email
+##### &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Is Active
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; No description provided
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; **Parameters:**
-- &nbsp;&nbsp; **Name**: `Companies.email`
-- &nbsp;&nbsp; **Title**: `Companies Email`
+- &nbsp;&nbsp; **Name**: `ActiveWorkspaceDetails.isActive`
+- &nbsp;&nbsp; **Title**: `Active Workspace Details Is Active`
 - &nbsp;&nbsp; **Type**: `string`
-##### &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Name
+##### &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Reporting Day
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; No description provided
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; **Parameters:**
-- &nbsp;&nbsp; **Name**: `Companies.name`
-- &nbsp;&nbsp; **Title**: `Companies Name`
-- &nbsp;&nbsp; **Type**: `string`
-##### &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Phone
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; No description provided
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; **Parameters:**
-- &nbsp;&nbsp; **Name**: `Companies.phone`
-- &nbsp;&nbsp; **Title**: `Companies Phone`
-- &nbsp;&nbsp; **Type**: `string`
-##### &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Address
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; No description provided
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; **Parameters:**
-- &nbsp;&nbsp; **Name**: `Companies.address`
-- &nbsp;&nbsp; **Title**: `Companies Address`
-- &nbsp;&nbsp; **Type**: `string`
+- &nbsp;&nbsp; **Name**: `ActiveWorkspaceDetails.reportingDay`
+- &nbsp;&nbsp; **Title**: `Active Workspace Details Reporting Day`
+- &nbsp;&nbsp; **Type**: `time`
 </details>
 <details open>
 <summary>LineItems</summary>
@@ -2995,19 +2979,19 @@ This documentation covers version 665de544-e30d-4769-8073-5d65fd2d03b6 from bran
 - &nbsp;&nbsp; **Type**: `number`
 - &nbsp;&nbsp; **Aggregation Type**: `count`
 - &nbsp;&nbsp; **Drill Members**: ``
-##### &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Quantity
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; No description provided
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; **Parameters:**
-- &nbsp;&nbsp; **Name**: `LineItems.quantity`
-- &nbsp;&nbsp; **Title**: `Line Items Quantity`
-- &nbsp;&nbsp; **Type**: `number`
-- &nbsp;&nbsp; **Aggregation Type**: `sum`
-- &nbsp;&nbsp; **Drill Members**: ``
 ##### &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Price
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; No description provided
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; **Parameters:**
 - &nbsp;&nbsp; **Name**: `LineItems.price`
 - &nbsp;&nbsp; **Title**: `Line Items Price`
+- &nbsp;&nbsp; **Type**: `number`
+- &nbsp;&nbsp; **Aggregation Type**: `sum`
+- &nbsp;&nbsp; **Drill Members**: ``
+##### &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Quantity
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; No description provided
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; **Parameters:**
+- &nbsp;&nbsp; **Name**: `LineItems.quantity`
+- &nbsp;&nbsp; **Title**: `Line Items Quantity`
 - &nbsp;&nbsp; **Type**: `number`
 - &nbsp;&nbsp; **Aggregation Type**: `sum`
 - &nbsp;&nbsp; **Drill Members**: ``
@@ -3020,133 +3004,39 @@ This documentation covers version 665de544-e30d-4769-8073-5d65fd2d03b6 from bran
 - &nbsp;&nbsp; **Type**: `time`
 </details>
 <details open>
-<summary>LineItemsCountByStates</summary>
-#### &nbsp;&nbsp;&nbsp;&nbsp; Line Items Count by States
+<summary>LineItemsCopy</summary>
+#### &nbsp;&nbsp;&nbsp;&nbsp; Line Items Copy
 #### &nbsp;&nbsp;&nbsp;&nbsp; Measures
 ##### &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Count
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; No description provided
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; **Parameters:**
-- &nbsp;&nbsp; **Name**: `LineItemsCountByStates.count`
-- &nbsp;&nbsp; **Title**: `Line Items Count by States Count`
-- &nbsp;&nbsp; **Type**: `number`
-- &nbsp;&nbsp; **Aggregation Type**: `count`
-- &nbsp;&nbsp; **Drill Members**: ``
-##### &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Line Items Count
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; No description provided
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; **Parameters:**
-- &nbsp;&nbsp; **Name**: `LineItemsCountByStates.lineItemsCount`
-- &nbsp;&nbsp; **Title**: `Line Items Count by States Line Items Count`
-- &nbsp;&nbsp; **Type**: `number`
-- &nbsp;&nbsp; **Aggregation Type**: `sum`
-- &nbsp;&nbsp; **Drill Members**: ``
-#### &nbsp;&nbsp;&nbsp;&nbsp; Dimensions
-##### &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Users State
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; No description provided
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; **Parameters:**
-- &nbsp;&nbsp; **Name**: `LineItemsCountByStates.usersState`
-- &nbsp;&nbsp; **Title**: `Line Items Count by States Users State`
-- &nbsp;&nbsp; **Type**: `string`
-</details>
-<details open>
-<summary>LineItemsEval</summary>
-#### &nbsp;&nbsp;&nbsp;&nbsp; Line Items Eval
-#### &nbsp;&nbsp;&nbsp;&nbsp; Measures
-##### &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Count
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; No description provided
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; **Parameters:**
-- &nbsp;&nbsp; **Name**: `LineItemsEval.count`
-- &nbsp;&nbsp; **Title**: `Line Items Eval Count`
+- &nbsp;&nbsp; **Name**: `LineItemsCopy.count`
+- &nbsp;&nbsp; **Title**: `Line Items Copy Count`
 - &nbsp;&nbsp; **Type**: `number`
 - &nbsp;&nbsp; **Aggregation Type**: `count`
 - &nbsp;&nbsp; **Drill Members**: ``
 ##### &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Quantity
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; No description provided
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; **Parameters:**
-- &nbsp;&nbsp; **Name**: `LineItemsEval.quantity`
-- &nbsp;&nbsp; **Title**: `Line Items Eval Quantity`
+- &nbsp;&nbsp; **Name**: `LineItemsCopy.quantity`
+- &nbsp;&nbsp; **Title**: `Line Items Copy Quantity`
+- &nbsp;&nbsp; **Type**: `number`
+- &nbsp;&nbsp; **Aggregation Type**: `sum`
+- &nbsp;&nbsp; **Drill Members**: ``
+##### &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Price
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; No description provided
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; **Parameters:**
+- &nbsp;&nbsp; **Name**: `LineItemsCopy.price`
+- &nbsp;&nbsp; **Title**: `Line Items Copy Price`
 - &nbsp;&nbsp; **Type**: `number`
 - &nbsp;&nbsp; **Aggregation Type**: `sum`
 - &nbsp;&nbsp; **Drill Members**: ``
 #### &nbsp;&nbsp;&nbsp;&nbsp; Dimensions
-##### &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Price
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; No description provided
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; **Parameters:**
-- &nbsp;&nbsp; **Name**: `LineItemsEval.price`
-- &nbsp;&nbsp; **Title**: `Line Items Eval Price`
-- &nbsp;&nbsp; **Type**: `string`
 ##### &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Created at
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; No description provided
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; **Parameters:**
-- &nbsp;&nbsp; **Name**: `LineItemsEval.createdAt`
-- &nbsp;&nbsp; **Title**: `Line Items Eval Created at`
-- &nbsp;&nbsp; **Type**: `time`
-</details>
-<details open>
-<summary>LineItemsEval1</summary>
-#### &nbsp;&nbsp;&nbsp;&nbsp; Line Items Eval1
-#### &nbsp;&nbsp;&nbsp;&nbsp; Measures
-##### &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Count
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; No description provided
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; **Parameters:**
-- &nbsp;&nbsp; **Name**: `LineItemsEval1.count`
-- &nbsp;&nbsp; **Title**: `Line Items Eval1 Count`
-- &nbsp;&nbsp; **Type**: `number`
-- &nbsp;&nbsp; **Aggregation Type**: `count`
-- &nbsp;&nbsp; **Drill Members**: ``
-##### &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Quantity
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; No description provided
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; **Parameters:**
-- &nbsp;&nbsp; **Name**: `LineItemsEval1.quantity`
-- &nbsp;&nbsp; **Title**: `Line Items Eval1 Quantity`
-- &nbsp;&nbsp; **Type**: `number`
-- &nbsp;&nbsp; **Aggregation Type**: `sum`
-- &nbsp;&nbsp; **Drill Members**: ``
-#### &nbsp;&nbsp;&nbsp;&nbsp; Dimensions
-##### &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Price
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; No description provided
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; **Parameters:**
-- &nbsp;&nbsp; **Name**: `LineItemsEval1.price`
-- &nbsp;&nbsp; **Title**: `Line Items Eval1 Price`
-- &nbsp;&nbsp; **Type**: `string`
-##### &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Created at
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; No description provided
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; **Parameters:**
-- &nbsp;&nbsp; **Name**: `LineItemsEval1.createdAt`
-- &nbsp;&nbsp; **Title**: `Line Items Eval1 Created at`
-- &nbsp;&nbsp; **Type**: `time`
-</details>
-<details open>
-<summary>LineItemsEval2</summary>
-#### &nbsp;&nbsp;&nbsp;&nbsp; Line Items Eval2
-#### &nbsp;&nbsp;&nbsp;&nbsp; Measures
-##### &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Count
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; No description provided
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; **Parameters:**
-- &nbsp;&nbsp; **Name**: `LineItemsEval2.count`
-- &nbsp;&nbsp; **Title**: `Line Items Eval2 Count`
-- &nbsp;&nbsp; **Type**: `number`
-- &nbsp;&nbsp; **Aggregation Type**: `count`
-- &nbsp;&nbsp; **Drill Members**: ``
-##### &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Quantity
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; No description provided
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; **Parameters:**
-- &nbsp;&nbsp; **Name**: `LineItemsEval2.quantity`
-- &nbsp;&nbsp; **Title**: `Line Items Eval2 Quantity`
-- &nbsp;&nbsp; **Type**: `number`
-- &nbsp;&nbsp; **Aggregation Type**: `sum`
-- &nbsp;&nbsp; **Drill Members**: ``
-#### &nbsp;&nbsp;&nbsp;&nbsp; Dimensions
-##### &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Price
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; No description provided
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; **Parameters:**
-- &nbsp;&nbsp; **Name**: `LineItemsEval2.price`
-- &nbsp;&nbsp; **Title**: `Line Items Eval2 Price`
-- &nbsp;&nbsp; **Type**: `string`
-##### &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Created at
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; No description provided
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; **Parameters:**
-- &nbsp;&nbsp; **Name**: `LineItemsEval2.createdAt`
-- &nbsp;&nbsp; **Title**: `Line Items Eval2 Created at`
+- &nbsp;&nbsp; **Name**: `LineItemsCopy.createdAt`
+- &nbsp;&nbsp; **Title**: `Line Items Copy Created at`
 - &nbsp;&nbsp; **Type**: `time`
 </details>
 <details open>
@@ -3160,103 +3050,73 @@ This documentation covers version 665de544-e30d-4769-8073-5d65fd2d03b6 from bran
 - &nbsp;&nbsp; **Type**: `number`
 - &nbsp;&nbsp; **Aggregation Type**: `count`
 - &nbsp;&nbsp; **Drill Members**: ``
-#### &nbsp;&nbsp;&nbsp;&nbsp; Dimensions
-##### &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Name
+##### &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Number
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; No description provided
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; **Parameters:**
-- &nbsp;&nbsp; **Name**: `Orders.name`
-- &nbsp;&nbsp; **Title**: `Orders Name`
-- &nbsp;&nbsp; **Type**: `string`
-</details>
-<details open>
-<summary>OrdersEval</summary>
-#### &nbsp;&nbsp;&nbsp;&nbsp; Orders Eval
-#### &nbsp;&nbsp;&nbsp;&nbsp; Measures
-##### &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Count
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; No description provided
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; **Parameters:**
-- &nbsp;&nbsp; **Name**: `OrdersEval.count`
-- &nbsp;&nbsp; **Title**: `Orders Eval Count`
+- &nbsp;&nbsp; **Name**: `Orders.number`
+- &nbsp;&nbsp; **Title**: `Orders Number`
 - &nbsp;&nbsp; **Type**: `number`
-- &nbsp;&nbsp; **Aggregation Type**: `count`
+- &nbsp;&nbsp; **Aggregation Type**: `sum`
 - &nbsp;&nbsp; **Drill Members**: ``
 #### &nbsp;&nbsp;&nbsp;&nbsp; Dimensions
-##### &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Sum
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; No description provided
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; **Parameters:**
-- &nbsp;&nbsp; **Name**: `OrdersEval.sum`
-- &nbsp;&nbsp; **Title**: `Orders Eval Sum`
-- &nbsp;&nbsp; **Type**: `string`
 ##### &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Status
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; No description provided
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; **Parameters:**
-- &nbsp;&nbsp; **Name**: `OrdersEval.status`
-- &nbsp;&nbsp; **Title**: `Orders Eval Status`
+- &nbsp;&nbsp; **Name**: `Orders.status`
+- &nbsp;&nbsp; **Title**: `Orders Status`
 - &nbsp;&nbsp; **Type**: `string`
 ##### &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Created at
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; No description provided
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; **Parameters:**
-- &nbsp;&nbsp; **Name**: `OrdersEval.createdAt`
-- &nbsp;&nbsp; **Title**: `Orders Eval Created at`
+- &nbsp;&nbsp; **Name**: `Orders.createdAt`
+- &nbsp;&nbsp; **Title**: `Orders Created at`
 - &nbsp;&nbsp; **Type**: `time`
 ##### &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Completed at
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; No description provided
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; **Parameters:**
-- &nbsp;&nbsp; **Name**: `OrdersEval.completedAt`
-- &nbsp;&nbsp; **Title**: `Orders Eval Completed at`
+- &nbsp;&nbsp; **Name**: `Orders.completedAt`
+- &nbsp;&nbsp; **Title**: `Orders Completed at`
 - &nbsp;&nbsp; **Type**: `time`
 </details>
 <details open>
-<summary>PolyLessons</summary>
-#### &nbsp;&nbsp;&nbsp;&nbsp; Poly Lessons
+<summary>OrdersCopy</summary>
+#### &nbsp;&nbsp;&nbsp;&nbsp; Orders Copy
 #### &nbsp;&nbsp;&nbsp;&nbsp; Measures
 ##### &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Count
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; No description provided
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; **Parameters:**
-- &nbsp;&nbsp; **Name**: `PolyLessons.count`
-- &nbsp;&nbsp; **Title**: `Poly Lessons Count`
+- &nbsp;&nbsp; **Name**: `OrdersCopy.count`
+- &nbsp;&nbsp; **Title**: `Orders Copy Count`
 - &nbsp;&nbsp; **Type**: `number`
 - &nbsp;&nbsp; **Aggregation Type**: `count`
 - &nbsp;&nbsp; **Drill Members**: ``
-#### &nbsp;&nbsp;&nbsp;&nbsp; Dimensions
-##### &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Name
+##### &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Number
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; No description provided
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; **Parameters:**
-- &nbsp;&nbsp; **Name**: `PolyLessons.name`
-- &nbsp;&nbsp; **Title**: `Poly Lessons Name`
-- &nbsp;&nbsp; **Type**: `string`
-</details>
-<details open>
-<summary>PolyUsers</summary>
-#### &nbsp;&nbsp;&nbsp;&nbsp; Poly Users
-#### &nbsp;&nbsp;&nbsp;&nbsp; Measures
-##### &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Count
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; No description provided
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; **Parameters:**
-- &nbsp;&nbsp; **Name**: `PolyUsers.count`
-- &nbsp;&nbsp; **Title**: `Poly Users Count`
+- &nbsp;&nbsp; **Name**: `OrdersCopy.number`
+- &nbsp;&nbsp; **Title**: `Orders Copy Number`
 - &nbsp;&nbsp; **Type**: `number`
-- &nbsp;&nbsp; **Aggregation Type**: `count`
+- &nbsp;&nbsp; **Aggregation Type**: `sum`
 - &nbsp;&nbsp; **Drill Members**: ``
 #### &nbsp;&nbsp;&nbsp;&nbsp; Dimensions
-##### &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Type
+##### &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Status
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; No description provided
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; **Parameters:**
-- &nbsp;&nbsp; **Name**: `PolyUsers.type`
-- &nbsp;&nbsp; **Title**: `Poly Users Type`
+- &nbsp;&nbsp; **Name**: `OrdersCopy.status`
+- &nbsp;&nbsp; **Title**: `Orders Copy Status`
 - &nbsp;&nbsp; **Type**: `string`
-##### &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Name
+##### &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Created at
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; No description provided
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; **Parameters:**
-- &nbsp;&nbsp; **Name**: `PolyUsers.name`
-- &nbsp;&nbsp; **Title**: `Poly Users Name`
-- &nbsp;&nbsp; **Type**: `string`
-##### &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; School
+- &nbsp;&nbsp; **Name**: `OrdersCopy.createdAt`
+- &nbsp;&nbsp; **Title**: `Orders Copy Created at`
+- &nbsp;&nbsp; **Type**: `time`
+##### &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Completed at
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; No description provided
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; **Parameters:**
-- &nbsp;&nbsp; **Name**: `PolyUsers.school`
-- &nbsp;&nbsp; **Title**: `Poly Users School`
-- &nbsp;&nbsp; **Type**: `string`
+- &nbsp;&nbsp; **Name**: `OrdersCopy.completedAt`
+- &nbsp;&nbsp; **Title**: `Orders Copy Completed at`
+- &nbsp;&nbsp; **Type**: `time`
 </details>
 <details open>
 <summary>ProductCategories</summary>
@@ -3296,17 +3156,17 @@ This documentation covers version 665de544-e30d-4769-8073-5d65fd2d03b6 from bran
 - &nbsp;&nbsp; **Aggregation Type**: `count`
 - &nbsp;&nbsp; **Drill Members**: ``
 #### &nbsp;&nbsp;&nbsp;&nbsp; Dimensions
-##### &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Name
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; No description provided
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; **Parameters:**
-- &nbsp;&nbsp; **Name**: `Products.name`
-- &nbsp;&nbsp; **Title**: `Products Name`
-- &nbsp;&nbsp; **Type**: `string`
 ##### &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Description
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; No description provided
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; **Parameters:**
 - &nbsp;&nbsp; **Name**: `Products.description`
 - &nbsp;&nbsp; **Title**: `Products Description`
+- &nbsp;&nbsp; **Type**: `string`
+##### &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Name
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; No description provided
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; **Parameters:**
+- &nbsp;&nbsp; **Name**: `Products.name`
+- &nbsp;&nbsp; **Title**: `Products Name`
 - &nbsp;&nbsp; **Type**: `string`
 ##### &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Created at
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; No description provided
@@ -3316,36 +3176,36 @@ This documentation covers version 665de544-e30d-4769-8073-5d65fd2d03b6 from bran
 - &nbsp;&nbsp; **Type**: `time`
 </details>
 <details open>
-<summary>Student</summary>
+<summary>ProductsCopy</summary>
+#### &nbsp;&nbsp;&nbsp;&nbsp; Products Copy
 #### &nbsp;&nbsp;&nbsp;&nbsp; Measures
 ##### &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Count
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; No description provided
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; **Parameters:**
-- &nbsp;&nbsp; **Name**: `Student.count`
-- &nbsp;&nbsp; **Title**: `Student Count`
+- &nbsp;&nbsp; **Name**: `ProductsCopy.count`
+- &nbsp;&nbsp; **Title**: `Products Copy Count`
 - &nbsp;&nbsp; **Type**: `number`
 - &nbsp;&nbsp; **Aggregation Type**: `count`
 - &nbsp;&nbsp; **Drill Members**: ``
 #### &nbsp;&nbsp;&nbsp;&nbsp; Dimensions
+##### &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Description
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; No description provided
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; **Parameters:**
+- &nbsp;&nbsp; **Name**: `ProductsCopy.description`
+- &nbsp;&nbsp; **Title**: `Products Copy Description`
+- &nbsp;&nbsp; **Type**: `string`
 ##### &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Name
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; No description provided
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; **Parameters:**
-- &nbsp;&nbsp; **Name**: `Student.name`
-- &nbsp;&nbsp; **Title**: `Student Name`
+- &nbsp;&nbsp; **Name**: `ProductsCopy.name`
+- &nbsp;&nbsp; **Title**: `Products Copy Name`
 - &nbsp;&nbsp; **Type**: `string`
-</details>
-<details open>
-<summary>StudentTeacher</summary>
-#### &nbsp;&nbsp;&nbsp;&nbsp; Student Teacher
-#### &nbsp;&nbsp;&nbsp;&nbsp; Measures
-##### &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Count
+##### &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Created at
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; No description provided
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; **Parameters:**
-- &nbsp;&nbsp; **Name**: `StudentTeacher.count`
-- &nbsp;&nbsp; **Title**: `Student Teacher Count`
-- &nbsp;&nbsp; **Type**: `number`
-- &nbsp;&nbsp; **Aggregation Type**: `count`
-- &nbsp;&nbsp; **Drill Members**: ``
+- &nbsp;&nbsp; **Name**: `ProductsCopy.createdAt`
+- &nbsp;&nbsp; **Title**: `Products Copy Created at`
+- &nbsp;&nbsp; **Type**: `time`
 </details>
 <details open>
 <summary>Suppliers</summary>
@@ -3359,17 +3219,17 @@ This documentation covers version 665de544-e30d-4769-8073-5d65fd2d03b6 from bran
 - &nbsp;&nbsp; **Aggregation Type**: `count`
 - &nbsp;&nbsp; **Drill Members**: ``
 #### &nbsp;&nbsp;&nbsp;&nbsp; Dimensions
-##### &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Address
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; No description provided
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; **Parameters:**
-- &nbsp;&nbsp; **Name**: `Suppliers.address`
-- &nbsp;&nbsp; **Title**: `Suppliers Address`
-- &nbsp;&nbsp; **Type**: `string`
 ##### &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Company
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; No description provided
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; **Parameters:**
 - &nbsp;&nbsp; **Name**: `Suppliers.company`
 - &nbsp;&nbsp; **Title**: `Suppliers Company`
+- &nbsp;&nbsp; **Type**: `string`
+##### &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Address
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; No description provided
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; **Parameters:**
+- &nbsp;&nbsp; **Name**: `Suppliers.address`
+- &nbsp;&nbsp; **Title**: `Suppliers Address`
 - &nbsp;&nbsp; **Type**: `string`
 ##### &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Email
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; No description provided
@@ -3385,106 +3245,6 @@ This documentation covers version 665de544-e30d-4769-8073-5d65fd2d03b6 from bran
 - &nbsp;&nbsp; **Type**: `time`
 </details>
 <details open>
-<summary>Teacher</summary>
-#### &nbsp;&nbsp;&nbsp;&nbsp; Measures
-##### &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Count
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; No description provided
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; **Parameters:**
-- &nbsp;&nbsp; **Name**: `Teacher.count`
-- &nbsp;&nbsp; **Title**: `Teacher Count`
-- &nbsp;&nbsp; **Type**: `number`
-- &nbsp;&nbsp; **Aggregation Type**: `count`
-- &nbsp;&nbsp; **Drill Members**: ``
-#### &nbsp;&nbsp;&nbsp;&nbsp; Dimensions
-##### &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Name
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; No description provided
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; **Parameters:**
-- &nbsp;&nbsp; **Name**: `Teacher.name`
-- &nbsp;&nbsp; **Title**: `Teacher Name`
-- &nbsp;&nbsp; **Type**: `string`
-</details>
-<details open>
-<summary>Teachers</summary>
-#### &nbsp;&nbsp;&nbsp;&nbsp; Measures
-##### &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Count
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; No description provided
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; **Parameters:**
-- &nbsp;&nbsp; **Name**: `Teachers.count`
-- &nbsp;&nbsp; **Title**: `Teachers Count`
-- &nbsp;&nbsp; **Type**: `number`
-- &nbsp;&nbsp; **Aggregation Type**: `count`
-- &nbsp;&nbsp; **Drill Members**: ``
-#### &nbsp;&nbsp;&nbsp;&nbsp; Dimensions
-##### &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Salary
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; No description provided
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; **Parameters:**
-- &nbsp;&nbsp; **Name**: `Teachers.salary`
-- &nbsp;&nbsp; **Title**: `Teachers Salary`
-- &nbsp;&nbsp; **Type**: `string`
-##### &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; First Name
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; No description provided
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; **Parameters:**
-- &nbsp;&nbsp; **Name**: `Teachers.firstName`
-- &nbsp;&nbsp; **Title**: `Teachers First Name`
-- &nbsp;&nbsp; **Type**: `string`
-##### &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Last Name
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; No description provided
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; **Parameters:**
-- &nbsp;&nbsp; **Name**: `Teachers.lastName`
-- &nbsp;&nbsp; **Title**: `Teachers Last Name`
-- &nbsp;&nbsp; **Type**: `string`
-##### &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; School
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; No description provided
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; **Parameters:**
-- &nbsp;&nbsp; **Name**: `Teachers.school`
-- &nbsp;&nbsp; **Title**: `Teachers School`
-- &nbsp;&nbsp; **Type**: `string`
-##### &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Hire Date
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; No description provided
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; **Parameters:**
-- &nbsp;&nbsp; **Name**: `Teachers.hireDate`
-- &nbsp;&nbsp; **Title**: `Teachers Hire Date`
-- &nbsp;&nbsp; **Type**: `time`
-</details>
-<details open>
-<summary>TmpNewtable</summary>
-#### &nbsp;&nbsp;&nbsp;&nbsp; Tmp Newtable
-#### &nbsp;&nbsp;&nbsp;&nbsp; Measures
-##### &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Count
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; No description provided
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; **Parameters:**
-- &nbsp;&nbsp; **Name**: `TmpNewtable.count`
-- &nbsp;&nbsp; **Title**: `Tmp Newtable Count`
-- &nbsp;&nbsp; **Type**: `number`
-- &nbsp;&nbsp; **Aggregation Type**: `count`
-- &nbsp;&nbsp; **Drill Members**: ``
-#### &nbsp;&nbsp;&nbsp;&nbsp; Dimensions
-##### &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Address
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; No description provided
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; **Parameters:**
-- &nbsp;&nbsp; **Name**: `TmpNewtable.address`
-- &nbsp;&nbsp; **Title**: `Tmp Newtable Address`
-- &nbsp;&nbsp; **Type**: `string`
-##### &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Name
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; No description provided
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; **Parameters:**
-- &nbsp;&nbsp; **Name**: `TmpNewtable.name`
-- &nbsp;&nbsp; **Title**: `Tmp Newtable Name`
-- &nbsp;&nbsp; **Type**: `string`
-##### &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Email
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; No description provided
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; **Parameters:**
-- &nbsp;&nbsp; **Name**: `TmpNewtable.email`
-- &nbsp;&nbsp; **Title**: `Tmp Newtable Email`
-- &nbsp;&nbsp; **Type**: `string`
-##### &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Phone
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; No description provided
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; **Parameters:**
-- &nbsp;&nbsp; **Name**: `TmpNewtable.phone`
-- &nbsp;&nbsp; **Title**: `Tmp Newtable Phone`
-- &nbsp;&nbsp; **Type**: `string`
-</details>
-<details open>
 <summary>Users</summary>
 #### &nbsp;&nbsp;&nbsp;&nbsp; Measures
 ##### &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Count
@@ -3496,35 +3256,11 @@ This documentation covers version 665de544-e30d-4769-8073-5d65fd2d03b6 from bran
 - &nbsp;&nbsp; **Aggregation Type**: `count`
 - &nbsp;&nbsp; **Drill Members**: ``
 #### &nbsp;&nbsp;&nbsp;&nbsp; Dimensions
-##### &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Gender
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; No description provided
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; **Parameters:**
-- &nbsp;&nbsp; **Name**: `Users.gender`
-- &nbsp;&nbsp; **Title**: `Users Gender`
-- &nbsp;&nbsp; **Type**: `string`
-##### &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; First Name
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; No description provided
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; **Parameters:**
-- &nbsp;&nbsp; **Name**: `Users.firstName`
-- &nbsp;&nbsp; **Title**: `Users First Name`
-- &nbsp;&nbsp; **Type**: `string`
 ##### &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; State
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; No description provided
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; **Parameters:**
 - &nbsp;&nbsp; **Name**: `Users.state`
 - &nbsp;&nbsp; **Title**: `Users State`
-- &nbsp;&nbsp; **Type**: `string`
-##### &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Last Name
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; No description provided
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; **Parameters:**
-- &nbsp;&nbsp; **Name**: `Users.lastName`
-- &nbsp;&nbsp; **Title**: `Users Last Name`
-- &nbsp;&nbsp; **Type**: `string`
-##### &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; City
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; No description provided
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; **Parameters:**
-- &nbsp;&nbsp; **Name**: `Users.city`
-- &nbsp;&nbsp; **Title**: `Users City`
 - &nbsp;&nbsp; **Type**: `string`
 ##### &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Company
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; No description provided
@@ -3532,11 +3268,91 @@ This documentation covers version 665de544-e30d-4769-8073-5d65fd2d03b6 from bran
 - &nbsp;&nbsp; **Name**: `Users.company`
 - &nbsp;&nbsp; **Title**: `Users Company`
 - &nbsp;&nbsp; **Type**: `string`
+##### &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Gender
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; No description provided
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; **Parameters:**
+- &nbsp;&nbsp; **Name**: `Users.gender`
+- &nbsp;&nbsp; **Title**: `Users Gender`
+- &nbsp;&nbsp; **Type**: `string`
+##### &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; City
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; No description provided
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; **Parameters:**
+- &nbsp;&nbsp; **Name**: `Users.city`
+- &nbsp;&nbsp; **Title**: `Users City`
+- &nbsp;&nbsp; **Type**: `string`
+##### &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; First Name
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; No description provided
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; **Parameters:**
+- &nbsp;&nbsp; **Name**: `Users.firstName`
+- &nbsp;&nbsp; **Title**: `Users First Name`
+- &nbsp;&nbsp; **Type**: `string`
+##### &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Last Name
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; No description provided
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; **Parameters:**
+- &nbsp;&nbsp; **Name**: `Users.lastName`
+- &nbsp;&nbsp; **Title**: `Users Last Name`
+- &nbsp;&nbsp; **Type**: `string`
 ##### &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Created at
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; No description provided
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; **Parameters:**
 - &nbsp;&nbsp; **Name**: `Users.createdAt`
 - &nbsp;&nbsp; **Title**: `Users Created at`
+- &nbsp;&nbsp; **Type**: `time`
+</details>
+<details open>
+<summary>UsersCopy</summary>
+#### &nbsp;&nbsp;&nbsp;&nbsp; Users Copy
+#### &nbsp;&nbsp;&nbsp;&nbsp; Measures
+##### &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Count
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; No description provided
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; **Parameters:**
+- &nbsp;&nbsp; **Name**: `UsersCopy.count`
+- &nbsp;&nbsp; **Title**: `Users Copy Count`
+- &nbsp;&nbsp; **Type**: `number`
+- &nbsp;&nbsp; **Aggregation Type**: `count`
+- &nbsp;&nbsp; **Drill Members**: ``
+#### &nbsp;&nbsp;&nbsp;&nbsp; Dimensions
+##### &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Last Name
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; No description provided
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; **Parameters:**
+- &nbsp;&nbsp; **Name**: `UsersCopy.lastName`
+- &nbsp;&nbsp; **Title**: `Users Copy Last Name`
+- &nbsp;&nbsp; **Type**: `string`
+##### &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; First Name
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; No description provided
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; **Parameters:**
+- &nbsp;&nbsp; **Name**: `UsersCopy.firstName`
+- &nbsp;&nbsp; **Title**: `Users Copy First Name`
+- &nbsp;&nbsp; **Type**: `string`
+##### &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; State
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; No description provided
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; **Parameters:**
+- &nbsp;&nbsp; **Name**: `UsersCopy.state`
+- &nbsp;&nbsp; **Title**: `Users Copy State`
+- &nbsp;&nbsp; **Type**: `string`
+##### &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Company
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; No description provided
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; **Parameters:**
+- &nbsp;&nbsp; **Name**: `UsersCopy.company`
+- &nbsp;&nbsp; **Title**: `Users Copy Company`
+- &nbsp;&nbsp; **Type**: `string`
+##### &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; City
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; No description provided
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; **Parameters:**
+- &nbsp;&nbsp; **Name**: `UsersCopy.city`
+- &nbsp;&nbsp; **Title**: `Users Copy City`
+- &nbsp;&nbsp; **Type**: `string`
+##### &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Gender
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; No description provided
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; **Parameters:**
+- &nbsp;&nbsp; **Name**: `UsersCopy.gender`
+- &nbsp;&nbsp; **Title**: `Users Copy Gender`
+- &nbsp;&nbsp; **Type**: `string`
+##### &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Created at
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; No description provided
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; **Parameters:**
+- &nbsp;&nbsp; **Name**: `UsersCopy.createdAt`
+- &nbsp;&nbsp; **Title**: `Users Copy Created at`
 - &nbsp;&nbsp; **Type**: `time`
 </details>
 ####  Version author: demo@synmetrix.org
@@ -3588,7 +3404,7 @@ INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_
     measures:
       - name: count
         type: count
-', '9bff96f8da2a6472881356445643ce90', 'cb87a34d-87e6-45b7-9339-248c18d951e8');
+', '11f01ee06eeaf53edab9daf7811c3881', 'cb87a34d-87e6-45b7-9339-248c18d951e8');
 INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('72756093-ae19-485f-869d-ca4eca233c02', '2024-02-15 22:47:16.524155+00', '2024-02-15 22:47:16.524155+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '715dfae1-1044-42ec-ac48-dd4cefa567e6', 'BenchmarkResults.yml', 'cubes:
   - name: BenchmarkResults
     sql: SELECT * FROM default.benchmark_results
@@ -3600,7 +3416,7 @@ INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_
     measures:
       - name: count
         type: count
-', '943fd8bb010e9339a4ca672001787192', 'cb87a34d-87e6-45b7-9339-248c18d951e8');
+', '75737ff54c8e62d349602e79b9a485b6', 'cb87a34d-87e6-45b7-9339-248c18d951e8');
 INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('48956c99-fbf0-43ea-b78e-99e9969a8f04', '2024-02-15 22:47:16.524155+00', '2024-02-15 22:47:16.524155+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '715dfae1-1044-42ec-ac48-dd4cefa567e6', 'BenchmarkRuns.yml', 'cubes:
   - name: BenchmarkRuns
     sql: SELECT * FROM default.benchmark_runs
@@ -3645,7 +3461,7 @@ INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_
     measures:
       - name: count
         type: count
-', '45d50ff2873c42b580f945b56ccf8121', 'cb87a34d-87e6-45b7-9339-248c18d951e8');
+', '1aaf9f6c24ee00568bcc6c47f85b7578', 'cb87a34d-87e6-45b7-9339-248c18d951e8');
 INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('e31517a4-95d4-45b4-9ce7-09a36f6fed09', '2024-02-15 22:47:16.524155+00', '2024-02-15 22:47:16.524155+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '715dfae1-1044-42ec-ac48-dd4cefa567e6', 'CellTowers.yml', 'cubes:
   - name: CellTowers
     sql: SELECT * FROM default.cell_towers
@@ -3669,7 +3485,7 @@ INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_
     measures:
       - name: count
         type: count
-', '35bbf31c1fff95d2dc2b58b3f897ef5b', 'cb87a34d-87e6-45b7-9339-248c18d951e8');
+', '34e36dcec45c7df50920e3af1d1125ed', 'cb87a34d-87e6-45b7-9339-248c18d951e8');
 INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('330d4796-a5ff-44a9-a32a-9f47571fab23', '2024-02-15 22:47:16.524155+00', '2024-02-15 22:47:16.524155+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '715dfae1-1044-42ec-ac48-dd4cefa567e6', 'Checks.yml', 'cubes:
   - name: Checks
     sql: SELECT * FROM default.checks
@@ -3732,7 +3548,7 @@ INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_
       - name: pullRequestNumber
         sql: pull_request_number
         type: sum
-', 'fb715d72490287cafacf3a68987d9bf4', 'cb87a34d-87e6-45b7-9339-248c18d951e8');
+', '7bd5f2968cfd7aa99445b37dfb05f9ce', 'cb87a34d-87e6-45b7-9339-248c18d951e8');
 INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('406611d5-b850-458b-aa48-5f6435b04359', '2024-02-15 22:47:16.524155+00', '2024-02-15 22:47:16.524155+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '715dfae1-1044-42ec-ac48-dd4cefa567e6', 'CiscoUmbrella.yml', 'cubes:
   - name: CiscoUmbrella
     sql: SELECT * FROM default.cisco_umbrella
@@ -3747,7 +3563,7 @@ INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_
     measures:
       - name: count
         type: count
-', '42f7fe5d7745cd31eea4d35c6c9d88a1', 'cb87a34d-87e6-45b7-9339-248c18d951e8');
+', '02db08669f39207c3f76720666a85cf2', 'cb87a34d-87e6-45b7-9339-248c18d951e8');
 INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('b3590ede-5686-4592-a775-625707a95910', '2024-02-15 22:47:16.524155+00', '2024-02-15 22:47:16.524155+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '715dfae1-1044-42ec-ac48-dd4cefa567e6', 'Covid.yml', 'cubes:
   - name: Covid
     sql: SELECT * FROM default.covid
@@ -3762,7 +3578,7 @@ INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_
     measures:
       - name: count
         type: count
-', 'bb177bdf53f9e4b52878da32dfd81050', 'cb87a34d-87e6-45b7-9339-248c18d951e8');
+', '9a2ecd92b3912cf5a4ac6179a1849b6e', 'cb87a34d-87e6-45b7-9339-248c18d951e8');
 INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('6900dab6-cefe-4085-af0a-ec72fca06418', '2024-02-15 22:47:16.524155+00', '2024-02-15 22:47:16.524155+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '715dfae1-1044-42ec-ac48-dd4cefa567e6', 'Dish.yml', 'cubes:
   - name: Dish
     sql: SELECT * FROM default.dish
@@ -3787,7 +3603,7 @@ INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_
       - name: highestPrice
         sql: highest_price
         type: sum
-', '979bebe792207f418dd67b7307206e3f', 'cb87a34d-87e6-45b7-9339-248c18d951e8');
+', '3e6a62263ad4013584429965ade60b33', 'cb87a34d-87e6-45b7-9339-248c18d951e8');
 INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('70418e6c-62a4-4961-a0ab-dcadf6ddfe6e', '2024-02-15 22:47:16.524155+00', '2024-02-15 22:47:16.524155+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '715dfae1-1044-42ec-ac48-dd4cefa567e6', 'Dns.yml', 'cubes:
   - name: Dns
     sql: SELECT * FROM default.dns
@@ -3811,7 +3627,7 @@ INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_
     measures:
       - name: count
         type: count
-', 'f9614384ba3785ea70f4ecaa6fd583f6', 'cb87a34d-87e6-45b7-9339-248c18d951e8');
+', '1d3380292f8866e8108e79e196873ecf', 'cb87a34d-87e6-45b7-9339-248c18d951e8');
 INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('3c7a077d-4a25-4506-82d1-011ea1d1712a', '2024-02-15 22:47:16.524155+00', '2024-02-15 22:47:16.524155+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '715dfae1-1044-42ec-ac48-dd4cefa567e6', 'Dns2.yml', 'cubes:
   - name: Dns2
     sql: SELECT * FROM default.dns2
@@ -3835,7 +3651,7 @@ INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_
     measures:
       - name: count
         type: count
-', '1a6bdc887f3a02eda0f490591186c774', 'cb87a34d-87e6-45b7-9339-248c18d951e8');
+', '00a86bc2f4f0268997ad7633f99106e8', 'cb87a34d-87e6-45b7-9339-248c18d951e8');
 INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('cf86c2cb-1bd3-4b2c-9139-5807d827c028', '2024-02-15 22:47:16.524155+00', '2024-02-15 22:47:16.524155+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '715dfae1-1044-42ec-ac48-dd4cefa567e6', 'FoodFacts.yml', 'cubes:
   - name: FoodFacts
     sql: SELECT * FROM default.food_facts
@@ -3847,7 +3663,7 @@ INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_
     measures:
       - name: count
         type: count
-', '1eab2e65bc7ff72f9c12a8781a1d2bd1', 'cb87a34d-87e6-45b7-9339-248c18d951e8');
+', '5a642ab8f44bf184acd8cab90e54b6f2', 'cb87a34d-87e6-45b7-9339-248c18d951e8');
 INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('c1a5c1d7-0ab3-4db9-80fe-1bfbc86f4a7f', '2024-02-15 22:47:16.524155+00', '2024-02-15 22:47:16.524155+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '715dfae1-1044-42ec-ac48-dd4cefa567e6', 'GithubEvents.yml', 'cubes:
   - name: GithubEvents
     sql: SELECT * FROM default.github_events
@@ -3967,7 +3783,7 @@ INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_
       - name: number
         sql: number
         type: sum
-', 'ce6bcfc497ba80dfc8473e996c07f602', 'cb87a34d-87e6-45b7-9339-248c18d951e8');
+', 'a58195bfe680b54f8553fb440265b449', 'cb87a34d-87e6-45b7-9339-248c18d951e8');
 INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('10483937-eb5f-45bc-af25-d3c793571152', '2024-02-15 22:47:16.524155+00', '2024-02-15 22:47:16.524155+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '715dfae1-1044-42ec-ac48-dd4cefa567e6', 'Hackernews.yml', 'cubes:
   - name: Hackernews
     sql: SELECT * FROM default.hackernews
@@ -3998,7 +3814,7 @@ INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_
     measures:
       - name: count
         type: count
-', 'aebd55ff7939101cdb62a5fe12742e2e', 'cb87a34d-87e6-45b7-9339-248c18d951e8');
+', '2e2e3f2a10bfaf95d36af9274ce29c64', 'cb87a34d-87e6-45b7-9339-248c18d951e8');
 INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('d98d5289-a6f8-4a7b-a48c-d43b8a4cbe42', '2024-02-15 22:47:16.524155+00', '2024-02-15 22:47:16.524155+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '715dfae1-1044-42ec-ac48-dd4cefa567e6', 'HackernewsChangesItems.yml', 'cubes:
   - name: HackernewsChangesItems
     sql: SELECT * FROM default.hackernews_changes_items
@@ -4032,7 +3848,7 @@ INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_
     measures:
       - name: count
         type: count
-', '7d38a7e67809577d2a64514baaf7440b', 'cb87a34d-87e6-45b7-9339-248c18d951e8');
+', '86bbe159793194e2dea6cfbc794ccd5f', 'cb87a34d-87e6-45b7-9339-248c18d951e8');
 INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('cdeb6878-f3ae-4164-b5fb-83dd95e22afa', '2024-02-15 22:47:16.524155+00', '2024-02-15 22:47:16.524155+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '715dfae1-1044-42ec-ac48-dd4cefa567e6', 'HackernewsChangesProfiles.yml', 'cubes:
   - name: HackernewsChangesProfiles
     sql: SELECT * FROM default.hackernews_changes_profiles
@@ -4057,7 +3873,7 @@ INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_
       - name: submittedCount
         sql: submitted_count
         type: sum
-', 'd47ae40f037f41fddba1d5cab427e5d6', 'cb87a34d-87e6-45b7-9339-248c18d951e8');
+', '07729fbd31aa77f3f936a984bf26cf4c', 'cb87a34d-87e6-45b7-9339-248c18d951e8');
 INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('24a05b0a-7b49-488f-b56b-ae46aa7be23f', '2024-02-15 22:47:16.524155+00', '2024-02-15 22:47:16.524155+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '715dfae1-1044-42ec-ac48-dd4cefa567e6', 'HackernewsChangesToHistory.yml', 'cubes:
   - name: HackernewsChangesToHistory
     sql: SELECT * FROM default.hackernews_changes_to_history
@@ -4091,7 +3907,7 @@ INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_
     measures:
       - name: count
         type: count
-', '0eed92ae78e83db07750ca3983c7f3b9', 'cb87a34d-87e6-45b7-9339-248c18d951e8');
+', 'f351431b56729fad3eba0471cc5abb30', 'cb87a34d-87e6-45b7-9339-248c18d951e8');
 INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('66817c0d-0052-4ce4-8e62-747f57b92296', '2024-02-15 22:47:16.524155+00', '2024-02-15 22:47:16.524155+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '715dfae1-1044-42ec-ac48-dd4cefa567e6', 'HackernewsHistory.yml', 'cubes:
   - name: HackernewsHistory
     sql: SELECT * FROM default.hackernews_history
@@ -4125,7 +3941,7 @@ INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_
     measures:
       - name: count
         type: count
-', '0c758fcfdfa84be0d51a8ea13415d94a', 'cb87a34d-87e6-45b7-9339-248c18d951e8');
+', '6ddc72b22c3c4b7192d180ea13fe6bfb', 'cb87a34d-87e6-45b7-9339-248c18d951e8');
 INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('fcebbab8-62ff-4ee6-b4c3-e88dfe50803f', '2024-02-15 22:47:16.524155+00', '2024-02-15 22:47:16.524155+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '715dfae1-1044-42ec-ac48-dd4cefa567e6', 'HackernewsHistory2.yml', 'cubes:
   - name: HackernewsHistory2
     sql: SELECT * FROM default.hackernews_history_2
@@ -4159,7 +3975,7 @@ INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_
     measures:
       - name: count
         type: count
-', '8535148873e7bc09e3e3d9c66ae33189', 'cb87a34d-87e6-45b7-9339-248c18d951e8');
+', '127b5405a42f0c6ccb22d18e79a3eec8', 'cb87a34d-87e6-45b7-9339-248c18d951e8');
 INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('132b6a7d-b3af-4bd1-8156-1ee36252d6c0', '2024-02-15 22:47:16.524155+00', '2024-02-15 22:47:16.524155+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '715dfae1-1044-42ec-ac48-dd4cefa567e6', 'HackernewsTop.yml', 'cubes:
   - name: HackernewsTop
     sql: SELECT * FROM default.hackernews_top
@@ -4174,7 +3990,7 @@ INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_
     measures:
       - name: count
         type: count
-', 'ebb13d5dc64e1a9a77f9a56b98393e5a', 'cb87a34d-87e6-45b7-9339-248c18d951e8');
+', 'edba9681261e654d56cb73f45f19f247', 'cb87a34d-87e6-45b7-9339-248c18d951e8');
 INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('a4300a71-6b18-42ed-b97c-d1c43f5e619d', '2024-02-15 22:47:16.524155+00', '2024-02-15 22:47:16.524155+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '715dfae1-1044-42ec-ac48-dd4cefa567e6', 'Lineorder.yml', 'cubes:
   - name: Lineorder
     sql: SELECT * FROM default.lineorder
@@ -4213,7 +4029,7 @@ INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_
       - name: loSupplycost
         sql: LO_SUPPLYCOST
         type: sum
-', '56bcce41157aa5624d52e4e05a3622c8', 'cb87a34d-87e6-45b7-9339-248c18d951e8');
+', '2c70543cac84d0a370c9cacd13ec16d7', 'cb87a34d-87e6-45b7-9339-248c18d951e8');
 INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('12a2a347-37df-4ac8-8e16-b0ce6f9095a7', '2024-02-15 22:47:16.524155+00', '2024-02-15 22:47:16.524155+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '715dfae1-1044-42ec-ac48-dd4cefa567e6', 'LocStats.yml', 'cubes:
   - name: LocStats
     sql: SELECT * FROM default.loc_stats
@@ -4234,7 +4050,7 @@ INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_
     measures:
       - name: count
         type: count
-', 'd9ef1bbc5f2a568a24646b064e7882f8', 'cb87a34d-87e6-45b7-9339-248c18d951e8');
+', 'fa78c182f3202af811e410b9423d5712', 'cb87a34d-87e6-45b7-9339-248c18d951e8');
 INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('2381bf8c-3c35-4b82-be8a-106180d7dc3e', '2024-02-15 22:47:16.524155+00', '2024-02-15 22:47:16.524155+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '715dfae1-1044-42ec-ac48-dd4cefa567e6', 'Menu.yml', 'cubes:
   - name: Menu
     sql: SELECT * FROM default.menu
@@ -4304,7 +4120,7 @@ INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_
       - name: dishCount
         sql: dish_count
         type: sum
-', 'ef33f2ca0e3be2be33025fce7bb1b84c', 'cb87a34d-87e6-45b7-9339-248c18d951e8');
+', '04a00da22fae4388f1f81202d399586f', 'cb87a34d-87e6-45b7-9339-248c18d951e8');
 INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('0aa3fbf5-f5d6-4fb3-9834-df005421133a', '2024-02-15 22:47:16.524155+00', '2024-02-15 22:47:16.524155+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '715dfae1-1044-42ec-ac48-dd4cefa567e6', 'MenuItem.yml', 'cubes:
   - name: MenuItem
     sql: SELECT * FROM default.menu_item
@@ -4341,7 +4157,7 @@ INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_
       - name: highPrice
         sql: high_price
         type: sum
-', 'bb639575476d83f9b58c22d4d257f505', 'cb87a34d-87e6-45b7-9339-248c18d951e8');
+', '1b960c9022af1256574265c038b16259', 'cb87a34d-87e6-45b7-9339-248c18d951e8');
 INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('be4f3c14-15cf-4799-8a66-de5134b5b2ce', '2024-02-15 22:47:16.524155+00', '2024-02-15 22:47:16.524155+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '715dfae1-1044-42ec-ac48-dd4cefa567e6', 'MenuItemDenorm.yml', 'cubes:
   - name: MenuItemDenorm
     sql: SELECT * FROM default.menu_item_denorm
@@ -4443,7 +4259,7 @@ INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_
       - name: menuDishCount
         sql: menu_dish_count
         type: sum
-', '43ec459781b87a6d13b2df38798efd76', 'cb87a34d-87e6-45b7-9339-248c18d951e8');
+', '6af3f540465dd612f67d6ca3ef2a8d6c', 'cb87a34d-87e6-45b7-9339-248c18d951e8');
 INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('6780b074-ea70-428e-a9cf-f7186fe895ad', '2024-02-15 22:47:16.524155+00', '2024-02-15 22:47:16.524155+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '715dfae1-1044-42ec-ac48-dd4cefa567e6', 'MenuPage.yml', 'cubes:
   - name: MenuPage
     sql: SELECT * FROM default.menu_page
@@ -4468,7 +4284,7 @@ INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_
       - name: pageNumber
         sql: page_number
         type: sum
-', '68322aa53493790b1e73900a73b76306', 'cb87a34d-87e6-45b7-9339-248c18d951e8');
+', 'eb1504a128adb6f144c2ec4e4ce98d06', 'cb87a34d-87e6-45b7-9339-248c18d951e8');
 INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('8be1db8d-5163-40c1-b1b2-f9a18aa2458a', '2024-02-15 22:47:16.524155+00', '2024-02-15 22:47:16.524155+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '715dfae1-1044-42ec-ac48-dd4cefa567e6', 'Minicrawl.yml', 'cubes:
   - name: Minicrawl
     sql: SELECT * FROM default.minicrawl
@@ -4492,7 +4308,7 @@ INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_
     measures:
       - name: count
         type: count
-', 'e55af900c1f264126334e84cda8d9fa0', 'cb87a34d-87e6-45b7-9339-248c18d951e8');
+', 'fd9d810a4f7a0608aeef7fe3643e1e86', 'cb87a34d-87e6-45b7-9339-248c18d951e8');
 INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('d7801d88-4460-4e42-b23f-1ae2c17a76f5', '2024-02-15 22:47:16.524155+00', '2024-02-15 22:47:16.524155+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '715dfae1-1044-42ec-ac48-dd4cefa567e6', 'Ontime.yml', 'cubes:
   - name: Ontime
     sql: SELECT * FROM default.ontime
@@ -4597,7 +4413,7 @@ INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_
     measures:
       - name: count
         type: count
-', '7fcf78af1467502bd113b3e269ae5cdb', 'cb87a34d-87e6-45b7-9339-248c18d951e8');
+', '61ceac55ec579fbe707a87acfe963bf2', 'cb87a34d-87e6-45b7-9339-248c18d951e8');
 INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('a85e57a5-065d-4916-80f1-b8e2ab434402', '2024-02-15 22:47:16.524155+00', '2024-02-15 22:47:16.524155+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '715dfae1-1044-42ec-ac48-dd4cefa567e6', 'Opensky.yml', 'cubes:
   - name: Opensky
     sql: SELECT * FROM default.opensky
@@ -4660,7 +4476,7 @@ INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_
     measures:
       - name: count
         type: count
-', '7654d3d3cee36517e3679f01ec268e06', 'cb87a34d-87e6-45b7-9339-248c18d951e8');
+', '9d8c5b2b5f356568712991bff203b5af', 'cb87a34d-87e6-45b7-9339-248c18d951e8');
 INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('49e48cc9-46be-46a4-a01a-87b7375d77d0', '2024-02-15 22:47:16.524155+00', '2024-02-15 22:47:16.524155+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '715dfae1-1044-42ec-ac48-dd4cefa567e6', 'Pypi.yml', 'cubes:
   - name: Pypi
     sql: SELECT * FROM default.pypi
@@ -4693,7 +4509,7 @@ INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_
     measures:
       - name: count
         type: count
-', '54ed5ed38394dcf530364fb8a4f4c920', 'cb87a34d-87e6-45b7-9339-248c18d951e8');
+', '5c9cd10e0e56fd6e451c880c6eb220e7', 'cb87a34d-87e6-45b7-9339-248c18d951e8');
 INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('db1a3367-7682-45c7-bc03-436e430db038', '2024-02-15 22:47:16.524155+00', '2024-02-15 22:47:16.524155+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '715dfae1-1044-42ec-ac48-dd4cefa567e6', 'QueryMetricsV2.yml', 'cubes:
   - name: QueryMetricsV2
     sql: SELECT * FROM default.query_metrics_v2
@@ -4738,7 +4554,7 @@ INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_
       - name: prNumber
         sql: pr_number
         type: sum
-', '7b29c1abc60d3d709e9cf0e109cfd40c', 'cb87a34d-87e6-45b7-9339-248c18d951e8');
+', 'f8b9d3420f4852355ce97d1a44957773', 'cb87a34d-87e6-45b7-9339-248c18d951e8');
 INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('6e40ed18-634a-4065-82d1-5aef7d858e9a', '2024-02-15 22:47:16.524155+00', '2024-02-15 22:47:16.524155+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '715dfae1-1044-42ec-ac48-dd4cefa567e6', 'Rdns.yml', 'cubes:
   - name: Rdns
     sql: SELECT * FROM default.rdns
@@ -4756,7 +4572,7 @@ INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_
     measures:
       - name: count
         type: count
-', '743c9de0722412875116910de75da3b7', 'cb87a34d-87e6-45b7-9339-248c18d951e8');
+', 'b9abbe6bcc60c457035e1fb03fb1b28a', 'cb87a34d-87e6-45b7-9339-248c18d951e8');
 INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('f3c15964-0ecd-4685-8976-ef392d81e072', '2024-02-15 22:47:16.524155+00', '2024-02-15 22:47:16.524155+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '715dfae1-1044-42ec-ac48-dd4cefa567e6', 'Recipes.yml', 'cubes:
   - name: Recipes
     sql: SELECT * FROM default.recipes
@@ -4783,7 +4599,7 @@ INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_
     measures:
       - name: count
         type: count
-', 'f9fe1b2408e0f739947324f25dcd4625', 'cb87a34d-87e6-45b7-9339-248c18d951e8');
+', '59307913db8b2d273c76f85db0e8c84f', 'cb87a34d-87e6-45b7-9339-248c18d951e8');
 INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('207e28eb-9287-4929-bb54-b98f56a8d7c3', '2024-02-15 22:47:16.524155+00', '2024-02-15 22:47:16.524155+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '715dfae1-1044-42ec-ac48-dd4cefa567e6', 'Repos.yml', 'cubes:
   - name: Repos
     sql: SELECT * FROM default.repos
@@ -4867,7 +4683,7 @@ INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_
       - name: openIssuesCount
         sql: open_issues_count
         type: sum
-', '3781edcbc87e1309cad9caee37b90f26', 'cb87a34d-87e6-45b7-9339-248c18d951e8');
+', '39c4b6c22c2be1d2b89511e4279472b5', 'cb87a34d-87e6-45b7-9339-248c18d951e8');
 INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('aa79764e-1937-4a68-8d18-38ed45e47c3e', '2024-02-15 22:47:16.524155+00', '2024-02-15 22:47:16.524155+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '715dfae1-1044-42ec-ac48-dd4cefa567e6', 'ReposRaw.yml', 'cubes:
   - name: ReposRaw
     sql: SELECT * FROM default.repos_raw
@@ -4879,7 +4695,7 @@ INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_
     measures:
       - name: count
         type: count
-', '3227a76f8814097623fec473ed5f6070', 'cb87a34d-87e6-45b7-9339-248c18d951e8');
+', '7637132852dacb8dd423af59e3a24f56', 'cb87a34d-87e6-45b7-9339-248c18d951e8');
 INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('ab0f367d-dfba-435d-8fdd-a77335e597d1', '2024-02-15 22:47:16.524155+00', '2024-02-15 22:47:16.524155+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '715dfae1-1044-42ec-ac48-dd4cefa567e6', 'RunAttributesV1.yml', 'cubes:
   - name: RunAttributesV1
     sql: SELECT * FROM default.run_attributes_v1
@@ -4900,7 +4716,7 @@ INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_
     measures:
       - name: count
         type: count
-', '37a99db8347e71c4b32e3cde01141cbb', 'cb87a34d-87e6-45b7-9339-248c18d951e8');
+', '10043a50dd0509fb285c29ac687876cc', 'cb87a34d-87e6-45b7-9339-248c18d951e8');
 INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('036f85f2-3075-437c-95f8-7c5be34da9bc', '2024-02-15 22:47:16.524155+00', '2024-02-15 22:47:16.524155+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '715dfae1-1044-42ec-ac48-dd4cefa567e6', 'Stock.yml', 'cubes:
   - name: Stock
     sql: SELECT * FROM default.stock
@@ -4918,7 +4734,7 @@ INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_
       - name: price
         sql: price
         type: sum
-', '3050c9db7efba7a14b53f3b1ba27081a', 'cb87a34d-87e6-45b7-9339-248c18d951e8');
+', 'f04c5b91366614f628c6b6e886cd89ca', 'cb87a34d-87e6-45b7-9339-248c18d951e8');
 INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('a125d431-6f39-4209-b3d1-de9e160de954', '2024-02-15 22:47:16.524155+00', '2024-02-15 22:47:16.524155+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '715dfae1-1044-42ec-ac48-dd4cefa567e6', 'Tranco.yml', 'cubes:
   - name: Tranco
     sql: SELECT * FROM default.tranco
@@ -4933,7 +4749,7 @@ INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_
     measures:
       - name: count
         type: count
-', '6907e63c004919e5de57289965082dc3', 'cb87a34d-87e6-45b7-9339-248c18d951e8');
+', 'e045e5b18963fc37e05a9552bac70f80', 'cb87a34d-87e6-45b7-9339-248c18d951e8');
 INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('9d5675c0-04a7-446b-84d6-2f0382a64c19', '2024-02-15 22:47:16.524155+00', '2024-02-15 22:47:16.524155+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '715dfae1-1044-42ec-ac48-dd4cefa567e6', 'Trips.yml', 'cubes:
   - name: Trips
     sql: SELECT * FROM default.trips
@@ -5048,7 +4864,7 @@ INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_
       - name: passengerCount
         sql: passenger_count
         type: sum
-', 'b7ace91310c65214b3a7187abac12c93', 'cb87a34d-87e6-45b7-9339-248c18d951e8');
+', 'a93523aa639f35cc3dbed26e0e98a916', 'cb87a34d-87e6-45b7-9339-248c18d951e8');
 INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('89157801-8089-4db1-b4da-53fece28eb1f', '2024-02-15 22:47:16.524155+00', '2024-02-15 22:47:16.524155+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '715dfae1-1044-42ec-ac48-dd4cefa567e6', 'UkPricePaid.yml', 'cubes:
   - name: UkPricePaid
     sql: SELECT * FROM default.uk_price_paid
@@ -5096,7 +4912,7 @@ INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_
       - name: price
         sql: price
         type: sum
-', '667b2c10a49ab383627f9c4949b0d3cc', 'cb87a34d-87e6-45b7-9339-248c18d951e8');
+', 'b9d57542e6f1de2522ce733e85d76cd6', 'cb87a34d-87e6-45b7-9339-248c18d951e8');
 INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('ba401364-474a-4818-84f7-e322f1090ee1', '2024-02-15 22:47:42.855225+00', '2024-02-15 22:47:42.855225+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '715dfae1-1044-42ec-ac48-dd4cefa567e6', 'HackernewsChangesToHistory.yml', 'cubes:
   - name: HackernewsChangesToHistory
     sql: SELECT * FROM default.hackernews_changes_to_history
@@ -5130,7 +4946,7 @@ INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_
     measures:
       - name: count
         type: count
-', '0eed92ae78e83db07750ca3983c7f3b9', '3c0301b4-6735-40d7-b4cc-0bfe5221d4c8');
+', 'f351431b56729fad3eba0471cc5abb30', '3c0301b4-6735-40d7-b4cc-0bfe5221d4c8');
 INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('b0f331dc-d95d-4458-94b4-d5a650c2afcc', '2024-02-15 22:47:16.524155+00', '2024-02-15 22:47:16.524155+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '715dfae1-1044-42ec-ac48-dd4cefa567e6', 'UkPricePaidUpdater.yml', 'cubes:
   - name: UkPricePaidUpdater
     sql: SELECT * FROM default.uk_price_paid_updater
@@ -5178,7 +4994,7 @@ INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_
       - name: price
         sql: price
         type: sum
-', '49c465588361c4b18ee32c3df0a44e3b', 'cb87a34d-87e6-45b7-9339-248c18d951e8');
+', '55a8fc5ab8d50258bf51ecb56cd43e8e', 'cb87a34d-87e6-45b7-9339-248c18d951e8');
 INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('a0d3e5b5-563e-456a-be4c-c8f542659fe6', '2024-02-15 22:47:16.524155+00', '2024-02-15 22:47:16.524155+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '715dfae1-1044-42ec-ac48-dd4cefa567e6', 'Wikistat.yml', 'cubes:
   - name: Wikistat
     sql: SELECT * FROM default.wikistat
@@ -5199,7 +5015,7 @@ INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_
     measures:
       - name: count
         type: count
-', '6015f667fcbe0a47fa9efcd24227ca13', 'cb87a34d-87e6-45b7-9339-248c18d951e8');
+', 'dc200014dfa9994fdbfb4fa6b40362f6', 'cb87a34d-87e6-45b7-9339-248c18d951e8');
 INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('74636ef0-5aa2-4ca7-84e4-843a2e6db68f', '2024-02-15 22:47:16.524155+00', '2024-02-15 22:47:16.524155+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '715dfae1-1044-42ec-ac48-dd4cefa567e6', 'WorkflowJobs.yml', 'cubes:
   - name: WorkflowJobs
     sql: SELECT * FROM default.workflow_jobs
@@ -5266,7 +5082,7 @@ INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_
     measures:
       - name: count
         type: count
-', '38a0e74b1fbd85398d3bbdb8c8eb936e', 'cb87a34d-87e6-45b7-9339-248c18d951e8');
+', '0781834c1d8b0364fcd3f74b428287d0', 'cb87a34d-87e6-45b7-9339-248c18d951e8');
 INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('b315390f-9868-466f-a682-cfba0a9e7efe', '2024-02-15 22:47:42.855225+00', '2024-02-15 22:47:42.855225+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '715dfae1-1044-42ec-ac48-dd4cefa567e6', 'Actors.yml', 'cubes:
   - name: Actors
     sql: SELECT * FROM default.actors
@@ -5314,7 +5130,7 @@ INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_
     measures:
       - name: count
         type: count
-', '9bff96f8da2a6472881356445643ce90', '3c0301b4-6735-40d7-b4cc-0bfe5221d4c8');
+', '11f01ee06eeaf53edab9daf7811c3881', '3c0301b4-6735-40d7-b4cc-0bfe5221d4c8');
 INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('6574f85d-8206-497c-b031-248c3215d213', '2024-02-15 22:47:42.855225+00', '2024-02-15 22:47:42.855225+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '715dfae1-1044-42ec-ac48-dd4cefa567e6', 'BenchmarkResults.yml', 'cubes:
   - name: BenchmarkResults
     sql: SELECT * FROM default.benchmark_results
@@ -5326,7 +5142,7 @@ INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_
     measures:
       - name: count
         type: count
-', '943fd8bb010e9339a4ca672001787192', '3c0301b4-6735-40d7-b4cc-0bfe5221d4c8');
+', '75737ff54c8e62d349602e79b9a485b6', '3c0301b4-6735-40d7-b4cc-0bfe5221d4c8');
 INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('2315be95-92a3-437d-b082-8e0634d70f55', '2024-02-15 22:47:42.855225+00', '2024-02-15 22:47:42.855225+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '715dfae1-1044-42ec-ac48-dd4cefa567e6', 'BenchmarkRuns.yml', 'cubes:
   - name: BenchmarkRuns
     sql: SELECT * FROM default.benchmark_runs
@@ -5371,7 +5187,7 @@ INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_
     measures:
       - name: count
         type: count
-', '45d50ff2873c42b580f945b56ccf8121', '3c0301b4-6735-40d7-b4cc-0bfe5221d4c8');
+', '1aaf9f6c24ee00568bcc6c47f85b7578', '3c0301b4-6735-40d7-b4cc-0bfe5221d4c8');
 INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('e347786a-d556-4163-9292-e46bda4f9fdf', '2024-02-15 22:47:42.855225+00', '2024-02-15 22:47:42.855225+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '715dfae1-1044-42ec-ac48-dd4cefa567e6', 'CellTowers.yml', 'cubes:
   - name: CellTowers
     sql: SELECT * FROM default.cell_towers
@@ -5395,7 +5211,7 @@ INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_
     measures:
       - name: count
         type: count
-', '35bbf31c1fff95d2dc2b58b3f897ef5b', '3c0301b4-6735-40d7-b4cc-0bfe5221d4c8');
+', '34e36dcec45c7df50920e3af1d1125ed', '3c0301b4-6735-40d7-b4cc-0bfe5221d4c8');
 INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('e562ea60-a14e-44d8-9015-0b7b4e70f220', '2024-02-15 22:47:42.855225+00', '2024-02-15 22:47:42.855225+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '715dfae1-1044-42ec-ac48-dd4cefa567e6', 'HackernewsHistory2.yml', 'cubes:
   - name: HackernewsHistory2
     sql: SELECT * FROM default.hackernews_history_2
@@ -5429,7 +5245,7 @@ INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_
     measures:
       - name: count
         type: count
-', '8535148873e7bc09e3e3d9c66ae33189', '3c0301b4-6735-40d7-b4cc-0bfe5221d4c8');
+', '127b5405a42f0c6ccb22d18e79a3eec8', '3c0301b4-6735-40d7-b4cc-0bfe5221d4c8');
 INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('1fc25ac9-31f0-4df1-8c98-fbdab21fd4f8', '2024-02-15 22:47:42.855225+00', '2024-02-15 22:47:42.855225+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '715dfae1-1044-42ec-ac48-dd4cefa567e6', 'HackernewsTop.yml', 'cubes:
   - name: HackernewsTop
     sql: SELECT * FROM default.hackernews_top
@@ -5444,7 +5260,7 @@ INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_
     measures:
       - name: count
         type: count
-', 'ebb13d5dc64e1a9a77f9a56b98393e5a', '3c0301b4-6735-40d7-b4cc-0bfe5221d4c8');
+', 'edba9681261e654d56cb73f45f19f247', '3c0301b4-6735-40d7-b4cc-0bfe5221d4c8');
 INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('2a13e111-8c72-48ac-af53-3e62db7b6497', '2024-02-15 22:47:42.855225+00', '2024-02-15 22:47:42.855225+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '715dfae1-1044-42ec-ac48-dd4cefa567e6', 'Checks.yml', 'cubes:
   - name: Checks
     sql: SELECT * FROM default.checks
@@ -5507,7 +5323,7 @@ INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_
       - name: pullRequestNumber
         sql: pull_request_number
         type: sum
-', 'fb715d72490287cafacf3a68987d9bf4', '3c0301b4-6735-40d7-b4cc-0bfe5221d4c8');
+', '7bd5f2968cfd7aa99445b37dfb05f9ce', '3c0301b4-6735-40d7-b4cc-0bfe5221d4c8');
 INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('6dc87fb2-0452-464a-bc03-71631b4e28f3', '2024-02-15 22:47:42.855225+00', '2024-02-15 22:47:42.855225+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '715dfae1-1044-42ec-ac48-dd4cefa567e6', 'CiscoUmbrella.yml', 'cubes:
   - name: CiscoUmbrella
     sql: SELECT * FROM default.cisco_umbrella
@@ -5522,7 +5338,7 @@ INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_
     measures:
       - name: count
         type: count
-', '42f7fe5d7745cd31eea4d35c6c9d88a1', '3c0301b4-6735-40d7-b4cc-0bfe5221d4c8');
+', '02db08669f39207c3f76720666a85cf2', '3c0301b4-6735-40d7-b4cc-0bfe5221d4c8');
 INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('e9bda3fd-f160-466f-bbe5-362ab5926d96', '2024-02-15 22:47:42.855225+00', '2024-02-15 22:47:42.855225+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '715dfae1-1044-42ec-ac48-dd4cefa567e6', 'Covid.yml', 'cubes:
   - name: Covid
     sql: SELECT * FROM default.covid
@@ -5537,7 +5353,7 @@ INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_
     measures:
       - name: count
         type: count
-', 'bb177bdf53f9e4b52878da32dfd81050', '3c0301b4-6735-40d7-b4cc-0bfe5221d4c8');
+', '9a2ecd92b3912cf5a4ac6179a1849b6e', '3c0301b4-6735-40d7-b4cc-0bfe5221d4c8');
 INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('a2db9c33-fb83-4d39-b88d-bd383bc86cb1', '2024-02-15 22:47:42.855225+00', '2024-02-15 22:47:42.855225+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '715dfae1-1044-42ec-ac48-dd4cefa567e6', 'Dish.yml', 'cubes:
   - name: Dish
     sql: SELECT * FROM default.dish
@@ -5562,7 +5378,7 @@ INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_
       - name: highestPrice
         sql: highest_price
         type: sum
-', '979bebe792207f418dd67b7307206e3f', '3c0301b4-6735-40d7-b4cc-0bfe5221d4c8');
+', '3e6a62263ad4013584429965ade60b33', '3c0301b4-6735-40d7-b4cc-0bfe5221d4c8');
 INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('fe787b95-1022-41d1-9bcf-d3d0d8fffb07', '2024-02-15 22:47:42.855225+00', '2024-02-15 22:47:42.855225+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '715dfae1-1044-42ec-ac48-dd4cefa567e6', 'Dns2.yml', 'cubes:
   - name: Dns2
     sql: SELECT * FROM default.dns2
@@ -5586,7 +5402,7 @@ INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_
     measures:
       - name: count
         type: count
-', '1a6bdc887f3a02eda0f490591186c774', '3c0301b4-6735-40d7-b4cc-0bfe5221d4c8');
+', '00a86bc2f4f0268997ad7633f99106e8', '3c0301b4-6735-40d7-b4cc-0bfe5221d4c8');
 INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('86e8b7d3-3827-4d91-8d5c-9752dc3953c0', '2024-02-15 22:47:42.855225+00', '2024-02-15 22:47:42.855225+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '715dfae1-1044-42ec-ac48-dd4cefa567e6', 'Dns.yml', 'cubes:
   - name: Dns
     sql: SELECT * FROM default.dns
@@ -5610,7 +5426,7 @@ INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_
     measures:
       - name: count
         type: count
-', 'f9614384ba3785ea70f4ecaa6fd583f6', '3c0301b4-6735-40d7-b4cc-0bfe5221d4c8');
+', '1d3380292f8866e8108e79e196873ecf', '3c0301b4-6735-40d7-b4cc-0bfe5221d4c8');
 INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('d6f08689-ee70-41d6-9dd1-14f1b01a7bf6', '2024-02-15 22:47:42.855225+00', '2024-02-15 22:47:42.855225+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '715dfae1-1044-42ec-ac48-dd4cefa567e6', 'FoodFacts.yml', 'cubes:
   - name: FoodFacts
     sql: SELECT * FROM default.food_facts
@@ -5622,7 +5438,7 @@ INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_
     measures:
       - name: count
         type: count
-', '1eab2e65bc7ff72f9c12a8781a1d2bd1', '3c0301b4-6735-40d7-b4cc-0bfe5221d4c8');
+', '5a642ab8f44bf184acd8cab90e54b6f2', '3c0301b4-6735-40d7-b4cc-0bfe5221d4c8');
 INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('c20960c0-8e75-4448-a0f6-0d46f7e80822', '2024-02-15 22:47:42.855225+00', '2024-02-15 22:47:42.855225+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '715dfae1-1044-42ec-ac48-dd4cefa567e6', 'GithubEvents.yml', 'cubes:
   - name: GithubEvents
     sql: SELECT * FROM default.github_events
@@ -5742,7 +5558,7 @@ INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_
       - name: number
         sql: number
         type: sum
-', 'ce6bcfc497ba80dfc8473e996c07f602', '3c0301b4-6735-40d7-b4cc-0bfe5221d4c8');
+', 'a58195bfe680b54f8553fb440265b449', '3c0301b4-6735-40d7-b4cc-0bfe5221d4c8');
 INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('423d16f2-c6ee-4dcd-a7be-9a7cbc59794c', '2024-02-15 22:47:42.855225+00', '2024-02-15 22:47:42.855225+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '715dfae1-1044-42ec-ac48-dd4cefa567e6', 'HackernewsChangesItems.yml', 'cubes:
   - name: HackernewsChangesItems
     sql: SELECT * FROM default.hackernews_changes_items
@@ -5776,7 +5592,7 @@ INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_
     measures:
       - name: count
         type: count
-', '7d38a7e67809577d2a64514baaf7440b', '3c0301b4-6735-40d7-b4cc-0bfe5221d4c8');
+', '86bbe159793194e2dea6cfbc794ccd5f', '3c0301b4-6735-40d7-b4cc-0bfe5221d4c8');
 INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('659656a7-89f5-4ec1-8fb2-651c4600db8c', '2024-02-15 22:47:42.855225+00', '2024-02-15 22:47:42.855225+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '715dfae1-1044-42ec-ac48-dd4cefa567e6', 'HackernewsChangesProfiles.yml', 'cubes:
   - name: HackernewsChangesProfiles
     sql: SELECT * FROM default.hackernews_changes_profiles
@@ -5801,7 +5617,7 @@ INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_
       - name: submittedCount
         sql: submitted_count
         type: sum
-', 'd47ae40f037f41fddba1d5cab427e5d6', '3c0301b4-6735-40d7-b4cc-0bfe5221d4c8');
+', '07729fbd31aa77f3f936a984bf26cf4c', '3c0301b4-6735-40d7-b4cc-0bfe5221d4c8');
 INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('213436dc-6221-41b6-9c47-df52a3b94334', '2024-02-15 22:47:42.855225+00', '2024-02-15 22:47:42.855225+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '715dfae1-1044-42ec-ac48-dd4cefa567e6', 'HackernewsHistory.yml', 'cubes:
   - name: HackernewsHistory
     sql: SELECT * FROM default.hackernews_history
@@ -5835,7 +5651,7 @@ INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_
     measures:
       - name: count
         type: count
-', '0c758fcfdfa84be0d51a8ea13415d94a', '3c0301b4-6735-40d7-b4cc-0bfe5221d4c8');
+', '6ddc72b22c3c4b7192d180ea13fe6bfb', '3c0301b4-6735-40d7-b4cc-0bfe5221d4c8');
 INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('d1ce8c78-6217-4d1f-aecc-5069c13708b6', '2024-02-15 22:47:42.855225+00', '2024-02-15 22:47:42.855225+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '715dfae1-1044-42ec-ac48-dd4cefa567e6', 'Hackernews.yml', 'cubes:
   - name: Hackernews
     sql: SELECT * FROM default.hackernews
@@ -5866,7 +5682,7 @@ INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_
     measures:
       - name: count
         type: count
-', 'aebd55ff7939101cdb62a5fe12742e2e', '3c0301b4-6735-40d7-b4cc-0bfe5221d4c8');
+', '2e2e3f2a10bfaf95d36af9274ce29c64', '3c0301b4-6735-40d7-b4cc-0bfe5221d4c8');
 INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('5f64bf22-bed5-427c-9aad-1d311670dbb2', '2024-02-15 22:47:42.855225+00', '2024-02-15 22:47:42.855225+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '715dfae1-1044-42ec-ac48-dd4cefa567e6', 'Lineorder.yml', 'cubes:
   - name: Lineorder
     sql: SELECT * FROM default.lineorder
@@ -5905,7 +5721,7 @@ INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_
       - name: loSupplycost
         sql: LO_SUPPLYCOST
         type: sum
-', '56bcce41157aa5624d52e4e05a3622c8', '3c0301b4-6735-40d7-b4cc-0bfe5221d4c8');
+', '2c70543cac84d0a370c9cacd13ec16d7', '3c0301b4-6735-40d7-b4cc-0bfe5221d4c8');
 INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('354faa7e-6505-4b50-92c1-354f178c9ecd', '2024-02-15 22:47:42.855225+00', '2024-02-15 22:47:42.855225+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '715dfae1-1044-42ec-ac48-dd4cefa567e6', 'LocStats.yml', 'cubes:
   - name: LocStats
     sql: SELECT * FROM default.loc_stats
@@ -5926,7 +5742,7 @@ INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_
     measures:
       - name: count
         type: count
-', 'd9ef1bbc5f2a568a24646b064e7882f8', '3c0301b4-6735-40d7-b4cc-0bfe5221d4c8');
+', 'fa78c182f3202af811e410b9423d5712', '3c0301b4-6735-40d7-b4cc-0bfe5221d4c8');
 INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('f18d81d2-fc4f-4130-aba0-8dfdd04249f6', '2024-02-15 22:47:42.855225+00', '2024-02-15 22:47:42.855225+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '715dfae1-1044-42ec-ac48-dd4cefa567e6', 'MenuItem.yml', 'cubes:
   - name: MenuItem
     sql: SELECT * FROM default.menu_item
@@ -5963,7 +5779,7 @@ INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_
       - name: highPrice
         sql: high_price
         type: sum
-', 'bb639575476d83f9b58c22d4d257f505', '3c0301b4-6735-40d7-b4cc-0bfe5221d4c8');
+', '1b960c9022af1256574265c038b16259', '3c0301b4-6735-40d7-b4cc-0bfe5221d4c8');
 INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('a94da64b-0051-4e12-aad2-97cd6f80a682', '2024-02-15 22:47:42.855225+00', '2024-02-15 22:47:42.855225+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '715dfae1-1044-42ec-ac48-dd4cefa567e6', 'MenuPage.yml', 'cubes:
   - name: MenuPage
     sql: SELECT * FROM default.menu_page
@@ -5988,7 +5804,7 @@ INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_
       - name: pageNumber
         sql: page_number
         type: sum
-', '68322aa53493790b1e73900a73b76306', '3c0301b4-6735-40d7-b4cc-0bfe5221d4c8');
+', 'eb1504a128adb6f144c2ec4e4ce98d06', '3c0301b4-6735-40d7-b4cc-0bfe5221d4c8');
 INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('e3b83d9c-554c-44cb-97b2-71b6a58e42ec', '2024-02-15 22:47:42.855225+00', '2024-02-15 22:47:42.855225+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '715dfae1-1044-42ec-ac48-dd4cefa567e6', 'Menu.yml', 'cubes:
   - name: Menu
     sql: SELECT * FROM default.menu
@@ -6058,7 +5874,7 @@ INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_
       - name: dishCount
         sql: dish_count
         type: sum
-', 'ef33f2ca0e3be2be33025fce7bb1b84c', '3c0301b4-6735-40d7-b4cc-0bfe5221d4c8');
+', '04a00da22fae4388f1f81202d399586f', '3c0301b4-6735-40d7-b4cc-0bfe5221d4c8');
 INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('15e49196-2b9b-4923-90ed-575444e6e7d9', '2024-02-15 22:47:42.855225+00', '2024-02-15 22:47:42.855225+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '715dfae1-1044-42ec-ac48-dd4cefa567e6', 'Minicrawl.yml', 'cubes:
   - name: Minicrawl
     sql: SELECT * FROM default.minicrawl
@@ -6082,7 +5898,7 @@ INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_
     measures:
       - name: count
         type: count
-', 'e55af900c1f264126334e84cda8d9fa0', '3c0301b4-6735-40d7-b4cc-0bfe5221d4c8');
+', 'fd9d810a4f7a0608aeef7fe3643e1e86', '3c0301b4-6735-40d7-b4cc-0bfe5221d4c8');
 INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('1751d2e0-b729-4476-8849-5d39e686540e', '2024-02-15 22:47:42.855225+00', '2024-02-15 22:47:42.855225+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '715dfae1-1044-42ec-ac48-dd4cefa567e6', 'Ontime.yml', 'cubes:
   - name: Ontime
     sql: SELECT * FROM default.ontime
@@ -6187,7 +6003,7 @@ INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_
     measures:
       - name: count
         type: count
-', '7fcf78af1467502bd113b3e269ae5cdb', '3c0301b4-6735-40d7-b4cc-0bfe5221d4c8');
+', '61ceac55ec579fbe707a87acfe963bf2', '3c0301b4-6735-40d7-b4cc-0bfe5221d4c8');
 INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('87615f56-6524-4110-b5b1-bf3414987852', '2024-02-15 22:47:42.855225+00', '2024-02-15 22:47:42.855225+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '715dfae1-1044-42ec-ac48-dd4cefa567e6', 'Trips.yml', 'cubes:
   - name: Trips
     sql: SELECT * FROM default.trips
@@ -6302,7 +6118,7 @@ INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_
       - name: passengerCount
         sql: passenger_count
         type: sum
-', 'b7ace91310c65214b3a7187abac12c93', '3c0301b4-6735-40d7-b4cc-0bfe5221d4c8');
+', 'a93523aa639f35cc3dbed26e0e98a916', '3c0301b4-6735-40d7-b4cc-0bfe5221d4c8');
 INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('bd45db01-76ff-421e-a993-594220ff1bcf', '2024-02-15 22:47:42.855225+00', '2024-02-15 22:47:42.855225+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '715dfae1-1044-42ec-ac48-dd4cefa567e6', 'Opensky.yml', 'cubes:
   - name: Opensky
     sql: SELECT * FROM default.opensky
@@ -6365,7 +6181,7 @@ INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_
     measures:
       - name: count
         type: count
-', '7654d3d3cee36517e3679f01ec268e06', '3c0301b4-6735-40d7-b4cc-0bfe5221d4c8');
+', '9d8c5b2b5f356568712991bff203b5af', '3c0301b4-6735-40d7-b4cc-0bfe5221d4c8');
 INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('7380f056-910c-4636-a170-2c3bd6346178', '2024-02-15 22:47:42.855225+00', '2024-02-15 22:47:42.855225+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '715dfae1-1044-42ec-ac48-dd4cefa567e6', 'Pypi.yml', 'cubes:
   - name: Pypi
     sql: SELECT * FROM default.pypi
@@ -6398,7 +6214,7 @@ INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_
     measures:
       - name: count
         type: count
-', '54ed5ed38394dcf530364fb8a4f4c920', '3c0301b4-6735-40d7-b4cc-0bfe5221d4c8');
+', '5c9cd10e0e56fd6e451c880c6eb220e7', '3c0301b4-6735-40d7-b4cc-0bfe5221d4c8');
 INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('8687d61b-81cc-4635-b0f8-e41d1f2f80e2', '2024-02-15 22:47:42.855225+00', '2024-02-15 22:47:42.855225+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '715dfae1-1044-42ec-ac48-dd4cefa567e6', 'QueryMetricsV2.yml', 'cubes:
   - name: QueryMetricsV2
     sql: SELECT * FROM default.query_metrics_v2
@@ -6443,7 +6259,7 @@ INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_
       - name: prNumber
         sql: pr_number
         type: sum
-', '7b29c1abc60d3d709e9cf0e109cfd40c', '3c0301b4-6735-40d7-b4cc-0bfe5221d4c8');
+', 'f8b9d3420f4852355ce97d1a44957773', '3c0301b4-6735-40d7-b4cc-0bfe5221d4c8');
 INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('9a818473-8ff9-41c8-9081-0981669ed2e7', '2024-02-15 22:47:42.855225+00', '2024-02-15 22:47:42.855225+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '715dfae1-1044-42ec-ac48-dd4cefa567e6', 'Rdns.yml', 'cubes:
   - name: Rdns
     sql: SELECT * FROM default.rdns
@@ -6461,7 +6277,7 @@ INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_
     measures:
       - name: count
         type: count
-', '743c9de0722412875116910de75da3b7', '3c0301b4-6735-40d7-b4cc-0bfe5221d4c8');
+', 'b9abbe6bcc60c457035e1fb03fb1b28a', '3c0301b4-6735-40d7-b4cc-0bfe5221d4c8');
 INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('6f94b498-8d30-44ad-a43e-e769fa42b55b', '2024-02-15 22:47:42.855225+00', '2024-02-15 22:47:42.855225+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '715dfae1-1044-42ec-ac48-dd4cefa567e6', 'Recipes.yml', 'cubes:
   - name: Recipes
     sql: SELECT * FROM default.recipes
@@ -6488,7 +6304,7 @@ INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_
     measures:
       - name: count
         type: count
-', 'f9fe1b2408e0f739947324f25dcd4625', '3c0301b4-6735-40d7-b4cc-0bfe5221d4c8');
+', '59307913db8b2d273c76f85db0e8c84f', '3c0301b4-6735-40d7-b4cc-0bfe5221d4c8');
 INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('f978162f-7ec4-454a-be01-fc0a19c5a402', '2024-02-15 22:47:42.855225+00', '2024-02-15 22:47:42.855225+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '715dfae1-1044-42ec-ac48-dd4cefa567e6', 'ReposRaw.yml', 'cubes:
   - name: ReposRaw
     sql: SELECT * FROM default.repos_raw
@@ -6500,7 +6316,7 @@ INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_
     measures:
       - name: count
         type: count
-', '3227a76f8814097623fec473ed5f6070', '3c0301b4-6735-40d7-b4cc-0bfe5221d4c8');
+', '7637132852dacb8dd423af59e3a24f56', '3c0301b4-6735-40d7-b4cc-0bfe5221d4c8');
 INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('5bde8e04-20fa-4756-a02d-a8842232f3d2', '2024-02-15 22:47:42.855225+00', '2024-02-15 22:47:42.855225+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '715dfae1-1044-42ec-ac48-dd4cefa567e6', 'Repos.yml', 'cubes:
   - name: Repos
     sql: SELECT * FROM default.repos
@@ -6584,7 +6400,7 @@ INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_
       - name: openIssuesCount
         sql: open_issues_count
         type: sum
-', '3781edcbc87e1309cad9caee37b90f26', '3c0301b4-6735-40d7-b4cc-0bfe5221d4c8');
+', '39c4b6c22c2be1d2b89511e4279472b5', '3c0301b4-6735-40d7-b4cc-0bfe5221d4c8');
 INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('6ced4fe6-ff1a-4ee8-82b0-94c1f5bb2dc5', '2024-02-15 22:47:42.855225+00', '2024-02-15 22:47:42.855225+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '715dfae1-1044-42ec-ac48-dd4cefa567e6', 'RunAttributesV1.yml', 'cubes:
   - name: RunAttributesV1
     sql: SELECT * FROM default.run_attributes_v1
@@ -6605,7 +6421,7 @@ INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_
     measures:
       - name: count
         type: count
-', '37a99db8347e71c4b32e3cde01141cbb', '3c0301b4-6735-40d7-b4cc-0bfe5221d4c8');
+', '10043a50dd0509fb285c29ac687876cc', '3c0301b4-6735-40d7-b4cc-0bfe5221d4c8');
 INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('21642ca1-a3cb-4ffd-af09-29bcb108ec2b', '2024-02-15 22:47:42.855225+00', '2024-02-15 22:47:42.855225+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '715dfae1-1044-42ec-ac48-dd4cefa567e6', 'Stock.yml', 'cubes:
   - name: Stock
     sql: SELECT * FROM default.stock
@@ -6623,7 +6439,7 @@ INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_
       - name: price
         sql: price
         type: sum
-', '3050c9db7efba7a14b53f3b1ba27081a', '3c0301b4-6735-40d7-b4cc-0bfe5221d4c8');
+', 'f04c5b91366614f628c6b6e886cd89ca', '3c0301b4-6735-40d7-b4cc-0bfe5221d4c8');
 INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('ef8a5e3b-6b19-49c7-9699-71cfb80d5282', '2024-02-15 22:47:42.855225+00', '2024-02-15 22:47:42.855225+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '715dfae1-1044-42ec-ac48-dd4cefa567e6', 'Tranco.yml', 'cubes:
   - name: Tranco
     sql: SELECT * FROM default.tranco
@@ -6638,32 +6454,7 @@ INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_
     measures:
       - name: count
         type: count
-', '6907e63c004919e5de57289965082dc3', '3c0301b4-6735-40d7-b4cc-0bfe5221d4c8');
-INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('b8ad6d46-3bd0-485d-9f07-d0650cf80361', '2024-02-15 22:49:18.03242+00', '2024-02-15 22:49:18.03242+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '17bbf032-2e25-4b17-aa61-1d3db0a99d57', 'TmpNewtable.yml', 'cubes:
-  - name: TmpNewtable
-    sql: SELECT * FROM public.tmp_newtable
-    joins: []
-    dimensions:
-      - name: id
-        sql: id
-        type: number
-        primaryKey: true
-      - name: address
-        sql: address
-        type: string
-      - name: name
-        sql: name
-        type: string
-      - name: email
-        sql: email
-        type: string
-      - name: phone
-        sql: phone
-        type: string
-    measures:
-      - name: count
-        type: count
-', '111353e2d946fcaf3644e0cf5770b5c2', 'ab116697-5fa3-4cda-ac5a-f4bca5742ead');
+', 'e045e5b18963fc37e05a9552bac70f80', '3c0301b4-6735-40d7-b4cc-0bfe5221d4c8');
 INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('584c3063-5eeb-4b76-a8e5-166bac8a8317', '2024-02-15 22:47:42.855225+00', '2024-02-15 22:47:42.855225+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '715dfae1-1044-42ec-ac48-dd4cefa567e6', 'UkPricePaidUpdater.yml', 'cubes:
   - name: UkPricePaidUpdater
     sql: SELECT * FROM default.uk_price_paid_updater
@@ -6711,7 +6502,7 @@ INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_
       - name: price
         sql: price
         type: sum
-', '49c465588361c4b18ee32c3df0a44e3b', '3c0301b4-6735-40d7-b4cc-0bfe5221d4c8');
+', '55a8fc5ab8d50258bf51ecb56cd43e8e', '3c0301b4-6735-40d7-b4cc-0bfe5221d4c8');
 INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('bdc3d6ea-4efe-43b9-9291-073faa8fdc3b', '2024-02-15 22:47:42.855225+00', '2024-02-15 22:47:42.855225+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '715dfae1-1044-42ec-ac48-dd4cefa567e6', 'UkPricePaid.yml', 'cubes:
   - name: UkPricePaid
     sql: SELECT * FROM default.uk_price_paid
@@ -6759,7 +6550,7 @@ INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_
       - name: price
         sql: price
         type: sum
-', '667b2c10a49ab383627f9c4949b0d3cc', '3c0301b4-6735-40d7-b4cc-0bfe5221d4c8');
+', 'b9d57542e6f1de2522ce733e85d76cd6', '3c0301b4-6735-40d7-b4cc-0bfe5221d4c8');
 INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('342cebc8-52ef-44c2-a286-d8cc3f88dce9', '2024-02-15 22:47:42.855225+00', '2024-02-15 22:47:42.855225+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '715dfae1-1044-42ec-ac48-dd4cefa567e6', 'Wikistat.yml', 'cubes:
   - name: Wikistat
     sql: SELECT * FROM default.wikistat
@@ -6780,7 +6571,7 @@ INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_
     measures:
       - name: count
         type: count
-', '6015f667fcbe0a47fa9efcd24227ca13', '3c0301b4-6735-40d7-b4cc-0bfe5221d4c8');
+', 'dc200014dfa9994fdbfb4fa6b40362f6', '3c0301b4-6735-40d7-b4cc-0bfe5221d4c8');
 INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('4035210a-c7bf-441c-84aa-f1a6747985c9', '2024-02-15 22:47:42.855225+00', '2024-02-15 22:47:42.855225+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '715dfae1-1044-42ec-ac48-dd4cefa567e6', 'WorkflowJobs.yml', 'cubes:
   - name: WorkflowJobs
     sql: SELECT * FROM default.workflow_jobs
@@ -6847,33 +6638,23 @@ INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_
     measures:
       - name: count
         type: count
-', '38a0e74b1fbd85398d3bbdb8c8eb936e', '3c0301b4-6735-40d7-b4cc-0bfe5221d4c8');
-INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('f8a432ef-dda2-41a3-adc7-f89966ee8cd3', '2024-02-15 22:49:18.03242+00', '2024-02-15 22:49:18.03242+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '17bbf032-2e25-4b17-aa61-1d3db0a99d57', 'Companies.yml', 'cubes:
-  - name: Companies
-    sql: SELECT * FROM public.companies
+', '0781834c1d8b0364fcd3f74b428287d0', '3c0301b4-6735-40d7-b4cc-0bfe5221d4c8');
+INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('01571fc2-55d2-41f2-832f-6d8f11bbd8f7', '2024-02-20 20:51:08.458633+00', '2024-02-20 20:51:08.458633+00', 'bd254cd6-ada3-4803-88ec-a47749459169', 'f9401258-4630-4005-8d47-1a682ae94cf3', 'ActiveWorkspaceDetails.yml', 'cubes:
+  - name: ActiveWorkspaceDetails
+    sql: SELECT * FROM public.active_workspace_details
     joins: []
     dimensions:
-      - name: id
-        sql: id
-        type: number
-        primaryKey: true
-      - name: email
-        sql: email
+      - name: isActive
+        sql: is_active
         type: string
-      - name: name
-        sql: name
-        type: string
-      - name: phone
-        sql: phone
-        type: string
-      - name: address
-        sql: address
-        type: string
+      - name: reportingDay
+        sql: reporting_day
+        type: time
     measures:
       - name: count
         type: count
-', '73d3a69114afa1dd90fb90053fc23caf', 'ab116697-5fa3-4cda-ac5a-f4bca5742ead');
-INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('7ad30d2a-a895-4d28-ae0a-3c0636ea2820', '2024-02-15 22:49:18.03242+00', '2024-02-15 22:49:18.03242+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '17bbf032-2e25-4b17-aa61-1d3db0a99d57', 'LineItems.yml', 'cubes:
+', 'bf9e07886a75f3a9cd62a33818150acd', '8ac5b66e-aca9-4845-b009-74127cbb6c00');
+INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('98f9d2c5-cedc-4258-9adf-6be049449351', '2024-02-20 20:51:08.458633+00', '2024-02-20 20:51:08.458633+00', 'bd254cd6-ada3-4803-88ec-a47749459169', 'f9401258-4630-4005-8d47-1a682ae94cf3', 'LineItems.yml', 'cubes:
   - name: LineItems
     sql: SELECT * FROM public.line_items
     joins:
@@ -6894,70 +6675,28 @@ INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_
     measures:
       - name: count
         type: count
-      - name: quantity
-        sql: quantity
-        type: sum
       - name: price
         sql: price
         type: sum
-', 'b5603719550035b0cf93106e8c608902', 'ab116697-5fa3-4cda-ac5a-f4bca5742ead');
-INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('ca7c9e4e-4abb-4322-a30e-ff5659473ee3', '2024-02-15 22:49:18.03242+00', '2024-02-15 22:49:18.03242+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '17bbf032-2e25-4b17-aa61-1d3db0a99d57', 'LineItemsCountByStates.yml', 'cubes:
-  - name: LineItemsCountByStates
-    sql: SELECT * FROM public.line_items_count_by_states
-    joins: []
-    dimensions:
-      - name: usersState
-        sql: users_state
-        type: string
-    measures:
-      - name: count
-        type: count
-      - name: lineItemsCount
-        sql: line_items_count
-        type: sum
-', '9263cb82160a4f840ff980c02213cd12', 'ab116697-5fa3-4cda-ac5a-f4bca5742ead');
-INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('80ddd5bc-aec2-4770-b21d-4ef2ee24d3bc', '2024-02-15 22:49:18.03242+00', '2024-02-15 22:49:18.03242+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '17bbf032-2e25-4b17-aa61-1d3db0a99d57', 'LineItemsEval.yml', 'cubes:
-  - name: LineItemsEval
-    sql: SELECT * FROM public.line_items_eval
-    joins:
-      - name: Products
-        sql: "{CUBE}.product_id = {Products}.id"
-        relationship: belongsTo
-      - name: Orders
-        sql: "{CUBE}.order_id = {Orders}.id"
-        relationship: belongsTo
-    dimensions:
-      - name: price
-        sql: price
-        type: string
-      - name: createdAt
-        sql: created_at
-        type: time
-    measures:
-      - name: count
-        type: count
       - name: quantity
         sql: quantity
         type: sum
-', '8cd950fef518b17f49c7850d930c45b5', 'ab116697-5fa3-4cda-ac5a-f4bca5742ead');
-INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('1a64cca8-94d8-4f08-a5f0-9db783aabae0', '2024-02-15 22:49:18.03242+00', '2024-02-15 22:49:18.03242+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '17bbf032-2e25-4b17-aa61-1d3db0a99d57', 'LineItemsEval1.yml', 'cubes:
-  - name: LineItemsEval1
-    sql: SELECT * FROM public.line_items_eval_1
+', '05c5029567d685b727c83787848a665d', '8ac5b66e-aca9-4845-b009-74127cbb6c00');
+INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('5024b010-f8a0-444b-868b-75a129ff0686', '2024-02-20 20:51:08.458633+00', '2024-02-20 20:51:08.458633+00', 'bd254cd6-ada3-4803-88ec-a47749459169', 'f9401258-4630-4005-8d47-1a682ae94cf3', 'LineItemsCopy.yml', 'cubes:
+  - name: LineItemsCopy
+    sql: SELECT * FROM public.line_items_copy
     joins:
-      - name: Products
-        sql: "{CUBE}.product_id = {Products}.id"
-        relationship: belongsTo
       - name: Orders
         sql: "{CUBE}.order_id = {Orders}.id"
+        relationship: belongsTo
+      - name: Products
+        sql: "{CUBE}.product_id = {Products}.id"
         relationship: belongsTo
     dimensions:
       - name: id
         sql: id
         type: number
         primaryKey: true
-      - name: price
-        sql: price
-        type: string
       - name: createdAt
         sql: created_at
         type: time
@@ -6967,62 +6706,25 @@ INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_
       - name: quantity
         sql: quantity
         type: sum
-', 'fb89e818c1c418c3896321020ee30bcb', 'ab116697-5fa3-4cda-ac5a-f4bca5742ead');
-INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('c229219a-ceeb-40d8-a9f1-5aaac49c6f75', '2024-02-15 22:49:18.03242+00', '2024-02-15 22:49:18.03242+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '17bbf032-2e25-4b17-aa61-1d3db0a99d57', 'LineItemsEval2.yml', 'cubes:
-  - name: LineItemsEval2
-    sql: SELECT * FROM public.line_items_eval_2
-    joins:
-      - name: Products
-        sql: "{CUBE}.product_id = {Products}.id"
-        relationship: belongsTo
-      - name: Orders
-        sql: "{CUBE}.order_id = {Orders}.id"
-        relationship: belongsTo
-    dimensions:
       - name: price
         sql: price
-        type: string
-      - name: createdAt
-        sql: created_at
-        type: time
-    measures:
-      - name: count
-        type: count
-      - name: quantity
-        sql: quantity
         type: sum
-', 'b82d9ce2bde6f8c4660fbca5f0670b90', 'ab116697-5fa3-4cda-ac5a-f4bca5742ead');
-INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('dc33749c-f813-4a40-9d17-2e65a3ccd037', '2024-02-15 22:49:18.03242+00', '2024-02-15 22:49:18.03242+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '17bbf032-2e25-4b17-aa61-1d3db0a99d57', 'Orders.yml', 'cubes:
+', '65c76b9ab9ce89c1fcb3d24f6a3645c5', '8ac5b66e-aca9-4845-b009-74127cbb6c00');
+INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('59cf349c-3e86-4cae-bdd5-84ef01b5150c', '2024-02-20 20:51:08.458633+00', '2024-02-20 20:51:08.458633+00', 'bd254cd6-ada3-4803-88ec-a47749459169', 'f9401258-4630-4005-8d47-1a682ae94cf3', 'Orders.yml', 'cubes:
   - name: Orders
-    sql: SELECT * FROM other.orders
-    joins: []
-    dimensions:
-      - name: id
-        sql: id
-        type: number
-        primaryKey: true
-      - name: name
-        sql: name
-        type: string
-    measures:
-      - name: count
-        type: count
-', '0f4179b4db2b5197afe5040cf5175123', 'ab116697-5fa3-4cda-ac5a-f4bca5742ead');
-INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('41c930d7-fcaf-4cd2-b522-7ba32e821951', '2024-02-15 22:49:18.03242+00', '2024-02-15 22:49:18.03242+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '17bbf032-2e25-4b17-aa61-1d3db0a99d57', 'OrdersEval.yml', 'cubes:
-  - name: OrdersEval
-    sql: SELECT * FROM public.orders_eval
+    sql: SELECT * FROM public.orders
     joins:
       - name: Users
         sql: "{CUBE}.user_id = {Users}.id"
         relationship: belongsTo
+      - name: Products
+        sql: "{CUBE}.product_id = {Products}.id"
+        relationship: belongsTo
     dimensions:
       - name: id
         sql: id
         type: number
         primaryKey: true
-      - name: sum
-        sql: sum
-        type: string
       - name: status
         sql: status
         type: string
@@ -7035,52 +6737,42 @@ INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_
     measures:
       - name: count
         type: count
-', 'c9ef2d7f047720ed49bc502d7c02d1ea', 'ab116697-5fa3-4cda-ac5a-f4bca5742ead');
-INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('f679a5c6-8c57-481d-9429-d361739410fb', '2024-02-15 22:49:18.03242+00', '2024-02-15 22:49:18.03242+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '17bbf032-2e25-4b17-aa61-1d3db0a99d57', 'PolyLessons.yml', 'cubes:
-  - name: PolyLessons
-    sql: SELECT * FROM public.poly_lessons
+      - name: number
+        sql: number
+        type: sum
+', '58a373cf050e7154f4a0e4d4c83a11c4', '8ac5b66e-aca9-4845-b009-74127cbb6c00');
+INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('166125ae-d69b-46b9-bcff-e5fa2171a095', '2024-02-20 20:51:08.458633+00', '2024-02-20 20:51:08.458633+00', 'bd254cd6-ada3-4803-88ec-a47749459169', 'f9401258-4630-4005-8d47-1a682ae94cf3', 'OrdersCopy.yml', 'cubes:
+  - name: OrdersCopy
+    sql: SELECT * FROM public.orders_copy
     joins:
-      - name: Teacher
-        sql: "{CUBE}.teacher_id = {Teacher}.id"
+      - name: Products
+        sql: "{CUBE}.product_id = {Products}.id"
         relationship: belongsTo
-      - name: Student
-        sql: "{CUBE}.student_id = {Student}.id"
+      - name: Users
+        sql: "{CUBE}.user_id = {Users}.id"
         relationship: belongsTo
     dimensions:
       - name: id
         sql: id
         type: number
         primaryKey: true
-      - name: name
-        sql: name
+      - name: status
+        sql: status
         type: string
+      - name: createdAt
+        sql: created_at
+        type: time
+      - name: completedAt
+        sql: completed_at
+        type: time
     measures:
       - name: count
         type: count
-', 'd423963a68aedcfca2dbee3923f57328', 'ab116697-5fa3-4cda-ac5a-f4bca5742ead');
-INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('43a9769a-2044-414c-9fc3-3337c09b9ee7', '2024-02-15 22:49:18.03242+00', '2024-02-15 22:49:18.03242+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '17bbf032-2e25-4b17-aa61-1d3db0a99d57', 'PolyUsers.yml', 'cubes:
-  - name: PolyUsers
-    sql: SELECT * FROM public.poly_users
-    joins: []
-    dimensions:
-      - name: id
-        sql: id
-        type: number
-        primaryKey: true
-      - name: type
-        sql: type
-        type: string
-      - name: name
-        sql: name
-        type: string
-      - name: school
-        sql: school
-        type: string
-    measures:
-      - name: count
-        type: count
-', '1f178c3186c4dda2ca9029f115c04743', 'ab116697-5fa3-4cda-ac5a-f4bca5742ead');
-INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('1b52d2b2-4753-4256-bd5d-ba708e4ce755', '2024-02-15 22:49:18.03242+00', '2024-02-15 22:49:18.03242+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '17bbf032-2e25-4b17-aa61-1d3db0a99d57', 'ProductCategories.yml', 'cubes:
+      - name: number
+        sql: number
+        type: sum
+', '8be5c63c91b76324c0e9dd6615632037', '8ac5b66e-aca9-4845-b009-74127cbb6c00');
+INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('1ce4212d-072c-45cf-a6ed-f9904dbd6674', '2024-02-20 20:51:08.458633+00', '2024-02-20 20:51:08.458633+00', 'bd254cd6-ada3-4803-88ec-a47749459169', 'f9401258-4630-4005-8d47-1a682ae94cf3', 'ProductCategories.yml', 'cubes:
   - name: ProductCategories
     sql: SELECT * FROM public.product_categories
     joins: []
@@ -7098,27 +6790,27 @@ INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_
     measures:
       - name: count
         type: count
-', '84c89b49880214ad72dd34eb4c9aa771', 'ab116697-5fa3-4cda-ac5a-f4bca5742ead');
-INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('044f21f2-c629-418c-abca-6dd85d6cab6b', '2024-02-15 22:49:18.03242+00', '2024-02-15 22:49:18.03242+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '17bbf032-2e25-4b17-aa61-1d3db0a99d57', 'Products.yml', 'cubes:
+', '84c89b49880214ad72dd34eb4c9aa771', '8ac5b66e-aca9-4845-b009-74127cbb6c00');
+INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('fe14627c-3b89-45a2-8328-b0209636fc1a', '2024-02-20 20:51:08.458633+00', '2024-02-20 20:51:08.458633+00', 'bd254cd6-ada3-4803-88ec-a47749459169', 'f9401258-4630-4005-8d47-1a682ae94cf3', 'Products.yml', 'cubes:
   - name: Products
     sql: SELECT * FROM public.products
     joins:
-      - name: Suppliers
-        sql: "{CUBE}.supplier_id = {Suppliers}.id"
-        relationship: belongsTo
       - name: ProductCategories
         sql: "{CUBE}.product_category_id = {ProductCategories}.id"
+        relationship: belongsTo
+      - name: Suppliers
+        sql: "{CUBE}.supplier_id = {Suppliers}.id"
         relationship: belongsTo
     dimensions:
       - name: id
         sql: id
         type: number
         primaryKey: true
-      - name: name
-        sql: name
-        type: string
       - name: description
         sql: description
+        type: string
+      - name: name
+        sql: name
         type: string
       - name: createdAt
         sql: created_at
@@ -7126,43 +6818,36 @@ INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_
     measures:
       - name: count
         type: count
-', 'a3f0e338c7edccf7166acdf4a62fe807', 'ab116697-5fa3-4cda-ac5a-f4bca5742ead');
-INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('e6e20a93-c675-4538-bdf4-4ba931974834', '2024-02-15 22:49:18.03242+00', '2024-02-15 22:49:18.03242+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '17bbf032-2e25-4b17-aa61-1d3db0a99d57', 'Student.yml', 'cubes:
-  - name: Student
-    sql: SELECT * FROM public.student
-    joins: []
+', '12bb21403a3499a03348264675ae4e2a', '8ac5b66e-aca9-4845-b009-74127cbb6c00');
+INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('a397e28d-a595-47d2-b912-daf70acbe758', '2024-02-20 20:51:08.458633+00', '2024-02-20 20:51:08.458633+00', 'bd254cd6-ada3-4803-88ec-a47749459169', 'f9401258-4630-4005-8d47-1a682ae94cf3', 'ProductsCopy.yml', 'cubes:
+  - name: ProductsCopy
+    sql: SELECT * FROM public.products_copy
+    joins:
+      - name: ProductCategories
+        sql: "{CUBE}.product_category_id = {ProductCategories}.id"
+        relationship: belongsTo
+      - name: Suppliers
+        sql: "{CUBE}.supplier_id = {Suppliers}.id"
+        relationship: belongsTo
     dimensions:
       - name: id
         sql: id
         type: number
         primaryKey: true
+      - name: description
+        sql: description
+        type: string
       - name: name
         sql: name
         type: string
+      - name: createdAt
+        sql: created_at
+        type: time
     measures:
       - name: count
         type: count
-', '5eafe7c98f36d7e89a40ef190201fb4e', 'ab116697-5fa3-4cda-ac5a-f4bca5742ead');
-INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('d343f798-d8e3-4f7f-a70d-57846d9b2b8a', '2024-02-15 22:49:18.03242+00', '2024-02-15 22:49:18.03242+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '17bbf032-2e25-4b17-aa61-1d3db0a99d57', 'StudentTeacher.yml', 'cubes:
-  - name: StudentTeacher
-    sql: SELECT * FROM public.student_teacher
-    joins:
-      - name: Student
-        sql: "{CUBE}.student_id = {Student}.id"
-        relationship: belongsTo
-      - name: Teacher
-        sql: "{CUBE}.teacher_id = {Teacher}.id"
-        relationship: belongsTo
-    dimensions:
-      - name: id
-        sql: id
-        type: number
-        primaryKey: true
-    measures:
-      - name: count
-        type: count
-', 'b30c612b2dd113b6996f8c7c053d4b95', 'ab116697-5fa3-4cda-ac5a-f4bca5742ead');
-INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('2edf72fa-d479-4a19-98ea-0908db23d8bb', '2024-02-15 22:49:18.03242+00', '2024-02-15 22:49:18.03242+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '17bbf032-2e25-4b17-aa61-1d3db0a99d57', 'Suppliers.yml', 'cubes:
+', 'd67fc47e2e9bd4efda0a2cc9974a0431', '8ac5b66e-aca9-4845-b009-74127cbb6c00');
+INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('beb66bd7-f5fb-418f-82dd-bd0a6302da0d', '2024-02-20 20:51:08.458633+00', '2024-02-20 20:51:08.458633+00', 'bd254cd6-ada3-4803-88ec-a47749459169', 'f9401258-4630-4005-8d47-1a682ae94cf3', 'Suppliers.yml', 'cubes:
   - name: Suppliers
     sql: SELECT * FROM public.suppliers
     joins: []
@@ -7171,11 +6856,11 @@ INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_
         sql: id
         type: number
         primaryKey: true
-      - name: address
-        sql: address
-        type: string
       - name: company
         sql: company
+        type: string
+      - name: address
+        sql: address
         type: string
       - name: email
         sql: email
@@ -7186,52 +6871,8 @@ INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_
     measures:
       - name: count
         type: count
-', '26857fc670d0914751a10f13829fff28', 'ab116697-5fa3-4cda-ac5a-f4bca5742ead');
-INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('0a111a5a-5915-4b35-a47d-22e816474de1', '2024-02-15 22:49:18.03242+00', '2024-02-15 22:49:18.03242+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '17bbf032-2e25-4b17-aa61-1d3db0a99d57', 'Teacher.yml', 'cubes:
-  - name: Teacher
-    sql: SELECT * FROM public.teacher
-    joins: []
-    dimensions:
-      - name: id
-        sql: id
-        type: number
-        primaryKey: true
-      - name: name
-        sql: name
-        type: string
-    measures:
-      - name: count
-        type: count
-', '560bf0a3ad49aeaec7cb5a35965e05f9', 'ab116697-5fa3-4cda-ac5a-f4bca5742ead');
-INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('223c9452-8dbb-4ee0-8c4b-c46d341fcb2a', '2024-02-15 22:49:18.03242+00', '2024-02-15 22:49:18.03242+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '17bbf032-2e25-4b17-aa61-1d3db0a99d57', 'Teachers.yml', 'cubes:
-  - name: Teachers
-    sql: SELECT * FROM public.teachers
-    joins: []
-    dimensions:
-      - name: id
-        sql: id
-        type: number
-        primaryKey: true
-      - name: salary
-        sql: salary
-        type: string
-      - name: firstName
-        sql: first_name
-        type: string
-      - name: lastName
-        sql: last_name
-        type: string
-      - name: school
-        sql: school
-        type: string
-      - name: hireDate
-        sql: hire_date
-        type: time
-    measures:
-      - name: count
-        type: count
-', 'ed292830b5057b97613cdb17a7416464', 'ab116697-5fa3-4cda-ac5a-f4bca5742ead');
-INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('a36e3202-a62d-479c-8f1e-2816689ee07b', '2024-02-15 22:49:18.03242+00', '2024-02-15 22:49:18.03242+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '17bbf032-2e25-4b17-aa61-1d3db0a99d57', 'Users.yml', 'cubes:
+', '7028133b0987608515999afbb809adf3', '8ac5b66e-aca9-4845-b009-74127cbb6c00');
+INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('251ba10b-72c4-4332-bcb4-3d5ef08c3d3d', '2024-02-20 20:51:08.458633+00', '2024-02-20 20:51:08.458633+00', 'bd254cd6-ada3-4803-88ec-a47749459169', 'f9401258-4630-4005-8d47-1a682ae94cf3', 'Users.yml', 'cubes:
   - name: Users
     sql: SELECT * FROM public.users
     joins: []
@@ -7240,8 +6881,42 @@ INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_
         sql: id
         type: number
         primaryKey: true
+      - name: state
+        sql: state
+        type: string
+      - name: company
+        sql: company
+        type: string
       - name: gender
         sql: gender
+        type: string
+      - name: city
+        sql: city
+        type: string
+      - name: firstName
+        sql: first_name
+        type: string
+      - name: lastName
+        sql: last_name
+        type: string
+      - name: createdAt
+        sql: created_at
+        type: time
+    measures:
+      - name: count
+        type: count
+', '1e922cfb06cb09962c71b544a4f495a5', '8ac5b66e-aca9-4845-b009-74127cbb6c00');
+INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('6a27e466-70d9-45c1-932d-0c8f548740cc', '2024-02-20 20:51:08.458633+00', '2024-02-20 20:51:08.458633+00', 'bd254cd6-ada3-4803-88ec-a47749459169', 'f9401258-4630-4005-8d47-1a682ae94cf3', 'UsersCopy.yml', 'cubes:
+  - name: UsersCopy
+    sql: SELECT * FROM public.users_copy
+    joins: []
+    dimensions:
+      - name: id
+        sql: id
+        type: number
+        primaryKey: true
+      - name: lastName
+        sql: last_name
         type: string
       - name: firstName
         sql: first_name
@@ -7249,2243 +6924,23 @@ INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_
       - name: state
         sql: state
         type: string
-      - name: lastName
-        sql: last_name
+      - name: company
+        sql: company
         type: string
       - name: city
         sql: city
         type: string
-      - name: company
-        sql: company
-        type: string
-      - name: createdAt
-        sql: created_at
-        type: time
-    measures:
-      - name: count
-        type: count
-', '412df880a505c372aef064606bfb7e5a', 'ab116697-5fa3-4cda-ac5a-f4bca5742ead');
-INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('490264fa-6eef-41aa-850c-2296e497ccb4', '2024-02-15 22:50:34.328636+00', '2024-02-15 22:50:34.328636+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '17bbf032-2e25-4b17-aa61-1d3db0a99d57', 'Companies.yml', 'cubes:
-  - name: Companies
-    sql: SELECT * FROM public.companies
-    joins: []
-    dimensions:
-      - name: id
-        sql: id
-        type: number
-        primaryKey: true
-      - name: email
-        sql: email
-        type: string
-      - name: name
-        sql: name
-        type: string
-      - name: phone
-        sql: phone
-        type: string
-      - name: address
-        sql: address
-        type: string
-    measures:
-      - name: count
-        type: count
-', '73d3a69114afa1dd90fb90053fc23caf', '1c71cc4f-6db9-4ae4-8530-10f4c44b81ea');
-INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('e268a1ab-2494-4863-be8c-ec04e1399e6a', '2024-02-15 22:50:34.328636+00', '2024-02-15 22:50:34.328636+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '17bbf032-2e25-4b17-aa61-1d3db0a99d57', 'LineItems.yml', 'cubes:
-  - name: LineItems
-    sql: SELECT * FROM public.line_items
-    joins:
-      - name: Products
-        sql: "{CUBE}.product_id = {Products}.id"
-        relationship: belongsTo
-      - name: Orders
-        sql: "{CUBE}.order_id = {Orders}.id"
-        relationship: belongsTo
-    dimensions:
-      - name: id
-        sql: id
-        type: number
-        primaryKey: true
-      - name: createdAt
-        sql: created_at
-        type: time
-    measures:
-      - name: count
-        type: count
-      - name: quantity
-        sql: quantity
-        type: sum
-      - name: price
-        sql: price
-        type: sum
-', 'b5603719550035b0cf93106e8c608902', '1c71cc4f-6db9-4ae4-8530-10f4c44b81ea');
-INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('eb5b6ad4-ec35-4644-8ee1-37e9fae7c4ae', '2024-02-15 22:50:34.328636+00', '2024-02-15 22:50:34.328636+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '17bbf032-2e25-4b17-aa61-1d3db0a99d57', 'LineItemsCountByStates.yml', 'cubes:
-  - name: LineItemsCountByStates
-    sql: SELECT * FROM public.line_items_count_by_states
-    joins: []
-    dimensions:
-      - name: usersState
-        sql: users_state
-        type: string
-    measures:
-      - name: count
-        type: count
-      - name: lineItemsCount
-        sql: line_items_count
-        type: sum
-', '9263cb82160a4f840ff980c02213cd12', '1c71cc4f-6db9-4ae4-8530-10f4c44b81ea');
-INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('55ad2a56-41ad-4579-9b25-38ae79124275', '2024-02-15 22:50:34.328636+00', '2024-02-15 22:50:34.328636+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '17bbf032-2e25-4b17-aa61-1d3db0a99d57', 'LineItemsEval.yml', 'cubes:
-  - name: LineItemsEval
-    sql: SELECT * FROM public.line_items_eval
-    joins:
-      - name: Products
-        sql: "{CUBE}.product_id = {Products}.id"
-        relationship: belongsTo
-      - name: Orders
-        sql: "{CUBE}.order_id = {Orders}.id"
-        relationship: belongsTo
-    dimensions:
-      - name: price
-        sql: price
-        type: string
-      - name: createdAt
-        sql: created_at
-        type: time
-    measures:
-      - name: count
-        type: count
-      - name: quantity
-        sql: quantity
-        type: sum
-', '8cd950fef518b17f49c7850d930c45b5', '1c71cc4f-6db9-4ae4-8530-10f4c44b81ea');
-INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('b48d68de-a560-4d99-ba2f-2f054f4ba2d6', '2024-02-15 22:50:34.328636+00', '2024-02-15 22:50:34.328636+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '17bbf032-2e25-4b17-aa61-1d3db0a99d57', 'LineItemsEval1.yml', 'cubes:
-  - name: LineItemsEval1
-    sql: SELECT * FROM public.line_items_eval_1
-    joins:
-      - name: Products
-        sql: "{CUBE}.product_id = {Products}.id"
-        relationship: belongsTo
-      - name: Orders
-        sql: "{CUBE}.order_id = {Orders}.id"
-        relationship: belongsTo
-    dimensions:
-      - name: id
-        sql: id
-        type: number
-        primaryKey: true
-      - name: price
-        sql: price
-        type: string
-      - name: createdAt
-        sql: created_at
-        type: time
-    measures:
-      - name: count
-        type: count
-      - name: quantity
-        sql: quantity
-        type: sum
-', 'fb89e818c1c418c3896321020ee30bcb', '1c71cc4f-6db9-4ae4-8530-10f4c44b81ea');
-INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('99908761-9cbf-4f14-a9dc-a90115374e00', '2024-02-15 22:50:34.328636+00', '2024-02-15 22:50:34.328636+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '17bbf032-2e25-4b17-aa61-1d3db0a99d57', 'LineItemsEval2.yml', 'cubes:
-  - name: LineItemsEval2
-    sql: SELECT * FROM public.line_items_eval_2
-    joins:
-      - name: Products
-        sql: "{CUBE}.product_id = {Products}.id"
-        relationship: belongsTo
-      - name: Orders
-        sql: "{CUBE}.order_id = {Orders}.id"
-        relationship: belongsTo
-    dimensions:
-      - name: price
-        sql: price
-        type: string
-      - name: createdAt
-        sql: created_at
-        type: time
-    measures:
-      - name: count
-        type: count
-      - name: quantity
-        sql: quantity
-        type: sum
-', 'b82d9ce2bde6f8c4660fbca5f0670b90', '1c71cc4f-6db9-4ae4-8530-10f4c44b81ea');
-INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('177cb4d8-bca5-4eab-9588-d268568c2e8b', '2024-02-15 22:50:34.328636+00', '2024-02-15 22:50:34.328636+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '17bbf032-2e25-4b17-aa61-1d3db0a99d57', 'Orders.yml', 'cubes:
-  - name: Orders
-    sql: SELECT * FROM other.orders
-    joins: []
-    dimensions:
-      - name: id
-        sql: id
-        type: number
-        primaryKey: true
-      - name: name
-        sql: name
-        type: string
-    measures:
-      - name: count
-        type: count
-', '0f4179b4db2b5197afe5040cf5175123', '1c71cc4f-6db9-4ae4-8530-10f4c44b81ea');
-INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('683c240f-ad10-4170-b9e4-cd0f8a514567', '2024-02-15 22:50:34.328636+00', '2024-02-15 22:50:34.328636+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '17bbf032-2e25-4b17-aa61-1d3db0a99d57', 'OrdersEval.yml', 'cubes:
-  - name: OrdersEval
-    sql: SELECT * FROM public.orders_eval
-    joins:
-      - name: Users
-        sql: "{CUBE}.user_id = {Users}.id"
-        relationship: belongsTo
-    dimensions:
-      - name: id
-        sql: id
-        type: number
-        primaryKey: true
-      - name: sum
-        sql: sum
-        type: string
-      - name: status
-        sql: status
-        type: string
-      - name: createdAt
-        sql: created_at
-        type: time
-      - name: completedAt
-        sql: completed_at
-        type: time
-    measures:
-      - name: count
-        type: count
-', 'c9ef2d7f047720ed49bc502d7c02d1ea', '1c71cc4f-6db9-4ae4-8530-10f4c44b81ea');
-INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('a52c0ee4-d3df-42aa-9c65-3a53730f309e', '2024-02-15 22:50:34.328636+00', '2024-02-15 22:50:34.328636+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '17bbf032-2e25-4b17-aa61-1d3db0a99d57', 'PolyLessons.yml', 'cubes:
-  - name: PolyLessons
-    sql: SELECT * FROM public.poly_lessons
-    joins:
-      - name: Teacher
-        sql: "{CUBE}.teacher_id = {Teacher}.id"
-        relationship: belongsTo
-      - name: Student
-        sql: "{CUBE}.student_id = {Student}.id"
-        relationship: belongsTo
-    dimensions:
-      - name: id
-        sql: id
-        type: number
-        primaryKey: true
-      - name: name
-        sql: name
-        type: string
-    measures:
-      - name: count
-        type: count
-', 'd423963a68aedcfca2dbee3923f57328', '1c71cc4f-6db9-4ae4-8530-10f4c44b81ea');
-INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('629bb02d-9dcd-41e3-b34d-122a186ae03e', '2024-02-15 22:50:34.328636+00', '2024-02-15 22:50:34.328636+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '17bbf032-2e25-4b17-aa61-1d3db0a99d57', 'PolyUsers.yml', 'cubes:
-  - name: PolyUsers
-    sql: SELECT * FROM public.poly_users
-    joins: []
-    dimensions:
-      - name: id
-        sql: id
-        type: number
-        primaryKey: true
-      - name: type
-        sql: type
-        type: string
-      - name: name
-        sql: name
-        type: string
-      - name: school
-        sql: school
-        type: string
-    measures:
-      - name: count
-        type: count
-', '1f178c3186c4dda2ca9029f115c04743', '1c71cc4f-6db9-4ae4-8530-10f4c44b81ea');
-INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('2cb8254f-fe3f-47ec-9a58-327b29994bb7', '2024-02-15 22:50:34.328636+00', '2024-02-15 22:50:34.328636+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '17bbf032-2e25-4b17-aa61-1d3db0a99d57', 'ProductCategories.yml', 'cubes:
-  - name: ProductCategories
-    sql: SELECT * FROM public.product_categories
-    joins: []
-    dimensions:
-      - name: id
-        sql: id
-        type: number
-        primaryKey: true
-      - name: name
-        sql: name
-        type: string
-      - name: createdAt
-        sql: created_at
-        type: time
-    measures:
-      - name: count
-        type: count
-', '84c89b49880214ad72dd34eb4c9aa771', '1c71cc4f-6db9-4ae4-8530-10f4c44b81ea');
-INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('6673dd41-e2cb-40e2-9a60-4fc2c06276fe', '2024-02-15 22:50:34.328636+00', '2024-02-15 22:50:34.328636+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '17bbf032-2e25-4b17-aa61-1d3db0a99d57', 'Products.yml', 'cubes:
-  - name: Products
-    sql: SELECT * FROM public.products
-    joins:
-      - name: Suppliers
-        sql: "{CUBE}.supplier_id = {Suppliers}.id"
-        relationship: belongsTo
-      - name: ProductCategories
-        sql: "{CUBE}.product_category_id = {ProductCategories}.id"
-        relationship: belongsTo
-    dimensions:
-      - name: id
-        sql: id
-        type: number
-        primaryKey: true
-      - name: name
-        sql: name
-        type: string
-      - name: description
-        sql: description
-        type: string
-      - name: createdAt
-        sql: created_at
-        type: time
-    measures:
-      - name: count
-        type: count
-', 'a3f0e338c7edccf7166acdf4a62fe807', '1c71cc4f-6db9-4ae4-8530-10f4c44b81ea');
-INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('220d1dbd-db1a-46eb-b0a8-43e290302f93', '2024-02-15 22:50:34.328636+00', '2024-02-15 22:50:34.328636+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '17bbf032-2e25-4b17-aa61-1d3db0a99d57', 'Student.yml', 'cubes:
-  - name: Student
-    sql: SELECT * FROM public.student
-    joins: []
-    dimensions:
-      - name: id
-        sql: id
-        type: number
-        primaryKey: true
-      - name: name
-        sql: name
-        type: string
-    measures:
-      - name: count
-        type: count
-', '5eafe7c98f36d7e89a40ef190201fb4e', '1c71cc4f-6db9-4ae4-8530-10f4c44b81ea');
-INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('72842aab-b964-45c7-aa47-16b10ff4d884', '2024-02-15 22:50:34.328636+00', '2024-02-15 22:50:34.328636+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '17bbf032-2e25-4b17-aa61-1d3db0a99d57', 'StudentTeacher.yml', 'cubes:
-  - name: StudentTeacher
-    sql: SELECT * FROM public.student_teacher
-    joins:
-      - name: Student
-        sql: "{CUBE}.student_id = {Student}.id"
-        relationship: belongsTo
-      - name: Teacher
-        sql: "{CUBE}.teacher_id = {Teacher}.id"
-        relationship: belongsTo
-    dimensions:
-      - name: id
-        sql: id
-        type: number
-        primaryKey: true
-    measures:
-      - name: count
-        type: count
-', 'b30c612b2dd113b6996f8c7c053d4b95', '1c71cc4f-6db9-4ae4-8530-10f4c44b81ea');
-INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('2f666d37-9392-4b8b-be82-228c92ad9358', '2024-02-15 22:50:34.328636+00', '2024-02-15 22:50:34.328636+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '17bbf032-2e25-4b17-aa61-1d3db0a99d57', 'Suppliers.yml', 'cubes:
-  - name: Suppliers
-    sql: SELECT * FROM public.suppliers
-    joins: []
-    dimensions:
-      - name: id
-        sql: id
-        type: number
-        primaryKey: true
-      - name: address
-        sql: address
-        type: string
-      - name: company
-        sql: company
-        type: string
-      - name: email
-        sql: email
-        type: string
-      - name: createdAt
-        sql: created_at
-        type: time
-    measures:
-      - name: count
-        type: count
-', '26857fc670d0914751a10f13829fff28', '1c71cc4f-6db9-4ae4-8530-10f4c44b81ea');
-INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('7a587c5b-27d1-4c23-8b39-90f67c7d646d', '2024-02-15 22:50:34.328636+00', '2024-02-15 22:50:34.328636+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '17bbf032-2e25-4b17-aa61-1d3db0a99d57', 'Teacher.yml', 'cubes:
-  - name: Teacher
-    sql: SELECT * FROM public.teacher
-    joins: []
-    dimensions:
-      - name: id
-        sql: id
-        type: number
-        primaryKey: true
-      - name: name
-        sql: name
-        type: string
-    measures:
-      - name: count
-        type: count
-', '560bf0a3ad49aeaec7cb5a35965e05f9', '1c71cc4f-6db9-4ae4-8530-10f4c44b81ea');
-INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('25013bc5-0927-46b4-94c1-f5caf4123f31', '2024-02-15 22:50:34.328636+00', '2024-02-15 22:50:34.328636+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '17bbf032-2e25-4b17-aa61-1d3db0a99d57', 'Teachers.yml', 'cubes:
-  - name: Teachers
-    sql: SELECT * FROM public.teachers
-    joins: []
-    dimensions:
-      - name: id
-        sql: id
-        type: number
-        primaryKey: true
-      - name: salary
-        sql: salary
-        type: string
-      - name: firstName
-        sql: first_name
-        type: string
-      - name: lastName
-        sql: last_name
-        type: string
-      - name: school
-        sql: school
-        type: string
-      - name: hireDate
-        sql: hire_date
-        type: time
-    measures:
-      - name: count
-        type: count
-', 'ed292830b5057b97613cdb17a7416464', '1c71cc4f-6db9-4ae4-8530-10f4c44b81ea');
-INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('e76e164e-6625-4c6d-b8a8-5bd7697d2c27', '2024-02-15 22:50:34.328636+00', '2024-02-15 22:50:34.328636+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '17bbf032-2e25-4b17-aa61-1d3db0a99d57', 'TmpNewtable.yml', 'cubes:
-  - name: TmpNewtable
-    sql: SELECT * FROM public.tmp_newtable
-    joins: []
-    dimensions:
-      - name: id
-        sql: id
-        type: number
-        primaryKey: true
-      - name: address
-        sql: address
-        type: string
-      - name: name
-        sql: name
-        type: string
-      - name: email
-        sql: email
-        type: string
-      - name: phone
-        sql: phone
-        type: string
-    measures:
-      - name: count
-        type: count
-', '111353e2d946fcaf3644e0cf5770b5c2', '1c71cc4f-6db9-4ae4-8530-10f4c44b81ea');
-INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('f657ee55-1d5c-49a5-a9d4-f963afcb7f9e', '2024-02-15 22:50:34.328636+00', '2024-02-15 22:50:34.328636+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '17bbf032-2e25-4b17-aa61-1d3db0a99d57', 'Users.yml', 'cubes:
-  - name: Users
-    sql: SELECT * FROM public.users
-    joins: []
-    dimensions:
-      - name: id
-        sql: id
-        type: number
-        primaryKey: true
       - name: gender
         sql: gender
         type: string
-      - name: firstName
-        sql: first_name
-        type: string
-      - name: state
-        sql: state
-        type: string
-      - name: lastName
-        sql: last_name
-        type: string
-      - name: city
-        sql: city
-        type: string
-      - name: company
-        sql: company
-        type: string
       - name: createdAt
         sql: created_at
         type: time
     measures:
       - name: count
         type: count
-', '412df880a505c372aef064606bfb7e5a', '1c71cc4f-6db9-4ae4-8530-10f4c44b81ea');
-INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('a968d551-fe55-4199-9135-f488fd30de38', '2024-02-15 22:51:03.984451+00', '2024-02-15 22:51:03.984451+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '17bbf032-2e25-4b17-aa61-1d3db0a99d57', 'Companies.yml', 'cubes:
-  - name: Companies
-    sql: SELECT * FROM public.companies
-    joins: []
-    dimensions:
-      - name: id
-        sql: id
-        type: number
-        primaryKey: true
-      - name: email
-        sql: email
-        type: string
-      - name: name
-        sql: name
-        type: string
-      - name: phone
-        sql: phone
-        type: string
-      - name: address
-        sql: address
-        type: string
-    measures:
-      - name: count
-        type: count
-', '73d3a69114afa1dd90fb90053fc23caf', '813d5960-c531-494d-9850-5384934fefc5');
-INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('e4e5c12f-754f-441f-854d-19742218ae8e', '2024-02-15 22:51:03.984451+00', '2024-02-15 22:51:03.984451+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '17bbf032-2e25-4b17-aa61-1d3db0a99d57', 'LineItems.yml', 'cubes:
-  - name: LineItems
-    sql: SELECT * FROM public.line_items
-    joins:
-      - name: Products
-        sql: "{CUBE}.product_id = {Products}.id"
-        relationship: belongsTo
-      - name: Orders
-        sql: "{CUBE}.order_id = {Orders}.id"
-        relationship: belongsTo
-    dimensions:
-      - name: id
-        sql: id
-        type: number
-        primaryKey: true
-      - name: createdAt
-        sql: created_at
-        type: time
-    measures:
-      - name: count
-        type: count
-      - name: quantity
-        sql: quantity
-        type: sum
-      - name: price
-        sql: price
-        type: sum
-', 'b5603719550035b0cf93106e8c608902', '813d5960-c531-494d-9850-5384934fefc5');
-INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('b42ef00b-4301-463a-8a6a-4fcdf122f1a6', '2024-02-15 22:51:03.984451+00', '2024-02-15 22:51:03.984451+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '17bbf032-2e25-4b17-aa61-1d3db0a99d57', 'LineItemsCountByStates.yml', 'cubes:
-  - name: LineItemsCountByStates
-    sql: SELECT * FROM public.line_items_count_by_states
-    joins: []
-    dimensions:
-      - name: usersState
-        sql: users_state
-        type: string
-    measures:
-      - name: count
-        type: count
-      - name: lineItemsCount
-        sql: line_items_count
-        type: sum
-', '9263cb82160a4f840ff980c02213cd12', '813d5960-c531-494d-9850-5384934fefc5');
-INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('d2c1afba-b458-4c9b-8b17-3414cf85df5f', '2024-02-15 22:51:03.984451+00', '2024-02-15 22:51:03.984451+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '17bbf032-2e25-4b17-aa61-1d3db0a99d57', 'LineItemsEval.yml', 'cubes:
-  - name: LineItemsEval
-    sql: SELECT * FROM public.line_items_eval
-    joins:
-      - name: Products
-        sql: "{CUBE}.product_id = {Products}.id"
-        relationship: belongsTo
-      - name: Orders
-        sql: "{CUBE}.order_id = {Orders}.id"
-        relationship: belongsTo
-    dimensions:
-      - name: price
-        sql: price
-        type: string
-      - name: createdAt
-        sql: created_at
-        type: time
-    measures:
-      - name: count
-        type: count
-      - name: quantity
-        sql: quantity
-        type: sum
-', '8cd950fef518b17f49c7850d930c45b5', '813d5960-c531-494d-9850-5384934fefc5');
-INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('edd22d24-425c-4d3d-8a2f-2e83d84fffd7', '2024-02-15 22:51:03.984451+00', '2024-02-15 22:51:03.984451+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '17bbf032-2e25-4b17-aa61-1d3db0a99d57', 'LineItemsEval1.yml', 'cubes:
-  - name: LineItemsEval1
-    sql: SELECT * FROM public.line_items_eval_1
-    joins:
-      - name: Products
-        sql: "{CUBE}.product_id = {Products}.id"
-        relationship: belongsTo
-      - name: Orders
-        sql: "{CUBE}.order_id = {Orders}.id"
-        relationship: belongsTo
-    dimensions:
-      - name: id
-        sql: id
-        type: number
-        primary_key: true
-      - name: price
-        sql: price
-        type: string
-      - name: createdAt
-        sql: created_at
-        type: time
-    measures:
-      - name: count
-        type: count
-      - name: quantity
-        sql: quantity
-        type: sum
-', '7efd6a8e29ef939010cb3004782f5b66', '813d5960-c531-494d-9850-5384934fefc5');
-INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('e31ace83-1ed2-4cfd-a22d-76d0f9f9a8d9', '2024-02-15 22:51:03.984451+00', '2024-02-15 22:51:03.984451+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '17bbf032-2e25-4b17-aa61-1d3db0a99d57', 'LineItemsEval2.yml', 'cubes:
-  - name: LineItemsEval2
-    sql: SELECT * FROM public.line_items_eval_2
-    joins:
-      - name: Products
-        sql: "{CUBE}.product_id = {Products}.id"
-        relationship: belongsTo
-      - name: Orders
-        sql: "{CUBE}.order_id = {Orders}.id"
-        relationship: belongsTo
-    dimensions:
-      - name: price
-        sql: price
-        type: string
-      - name: createdAt
-        sql: created_at
-        type: time
-    measures:
-      - name: count
-        type: count
-      - name: quantity
-        sql: quantity
-        type: sum
-', 'b82d9ce2bde6f8c4660fbca5f0670b90', '813d5960-c531-494d-9850-5384934fefc5');
-INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('27872538-1ed0-4085-ac32-9daa0532623e', '2024-02-15 22:51:03.984451+00', '2024-02-15 22:51:03.984451+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '17bbf032-2e25-4b17-aa61-1d3db0a99d57', 'Orders.yml', 'cubes:
-  - name: Orders
-    sql: SELECT * FROM other.orders
-    joins: []
-    dimensions:
-      - name: id
-        sql: id
-        type: number
-        primaryKey: true
-      - name: name
-        sql: name
-        type: string
-    measures:
-      - name: count
-        type: count
-', '0f4179b4db2b5197afe5040cf5175123', '813d5960-c531-494d-9850-5384934fefc5');
-INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('e3228d8d-aa15-4efb-84b6-8fc6255d2931', '2024-02-15 22:51:03.984451+00', '2024-02-15 22:51:03.984451+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '17bbf032-2e25-4b17-aa61-1d3db0a99d57', 'OrdersEval.yml', 'cubes:
-  - name: OrdersEval
-    sql: SELECT * FROM public.orders_eval
-    joins:
-      - name: Users
-        sql: "{CUBE}.user_id = {Users}.id"
-        relationship: belongsTo
-    dimensions:
-      - name: id
-        sql: id
-        type: number
-        primaryKey: true
-      - name: sum
-        sql: sum
-        type: string
-      - name: status
-        sql: status
-        type: string
-      - name: createdAt
-        sql: created_at
-        type: time
-      - name: completedAt
-        sql: completed_at
-        type: time
-    measures:
-      - name: count
-        type: count
-', 'c9ef2d7f047720ed49bc502d7c02d1ea', '813d5960-c531-494d-9850-5384934fefc5');
-INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('5d551623-3bcf-4211-8c82-af26472c11d7', '2024-02-15 22:51:03.984451+00', '2024-02-15 22:51:03.984451+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '17bbf032-2e25-4b17-aa61-1d3db0a99d57', 'PolyLessons.yml', 'cubes:
-  - name: PolyLessons
-    sql: SELECT * FROM public.poly_lessons
-    joins:
-      - name: Teacher
-        sql: "{CUBE}.teacher_id = {Teacher}.id"
-        relationship: belongsTo
-      - name: Student
-        sql: "{CUBE}.student_id = {Student}.id"
-        relationship: belongsTo
-    dimensions:
-      - name: id
-        sql: id
-        type: number
-        primaryKey: true
-      - name: name
-        sql: name
-        type: string
-    measures:
-      - name: count
-        type: count
-', 'd423963a68aedcfca2dbee3923f57328', '813d5960-c531-494d-9850-5384934fefc5');
-INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('83eac130-1f57-4669-815f-d78f106989a0', '2024-02-15 22:51:03.984451+00', '2024-02-15 22:51:03.984451+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '17bbf032-2e25-4b17-aa61-1d3db0a99d57', 'PolyUsers.yml', 'cubes:
-  - name: PolyUsers
-    sql: SELECT * FROM public.poly_users
-    joins: []
-    dimensions:
-      - name: id
-        sql: id
-        type: number
-        primaryKey: true
-      - name: type
-        sql: type
-        type: string
-      - name: name
-        sql: name
-        type: string
-      - name: school
-        sql: school
-        type: string
-    measures:
-      - name: count
-        type: count
-', '1f178c3186c4dda2ca9029f115c04743', '813d5960-c531-494d-9850-5384934fefc5');
-INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('eed204ca-4969-4948-bb6c-e6c0932d1249', '2024-02-15 22:51:03.984451+00', '2024-02-15 22:51:03.984451+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '17bbf032-2e25-4b17-aa61-1d3db0a99d57', 'ProductCategories.yml', 'cubes:
-  - name: ProductCategories
-    sql: SELECT * FROM public.product_categories
-    joins: []
-    dimensions:
-      - name: id
-        sql: id
-        type: number
-        primaryKey: true
-      - name: name
-        sql: name
-        type: string
-      - name: createdAt
-        sql: created_at
-        type: time
-    measures:
-      - name: count
-        type: count
-', '84c89b49880214ad72dd34eb4c9aa771', '813d5960-c531-494d-9850-5384934fefc5');
-INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('33411e81-9b70-49d4-953e-c3bf2bbbdcb2', '2024-02-15 22:51:03.984451+00', '2024-02-15 22:51:03.984451+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '17bbf032-2e25-4b17-aa61-1d3db0a99d57', 'Products.yml', 'cubes:
-  - name: Products
-    sql: SELECT * FROM public.products
-    joins:
-      - name: Suppliers
-        sql: "{CUBE}.supplier_id = {Suppliers}.id"
-        relationship: belongsTo
-      - name: ProductCategories
-        sql: "{CUBE}.product_category_id = {ProductCategories}.id"
-        relationship: belongsTo
-    dimensions:
-      - name: id
-        sql: id
-        type: number
-        primaryKey: true
-      - name: name
-        sql: name
-        type: string
-      - name: description
-        sql: description
-        type: string
-      - name: createdAt
-        sql: created_at
-        type: time
-    measures:
-      - name: count
-        type: count
-', 'a3f0e338c7edccf7166acdf4a62fe807', '813d5960-c531-494d-9850-5384934fefc5');
-INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('dec8648b-f84a-4d87-a6f1-894df5a9af1a', '2024-02-15 22:51:03.984451+00', '2024-02-15 22:51:03.984451+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '17bbf032-2e25-4b17-aa61-1d3db0a99d57', 'Student.yml', 'cubes:
-  - name: Student
-    sql: SELECT * FROM public.student
-    joins: []
-    dimensions:
-      - name: id
-        sql: id
-        type: number
-        primaryKey: true
-      - name: name
-        sql: name
-        type: string
-    measures:
-      - name: count
-        type: count
-', '5eafe7c98f36d7e89a40ef190201fb4e', '813d5960-c531-494d-9850-5384934fefc5');
-INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('10b62d00-da8b-4ea2-ad4c-7427fd916699', '2024-02-15 22:51:03.984451+00', '2024-02-15 22:51:03.984451+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '17bbf032-2e25-4b17-aa61-1d3db0a99d57', 'StudentTeacher.yml', 'cubes:
-  - name: StudentTeacher
-    sql: SELECT * FROM public.student_teacher
-    joins:
-      - name: Student
-        sql: "{CUBE}.student_id = {Student}.id"
-        relationship: belongsTo
-      - name: Teacher
-        sql: "{CUBE}.teacher_id = {Teacher}.id"
-        relationship: belongsTo
-    dimensions:
-      - name: id
-        sql: id
-        type: number
-        primaryKey: true
-    measures:
-      - name: count
-        type: count
-', 'b30c612b2dd113b6996f8c7c053d4b95', '813d5960-c531-494d-9850-5384934fefc5');
-INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('d8290c6d-ad9c-4fb4-ace4-752aa786dbcb', '2024-02-15 22:51:03.984451+00', '2024-02-15 22:51:03.984451+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '17bbf032-2e25-4b17-aa61-1d3db0a99d57', 'Suppliers.yml', 'cubes:
-  - name: Suppliers
-    sql: SELECT * FROM public.suppliers
-    joins: []
-    dimensions:
-      - name: id
-        sql: id
-        type: number
-        primaryKey: true
-      - name: address
-        sql: address
-        type: string
-      - name: company
-        sql: company
-        type: string
-      - name: email
-        sql: email
-        type: string
-      - name: createdAt
-        sql: created_at
-        type: time
-    measures:
-      - name: count
-        type: count
-', '26857fc670d0914751a10f13829fff28', '813d5960-c531-494d-9850-5384934fefc5');
-INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('26b924ef-c128-4b86-912e-011e1d80bb30', '2024-02-15 22:51:03.984451+00', '2024-02-15 22:51:03.984451+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '17bbf032-2e25-4b17-aa61-1d3db0a99d57', 'Teacher.yml', 'cubes:
-  - name: Teacher
-    sql: SELECT * FROM public.teacher
-    joins: []
-    dimensions:
-      - name: id
-        sql: id
-        type: number
-        primaryKey: true
-      - name: name
-        sql: name
-        type: string
-    measures:
-      - name: count
-        type: count
-', '560bf0a3ad49aeaec7cb5a35965e05f9', '813d5960-c531-494d-9850-5384934fefc5');
-INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('51d9a0a0-9aaf-4e5f-acd5-ec3e7724fdd7', '2024-02-15 22:51:03.984451+00', '2024-02-15 22:51:03.984451+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '17bbf032-2e25-4b17-aa61-1d3db0a99d57', 'Teachers.yml', 'cubes:
-  - name: Teachers
-    sql: SELECT * FROM public.teachers
-    joins: []
-    dimensions:
-      - name: id
-        sql: id
-        type: number
-        primaryKey: true
-      - name: salary
-        sql: salary
-        type: string
-      - name: firstName
-        sql: first_name
-        type: string
-      - name: lastName
-        sql: last_name
-        type: string
-      - name: school
-        sql: school
-        type: string
-      - name: hireDate
-        sql: hire_date
-        type: time
-    measures:
-      - name: count
-        type: count
-', 'ed292830b5057b97613cdb17a7416464', '813d5960-c531-494d-9850-5384934fefc5');
-INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('80c5abf3-3f5f-44dc-a74c-cdb0f499e700', '2024-02-15 22:51:03.984451+00', '2024-02-15 22:51:03.984451+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '17bbf032-2e25-4b17-aa61-1d3db0a99d57', 'TmpNewtable.yml', 'cubes:
-  - name: TmpNewtable
-    sql: SELECT * FROM public.tmp_newtable
-    joins: []
-    dimensions:
-      - name: id
-        sql: id
-        type: number
-        primaryKey: true
-      - name: address
-        sql: address
-        type: string
-      - name: name
-        sql: name
-        type: string
-      - name: email
-        sql: email
-        type: string
-      - name: phone
-        sql: phone
-        type: string
-    measures:
-      - name: count
-        type: count
-', '111353e2d946fcaf3644e0cf5770b5c2', '813d5960-c531-494d-9850-5384934fefc5');
-INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('6fb2a795-54b8-4beb-8808-b2adfc16f78f', '2024-02-15 22:51:03.984451+00', '2024-02-15 22:51:03.984451+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '17bbf032-2e25-4b17-aa61-1d3db0a99d57', 'Users.yml', 'cubes:
-  - name: Users
-    sql: SELECT * FROM public.users
-    joins: []
-    dimensions:
-      - name: id
-        sql: id
-        type: number
-        primaryKey: true
-      - name: gender
-        sql: gender
-        type: string
-      - name: firstName
-        sql: first_name
-        type: string
-      - name: state
-        sql: state
-        type: string
-      - name: lastName
-        sql: last_name
-        type: string
-      - name: city
-        sql: city
-        type: string
-      - name: company
-        sql: company
-        type: string
-      - name: createdAt
-        sql: created_at
-        type: time
-    measures:
-      - name: count
-        type: count
-', '412df880a505c372aef064606bfb7e5a', '813d5960-c531-494d-9850-5384934fefc5');
-INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('b113ab1e-e203-43dc-83e9-6566eb618c3f', '2024-02-15 22:51:14.766779+00', '2024-02-15 22:51:14.766779+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '17bbf032-2e25-4b17-aa61-1d3db0a99d57', 'Companies.yml', 'cubes:
-  - name: Companies
-    sql: SELECT * FROM public.companies
-    joins: []
-    dimensions:
-      - name: id
-        sql: id
-        type: number
-        primaryKey: true
-      - name: email
-        sql: email
-        type: string
-      - name: name
-        sql: name
-        type: string
-      - name: phone
-        sql: phone
-        type: string
-      - name: address
-        sql: address
-        type: string
-    measures:
-      - name: count
-        type: count
-', '73d3a69114afa1dd90fb90053fc23caf', '89bdb46a-53d1-4a98-b49d-0175bc9105a0');
-INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('7d082b21-7d5a-495f-a29f-2e11adc503a4', '2024-02-15 22:51:14.766779+00', '2024-02-15 22:51:14.766779+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '17bbf032-2e25-4b17-aa61-1d3db0a99d57', 'LineItems.yml', 'cubes:
-  - name: LineItems
-    sql: SELECT * FROM public.line_items
-    joins:
-      - name: Products
-        sql: "{CUBE}.product_id = {Products}.id"
-        relationship: belongsTo
-      - name: Orders
-        sql: "{CUBE}.order_id = {Orders}.id"
-        relationship: belongsTo
-    dimensions:
-      - name: id
-        sql: id
-        type: number
-        primaryKey: true
-      - name: createdAt
-        sql: created_at
-        type: time
-    measures:
-      - name: count
-        type: count
-      - name: quantity
-        sql: quantity
-        type: sum
-      - name: price
-        sql: price
-        type: sum
-', 'b5603719550035b0cf93106e8c608902', '89bdb46a-53d1-4a98-b49d-0175bc9105a0');
-INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('2e205635-7eb0-4a94-8df1-077fb358fdc6', '2024-02-15 22:51:14.766779+00', '2024-02-15 22:51:14.766779+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '17bbf032-2e25-4b17-aa61-1d3db0a99d57', 'LineItemsCountByStates.yml', 'cubes:
-  - name: LineItemsCountByStates
-    sql: SELECT * FROM public.line_items_count_by_states
-    joins: []
-    dimensions:
-      - name: usersState
-        sql: users_state
-        type: string
-    measures:
-      - name: count
-        type: count
-      - name: lineItemsCount
-        sql: line_items_count
-        type: sum
-', '9263cb82160a4f840ff980c02213cd12', '89bdb46a-53d1-4a98-b49d-0175bc9105a0');
-INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('ef167149-e2ad-412e-b15d-3ff02af2c962', '2024-02-15 22:51:14.766779+00', '2024-02-15 22:51:14.766779+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '17bbf032-2e25-4b17-aa61-1d3db0a99d57', 'LineItemsEval.yml', 'cubes:
-  - name: LineItemsEval
-    sql: SELECT * FROM public.line_items_eval
-    joins:
-      - name: Products
-        sql: "{CUBE}.product_id = {Products}.id"
-        relationship: belongsTo
-      - name: Orders
-        sql: "{CUBE}.order_id = {Orders}.id"
-        relationship: belongsTo
-    dimensions:
-      - name: price
-        sql: price
-        type: string
-      - name: createdAt
-        sql: created_at
-        type: time
-    measures:
-      - name: count
-        type: count
-      - name: quantity
-        sql: quantity
-        type: sum
-', '8cd950fef518b17f49c7850d930c45b5', '89bdb46a-53d1-4a98-b49d-0175bc9105a0');
-INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('ee5ab3ee-6042-492f-a53c-f609ae247ecc', '2024-02-15 22:51:14.766779+00', '2024-02-15 22:51:14.766779+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '17bbf032-2e25-4b17-aa61-1d3db0a99d57', 'LineItemsEval1.yml', 'cubes:
-  - name: LineItemsEval1
-    sql: SELECT * FROM public.line_items_eval_1
-    joins:
-      - name: Products
-        sql: "{CUBE}.product_id = {Products}.id"
-        relationship: belongsTo
-      - name: Orders
-        sql: "{CUBE}.order_id = {Orders}.id"
-        relationship: belongsTo
-    dimensions:
-      - name: id
-        sql: id
-        type: number
-        primaryKey: true
-      - name: price
-        sql: price
-        type: string
-      - name: createdAt
-        sql: created_at
-        type: time
-    measures:
-      - name: count
-        type: count
-      - name: quantity
-        sql: quantity
-        type: sum
-', 'fb89e818c1c418c3896321020ee30bcb', '89bdb46a-53d1-4a98-b49d-0175bc9105a0');
-INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('a737f5d9-b9cf-420a-b2e2-a20fd25a729b', '2024-02-15 22:51:14.766779+00', '2024-02-15 22:51:14.766779+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '17bbf032-2e25-4b17-aa61-1d3db0a99d57', 'LineItemsEval2.yml', 'cubes:
-  - name: LineItemsEval2
-    sql: SELECT * FROM public.line_items_eval_2
-    joins:
-      - name: Products
-        sql: "{CUBE}.product_id = {Products}.id"
-        relationship: belongsTo
-      - name: Orders
-        sql: "{CUBE}.order_id = {Orders}.id"
-        relationship: belongsTo
-    dimensions:
-      - name: price
-        sql: price
-        type: string
-      - name: createdAt
-        sql: created_at
-        type: time
-    measures:
-      - name: count
-        type: count
-      - name: quantity
-        sql: quantity
-        type: sum
-', 'b82d9ce2bde6f8c4660fbca5f0670b90', '89bdb46a-53d1-4a98-b49d-0175bc9105a0');
-INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('96d17118-2571-4fea-9b14-8527f1ed1cdd', '2024-02-15 22:51:14.766779+00', '2024-02-15 22:51:14.766779+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '17bbf032-2e25-4b17-aa61-1d3db0a99d57', 'Orders.yml', 'cubes:
-  - name: Orders
-    sql: SELECT * FROM other.orders
-    joins: []
-    dimensions:
-      - name: id
-        sql: id
-        type: number
-        primaryKey: true
-      - name: name
-        sql: name
-        type: string
-    measures:
-      - name: count
-        type: count
-', '0f4179b4db2b5197afe5040cf5175123', '89bdb46a-53d1-4a98-b49d-0175bc9105a0');
-INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('4465d4b6-43fd-4717-8ca4-4e8bf4ac7881', '2024-02-15 22:51:14.766779+00', '2024-02-15 22:51:14.766779+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '17bbf032-2e25-4b17-aa61-1d3db0a99d57', 'OrdersEval.yml', 'cubes:
-  - name: OrdersEval
-    sql: SELECT * FROM public.orders_eval
-    joins:
-      - name: Users
-        sql: "{CUBE}.user_id = {Users}.id"
-        relationship: belongsTo
-    dimensions:
-      - name: id
-        sql: id
-        type: number
-        primaryKey: true
-      - name: sum
-        sql: sum
-        type: string
-      - name: status
-        sql: status
-        type: string
-      - name: createdAt
-        sql: created_at
-        type: time
-      - name: completedAt
-        sql: completed_at
-        type: time
-    measures:
-      - name: count
-        type: count
-', 'c9ef2d7f047720ed49bc502d7c02d1ea', '89bdb46a-53d1-4a98-b49d-0175bc9105a0');
-INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('153e9c56-75b3-4e89-8490-c4eb4885565c', '2024-02-15 22:51:14.766779+00', '2024-02-15 22:51:14.766779+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '17bbf032-2e25-4b17-aa61-1d3db0a99d57', 'PolyLessons.yml', 'cubes:
-  - name: PolyLessons
-    sql: SELECT * FROM public.poly_lessons
-    joins:
-      - name: Teacher
-        sql: "{CUBE}.teacher_id = {Teacher}.id"
-        relationship: belongsTo
-      - name: Student
-        sql: "{CUBE}.student_id = {Student}.id"
-        relationship: belongsTo
-    dimensions:
-      - name: id
-        sql: id
-        type: number
-        primaryKey: true
-      - name: name
-        sql: name
-        type: string
-    measures:
-      - name: count
-        type: count
-', 'd423963a68aedcfca2dbee3923f57328', '89bdb46a-53d1-4a98-b49d-0175bc9105a0');
-INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('e8fae49c-eb5d-4d1c-bea6-8ca266ad2b31', '2024-02-15 22:51:14.766779+00', '2024-02-15 22:51:14.766779+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '17bbf032-2e25-4b17-aa61-1d3db0a99d57', 'PolyUsers.yml', 'cubes:
-  - name: PolyUsers
-    sql: SELECT * FROM public.poly_users
-    joins: []
-    dimensions:
-      - name: id
-        sql: id
-        type: number
-        primaryKey: true
-      - name: type
-        sql: type
-        type: string
-      - name: name
-        sql: name
-        type: string
-      - name: school
-        sql: school
-        type: string
-    measures:
-      - name: count
-        type: count
-', '1f178c3186c4dda2ca9029f115c04743', '89bdb46a-53d1-4a98-b49d-0175bc9105a0');
-INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('7a784e48-3c65-4c1c-9455-ee39b861afa6', '2024-02-15 22:51:14.766779+00', '2024-02-15 22:51:14.766779+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '17bbf032-2e25-4b17-aa61-1d3db0a99d57', 'ProductCategories.yml', 'cubes:
-  - name: ProductCategories
-    sql: SELECT * FROM public.product_categories
-    joins: []
-    dimensions:
-      - name: id
-        sql: id
-        type: number
-        primaryKey: true
-      - name: name
-        sql: name
-        type: string
-      - name: createdAt
-        sql: created_at
-        type: time
-    measures:
-      - name: count
-        type: count
-', '84c89b49880214ad72dd34eb4c9aa771', '89bdb46a-53d1-4a98-b49d-0175bc9105a0');
-INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('faa0056f-7967-459c-ae69-d3bc16921c48', '2024-02-15 22:51:14.766779+00', '2024-02-15 22:51:14.766779+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '17bbf032-2e25-4b17-aa61-1d3db0a99d57', 'Products.yml', 'cubes:
-  - name: Products
-    sql: SELECT * FROM public.products
-    joins:
-      - name: Suppliers
-        sql: "{CUBE}.supplier_id = {Suppliers}.id"
-        relationship: belongsTo
-      - name: ProductCategories
-        sql: "{CUBE}.product_category_id = {ProductCategories}.id"
-        relationship: belongsTo
-    dimensions:
-      - name: id
-        sql: id
-        type: number
-        primaryKey: true
-      - name: name
-        sql: name
-        type: string
-      - name: description
-        sql: description
-        type: string
-      - name: createdAt
-        sql: created_at
-        type: time
-    measures:
-      - name: count
-        type: count
-', 'a3f0e338c7edccf7166acdf4a62fe807', '89bdb46a-53d1-4a98-b49d-0175bc9105a0');
-INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('52abe108-0dda-4016-8d93-1edc5a9a9db9', '2024-02-15 22:51:14.766779+00', '2024-02-15 22:51:14.766779+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '17bbf032-2e25-4b17-aa61-1d3db0a99d57', 'Student.yml', 'cubes:
-  - name: Student
-    sql: SELECT * FROM public.student
-    joins: []
-    dimensions:
-      - name: id
-        sql: id
-        type: number
-        primaryKey: true
-      - name: name
-        sql: name
-        type: string
-    measures:
-      - name: count
-        type: count
-', '5eafe7c98f36d7e89a40ef190201fb4e', '89bdb46a-53d1-4a98-b49d-0175bc9105a0');
-INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('4feb11f8-7fe7-4a5d-ba59-315b24cdd68e', '2024-02-15 22:51:14.766779+00', '2024-02-15 22:51:14.766779+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '17bbf032-2e25-4b17-aa61-1d3db0a99d57', 'StudentTeacher.yml', 'cubes:
-  - name: StudentTeacher
-    sql: SELECT * FROM public.student_teacher
-    joins:
-      - name: Student
-        sql: "{CUBE}.student_id = {Student}.id"
-        relationship: belongsTo
-      - name: Teacher
-        sql: "{CUBE}.teacher_id = {Teacher}.id"
-        relationship: belongsTo
-    dimensions:
-      - name: id
-        sql: id
-        type: number
-        primaryKey: true
-    measures:
-      - name: count
-        type: count
-', 'b30c612b2dd113b6996f8c7c053d4b95', '89bdb46a-53d1-4a98-b49d-0175bc9105a0');
-INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('b9089895-4c0c-4a76-ab90-5b97eb798106', '2024-02-15 22:51:14.766779+00', '2024-02-15 22:51:14.766779+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '17bbf032-2e25-4b17-aa61-1d3db0a99d57', 'Suppliers.yml', 'cubes:
-  - name: Suppliers
-    sql: SELECT * FROM public.suppliers
-    joins: []
-    dimensions:
-      - name: id
-        sql: id
-        type: number
-        primaryKey: true
-      - name: address
-        sql: address
-        type: string
-      - name: company
-        sql: company
-        type: string
-      - name: email
-        sql: email
-        type: string
-      - name: createdAt
-        sql: created_at
-        type: time
-    measures:
-      - name: count
-        type: count
-', '26857fc670d0914751a10f13829fff28', '89bdb46a-53d1-4a98-b49d-0175bc9105a0');
-INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('891e54e0-49b8-4df9-aefb-204ea6ddd6fe', '2024-02-15 22:51:14.766779+00', '2024-02-15 22:51:14.766779+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '17bbf032-2e25-4b17-aa61-1d3db0a99d57', 'Teacher.yml', 'cubes:
-  - name: Teacher
-    sql: SELECT * FROM public.teacher
-    joins: []
-    dimensions:
-      - name: id
-        sql: id
-        type: number
-        primaryKey: true
-      - name: name
-        sql: name
-        type: string
-    measures:
-      - name: count
-        type: count
-', '560bf0a3ad49aeaec7cb5a35965e05f9', '89bdb46a-53d1-4a98-b49d-0175bc9105a0');
-INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('0fd68e44-7700-40f3-87bf-9bf87d1e94c3', '2024-02-15 22:51:14.766779+00', '2024-02-15 22:51:14.766779+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '17bbf032-2e25-4b17-aa61-1d3db0a99d57', 'Teachers.yml', 'cubes:
-  - name: Teachers
-    sql: SELECT * FROM public.teachers
-    joins: []
-    dimensions:
-      - name: id
-        sql: id
-        type: number
-        primaryKey: true
-      - name: salary
-        sql: salary
-        type: string
-      - name: firstName
-        sql: first_name
-        type: string
-      - name: lastName
-        sql: last_name
-        type: string
-      - name: school
-        sql: school
-        type: string
-      - name: hireDate
-        sql: hire_date
-        type: time
-    measures:
-      - name: count
-        type: count
-', 'ed292830b5057b97613cdb17a7416464', '89bdb46a-53d1-4a98-b49d-0175bc9105a0');
-INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('e0645801-3cbd-4d8f-9d4f-e6016bf9acdf', '2024-02-15 22:51:14.766779+00', '2024-02-15 22:51:14.766779+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '17bbf032-2e25-4b17-aa61-1d3db0a99d57', 'TmpNewtable.yml', 'cubes:
-  - name: TmpNewtable
-    sql: SELECT * FROM public.tmp_newtable
-    joins: []
-    dimensions:
-      - name: id
-        sql: id
-        type: number
-        primaryKey: true
-      - name: address
-        sql: address
-        type: string
-      - name: name
-        sql: name
-        type: string
-      - name: email
-        sql: email
-        type: string
-      - name: phone
-        sql: phone
-        type: string
-    measures:
-      - name: count
-        type: count
-', '111353e2d946fcaf3644e0cf5770b5c2', '89bdb46a-53d1-4a98-b49d-0175bc9105a0');
-INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('8b030c83-6789-49cb-b801-4c189f8e17d3', '2024-02-15 22:51:14.766779+00', '2024-02-15 22:51:14.766779+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '17bbf032-2e25-4b17-aa61-1d3db0a99d57', 'Users.yml', 'cubes:
-  - name: Users
-    sql: SELECT * FROM public.users
-    joins: []
-    dimensions:
-      - name: id
-        sql: id
-        type: number
-        primaryKey: true
-      - name: gender
-        sql: gender
-        type: string
-      - name: firstName
-        sql: first_name
-        type: string
-      - name: state
-        sql: state
-        type: string
-      - name: lastName
-        sql: last_name
-        type: string
-      - name: city
-        sql: city
-        type: string
-      - name: company
-        sql: company
-        type: string
-      - name: createdAt
-        sql: created_at
-        type: time
-    measures:
-      - name: count
-        type: count
-', '412df880a505c372aef064606bfb7e5a', '89bdb46a-53d1-4a98-b49d-0175bc9105a0');
-INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('e46e9abe-4dd5-45cb-a462-416b1863d3ba', '2024-02-15 22:53:53.656866+00', '2024-02-15 22:53:53.656866+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '17bbf032-2e25-4b17-aa61-1d3db0a99d57', 'Companies.yml', 'cubes:
-  - name: Companies
-    sql: SELECT * FROM public.companies
-    joins: []
-    dimensions:
-      - name: id
-        sql: id
-        type: number
-        primaryKey: true
-      - name: email
-        sql: email
-        type: string
-      - name: name
-        sql: name
-        type: string
-      - name: phone
-        sql: phone
-        type: string
-      - name: address
-        sql: address
-        type: string
-    measures:
-      - name: count
-        type: count
-', '73d3a69114afa1dd90fb90053fc23caf', '76e900ad-a007-440a-8dd6-4cf8952e45a4');
-INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('551e4c8d-359f-4334-834c-a309f8bbd7ff', '2024-02-15 22:53:53.656866+00', '2024-02-15 22:53:53.656866+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '17bbf032-2e25-4b17-aa61-1d3db0a99d57', 'LineItems.yml', 'cubes:
-  - name: LineItems
-    sql: SELECT * FROM public.line_items
-    joins:
-      - name: Products
-        sql: "{CUBE}.product_id = {Products}.id"
-        relationship: belongsTo
-      - name: Orders
-        sql: "{CUBE}.order_id = {Orders}.id"
-        relationship: belongsTo
-    dimensions:
-      - name: id
-        sql: id
-        type: number
-        primaryKey: true
-      - name: createdAt
-        sql: created_at
-        type: time
-    measures:
-      - name: count
-        type: count
-      - name: quantity
-        sql: quantity
-        type: sum
-      - name: price
-        sql: price
-        type: sum
-', 'b5603719550035b0cf93106e8c608902', '76e900ad-a007-440a-8dd6-4cf8952e45a4');
-INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('2cc88b87-cef4-4e6f-85a9-cec7a3e00c79', '2024-02-15 22:53:53.656866+00', '2024-02-15 22:53:53.656866+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '17bbf032-2e25-4b17-aa61-1d3db0a99d57', 'LineItemsCountByStates.yml', 'cubes:
-  - name: LineItemsCountByStates
-    sql: SELECT * FROM public.line_items_count_by_states
-    joins: []
-    dimensions:
-      - name: usersState
-        sql: users_state
-        type: string
-    measures:
-      - name: count
-        type: count
-      - name: lineItemsCount
-        sql: line_items_count
-        type: sum
-', '9263cb82160a4f840ff980c02213cd12', '76e900ad-a007-440a-8dd6-4cf8952e45a4');
-INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('8cab4b55-705a-4fd6-9666-724f2dc9918b', '2024-02-15 22:53:53.656866+00', '2024-02-15 22:53:53.656866+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '17bbf032-2e25-4b17-aa61-1d3db0a99d57', 'LineItemsEval.yml', 'cubes:
-  - name: LineItemsEval
-    sql: SELECT * FROM public.line_items_eval
-    joins:
-      - name: Products
-        sql: "{CUBE}.product_id = {Products}.id"
-        relationship: belongsTo
-      - name: Orders
-        sql: "{CUBE}.order_id = {Orders}.id"
-        relationship: belongsTo
-    dimensions:
-      - name: price
-        sql: price
-        type: string
-      - name: createdAt
-        sql: created_at
-        type: time
-    measures:
-      - name: count
-        type: count
-      - name: quantity
-        sql: quantity
-        type: sum
-', '8cd950fef518b17f49c7850d930c45b5', '76e900ad-a007-440a-8dd6-4cf8952e45a4');
-INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('0128cfef-51e6-48a4-901c-d4c4fcd4aaba', '2024-02-15 22:53:53.656866+00', '2024-02-15 22:53:53.656866+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '17bbf032-2e25-4b17-aa61-1d3db0a99d57', 'LineItemsEval1.yml', 'cubes:
-  - name: LineItemsEval1
-    sql: SELECT * FROM public.line_items_eval_1
-    joins:
-      - name: Products
-        sql: "{CUBE}.product_id = {Products}.id"
-        relationship: belongsTo
-      - name: Orders
-        sql: "{CUBE}.order_id = {Orders}.id"
-        relationship: belongsTo
-    dimensions:
-      - name: id
-        sql: id
-        type: number
-        primaryKey: true
-      - name: price
-        sql: price
-        type: string
-      - name: createdAt
-        sql: created_at
-        type: time
-    measures:
-      - name: count
-        type: count
-      - name: quantity
-        sql: quantity
-        type: sum
-', 'fb89e818c1c418c3896321020ee30bcb', '76e900ad-a007-440a-8dd6-4cf8952e45a4');
-INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('a3b36929-b390-45dd-9143-f8b8dddf2fa3', '2024-02-15 22:53:53.656866+00', '2024-02-15 22:53:53.656866+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '17bbf032-2e25-4b17-aa61-1d3db0a99d57', 'LineItemsEval2.yml', 'cubes:
-  - name: LineItemsEval2
-    sql: SELECT * FROM public.line_items_eval_2
-    joins:
-      - name: Products
-        sql: "{CUBE}.product_id = {Products}.id"
-        relationship: belongsTo
-      - name: Orders
-        sql: "{CUBE}.order_id = {Orders}.id"
-        relationship: belongsTo
-    dimensions:
-      - name: price
-        sql: price
-        type: string
-      - name: orderId
-        sql: order_id
-        type: string
-        primaryKey: true
-      - name: createdAt
-        sql: created_at
-        type: time
-    measures:
-      - name: count
-        type: count
-      - name: quantity
-        sql: quantity
-        type: sum
-', '4f94844a31cb9d28c819c04a5f437336', '76e900ad-a007-440a-8dd6-4cf8952e45a4');
-INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('41f89aef-cbc1-44a9-a5b5-c1bd88be4300', '2024-02-15 22:53:53.656866+00', '2024-02-15 22:53:53.656866+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '17bbf032-2e25-4b17-aa61-1d3db0a99d57', 'Orders.yml', 'cubes:
-  - name: Orders
-    sql: SELECT * FROM other.orders
-    joins: []
-    dimensions:
-      - name: id
-        sql: id
-        type: number
-        primaryKey: true
-      - name: name
-        sql: name
-        type: string
-    measures:
-      - name: count
-        type: count
-', '0f4179b4db2b5197afe5040cf5175123', '76e900ad-a007-440a-8dd6-4cf8952e45a4');
-INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('199c3b97-0120-45dd-b1fe-5a3fe3b139ef', '2024-02-15 22:53:53.656866+00', '2024-02-15 22:53:53.656866+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '17bbf032-2e25-4b17-aa61-1d3db0a99d57', 'OrdersEval.yml', 'cubes:
-  - name: OrdersEval
-    sql: SELECT * FROM public.orders_eval
-    joins:
-      - name: Users
-        sql: "{CUBE}.user_id = {Users}.id"
-        relationship: belongsTo
-    dimensions:
-      - name: id
-        sql: id
-        type: number
-        primaryKey: true
-      - name: sum
-        sql: sum
-        type: string
-      - name: status
-        sql: status
-        type: string
-      - name: createdAt
-        sql: created_at
-        type: time
-      - name: completedAt
-        sql: completed_at
-        type: time
-    measures:
-      - name: count
-        type: count
-', 'c9ef2d7f047720ed49bc502d7c02d1ea', '76e900ad-a007-440a-8dd6-4cf8952e45a4');
-INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('bba09a97-43c8-4a58-ae98-9b493a7e62c0', '2024-02-15 22:53:53.656866+00', '2024-02-15 22:53:53.656866+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '17bbf032-2e25-4b17-aa61-1d3db0a99d57', 'PolyLessons.yml', 'cubes:
-  - name: PolyLessons
-    sql: SELECT * FROM public.poly_lessons
-    joins:
-      - name: Teacher
-        sql: "{CUBE}.teacher_id = {Teacher}.id"
-        relationship: belongsTo
-      - name: Student
-        sql: "{CUBE}.student_id = {Student}.id"
-        relationship: belongsTo
-    dimensions:
-      - name: id
-        sql: id
-        type: number
-        primaryKey: true
-      - name: name
-        sql: name
-        type: string
-    measures:
-      - name: count
-        type: count
-', 'd423963a68aedcfca2dbee3923f57328', '76e900ad-a007-440a-8dd6-4cf8952e45a4');
-INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('7e96a5c3-df9d-4e43-b16f-b070da39699c', '2024-02-15 22:53:53.656866+00', '2024-02-15 22:53:53.656866+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '17bbf032-2e25-4b17-aa61-1d3db0a99d57', 'PolyUsers.yml', 'cubes:
-  - name: PolyUsers
-    sql: SELECT * FROM public.poly_users
-    joins: []
-    dimensions:
-      - name: id
-        sql: id
-        type: number
-        primaryKey: true
-      - name: type
-        sql: type
-        type: string
-      - name: name
-        sql: name
-        type: string
-      - name: school
-        sql: school
-        type: string
-    measures:
-      - name: count
-        type: count
-', '1f178c3186c4dda2ca9029f115c04743', '76e900ad-a007-440a-8dd6-4cf8952e45a4');
-INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('995becb8-4874-44c9-b7bc-91018c858773', '2024-02-15 22:53:53.656866+00', '2024-02-15 22:53:53.656866+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '17bbf032-2e25-4b17-aa61-1d3db0a99d57', 'ProductCategories.yml', 'cubes:
-  - name: ProductCategories
-    sql: SELECT * FROM public.product_categories
-    joins: []
-    dimensions:
-      - name: id
-        sql: id
-        type: number
-        primaryKey: true
-      - name: name
-        sql: name
-        type: string
-      - name: createdAt
-        sql: created_at
-        type: time
-    measures:
-      - name: count
-        type: count
-', '84c89b49880214ad72dd34eb4c9aa771', '76e900ad-a007-440a-8dd6-4cf8952e45a4');
-INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('9fabf5dc-c9c6-4737-9f44-939a36a6427b', '2024-02-15 22:53:53.656866+00', '2024-02-15 22:53:53.656866+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '17bbf032-2e25-4b17-aa61-1d3db0a99d57', 'Products.yml', 'cubes:
-  - name: Products
-    sql: SELECT * FROM public.products
-    joins:
-      - name: Suppliers
-        sql: "{CUBE}.supplier_id = {Suppliers}.id"
-        relationship: belongsTo
-      - name: ProductCategories
-        sql: "{CUBE}.product_category_id = {ProductCategories}.id"
-        relationship: belongsTo
-    dimensions:
-      - name: id
-        sql: id
-        type: number
-        primaryKey: true
-      - name: name
-        sql: name
-        type: string
-      - name: description
-        sql: description
-        type: string
-      - name: createdAt
-        sql: created_at
-        type: time
-    measures:
-      - name: count
-        type: count
-', 'a3f0e338c7edccf7166acdf4a62fe807', '76e900ad-a007-440a-8dd6-4cf8952e45a4');
-INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('06b5ea07-b010-43da-8d0d-095902c6bd99', '2024-02-15 22:53:53.656866+00', '2024-02-15 22:53:53.656866+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '17bbf032-2e25-4b17-aa61-1d3db0a99d57', 'Student.yml', 'cubes:
-  - name: Student
-    sql: SELECT * FROM public.student
-    joins: []
-    dimensions:
-      - name: id
-        sql: id
-        type: number
-        primaryKey: true
-      - name: name
-        sql: name
-        type: string
-    measures:
-      - name: count
-        type: count
-', '5eafe7c98f36d7e89a40ef190201fb4e', '76e900ad-a007-440a-8dd6-4cf8952e45a4');
-INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('95658344-39df-4a4e-b7b3-280b7bbe07fa', '2024-02-15 22:53:53.656866+00', '2024-02-15 22:53:53.656866+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '17bbf032-2e25-4b17-aa61-1d3db0a99d57', 'StudentTeacher.yml', 'cubes:
-  - name: StudentTeacher
-    sql: SELECT * FROM public.student_teacher
-    joins:
-      - name: Student
-        sql: "{CUBE}.student_id = {Student}.id"
-        relationship: belongsTo
-      - name: Teacher
-        sql: "{CUBE}.teacher_id = {Teacher}.id"
-        relationship: belongsTo
-    dimensions:
-      - name: id
-        sql: id
-        type: number
-        primaryKey: true
-    measures:
-      - name: count
-        type: count
-', 'b30c612b2dd113b6996f8c7c053d4b95', '76e900ad-a007-440a-8dd6-4cf8952e45a4');
-INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('676862d4-d07b-455b-8fe9-43d6ad66c9ca', '2024-02-15 22:53:53.656866+00', '2024-02-15 22:53:53.656866+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '17bbf032-2e25-4b17-aa61-1d3db0a99d57', 'Suppliers.yml', 'cubes:
-  - name: Suppliers
-    sql: SELECT * FROM public.suppliers
-    joins: []
-    dimensions:
-      - name: id
-        sql: id
-        type: number
-        primaryKey: true
-      - name: address
-        sql: address
-        type: string
-      - name: company
-        sql: company
-        type: string
-      - name: email
-        sql: email
-        type: string
-      - name: createdAt
-        sql: created_at
-        type: time
-    measures:
-      - name: count
-        type: count
-', '26857fc670d0914751a10f13829fff28', '76e900ad-a007-440a-8dd6-4cf8952e45a4');
-INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('a3b23075-0ade-498e-b3b5-5954b754140f', '2024-02-15 22:53:53.656866+00', '2024-02-15 22:53:53.656866+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '17bbf032-2e25-4b17-aa61-1d3db0a99d57', 'Teacher.yml', 'cubes:
-  - name: Teacher
-    sql: SELECT * FROM public.teacher
-    joins: []
-    dimensions:
-      - name: id
-        sql: id
-        type: number
-        primaryKey: true
-      - name: name
-        sql: name
-        type: string
-    measures:
-      - name: count
-        type: count
-', '560bf0a3ad49aeaec7cb5a35965e05f9', '76e900ad-a007-440a-8dd6-4cf8952e45a4');
-INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('c1144b77-eb85-4b92-be53-c3c8c1bc5eb4', '2024-02-15 22:53:53.656866+00', '2024-02-15 22:53:53.656866+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '17bbf032-2e25-4b17-aa61-1d3db0a99d57', 'Teachers.yml', 'cubes:
-  - name: Teachers
-    sql: SELECT * FROM public.teachers
-    joins: []
-    dimensions:
-      - name: id
-        sql: id
-        type: number
-        primaryKey: true
-      - name: salary
-        sql: salary
-        type: string
-      - name: firstName
-        sql: first_name
-        type: string
-      - name: lastName
-        sql: last_name
-        type: string
-      - name: school
-        sql: school
-        type: string
-      - name: hireDate
-        sql: hire_date
-        type: time
-    measures:
-      - name: count
-        type: count
-', 'ed292830b5057b97613cdb17a7416464', '76e900ad-a007-440a-8dd6-4cf8952e45a4');
-INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('0394bab9-22f0-4a14-8296-68d85b7fa46c', '2024-02-15 22:53:53.656866+00', '2024-02-15 22:53:53.656866+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '17bbf032-2e25-4b17-aa61-1d3db0a99d57', 'TmpNewtable.yml', 'cubes:
-  - name: TmpNewtable
-    sql: SELECT * FROM public.tmp_newtable
-    joins: []
-    dimensions:
-      - name: id
-        sql: id
-        type: number
-        primaryKey: true
-      - name: address
-        sql: address
-        type: string
-      - name: name
-        sql: name
-        type: string
-      - name: email
-        sql: email
-        type: string
-      - name: phone
-        sql: phone
-        type: string
-    measures:
-      - name: count
-        type: count
-', '111353e2d946fcaf3644e0cf5770b5c2', '76e900ad-a007-440a-8dd6-4cf8952e45a4');
-INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('e84361e3-54e6-4055-8442-166b06044376', '2024-02-15 22:53:53.656866+00', '2024-02-15 22:53:53.656866+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '17bbf032-2e25-4b17-aa61-1d3db0a99d57', 'Users.yml', 'cubes:
-  - name: Users
-    sql: SELECT * FROM public.users
-    joins: []
-    dimensions:
-      - name: id
-        sql: id
-        type: number
-        primaryKey: true
-      - name: gender
-        sql: gender
-        type: string
-      - name: firstName
-        sql: first_name
-        type: string
-      - name: state
-        sql: state
-        type: string
-      - name: lastName
-        sql: last_name
-        type: string
-      - name: city
-        sql: city
-        type: string
-      - name: company
-        sql: company
-        type: string
-      - name: createdAt
-        sql: created_at
-        type: time
-    measures:
-      - name: count
-        type: count
-', '412df880a505c372aef064606bfb7e5a', '76e900ad-a007-440a-8dd6-4cf8952e45a4');
-INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('f4e0d259-a0ba-4010-beaf-1642909c1ae6', '2024-02-15 22:54:44.919089+00', '2024-02-15 22:54:44.919089+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '17bbf032-2e25-4b17-aa61-1d3db0a99d57', 'Companies.yml', 'cubes:
-  - name: Companies
-    sql: SELECT * FROM public.companies
-    joins: []
-    dimensions:
-      - name: id
-        sql: id
-        type: number
-        primaryKey: true
-      - name: email
-        sql: email
-        type: string
-      - name: name
-        sql: name
-        type: string
-      - name: phone
-        sql: phone
-        type: string
-      - name: address
-        sql: address
-        type: string
-    measures:
-      - name: count
-        type: count
-', '73d3a69114afa1dd90fb90053fc23caf', '665de544-e30d-4769-8073-5d65fd2d03b6');
-INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('fbbb3dfa-ed00-4169-a723-447d8a7bf0c6', '2024-02-15 22:54:44.919089+00', '2024-02-15 22:54:44.919089+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '17bbf032-2e25-4b17-aa61-1d3db0a99d57', 'LineItems.yml', 'cubes:
-  - name: LineItems
-    sql: SELECT * FROM public.line_items
-    joins:
-      - name: Products
-        sql: "{CUBE}.product_id = {Products}.id"
-        relationship: belongsTo
-      - name: Orders
-        sql: "{CUBE}.order_id = {Orders}.id"
-        relationship: belongsTo
-    dimensions:
-      - name: id
-        sql: id
-        type: number
-        primaryKey: true
-      - name: createdAt
-        sql: created_at
-        type: time
-    measures:
-      - name: count
-        type: count
-      - name: quantity
-        sql: quantity
-        type: sum
-      - name: price
-        sql: price
-        type: sum
-', 'b5603719550035b0cf93106e8c608902', '665de544-e30d-4769-8073-5d65fd2d03b6');
-INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('3be3a8bb-db52-4eef-b337-f649b565c089', '2024-02-15 22:54:44.919089+00', '2024-02-15 22:54:44.919089+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '17bbf032-2e25-4b17-aa61-1d3db0a99d57', 'LineItemsCountByStates.yml', 'cubes:
-  - name: LineItemsCountByStates
-    sql: SELECT * FROM public.line_items_count_by_states
-    joins: []
-    dimensions:
-      - name: usersState
-        sql: users_state
-        type: string
-    measures:
-      - name: count
-        type: count
-      - name: lineItemsCount
-        sql: line_items_count
-        type: sum
-', '9263cb82160a4f840ff980c02213cd12', '665de544-e30d-4769-8073-5d65fd2d03b6');
-INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('5e1cae3a-9348-4a33-852a-5150bfba6962', '2024-02-15 22:54:44.919089+00', '2024-02-15 22:54:44.919089+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '17bbf032-2e25-4b17-aa61-1d3db0a99d57', 'LineItemsEval.yml', 'cubes:
-  - name: LineItemsEval
-    sql: SELECT * FROM public.line_items_eval
-    joins:
-      - name: Products
-        sql: "{CUBE}.product_id = {Products}.id"
-        relationship: belongsTo
-      - name: Orders
-        sql: "{CUBE}.order_id = {Orders}.id"
-        relationship: belongsTo
-    dimensions:
-      - name: price
-        sql: price
-        type: string
-      - name: orderId
-        sql: order_id
-        type: string
-        primaryKey: true
-      - name: createdAt
-        sql: created_at
-        type: time
-    measures:
-      - name: count
-        type: count
-      - name: quantity
-        sql: quantity
-        type: sum
-', '5c19200404acc9f87699f2a1ead28a9d', '665de544-e30d-4769-8073-5d65fd2d03b6');
-INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('3b8dcef5-218e-4c0f-85ca-1ac78a76b8ed', '2024-02-15 22:54:44.919089+00', '2024-02-15 22:54:44.919089+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '17bbf032-2e25-4b17-aa61-1d3db0a99d57', 'LineItemsEval1.yml', 'cubes:
-  - name: LineItemsEval1
-    sql: SELECT * FROM public.line_items_eval_1
-    joins:
-      - name: Products
-        sql: "{CUBE}.product_id = {Products}.id"
-        relationship: belongsTo
-      - name: Orders
-        sql: "{CUBE}.order_id = {Orders}.id"
-        relationship: belongsTo
-    dimensions:
-      - name: id
-        sql: id
-        type: number
-        primaryKey: true
-      - name: price
-        sql: price
-        type: string
-      - name: createdAt
-        sql: created_at
-        type: time
-    measures:
-      - name: count
-        type: count
-      - name: quantity
-        sql: quantity
-        type: sum
-', 'fb89e818c1c418c3896321020ee30bcb', '665de544-e30d-4769-8073-5d65fd2d03b6');
-INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('6636e9c0-a183-4bd7-ad11-1c0d02a955ba', '2024-02-15 22:54:44.919089+00', '2024-02-15 22:54:44.919089+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '17bbf032-2e25-4b17-aa61-1d3db0a99d57', 'LineItemsEval2.yml', 'cubes:
-  - name: LineItemsEval2
-    sql: SELECT * FROM public.line_items_eval_2
-    joins:
-      - name: Products
-        sql: "{CUBE}.product_id = {Products}.id"
-        relationship: belongsTo
-      - name: Orders
-        sql: "{CUBE}.order_id = {Orders}.id"
-        relationship: belongsTo
-    dimensions:
-      - name: price
-        sql: price
-        type: string
-      - name: orderId
-        sql: order_id
-        type: string
-        primaryKey: true
-      - name: createdAt
-        sql: created_at
-        type: time
-    measures:
-      - name: count
-        type: count
-      - name: quantity
-        sql: quantity
-        type: sum
-', '4f94844a31cb9d28c819c04a5f437336', '665de544-e30d-4769-8073-5d65fd2d03b6');
-INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('45cc5636-5fdf-4943-997e-c44856dc88d1', '2024-02-15 22:54:44.919089+00', '2024-02-15 22:54:44.919089+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '17bbf032-2e25-4b17-aa61-1d3db0a99d57', 'Orders.yml', 'cubes:
-  - name: Orders
-    sql: SELECT * FROM other.orders
-    joins: []
-    dimensions:
-      - name: id
-        sql: id
-        type: number
-        primaryKey: true
-      - name: name
-        sql: name
-        type: string
-    measures:
-      - name: count
-        type: count
-', '0f4179b4db2b5197afe5040cf5175123', '665de544-e30d-4769-8073-5d65fd2d03b6');
-INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('398d2a23-d9af-4087-9b5f-cea0dff87c00', '2024-02-15 22:54:44.919089+00', '2024-02-15 22:54:44.919089+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '17bbf032-2e25-4b17-aa61-1d3db0a99d57', 'OrdersEval.yml', 'cubes:
-  - name: OrdersEval
-    sql: SELECT * FROM public.orders_eval
-    joins:
-      - name: Users
-        sql: "{CUBE}.user_id = {Users}.id"
-        relationship: belongsTo
-    dimensions:
-      - name: id
-        sql: id
-        type: number
-        primaryKey: true
-      - name: sum
-        sql: sum
-        type: string
-      - name: status
-        sql: status
-        type: string
-      - name: createdAt
-        sql: created_at
-        type: time
-      - name: completedAt
-        sql: completed_at
-        type: time
-    measures:
-      - name: count
-        type: count
-', 'c9ef2d7f047720ed49bc502d7c02d1ea', '665de544-e30d-4769-8073-5d65fd2d03b6');
-INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('8450995d-0290-4f09-b455-bcecaef0fe0c', '2024-02-15 22:54:44.919089+00', '2024-02-15 22:54:44.919089+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '17bbf032-2e25-4b17-aa61-1d3db0a99d57', 'PolyLessons.yml', 'cubes:
-  - name: PolyLessons
-    sql: SELECT * FROM public.poly_lessons
-    joins:
-      - name: Teacher
-        sql: "{CUBE}.teacher_id = {Teacher}.id"
-        relationship: belongsTo
-      - name: Student
-        sql: "{CUBE}.student_id = {Student}.id"
-        relationship: belongsTo
-    dimensions:
-      - name: id
-        sql: id
-        type: number
-        primaryKey: true
-      - name: name
-        sql: name
-        type: string
-    measures:
-      - name: count
-        type: count
-', 'd423963a68aedcfca2dbee3923f57328', '665de544-e30d-4769-8073-5d65fd2d03b6');
-INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('7891e7a6-7f19-4898-aca5-5ee95b2f8967', '2024-02-15 22:54:44.919089+00', '2024-02-15 22:54:44.919089+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '17bbf032-2e25-4b17-aa61-1d3db0a99d57', 'PolyUsers.yml', 'cubes:
-  - name: PolyUsers
-    sql: SELECT * FROM public.poly_users
-    joins: []
-    dimensions:
-      - name: id
-        sql: id
-        type: number
-        primaryKey: true
-      - name: type
-        sql: type
-        type: string
-      - name: name
-        sql: name
-        type: string
-      - name: school
-        sql: school
-        type: string
-    measures:
-      - name: count
-        type: count
-', '1f178c3186c4dda2ca9029f115c04743', '665de544-e30d-4769-8073-5d65fd2d03b6');
-INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('f4df5ce9-a2db-4f4c-88a0-0eaef92c9ed6', '2024-02-15 22:54:44.919089+00', '2024-02-15 22:54:44.919089+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '17bbf032-2e25-4b17-aa61-1d3db0a99d57', 'ProductCategories.yml', 'cubes:
-  - name: ProductCategories
-    sql: SELECT * FROM public.product_categories
-    joins: []
-    dimensions:
-      - name: id
-        sql: id
-        type: number
-        primaryKey: true
-      - name: name
-        sql: name
-        type: string
-      - name: createdAt
-        sql: created_at
-        type: time
-    measures:
-      - name: count
-        type: count
-', '84c89b49880214ad72dd34eb4c9aa771', '665de544-e30d-4769-8073-5d65fd2d03b6');
-INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('3d10c98b-625e-4023-89bc-52d61ddfd8ac', '2024-02-15 22:54:44.919089+00', '2024-02-15 22:54:44.919089+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '17bbf032-2e25-4b17-aa61-1d3db0a99d57', 'Products.yml', 'cubes:
-  - name: Products
-    sql: SELECT * FROM public.products
-    joins:
-      - name: Suppliers
-        sql: "{CUBE}.supplier_id = {Suppliers}.id"
-        relationship: belongsTo
-      - name: ProductCategories
-        sql: "{CUBE}.product_category_id = {ProductCategories}.id"
-        relationship: belongsTo
-    dimensions:
-      - name: id
-        sql: id
-        type: number
-        primaryKey: true
-      - name: name
-        sql: name
-        type: string
-      - name: description
-        sql: description
-        type: string
-      - name: createdAt
-        sql: created_at
-        type: time
-    measures:
-      - name: count
-        type: count
-', 'a3f0e338c7edccf7166acdf4a62fe807', '665de544-e30d-4769-8073-5d65fd2d03b6');
-INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('86810b9d-5955-45fa-b604-ed2e967ff807', '2024-02-15 22:54:44.919089+00', '2024-02-15 22:54:44.919089+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '17bbf032-2e25-4b17-aa61-1d3db0a99d57', 'Student.yml', 'cubes:
-  - name: Student
-    sql: SELECT * FROM public.student
-    joins: []
-    dimensions:
-      - name: id
-        sql: id
-        type: number
-        primaryKey: true
-      - name: name
-        sql: name
-        type: string
-    measures:
-      - name: count
-        type: count
-', '5eafe7c98f36d7e89a40ef190201fb4e', '665de544-e30d-4769-8073-5d65fd2d03b6');
-INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('10cf1178-0800-4aef-8f5f-e52ad1446c61', '2024-02-15 22:54:44.919089+00', '2024-02-15 22:54:44.919089+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '17bbf032-2e25-4b17-aa61-1d3db0a99d57', 'StudentTeacher.yml', 'cubes:
-  - name: StudentTeacher
-    sql: SELECT * FROM public.student_teacher
-    joins:
-      - name: Student
-        sql: "{CUBE}.student_id = {Student}.id"
-        relationship: belongsTo
-      - name: Teacher
-        sql: "{CUBE}.teacher_id = {Teacher}.id"
-        relationship: belongsTo
-    dimensions:
-      - name: id
-        sql: id
-        type: number
-        primaryKey: true
-    measures:
-      - name: count
-        type: count
-', 'b30c612b2dd113b6996f8c7c053d4b95', '665de544-e30d-4769-8073-5d65fd2d03b6');
-INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('8fa5ffa1-5f37-4da8-a303-5196dba5368f', '2024-02-15 22:54:44.919089+00', '2024-02-15 22:54:44.919089+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '17bbf032-2e25-4b17-aa61-1d3db0a99d57', 'Suppliers.yml', 'cubes:
-  - name: Suppliers
-    sql: SELECT * FROM public.suppliers
-    joins: []
-    dimensions:
-      - name: id
-        sql: id
-        type: number
-        primaryKey: true
-      - name: address
-        sql: address
-        type: string
-      - name: company
-        sql: company
-        type: string
-      - name: email
-        sql: email
-        type: string
-      - name: createdAt
-        sql: created_at
-        type: time
-    measures:
-      - name: count
-        type: count
-', '26857fc670d0914751a10f13829fff28', '665de544-e30d-4769-8073-5d65fd2d03b6');
-INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('c8bb8d3e-c577-4787-a853-92f42cd866bf', '2024-02-15 22:54:44.919089+00', '2024-02-15 22:54:44.919089+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '17bbf032-2e25-4b17-aa61-1d3db0a99d57', 'Teacher.yml', 'cubes:
-  - name: Teacher
-    sql: SELECT * FROM public.teacher
-    joins: []
-    dimensions:
-      - name: id
-        sql: id
-        type: number
-        primaryKey: true
-      - name: name
-        sql: name
-        type: string
-    measures:
-      - name: count
-        type: count
-', '560bf0a3ad49aeaec7cb5a35965e05f9', '665de544-e30d-4769-8073-5d65fd2d03b6');
-INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('e86da650-eb04-4b9b-902c-3a23b97a5db5', '2024-02-15 22:54:44.919089+00', '2024-02-15 22:54:44.919089+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '17bbf032-2e25-4b17-aa61-1d3db0a99d57', 'Teachers.yml', 'cubes:
-  - name: Teachers
-    sql: SELECT * FROM public.teachers
-    joins: []
-    dimensions:
-      - name: id
-        sql: id
-        type: number
-        primaryKey: true
-      - name: salary
-        sql: salary
-        type: string
-      - name: firstName
-        sql: first_name
-        type: string
-      - name: lastName
-        sql: last_name
-        type: string
-      - name: school
-        sql: school
-        type: string
-      - name: hireDate
-        sql: hire_date
-        type: time
-    measures:
-      - name: count
-        type: count
-', 'ed292830b5057b97613cdb17a7416464', '665de544-e30d-4769-8073-5d65fd2d03b6');
-INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('ac018827-70bd-4fd6-8fd0-1569098977ab', '2024-02-15 22:54:44.919089+00', '2024-02-15 22:54:44.919089+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '17bbf032-2e25-4b17-aa61-1d3db0a99d57', 'TmpNewtable.yml', 'cubes:
-  - name: TmpNewtable
-    sql: SELECT * FROM public.tmp_newtable
-    joins: []
-    dimensions:
-      - name: id
-        sql: id
-        type: number
-        primaryKey: true
-      - name: address
-        sql: address
-        type: string
-      - name: name
-        sql: name
-        type: string
-      - name: email
-        sql: email
-        type: string
-      - name: phone
-        sql: phone
-        type: string
-    measures:
-      - name: count
-        type: count
-', '111353e2d946fcaf3644e0cf5770b5c2', '665de544-e30d-4769-8073-5d65fd2d03b6');
-INSERT INTO public.dataschemas (id, created_at, updated_at, user_id, datasource_id, name, code, checksum, version_id) VALUES ('e12aa956-a793-40ad-8d2f-d354dbd6d472', '2024-02-15 22:54:44.919089+00', '2024-02-15 22:54:44.919089+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '17bbf032-2e25-4b17-aa61-1d3db0a99d57', 'Users.yml', 'cubes:
-  - name: Users
-    sql: SELECT * FROM public.users
-    joins: []
-    dimensions:
-      - name: id
-        sql: id
-        type: number
-        primaryKey: true
-      - name: gender
-        sql: gender
-        type: string
-      - name: firstName
-        sql: first_name
-        type: string
-      - name: state
-        sql: state
-        type: string
-      - name: lastName
-        sql: last_name
-        type: string
-      - name: city
-        sql: city
-        type: string
-      - name: company
-        sql: company
-        type: string
-      - name: createdAt
-        sql: created_at
-        type: time
-    measures:
-      - name: count
-        type: count
-', '412df880a505c372aef064606bfb7e5a', '665de544-e30d-4769-8073-5d65fd2d03b6');
+', '35b385290a8fe596a0280511ed79a0b9', '8ac5b66e-aca9-4845-b009-74127cbb6c00');
 INSERT INTO public.members (id, created_at, updated_at, user_id, team_id) VALUES ('4eb5d9f8-d1b0-40a9-ae5c-d85743ba62c3', '2024-02-15 22:46:43.921517+00', '2024-02-15 22:46:43.921517+00', 'bd254cd6-ada3-4803-88ec-a47749459169', '02db13fa-37ad-4a15-a237-e4a9f400797a');
 INSERT INTO public.member_roles (id, member_id, team_role, access_list_id, created_at, updated_at) VALUES ('96267609-4fc2-464c-86cc-4d31546436cd', '4eb5d9f8-d1b0-40a9-ae5c-d85743ba62c3', 'owner', NULL, '2024-02-15 23:06:43.096277+00', '2024-02-15 23:06:43.096277+00');
+INSERT INTO public.sql_credentials (id, created_at, updated_at, datasource_id, user_id, username, password) VALUES ('fa839ee5-9d27-4f54-97a8-4e8118ba9b05', '2024-02-20 20:59:39.105882+00', '2024-02-20 20:59:39.105882+00', '715dfae1-1044-42ec-ac48-dd4cefa567e6', 'bd254cd6-ada3-4803-88ec-a47749459169', 'demo_clickhouse_user', 'demo_clickhouse_pass');
+INSERT INTO public.sql_credentials (id, created_at, updated_at, datasource_id, user_id, username, password) VALUES ('9e62b8fd-19e1-4bf4-a732-7f02501657dd', '2024-02-20 20:59:22.836483+00', '2024-02-20 21:43:57.281308+00', 'f9401258-4630-4005-8d47-1a682ae94cf3', 'bd254cd6-ada3-4803-88ec-a47749459169', 'demo_pg_user', 'demo_pg_pass');

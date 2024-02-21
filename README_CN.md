@@ -56,7 +56,7 @@ curl https://raw.githubusercontent.com/mlcraft-io/mlcraft/main/install-manifests
 及用于数据存储的Postgres数据库。
 
 ```
-$ docker-compose up -d
+$ docker-compose pull stack && docker-compose up -d
 ```
 
 验证容器是否运行：
@@ -80,12 +80,19 @@ c8f342d086f3 synmetrix/stack       ... 1分钟前  运行中 1分钟 80->8888/tc
 
 #### 重要说明
 
-1. **管理控制台访问**：务必检查docker-compose文件中的 `HASURA_GRAPHQL_ADMIN_SECRET`。这是访问管理控制台所必需的。默认值为 `adminsecret`。记得在生产环境中修改这个值。
-2. **环境变量**：设置所有必要的环境变量。Synmetrix将使用默认值工作，但某些功能可能不会按预期执行。
-3. **默认种子数据**：项目附带默认种子数据。使用以下凭据登录：
+1. **管理控制台访问**：请确保在docker-compose文件中检查 `HASURA_GRAPHQL_ADMIN_SECRET`。这是访问管理控制台的必要条件。默认值为 `adminsecret`。记得在生产环境中修改此值。
+2. **环境变量**：设置所有必要的环境变量。Synmetrix将按默认值运行，但某些功能可能不会按预期执行。
+3. **预加载的种子数据**：该项目配备了预加载的种子数据。使用下面的凭据登录：
 
    - 电子邮件：`demo@synmetrix.org`
    - 密码：`demodemo`
+
+   该账户预配置了两个演示数据源及其相应的SQL API访问权限。对于SQL操作，您可以使用以下凭证与任何PostgreSQL客户端工具（例如DBeaver或TablePlus）一起使用：
+
+   | 主机      | 端口  | 数据库 | 用户名               | 密码                 |
+   | --------- | ----- | ------ | -------------------- | -------------------- |
+   | localhost | 15432 | db     | demo_pg_user         | demo_pg_pass         |
+   | localhost | 15432 | db     | demo_clickhouse_user | demo_clickhouse_pass |
 
 ## 文档
 
@@ -103,10 +110,10 @@ c8f342d086f3 synmetrix/stack       ... 1分钟前  运行中 1分钟 80->8888/tc
 
 ### 演示凭据
 
-| 数据库类型 | 主机                   | 端口 | 数据库  | 用户 | 密码   | SSL   |
-| ---------- | ---------------------- | ---- | ------- | ---- | ------ | ----- |
-| ClickHouse | gh-api.clickhouse.tech | 443  | default | play | 无密码 | true  |
-| PostgreSQL | demo-db.cube.dev       | 5432 | ecom    | cube | 12345  | false |
+| 数据库类型 | 主机                      | 端口 | 数据库  | 用户 | 密码   | SSL   |
+| ---------- | ------------------------- | ---- | ------- | ---- | ------ | ----- |
+| ClickHouse | gh-api.clickhouse.tech    | 443  | default | play | 无密码 | true  |
+| PostgreSQL | demo-db-examples.cube.dev | 5432 | ecom    | cube | 12345  | false |
 
 ---
 
