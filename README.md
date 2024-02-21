@@ -14,7 +14,7 @@
 
 Synmetrix (prev. MLCraft) is an open source data engineering platform and semantic layer for centralized metrics management. It provides a complete framework for modeling, integrating, transforming, aggregating, and distributing metrics data at scale.
 
-## Key Features
+### Key Features
 
 - **Data modeling and transformations**: Flexibly define metrics and dimensions using SQL and [Cube](https://github.com/cube-js/cube) data models. Apply transformations and aggregations.
 - **Semantic layer**: Consolidate metrics from across sources into a unified, governed data model. Eliminate metric definition differences.
@@ -35,7 +35,19 @@ The metrics data model can then be distributed downstream to any consumer via a 
 
 By combining best practices from data engineering, like caching, orchestration, and transformation, with self-service analytics capabilities, Synmetrix speeds up data-driven workflows from metrics definition to consumption.
 
-## Getting Started
+### Use cases
+
+1. **Data Democratization**: Synmetrix makes data accessible to non-experts, enabling everyone in an organization to make data-driven decisions easily.
+
+2. **Business Intelligence (BI) and Reporting**: Integrate Synmetrix with any BI tool for advanced reporting and analytics, enhancing data visualization and insights.
+
+3. **Embedded Analytics**: Use the Synmetrix API to embed analytics directly into applications, providing users with real-time data insights within their workflows.
+
+4. **Multi-Source Data Aggregation**: Synmetrix allows joining data from various sources seamlessly, offering a unified view for comprehensive analysis.
+
+5. **Semantic Layer for LLM**: Enhance LLM's accuracy in data handling and queries with Synmetrix's semantic layer, improving data interaction and precision.
+
+# Getting Started
 
 ### Prerequisite Software
 
