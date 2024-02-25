@@ -40,12 +40,14 @@ By combining best practices from data engineering, like caching, orchestration, 
 1. **Data Democratization**: Synmetrix makes data accessible to non-experts, enabling everyone in an organization to make data-driven decisions easily.
 
 2. **Business Intelligence (BI) and Reporting**: Integrate Synmetrix with any BI tool for advanced reporting and analytics, enhancing data visualization and insights.
+  - [Integrating Synmetrix with Apache Superset](https://github.com/mlcraft-io/examples/tree/main/superset) ([Video](https://www.youtube.com/watch?v=TzLy88IAYZo))
 
 3. **Embedded Analytics**: Use the Synmetrix API to embed analytics directly into applications, providing users with real-time data insights within their workflows.
+  - [Integrating Synmetrix with Observable: A Quick Guide](https://github.com/mlcraft-io/examples/tree/main/observable) ([Video](https://www.youtube.com/watch?v=VcAP4vrL8cY))
+  - [Guide to Connecting Synmetrix with DBeaver Using SQL API](https://github.com/mlcraft-io/examples/tree/main/dbeaver) ([Video](https://www.youtube.com/watch?v=8l_Ud3IM0OQ))
 
-4. **Multi-Source Data Aggregation**: Synmetrix allows joining data from various sources seamlessly, offering a unified view for comprehensive analysis.
-
-5. **Semantic Layer for LLM**: Enhance LLM's accuracy in data handling and queries with Synmetrix's semantic layer, improving data interaction and precision.
+4. **Semantic Layer for LLM**: Enhance LLM's accuracy in data handling and queries with Synmetrix's semantic layer, improving data interaction and precision.
+  - [Synmetrix with Large Language Model (LLM) example](https://github.com/mlcraft-io/examples/tree/main/langchain) ([Video](https://www.youtube.com/watch?v=TtH-pFGDK84))
 
 # Getting Started
 
@@ -174,6 +176,7 @@ By leveraging Cube Store and Cube together, Synmetrix benefits from excellent an
 | [mlcraft-io/mlcraft](https://github.com/mlcraft-io/mlcraft)     | Synmetrix Monorepo |
 | [mlcraft-io/client-v2](https://github.com/mlcraft-io/client-v2) | Synmetrix Client   |
 | [mlcraft-io/docs](https://github.com/mlcraft-io/docs)           | Synmetrix Docs     |
+| [mlcraft-io/examples](https://github.com/mlcraft-io/example)           | Synmetrix Examples     |
 
 ## Community support
 

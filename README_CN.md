@@ -29,17 +29,19 @@ Synmetrix利用[Cube (Cube.js)](https://github.com/cube-js/cube)实现灵活的�
 
 通过结合数据工程的最佳实践，如缓存、编排和转换，与自助式分析能力，Synmetrix加速了从度量定义到消费的数据驱动工作流程。
 
-### 用例
+### 使用案例
 
-1. **数据民主化**: Synmetrix 使非专家也能轻松访问数据，让组织中的每个人都能基于数据做出决策。
+1. **数据民主化**: Synmetrix 使得数据对非专家用户也易于访问，使组织中的每个人都能轻松做出基于数据的决策。
 
-2. **商业智能（BI）与报告**: 将 Synmetrix 与任何 BI 工具集成，以实现高级报告和分析，提高数据可视化和洞察力。
+2. **商务智能（BI）与报告**: 将 Synmetrix 与任何 BI 工具集成，以进行高级报告和分析，改善数据可视化和见解。
+   - [将 Synmetrix 与 Apache Superset 集成](https://github.com/mlcraft-io/examples/tree/main/superset) ([视频](https://www.youtube.com/watch?v=TzLy88IAYZo))
 
-3. **嵌入式分析**: 使用 Synmetrix API 将分析直接嵌入到应用程序中，为用户提供其工作流程中的实时数据洞察。
+3. **嵌入式分析**: 使用 Synmetrix API 直接将分析功能嵌入应用程序中，为用户提供其工作流程中的实时数据洞察。
+   - [将 Synmetrix 与 Observable 集成：快速指南](https://github.com/mlcraft-io/examples/tree/main/observable) ([视频](https://www.youtube.com/watch?v=VcAP4vrL8cY))
+   - [使用 SQL API 将 Synmetrix 与 DBeaver 连接指南](https://github.com/mlcraft-io/examples/tree/main/dbeaver) ([视频](https://www.youtube.com/watch?v=8l_Ud3IM0OQ))
 
-4. **多源数据聚合**: Synmetrix 允许无缝连接来自不同来源的数据，提供一个统一视图进行全面分析。
-
-5. **LLM 语义层**: 通过 Synmetrix 的语义层提高 LLM 在数据处理和查询中的准确性，改善数据交互和精确度。
+4. **LLM 的语义层**: 通过 Synmetrix 的语义层提高 LLM 在数据处理和查询中的准确性，改善数据交互和精度。
+   - [Synmetrix 与大型语言模型（LLM）示例](https://github.com/mlcraft-io/examples/tree/main/langchain) ([视频](https://www.youtube.com/watch?v=TtH-pFGDK84))
 
 # 入门
 
@@ -169,6 +171,7 @@ Cube Store是一个为操作分析而特别构建的数据库，优化了快速�
 | [mlcraft-io/mlcraft](https://github.com/mlcraft-io/mlcraft)     | Synmetrix单体仓库 |
 | [mlcraft-io/client-v2](https://github.com/mlcraft-io/client-v2) | Synmetrix客户端   |
 | [mlcraft-io/docs](https://github.com/mlcraft-io/docs)           | Synmetrix文档     |
+| [mlcraft-io/examples](https://github.com/mlcraft-io/examples)           | Synmetrix 示例     |
 
 ## 社区支持
 
