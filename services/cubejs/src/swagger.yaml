@@ -235,17 +235,6 @@ paths:
           description: 'Successful operation'
       security:
         - BearerAuth: []
-  /api/v1/validate-code:
-    post:
-      summary: 'Validate data models code'
-      parameters:
-        - $ref: '#/components/parameters/HasuraDatasourceId'
-        - $ref: '#/components/parameters/HasuraBranchId'
-      responses:
-        '200':
-          description: 'Successful operation'
-      security:
-        - BearerAuth: []
   /api/v1/pre-aggregation-preview:
     post:
       summary: 'Pre-aggregation preview'
