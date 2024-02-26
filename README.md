@@ -184,6 +184,8 @@ For general help using Synmetrix, please refer to the official Synmetrix documen
 
 * [Slack](https://join.slack.com/t/mlcraft/shared_invite/zt-1x2gxwn37-J3tTvCR5xSFVfxwUU_YKtg) / For live discussion with the Community and Synmetrix team
 * [GitHub](https://github.com/mlcraft-io/mlcraft) / Bug reports, Contributions
+* [Twitter](https://twitter.com/trySynmetrix) / Updates and news
+* [Youtube](https://www.youtube.com/channel/UCEPlxaWYrdOaf9IXjD2IRTg) / Video tutorials and demos
 
 ## Roadmap
 
