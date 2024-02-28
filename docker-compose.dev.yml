@@ -33,8 +33,6 @@ services:
     volumes:
       - ./services/actions/src:/app/src
       - ./services/actions/index.js:/app/index.js
-    ports:
-      - 3001:3000
     env_file:
       - .env
       - .dev.env
@@ -57,6 +55,26 @@ services:
     env_file:
       - .env
       - .dev.env
+    environment:
+      CUBEJS_SCHEDULED_REFRESH: false
+    networks:
+      - synmetrix_default
+
+  cubejs_refresh_worker:
+    build:
+      context: ./services/cubejs
+    restart: always
+    command: yarn start.dev
+    volumes:
+      - ./services/cubejs/src:/app/src
+      - ./services/cubejs/index.js:/app/index.js
+    env_file:
+      - .env
+      - .dev.env
+    environment:
+      CUBEJS_REFRESH_TIMER: 60
+      CUBEJS_SCHEDULED_REFRESH: true
+      CUBEJS_SQL_API: false
     networks:
       - synmetrix_default
 

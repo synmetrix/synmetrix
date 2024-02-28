@@ -9,6 +9,16 @@ const CUBEJS_URL = process.env.CUBEJS_URL || `http://localhost:${CUBEJS_PORT}`;
 const CUBEJS_REST_API_URL =
   process.env.CUBEJS_REST_API_URL || `http://localhost/api/v1/load`;
 
+const CUBEJS_SCHEDULED_REFRESH =
+  process.env.CUBEJS_SCHEDULED_REFRESH !== undefined
+    ? process.env.CUBEJS_SCHEDULED_REFRESH
+    : true;
+
+const CUBEJS_REFRESH_TIMER = process.env.CUBEJS_REFRESH_TIMER || 60;
+
+const CUBEJS_SQL_API =
+  process.env.CUBEJS_SQL_API !== undefined ? process.env.CUBEJS_SQL_API : true;
+
 const CUBEJS_API_DOCS_URL =
   process.env.CUBEJS_API_DOCS_URL || `http://localhost:4000/docs`;
 
@@ -182,6 +192,9 @@ module.exports = {
         CUBEJS_SQL_PORT,
         CUBEJS_PG_SQL_PORT,
         CUBEJS_DB_CLICKHOUSE_READONLY,
+        CUBEJS_SCHEDULED_REFRESH,
+        CUBEJS_REFRESH_TIMER,
+        CUBEJS_SQL_API,
         JWT_EXPIRES_IN,
         JWT_ALGORITHM,
         JWT_CLAIMS_NAMESPACE,

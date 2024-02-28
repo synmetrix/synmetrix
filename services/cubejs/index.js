@@ -21,6 +21,9 @@ const {
   CUBEJS_CUBESTORE_PORT,
   CUBEJS_CUBESTORE_HOST,
   CUBEJS_TELEMETRY = false,
+  CUBEJS_SCHEDULED_REFRESH = true,
+  CUBEJS_REFRESH_TIMER = 60,
+  CUBEJS_SQL_API = true,
 } = process.env;
 
 const port = parseInt(process.env.PORT, 10) || 4000;
@@ -65,7 +68,10 @@ const options = {
   repositoryFactory,
   preAggregationsSchema,
   telemetry: CUBEJS_TELEMETRY,
-  scheduledRefreshTimer: 60,
+  scheduledRefreshTimer:
+    String(CUBEJS_SCHEDULED_REFRESH) !== "false"
+      ? parseInt(CUBEJS_REFRESH_TIMER, 10)
+      : undefined,
   scheduledRefreshContexts,
   externalDbType: "cubestore",
   externalDriverFactory,
@@ -90,8 +96,10 @@ app.use(routes({ basePath, cubejs }));
 
 cubejs.initApp(app);
 
-const sqlServer = cubejs.initSQLServer();
-sqlServer.init(options);
+if (String(CUBEJS_SQL_API) === "true") {
+  const sqlServer = cubejs.initSQLServer();
+  sqlServer.init(options);
+}
 
 app.use((err, req, res, next) => {
   console.error(err.stack);
