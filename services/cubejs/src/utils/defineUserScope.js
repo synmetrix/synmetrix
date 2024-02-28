@@ -27,7 +27,8 @@ const defineUserScope = (
   allDataSources,
   allMembers,
   selectedDataSourceId,
-  selectedBranchId
+  selectedBranchId,
+  selectedVersionId
 ) => {
   const dataSource = allDataSources.find(
     (source) => source.id === selectedDataSourceId
@@ -38,6 +39,7 @@ const defineUserScope = (
   }
 
   let selectedBranch;
+  let selectedVersion;
 
   if (selectedBranchId) {
     const branch = dataSource.branches.find(
@@ -61,13 +63,29 @@ const defineUserScope = (
     selectedBranch = defaultBranch;
   }
 
+  if (selectedVersionId) {
+    const version = selectedBranch.versions.find(
+      (version) => version.id === selectedVersionId
+    );
+
+    if (!version) {
+      throw new Error(`404: version "${selectedVersionId}" not found`);
+    }
+
+    selectedVersion = version;
+  }
+
   const dataSourceAccessList = getDataSourceAccessList(
     allMembers,
     selectedDataSourceId,
     dataSource.team_id
   );
 
-  const dataSourceContext = buildSecurityContext(dataSource, selectedBranch);
+  const dataSourceContext = buildSecurityContext(
+    dataSource,
+    selectedBranch,
+    selectedVersion
+  );
 
   return {
     dataSource: dataSourceContext,

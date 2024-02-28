@@ -28,6 +28,8 @@ const checkAuth = async (req) => {
   const dataSourceId = req.headers["x-hasura-datasource-id"];
   // Extract the branch ID from the request headers
   const branchId = req.headers["x-hasura-branch-id"];
+  // Extract the branch version ID from the request headers
+  const branchVersionId = req.headers["x-hasura-branch-version-id"];
 
   let jwtDecoded;
   let authToken;
@@ -71,14 +73,14 @@ const checkAuth = async (req) => {
     user.dataSources,
     user.members,
     dataSourceId,
-    branchId
+    branchId,
+    branchVersionId
   );
 
   req.securityContext = {
     authToken,
     userId,
     userScope,
-    user,
   };
 };
 

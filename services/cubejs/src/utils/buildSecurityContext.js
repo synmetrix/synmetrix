@@ -1,6 +1,5 @@
 import JSum from "jsum";
 
-import mapSchemaToFile from "./mapSchemaToFile.js";
 import createMd5Hex from "./md5Hex.js";
 import prepareDbParams from "./prepareDbParams.js";
 
@@ -16,7 +15,7 @@ import prepareDbParams from "./prepareDbParams.js";
  *
  * @throws {Error} - Throws an error if no data source or no dbParams are provided.
  */
-const buildSecurityContext = (dataSource, branch) => {
+const buildSecurityContext = (dataSource, branch, version) => {
   if (!dataSource) {
     throw new Error("No dataSource provided");
   }
@@ -36,11 +35,12 @@ const buildSecurityContext = (dataSource, branch) => {
   const dataSourceVersion = JSum.digest(data, "SHA256", "hex");
 
   const dataModels =
+    version?.dataschemas ||
     branch?.versions?.[0]?.dataschemas ||
     dataSource.branches?.[0]?.versions?.[0]?.dataschemas ||
     [];
 
-  const files = dataModels.map((schema) => mapSchemaToFile(schema));
+  const files = dataModels.map((schema) => schema.id);
 
   const schemaVersion = createMd5Hex(files);
   const preAggregationSchema = createMd5Hex(data.dataSourceId);

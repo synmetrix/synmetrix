@@ -114,6 +114,16 @@ const sqlCredentialsQuery = `
   }
 `;
 
+const dataschemasQuery = `
+  query GetSchemas($_in: [uuid!]) {
+    dataschemas(where: {id: {_in: $_in}}) {
+      code
+      name
+      id
+    }
+  }
+`;
+
 export const findUser = async ({ userId }) => {
   const where = {
     _or: [
@@ -175,6 +185,14 @@ export const findDataSchemas = async ({ branchId, authToken }) => {
 
   const dataSchemas =
     res?.data?.branches_by_pk?.versions?.[0]?.dataschemas || [];
+
+  return dataSchemas;
+};
+
+export const findDataSchemasByIds = async ({ ids }) => {
+  const res = await fetchGraphQL(dataschemasQuery, { _in: ids });
+
+  const dataSchemas = res?.data?.dataschemas || [];
 
   return dataSchemas;
 };
