@@ -27,5 +27,6 @@ jobs:
 
       - name: Build and push services images
         run: |
-          REGISTRY_HOST=index.docker.io docker-compose -f docker-compose.stage.yml build && \
+          export REGISTRY_HOST=index.docker.io && \
+          docker-compose -f docker-compose.stage.yml build && \
           docker-compose -f docker-compose.stage.yml push
