@@ -9,7 +9,7 @@ services:
     image: redis:7.0.0
     env_file:
       - .env
-      - .dev.env
+      - .test.env
     networks:
       - synmetrix_default
 
@@ -30,7 +30,7 @@ services:
       - pgstorage-test-data:/var/lib/postgresql/data
     env_file:
       - .env
-      - .dev.env
+      - .test.env
     networks:
       - synmetrix_default
 
@@ -45,7 +45,7 @@ services:
     command: yarn start
     env_file:
       - .env
-      - .dev.env
+      - .test.env
     environment:
       CUBEJS_SCHEDULED_REFRESH: false
     networks:
@@ -56,7 +56,7 @@ services:
     command: yarn start
     env_file:
       - .env
-      - .dev.env
+      - .test.env
     environment:
       CUBEJS_SCHEDULED_REFRESH: true
       CUBEJS_SQL_API: false
@@ -84,7 +84,7 @@ services:
     image: synmetrix/hasura-plus:latest
     env_file:
       - .env
-      - .dev.env
+      - .test.env
     environment:
       SERVER_URL: ${PROTOCOL:-http}://app.${DOMAIN}
       REDIRECT_URL_SUCCESS: ${PROTOCOL:-http}://app.${DOMAIN}/callback
@@ -97,7 +97,7 @@ services:
     command: yarn start
     env_file:
       - .env
-      - .dev.env
+      - .test.env
     networks:
       - synmetrix_default
 
@@ -107,7 +107,7 @@ services:
       - cubestore-test:/cube/data
     env_file:
       - .env
-      - .dev.env
+      - .test.env
     environment:
       - CUBESTORE_REMOTE_DIR=/cube/data
     networks:
@@ -120,7 +120,7 @@ services:
       - minio-test-data:/data
     env_file:
       - .env
-      - .dev.env
+      - .test.env
     healthcheck:
       test: ["CMD", "mc", "ready", "local"]
       interval: 5s
