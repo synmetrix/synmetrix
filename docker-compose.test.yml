@@ -1,0 +1,135 @@
+version: "3.8"
+
+networks:
+  synmetrix_default:
+    external: true
+
+services:
+  redis:
+    image: redis:7.0.0
+    env_file:
+      - .env
+      - .dev.env
+    networks:
+      - synmetrix_default
+
+  postgres_test:
+    image: postgres:${POSTGRES_VERSION:-12}
+    volumes:
+      - ./tests/data/orders.sql:/docker-entrypoint-initdb.d/orders.sql
+    environment:
+      POSTGRES_USER: test_pg
+      POSTGRES_PASSWORD: test_pg
+      POSTGRES_DB: synmetrix_test
+    networks:
+      - synmetrix_default
+
+  postgres:
+    image: postgres:${POSTGRES_VERSION}
+    volumes:
+      - pgstorage-test-data:/var/lib/postgresql/data
+    env_file:
+      - .env
+      - .dev.env
+    networks:
+      - synmetrix_default
+
+  cubejs:
+    image: synmetrix/cubejs:latest
+    deploy:
+      replicas: 3
+    ports:
+      - 4000:4000
+      - 15432:15432
+      - 13306:13306
+    command: yarn start
+    env_file:
+      - .env
+      - .dev.env
+    environment:
+      CUBEJS_SCHEDULED_REFRESH: false
+    networks:
+      - synmetrix_default
+
+  cubejs_refresh_worker:
+    image: synmetrix/cubejs:latest
+    command: yarn start
+    env_file:
+      - .env
+      - .dev.env
+    environment:
+      CUBEJS_SCHEDULED_REFRESH: true
+      CUBEJS_SQL_API: false
+    networks:
+      - synmetrix_default
+
+  client:
+    image: synmetrix/app-client:latest
+    ports:
+      - 80:8888
+    networks:
+      - synmetrix_default
+
+  hasura:
+    image: synmetrix/hasura:latest
+    env_file:
+      - .env
+      - .dev.env
+    environment:
+      HASURA_GRAPHQL_ENABLE_CONSOLE: "true"
+    networks:
+      - synmetrix_default
+
+  hasura_plus:
+    image: synmetrix/hasura-plus:latest
+    env_file:
+      - .env
+      - .dev.env
+    environment:
+      SERVER_URL: ${PROTOCOL:-http}://app.${DOMAIN}
+      REDIRECT_URL_SUCCESS: ${PROTOCOL:-http}://app.${DOMAIN}/callback
+      REDIRECT_URL_ERROR: ${PROTOCOL:-http}://app.${DOMAIN}/callback
+    networks:
+      - synmetrix_default
+
+  actions:
+    image: synmetrix/hasura-actions:latest
+    command: yarn start
+    env_file:
+      - .env
+      - .dev.env
+    networks:
+      - synmetrix_default
+
+  cubestore:
+    image: cubejs/cubestore:${CUBESTORE_VERSION}
+    volumes:
+      - cubestore-test:/cube/data
+    env_file:
+      - .env
+      - .dev.env
+    environment:
+      - CUBESTORE_REMOTE_DIR=/cube/data
+    networks:
+      - synmetrix_default
+
+  minio:
+    image: minio/minio:latest
+    command: server --console-address ":9001" /data
+    volumes:
+      - minio-test-data:/data
+    env_file:
+      - .env
+      - .dev.env
+    healthcheck:
+      test: ["CMD", "mc", "ready", "local"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - synmetrix_default
+
+volumes:
+  pgstorage-test-data:
+  cubestore-test:
+  minio-test-data:
