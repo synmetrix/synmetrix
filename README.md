@@ -176,7 +176,7 @@ By leveraging Cube Store and Cube together, Synmetrix benefits from excellent an
 | [mlcraft-io/mlcraft](https://github.com/mlcraft-io/mlcraft)     | Synmetrix Monorepo |
 | [mlcraft-io/client-v2](https://github.com/mlcraft-io/client-v2) | Synmetrix Client   |
 | [mlcraft-io/docs](https://github.com/mlcraft-io/docs)           | Synmetrix Docs     |
-| [mlcraft-io/examples](https://github.com/mlcraft-io/example)           | Synmetrix Examples     |
+| [mlcraft-io/examples](https://github.com/mlcraft-io/examples)           | Synmetrix Examples     |
 
 ## Community support
 
