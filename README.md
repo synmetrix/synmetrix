@@ -167,6 +167,10 @@ Cube Store is a purpose-built database for operational analytics, optimized for 
 
 By leveraging Cube Store and Cube together, Synmetrix benefits from excellent analytics performance and flexibility in modeling metrics.
 
+#### Benchmarks
+
+- [Synmetrix with Cube: Caching and Highload](https://github.com/mlcraft-io/examples/tree/main/benchmarks)
+
 ---
 
 ## Ecosystem
