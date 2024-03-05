@@ -15,7 +15,7 @@ export const getDataSourceAccessList = (
 
   const { access_list: accessList } = dataSourceMemberRole;
   const dataSourceAccessList =
-    accessList?.datasources?.[selectedDataSourceId]?.cubes;
+    accessList?.config?.datasources?.[selectedDataSourceId]?.cubes;
 
   return {
     role: dataSourceMemberRole?.team_role,
