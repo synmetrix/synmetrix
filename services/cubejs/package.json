@@ -31,6 +31,7 @@
     "@cubejs-backend/server-core": "^0.34.45",
     "@cubejs-backend/snowflake-driver": "^0.34.44",
     "@cubejs-backend/trino-driver": "^0.34.45",
+    "@cubejs-backend/vertica-driver": "npm:@knowitall/vertica-driver@^0.32.3",
     "body-parser": "^1.19.0",
     "express": "^4.18.2",
     "ioredis": "^5.3.2",

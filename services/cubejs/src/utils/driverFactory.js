@@ -1,4 +1,6 @@
 import DriverDependencies from "@cubejs-backend/server-core/dist/src/core/DriverDependencies.js";
+import VerticaDriver from '@cubejs-backend/vertica-driver';
+
 import defineUserScope from "./defineUserScope.js";
 
 const driverError = (err) => {
@@ -44,6 +46,10 @@ const driverFactory = async ({ securityContext, dataSource }) => {
   let driverModule;
 
   try {
+    if (dbType === "vertica") {
+      return new VerticaDriver(dbParams);
+    }
+
     const dbDriver = DriverDependencies[dbType];
     driverModule = await import(dbDriver);
 
