@@ -63,7 +63,7 @@ wget https://raw.githubusercontent.com/mlcraft-io/mlcraft/main/install-manifests
 curl https://raw.githubusercontent.com/mlcraft-io/mlcraft/main/install-manifests/docker-compose/docker-compose.yml -o docker-compose.yml
 ```
 
-ВНИМАНИЕ: Убедитесь, что вы проверили переменные среды в файле docker-compose.yml. Измените их по мере необходимости.
+ВНИМАНИЕ: Убедитесь, что вы проверили [переменные среды](docs/environments_RU.md) в файле docker-compose.yml. Измените их по мере необходимости.
 
 ### Шаг 2: Запустите Synmetrix
 
