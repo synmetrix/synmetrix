@@ -182,6 +182,9 @@ services:
 
   cubestore:
     image: cubejs/cubestore:${CUBESTORE_VERSION}
+    deploy:
+      placement:
+        constraints: [node.role == manager]
     environment:
       - CUBESTORE_REMOTE_DIR=/cube/data
     volumes:
@@ -191,6 +194,9 @@ services:
 
   minio:
     image: minio/minio:latest
+    deploy:
+      placement:
+        constraints: [node.role == manager]
     deploy:
       labels:
         - traefik.enable=true
