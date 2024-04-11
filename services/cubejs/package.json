@@ -2,7 +2,7 @@
   "private": true,
   "scripts": {
     "start": "npm run build && node --max-old-space-size=8096 --max-http-header-size=32768 build/index.js",
-    "build": "rimraf ./build && tsc",
+    "build": "rimraf ./build && tsc && cp -r src/types/*.d.ts build/declarations/types",
     "start.dev": "npx nodemon",
     "jsdoc": "jsdoc index.js -r src -d docs"
   },

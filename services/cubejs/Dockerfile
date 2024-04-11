@@ -39,6 +39,7 @@ ENV PATH /app/node_modules/.bin:$PATH
 
 COPY yarn.lock /app/yarn.lock
 COPY package.json /app/package.json
+COPY idl/ /app/idl/
 
 RUN yarn install --production
 

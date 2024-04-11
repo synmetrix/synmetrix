@@ -26,6 +26,8 @@ WORKDIR /app
 ENV PATH /app/node_modules/.bin:$PATH
 
 COPY nodemon.json tsconfig.json package.json yarn.lock /app/
+COPY idl/ /app/idl/
+
 RUN yarn install
 
 RUN apt-get update && apt-get install -y wget unzip && \
