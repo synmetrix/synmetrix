@@ -23,7 +23,7 @@ services:
       - cube_store_data:/cube/data
 
   stack:
-    image: synmetrix/stack:${STACK_VERSION:-latest}
+    # image: synmetrix/stack:${STACK_VERSION:-latest}
     restart: always
     build:
       context: ./scripts/containers/stack

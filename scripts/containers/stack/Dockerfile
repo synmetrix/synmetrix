@@ -34,9 +34,9 @@ RUN export VERSION=${HASURA_VERSION} \
     && curl -L https://github.com/hasura/graphql-engine/raw/stable/cli/get.sh | bash
 
 # application
-RUN git clone --recurse-submodules --depth 1 --branch $BRANCH https://github.com/mlcraft-io/mlcraft $STACK_DIR && \
+RUN git clone --recurse-submodules --depth 1 --branch feat/typescript_on_cube_server https://github.com/mlcraft-io/mlcraft $STACK_DIR && \
     cd $STACK_DIR && \
-    git pull origin $BRANCH && \
+    git pull origin feat/typescript_on_cube_server && \
     git submodule update --init --recursive
 
 # hasura backend plus
