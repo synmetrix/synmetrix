@@ -50,40 +50,57 @@ Synmetrix利用[Cube (Cube.js)](https://github.com/cube-js/cube)实现灵活的�
 - [Docker](https://docs.docker.com/install)
 - [Docker Compose](https://docs.docker.com/compose/install)
 
-### 步骤1：下载docker-compose文件
+### 第一步：下载 docker-compose 文件
 
-仓库[mlcraft-io/mlcraft/install-manifests](https://github.com/mlcraft-io/mlcraft/tree/main/install-manifests)包含了在任何地方部署Synmetrix所需的所有安装清单。您可以从此仓库下载docker-compose文件：
+在仓库 [mlcraft-io/mlcraft/install-manifests](https://github.com/mlcraft-io/mlcraft/tree/main/install-manifests) 中包含了在任何地方部署 Synmetrix 所需的所有安装清单。你可以从这个仓库下载 docker-compose 文件：
 
+在新目录中执行以下命令：
 ```
-# 在新目录中执行此操作
 wget https://raw.githubusercontent.com/mlcraft-io/mlcraft/main/install-manifests/docker-compose/docker-compose.yml
-# 或者，您可以使用curl
+```
+
+或者你可以使用 curl：
+```
 curl https://raw.githubusercontent.com/mlcraft-io/mlcraft/main/install-manifests/docker-compose/docker-compose.yml -o docker-compose.yml
 ```
 
-注意：确保检查docker-compose.yml文件中的环境变量。必要时进行修改。
+注意：请确保查看 docker-compose.yml 文件中的[环境变量](docs/environments.md)，并根据需要进行修改。
 
-### 步骤2：启动Synmetrix
+### 第二步：启动 Synmetrix
 
-执行以下命令，启动Synmetrix以
-
-及用于数据存储的Postgres数据库。
-
+执行以下命令启动 Synmetrix 以及用于数据存储的 Postgres 数据库：
 ```
-$ docker-compose pull stack && docker-compose up -d
+docker-compose pull stack && docker-compose up -d
 ```
 
-验证容器是否运行：
-
+验证容器是否正在运行：
 ```
-$ docker ps
+docker ps
+```
 
+输出示例：
+```
 CONTAINER ID IMAGE                 ... CREATED STATUS PORTS          ...
-c8f342d086f3 synmetrix/stack       ... 1分钟前  运行中 1分钟 80->8888/tcp ...
-30ea14ddaa5e postgres:12           ... 1分钟前  运行中 1分钟 5432/tcp  
+c8f342d086f3 synmetrix/stack       ... 1m ago  Up 1m  80->8888/tcp ...
+30ea14ddaa5e postgres:12           ... 1m ago  Up 1m  5432/tcp  
 ```
 
-安装所有依赖大约需要5-7分钟。等待直到出现 `Synmetrix Stack is ready`消息。您可以使用 `docker-compose logs -f`查看日志，以确认过程是否完成。
+安装所有依赖项大约需要 5-7 分钟。等待直到你看到 `Synmetrix Stack is ready` 消息。你可以使用 `docker-compose logs -f` 查看日志，以确认过程是否完成。
+
+#### 在 ARM64v8 架构上运行 Synmetrix
+
+首先，建议在你的 Mac 上安装 [Rosetta 2](https://support.apple.com/en-gb/102527)。这将允许 Docker 运行 ARM64v8 容器。自 Docker [4.25 版](https://www.docker.com/blog/docker-desktop-4-25/) 起，支持原生运行 ARM64v8 容器，但一些用户在未安装 Rosetta 的情况下仍会遇到问题。
+
+对于 ARM64v8，Cubestore 需要特定版本。在 docker-compose 文件中更新 Cubestore 版本，添加 `-arm64v8` 后缀。例如，使用 `v0.35.33-arm64v8`（参见 [Docker Hub 上的 Cubestore 标签](https://hub.docker.com/r/cubejs/cubestore/tags) 获取最新版本）。
+
+要在 ARM64v8 上运行 docker-compose 文件，请使用以下命令：
+```
+docker-compose pull stack && CUBESTORE_VERSION=v0.35.33-arm64v8 docker-compose up -d
+```
+
+视频指南（MacOS，M3 Max 处理器）：
+
+[![视频指南](https://img.youtube.com/vi/nLorFq-WpGw/0.jpg)](https://youtu.be/nLorFq-WpGw)
 
 ### 步骤3：探索Synmetrix
 
