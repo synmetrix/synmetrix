@@ -68,7 +68,7 @@ export const findOrCreateBucket = async (bucketName) => {
 
     return {};
   } catch (error) {
-    logger.error(`An error occured while working with the bucket: ${error}`);
+    logger.error(`An error occurred while working with the bucket: ${error}`);
 
     return { error };
   }
@@ -87,7 +87,7 @@ export const getPresignedDowloadUrl = async ({ bucketName, filePath }) => {
 
     return { url };
   } catch (error) {
-    logger.error(`An error occured while signing URL to the file: ${error}`);
+    logger.error(`An error occurred while signing URL to the file: ${error}`);
 
     return { error };
   }
@@ -117,7 +117,7 @@ export const putFileToBucket = async ({
       })
     );
   } catch (error) {
-    logger.error(`An error occured while working with the file: ${error}`);
+    logger.error(`An error occurred while working with the file: ${error}`);
 
     return { error };
   }
