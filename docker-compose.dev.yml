@@ -7,6 +7,7 @@ networks:
 services:
   redis:
     image: redis:7.0.0
+    restart: always
     ports:
       - 6379:6379
     networks:
@@ -14,6 +15,7 @@ services:
 
   postgres:
     image: postgres:${POSTGRES_VERSION}
+    restart: always
     ports:
       - 5435:5432
     volumes:
@@ -161,6 +163,7 @@ services:
 
   mailhog:
     image: mailhog/mailhog
+    restart: always
     logging:
       driver: 'none'
     ports:
@@ -182,6 +185,7 @@ services:
         CUBEJS_PG_API_URL: localhost:15432
         CUBEJS_REST_API_URL: /api/v1/load
         CUBEJS_API_DOCS_URL: http://localhost:4000/docs
+    restart: always
     ports:
       - 80:8888
       - 9055:9055
@@ -195,6 +199,7 @@ services:
 
   cubestore:
     image: cubejs/cubestore:${CUBESTORE_VERSION}
+    restart: always
     ports:
       - 3030:3030
     environment:
