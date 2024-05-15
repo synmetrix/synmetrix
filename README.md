@@ -62,10 +62,14 @@ Ensure the following software is installed before proceeding:
 
 The repository [mlcraft-io/mlcraft/install-manifests](https://github.com/mlcraft-io/mlcraft/tree/main/install-manifests) houses all the necessary installation manifests for deploying Synmetrix anywhere. You can download the docker compose file from this repository:
 
+Execute this in a new directory
 ```
-# Execute this in a new directory
 wget https://raw.githubusercontent.com/mlcraft-io/mlcraft/main/install-manifests/docker-compose/docker-compose.yml
-# Alternatively, you can use curl
+```
+
+Alternatively, you can use curl
+
+```
 curl https://raw.githubusercontent.com/mlcraft-io/mlcraft/main/install-manifests/docker-compose/docker-compose.yml -o docker-compose.yml
 ```
 
@@ -76,20 +80,35 @@ NOTE: Ensure to review the [environment variables](docs/environments.md) in the 
 Execute the following command to start Synmetrix along with a Postgres database for data storage.
 
 ```
-$ docker-compose pull stack && docker-compose up -d
+docker-compose pull stack && docker-compose up -d
 ```
 
 Verify if the containers are operational:
 
 ```
-$ docker ps
+docker ps
+```
 
+Output:
+```
 CONTAINER ID IMAGE                 ... CREATED STATUS PORTS          ...
 c8f342d086f3 synmetrix/stack       ... 1m ago  Up 1m  80->8888/tcp ...
 30ea14ddaa5e postgres:12           ... 1m ago  Up 1m  5432/tcp  
 ```
 
 The installation of all dependencies will take approximately 5-7 minutes. Wait until you see the `Synmetrix Stack is ready` message. You can view the logs using `docker-compose logs -f` to confirm if the process has completed.
+
+#### Running Synmetrix on ARM64v8 Architecture
+
+First, it's recommended to install [Rosetta 2](https://support.apple.com/en-gb/102527) on your Mac. This will allow Docker to run ARM64v8 containers. Since Docker [version 4.25](https://www.docker.com/blog/docker-desktop-4-25/) it allows to run ARM64v8 containers natively, but some users still encounter issues without Rosetta installed.
+
+For ARM64v8, Cubestore requires a specific version. Update the Cubestore version in the docker-compose file to include the `-arm64v8` suffix. For instance, use `v0.35.33-arm64v8` (refer to the [Cubestore tags on Docker Hub](https://hub.docker.com/r/cubejs/cubestore/tags) for the latest version).
+
+To run the docker-compose file for ARM64v8, use the following command:
+
+```
+docker-compose pull stack && CUBESTORE_VERSION=v0.35.33-arm64v8 docker-compose up -d
+```
 
 ### Step 3: Explore Synmetrix
 
