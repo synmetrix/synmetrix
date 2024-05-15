@@ -67,7 +67,7 @@ Execute this in a new directory
 wget https://raw.githubusercontent.com/mlcraft-io/mlcraft/main/install-manifests/docker-compose/docker-compose.yml
 ```
 
-Alternatively, you can use curl
+Alternatively, you can use `curl`
 
 ```
 curl https://raw.githubusercontent.com/mlcraft-io/mlcraft/main/install-manifests/docker-compose/docker-compose.yml -o docker-compose.yml
@@ -109,6 +109,10 @@ To run the docker-compose file for ARM64v8, use the following command:
 ```
 docker-compose pull stack && CUBESTORE_VERSION=v0.35.33-arm64v8 docker-compose up -d
 ```
+
+Video guide (MacOS, M3 Max processor):
+
+[![Video guide](https://img.youtube.com/vi/nLorFq-WpGw/0.jpg)](https://youtu.be/nLorFq-WpGw)
 
 ### Step 3: Explore Synmetrix
 

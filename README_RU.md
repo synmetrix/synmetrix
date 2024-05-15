@@ -52,38 +52,57 @@ Synmetrix использует [Cube (Cube.js)](https://github.com/cube-js/cube)
 - [Docker](https://docs.docker.com/install)
 - [Docker Compose](https://docs.docker.com/compose/install)
 
-### Шаг 1: Скачайте файл docker-compose
+### Шаг 1: Загрузка файла docker-compose
 
-Репозиторий [mlcraft-io/mlcraft/install-manifests](https://github.com/mlcraft-io/mlcraft/tree/main/install-manifests) содержит все необходимые манифесты установки для развертывания Synmetrix в любом месте. Вы можете скачать файл docker-compose из этого репозитория:
+Репозиторий [mlcraft-io/mlcraft/install-manifests](https://github.com/mlcraft-io/mlcraft/tree/main/install-manifests) содержит все необходимые манифесты для установки Synmetrix. Вы можете скачать файл docker-compose из этого репозитория:
 
+Выполните следующую команду в новой директории:
 ```
-# Выполните это в новом каталоге
 wget https://raw.githubusercontent.com/mlcraft-io/mlcraft/main/install-manifests/docker-compose/docker-compose.yml
-# Или вы можете использовать curl
+```
+
+Или используйте `curl`:
+```
 curl https://raw.githubusercontent.com/mlcraft-io/mlcraft/main/install-manifests/docker-compose/docker-compose.yml -o docker-compose.yml
 ```
 
-ВНИМАНИЕ: Убедитесь, что вы проверили [переменные среды](docs/environments_RU.md) в файле docker-compose.yml. Измените их по мере необходимости.
+ПРИМЕЧАНИЕ: Убедитесь, что вы проверили [переменные окружения](docs/environments.md) в файле docker-compose.yml и при необходимости измените их.
 
-### Шаг 2: Запустите Synmetrix
+### Шаг 2: Запуск Synmetrix
 
-Выполните следующую команду, чтобы запустить Synmetrix вместе с базой данных Postgres для хранения данных.
-
+Выполните следующую команду для запуска Synmetrix вместе с базой данных Postgres для хранения данных:
 ```
-$ docker-compose pull stack && docker-compose up -d
+docker-compose pull stack && docker-compose up -d
 ```
 
 Проверьте, работают ли контейнеры:
-
 ```
-$ docker ps
+docker ps
+```
 
+Вывод:
+```
 CONTAINER ID IMAGE                 ... CREATED STATUS PORTS          ...
-c8f342d086f3 synmetrix/stack       ... 1 минуту назад  В работе 1 минуту  80->8888/tcp ...
-30ea14ddaa5e postgres:12           ... 1 минуту назад  В работе 1 минуту  5432/tcp  
+c8f342d086f3 synmetrix/stack       ... 1m ago  Up 1m  80->8888/tcp ...
+30ea14ddaa5e postgres:12           ... 1m ago  Up 1m  5432/tcp  
 ```
 
-Установка всех зависимостей займет примерно 5-7 минут. Подождите, пока не появится сообщение `Synmetrix Stack is ready`. Вы можете просмотреть логи с помощью `docker-compose logs -f`, чтобы подтвердить завершение процесса.
+Установка всех зависимостей займет примерно 5-7 минут. Подождите, пока не увидите сообщение `Synmetrix Stack is ready`. Вы можете просмотреть логи с помощью команды `docker-compose logs -f`, чтобы убедиться, что процесс завершен.
+
+#### Запуск Synmetrix на архитектуре ARM64v8
+
+Сначала рекомендуется установить [Rosetta 2](https://support.apple.com/en-gb/102527) на ваш Mac. Это позволит Docker запускать контейнеры ARM64v8. Начиная с версии Docker [4.25](https://www.docker.com/blog/docker-desktop-4-25/) поддерживается нативный запуск контейнеров ARM64v8, но некоторые пользователи все еще сталкиваются с проблемами без установленного Rosetta.
+
+Для ARM64v8 Cubestore требует определенной версии. Обновите версию Cubestore в файле docker-compose, добавив суффикс `-arm64v8`. Например, используйте `v0.35.33-arm64v8` (смотрите [теги Cubestore на Docker Hub](https://hub.docker.com/r/cubejs/cubestore/tags) для последней версии).
+
+Чтобы запустить файл docker-compose для ARM64v8, используйте следующую команду:
+```
+docker-compose pull stack && CUBESTORE_VERSION=v0.35.33-arm64v8 docker-compose up -d
+```
+
+Видеоруководство (MacOS, процессор M3 Max):
+
+[![Видеоруководство](https://img.youtube.com/vi/nLorFq-WpGw/0.jpg)](https://youtu.be/nLorFq-WpGw)
 
 ### Шаг 3: Изучите Synmetrix
 
