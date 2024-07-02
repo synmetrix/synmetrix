@@ -20,6 +20,7 @@
     "@cubejs-backend/elasticsearch-driver": "^0.34.44",
     "@cubejs-backend/firebolt-driver": "^0.34.45",
     "@cubejs-backend/hive-driver": "^0.35.2",
+    "@cubejs-backend/jdbc": "^0.8.0",
     "@cubejs-backend/jdbc-driver": "^0.35.2",
     "@cubejs-backend/ksql-driver": "^0.34.45",
     "@cubejs-backend/materialize-driver": "^0.34.45",
