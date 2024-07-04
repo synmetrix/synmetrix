@@ -86,7 +86,6 @@ services:
     restart: always
     command: ./start.sh
     ports:
-      - 9693:9693
       - 9695:9695
     env_file:
       - .env
