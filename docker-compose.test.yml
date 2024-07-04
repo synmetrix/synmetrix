@@ -71,7 +71,7 @@ services:
       - synmetrix_default
 
   hasura:
-    image: synmetrix/hasura:latest
+    image: hasura/graphql-engine:${HASURA_VERSION}
     env_file:
       - .env
       - .dev.env

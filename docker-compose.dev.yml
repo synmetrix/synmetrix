@@ -83,10 +83,13 @@ services:
   hasura_cli:
     build:
       context: ./scripts/containers/hasura-cli
+      args:
+        HASURA_VERSION: ${HASURA_VERSION}
     restart: always
     command: ./start.sh
     ports:
       - 9695:9695
+      - 9693:9693
     env_file:
       - .env
       - .dev.env
@@ -103,8 +106,7 @@ services:
       - synmetrix_default
 
   hasura:
-    build:
-      context: ./services/hasura
+    image: hasura/graphql-engine:${HASURA_VERSION}
     restart: always
     ports:
       - 8080:8080

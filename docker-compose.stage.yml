@@ -136,9 +136,7 @@ services:
       - synmetrix_default
 
   hasura:
-    image: ${REGISTRY_HOST}/synmetrix/hasura:latest
-    build:
-      context: ./services/hasura/
+    image: hasura/graphql-engine:${HASURA_VERSION}
     deploy:
       labels:
         - traefik.enable=true
