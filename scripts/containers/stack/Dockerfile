@@ -1,4 +1,4 @@
-FROM node:lts-bookworm-slim
+FROM --platform=linux/amd64 node:lts-bookworm-slim
 
 ARG DATABRICKS_JDBC_URL=https://databricks-bi-artifacts.s3.us-east-2.amazonaws.com/simbaspark-drivers/jdbc/2.6.32/DatabricksJDBC42-2.6.32.1054.zip
 ARG HASURA_VERSION=v2.36.0
@@ -9,8 +9,15 @@ ARG WORK_DIR=/app
 ARG STACK_DIR=$WORK_DIR/stack
 ARG SERVICES_DIR=$STACK_DIR/services
 
+# Required for node-oracledb to buld on ARM64
+RUN apt-get update \
+    && apt-get install -y python3 gcc g++ make cmake libc-bin libc6 \
+    && rm -rf /var/lib/apt/lists/*
+
 RUN apt-get update -y \
-  && apt-get install -y wget gnupg curl git unixodbc-dev nginx gettext-base apt-transport-https ca-certificates gnupg unzip lsb-release \
+  && apt-get install -y \
+   wget gnupg curl git unixodbc-dev nginx gettext-base apt-transport-https ca-certificates gnupg unzip lsb-release \
+   python3 gcc g++ make cmake libc-bin libc6 \
   && wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - \
   && sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list' \
   && wget -q -O - https://apt.corretto.aws/corretto.key | apt-key add - \

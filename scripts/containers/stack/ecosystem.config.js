@@ -137,7 +137,7 @@ module.exports = {
     },
     {
       name: "hasura_plus",
-      script: `npx wait-on http-get://localhost:8080 && cd ${SERVICES_DIR}/hasura-backend-plus && npm install --loglevel=error && npm run --loglevel=error build && npm start`,
+      script: `npx wait-on http-get://localhost:8080 && cd ${SERVICES_DIR}/hasura-backend-plus && yarn install --loglevel=error && yarn build && yarn start`,
       out_file: null,
       env: {
         PORT: HASURA_PLUS_PORT,
@@ -156,7 +156,7 @@ module.exports = {
     },
     {
       name: "actions",
-      script: `cd ${SERVICES_DIR}/actions && npm install --loglevel=error && npm start`,
+      script: `cd ${SERVICES_DIR}/actions && yarn install --loglevel=error && yarn start`,
       out_file: null,
       env: {
         NODE_ENV: "production",
@@ -182,7 +182,7 @@ module.exports = {
     },
     {
       name: "cubejs",
-      script: `cd ${SERVICES_DIR}/cubejs && npm install --loglevel=error && npm start`,
+      script: `cd ${SERVICES_DIR}/cubejs && yarn install --loglevel=error && yarn start`,
       env: {
         PORT: CUBEJS_PORT,
         HASURA_ENDPOINT,
