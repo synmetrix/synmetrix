@@ -97,7 +97,7 @@ source $RUNNER_HOME/.profile
 sudo mount -a
 sudo mkdir -p /etc/docker
 sudo touch /etc/docker/daemon.json
-echo "{\"data-root\": \"$DOCKER_DATA_PATH\"}z" | sudo tee /etc/docker/daemon.json
+echo "{\"data-root\": \"$DOCKER_DATA_PATH\"}" | sudo tee /etc/docker/daemon.json
 
 sudo kubeadm reset -f
 sudo systemctl stop kubelet
