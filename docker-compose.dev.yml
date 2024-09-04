@@ -13,6 +13,46 @@ services:
     networks:
       - synmetrix_default
 
+  keycloak_postgres:
+    image: postgres:${POSTGRES_VERSION}
+    restart: always
+    ports:
+      - 5436:5432
+    volumes:
+      - keycloak-pgstorage-data:/var/lib/postgresql/data
+      - ./etc/postgres.conf:/var/lib/postgresql/data/postgresql.conf
+    env_file:
+      - .env
+      - .dev.env
+    environment:
+      POSTGRES_DB: keycloak
+    networks:
+      - synmetrix_default
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:25.0.2
+    command: start
+    environment:
+      KC_HOSTNAME: localhost
+      KC_HOSTNAME_PORT: 8080
+      KC_HOSTNAME_STRICT_BACKCHANNEL: false
+      KC_HTTP_ENABLED: true
+      KC_HOSTNAME_STRICT_HTTPS: false
+      KC_HEALTH_ENABLED: true
+      KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN}
+      KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://keycloak_postgres/${KEYCLOAK_POSTGRES_DB}
+      KC_DB_USERNAME: ${POSTGRES_USER}
+      KC_DB_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+      - 8090:8080
+    restart: always
+    depends_on:
+      - keycloak_postgres
+    networks:
+      - synmetrix_default
+
   postgres:
     image: postgres:${POSTGRES_VERSION}
     restart: always
@@ -126,22 +166,6 @@ services:
     networks:
       - synmetrix_default
 
-  hasura_plus:
-    build:
-      context: ./scripts/containers/hasura-backend-plus
-    restart: always
-    volumes:
-      - ./scripts/containers/hasura-backend-plus/storage-rules/rules.yaml:/app/custom/storage-rules/rules.yaml
-    ports:
-      - 8081:3000
-    env_file:
-      - .env
-      - .dev.env
-    depends_on:
-      - postgres
-    networks:
-      - synmetrix_default
-
   minio:
     image: minio/minio:latest
     restart: always
@@ -213,3 +237,4 @@ services:
 volumes:
   pgstorage-data:
   minio-data:
+  keycloak-pgstorage-data:

@@ -81,6 +81,9 @@
             id:
               _eq: X-Hasura-User-Id
 - table:
+    name: migrations
+    schema: auth
+- table:
     name: providers
     schema: auth
   array_relationships:
@@ -383,6 +386,8 @@
                         _in:
                           - owner
                           - admin
+        set:
+          user_id: x-hasura-User-Id
         columns:
           - datasource_id
           - name
@@ -548,6 +553,8 @@
                           - admin
                   - user_id:
                       _eq: X-Hasura-User-Id
+        set:
+          user_id: x-hasura-User-Id
         columns:
           - code
           - datasource_id
@@ -1309,6 +1316,8 @@
                   members:
                     user_id:
                       _eq: X-Hasura-User-Id
+        set:
+          user_id: x-hasura-User-Id
         columns:
           - datasource_id
           - password
@@ -1615,6 +1624,8 @@
                     members:
                       user_id:
                         _eq: X-Hasura-User-Id
+        set:
+          user_id: x-hasura-User-Id
         columns:
           - branch_id
           - checksum
