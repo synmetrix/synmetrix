@@ -22,12 +22,12 @@ jobs:
 
       - name: Build and push stack image
         run: |
-          docker-compose -f docker-compose.stack.yml build && \
-          docker-compose -f docker-compose.stack.yml push
+          docker compose -f docker-compose.stack.yml build && \
+          docker compose -f docker-compose.stack.yml push
 
       - name: Build and push services images
         run: |
           export REGISTRY_HOST=index.docker.io && \
           export DOMAIN=synmetrix.org && \
-          docker-compose -f docker-compose.stage.yml build && \
-          docker-compose -f docker-compose.stage.yml push
+          docker compose -f docker-compose.stage.yml build && \
+          docker compose -f docker-compose.stage.yml push
