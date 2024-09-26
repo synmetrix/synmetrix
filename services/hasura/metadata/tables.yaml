@@ -337,9 +337,21 @@
         schedule: 0 0 * * *
         timeout: 60
 - table:
+    name: auth_options
+    schema: public
+  is_enum: true
+- table:
     name: branch_statuses
     schema: public
   is_enum: true
+  array_relationships:
+    - name: branches
+      using:
+        foreign_key_constraint_on:
+          column: status
+          table:
+            name: branches
+            schema: public
 - table:
     name: branches
     schema: public
@@ -436,6 +448,91 @@
                         _in:
                           - owner
                           - admin
+- table:
+    name: credentials
+    schema: public
+  object_relationships:
+    - name: datasource
+      using:
+        foreign_key_constraint_on: datasource_id
+    - name: user
+      using:
+        foreign_key_constraint_on: user_id
+  computed_fields:
+    - name: db_params_computed
+      definition:
+        function:
+          name: hide_password
+          schema: public
+  insert_permissions:
+    - role: user
+      permission:
+        check:
+          _or:
+            - user_id:
+                _eq: X-Hasura-User-Id
+            - datasource:
+                team:
+                  user:
+                    id:
+                      _eq: X-Hasura-User-Id
+        columns:
+          - datasource_id
+          - db_params
+          - user_id
+      comment: ""
+  select_permissions:
+    - role: user
+      permission:
+        columns:
+          - created_at
+          - datasource_id
+          - id
+          - updated_at
+          - user_id
+        computed_fields:
+          - db_params_computed
+        filter:
+          _or:
+            - user_id:
+                _eq: X-Hasura-User-Id
+            - datasource:
+                team:
+                  user:
+                    id:
+                      _eq: X-Hasura-User-Id
+      comment: ""
+  update_permissions:
+    - role: user
+      permission:
+        columns:
+          - datasource_id
+          - db_params
+          - user_id
+        filter:
+          _or:
+            - user_id:
+                _eq: X-Hasura-User-Id
+            - datasource:
+                team:
+                  user:
+                    id:
+                      _eq: X-Hasura-User-Id
+        check: null
+      comment: ""
+  delete_permissions:
+    - role: user
+      permission:
+        filter:
+          _or:
+            - user_id:
+                _eq: X-Hasura-User-Id
+            - datasource:
+                team:
+                  user:
+                    id:
+                      _eq: X-Hasura-User-Id
+      comment: ""
 - table:
     name: dashboards
     schema: public
@@ -628,6 +725,13 @@
           table:
             name: branches
             schema: public
+    - name: credentials
+      using:
+        foreign_key_constraint_on:
+          column: datasource_id
+          table:
+            name: credentials
+            schema: public
     - name: dataschemas
       using:
         foreign_key_constraint_on:
@@ -656,12 +760,6 @@
           table:
             name: sql_credentials
             schema: public
-  computed_fields:
-    - name: db_params_computed
-      definition:
-        function:
-          name: hide_password
-          schema: public
   insert_permissions:
     - role: user
       permission:
@@ -676,7 +774,6 @@
         set:
           user_id: x-hasura-user-id
         columns:
-          - db_params
           - db_type
           - name
           - team_id
@@ -692,8 +789,6 @@
           - team_id
           - updated_at
           - user_id
-        computed_fields:
-          - db_params_computed
         filter:
           _or:
             - user_id:
@@ -707,7 +802,6 @@
     - role: user
       permission:
         columns:
-          - db_params
           - db_type
           - name
         filter:
@@ -1294,6 +1388,15 @@
     - name: datasource
       using:
         foreign_key_constraint_on: datasource_id
+    - name: provider_name
+      using:
+        manual_configuration:
+          column_mapping:
+            provider: provider
+          insertion_order: null
+          remote_table:
+            name: providers
+            schema: auth
     - name: user
       using:
         foreign_key_constraint_on: user_id
@@ -1480,6 +1583,13 @@
           column: user_id
           table:
             name: branches
+            schema: public
+    - name: credentials
+      using:
+        foreign_key_constraint_on:
+          column: user_id
+          table:
+            name: credentials
             schema: public
     - name: dataschemas
       using:
