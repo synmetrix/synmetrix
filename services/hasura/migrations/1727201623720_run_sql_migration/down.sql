@@ -1,12 +1,4 @@
 -- Could not auto-generate a down migration.
 -- Please write an appropriate down migration for the SQL below:
--- DROP FUNCTION IF EXISTS public.hide_password(credentials);
 -- DROP FUNCTION IF EXISTS public.hide_password(datasources);
---
--- CREATE OR REPLACE FUNCTION public.hide_password(credentials_row credentials)
---  RETURNS jsonb
---  LANGUAGE sql
---  STABLE
--- AS $function$
---   SELECT jsonb_set(credentials_row.db_params, '{password}', '""')
--- $function$;
+
