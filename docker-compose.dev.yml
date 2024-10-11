@@ -13,22 +13,6 @@ services:
     networks:
       - synmetrix_default
 
-  redshift:
-    image: guildeducation/docker-amazon-redshift
-    restart: always
-    ports:
-      - 5439:5439
-    environment:
-      PGPORT: 5439
-      PGDATA: /var/lib/postgresql/data
-      POSTGRES_PASSWORD: 123456
-      POSTGRES_USER: postgres
-      POSTGRES_DB: postgres
-    volumes:
-      - ./services/redshift/data:/var/lib/postgresql/data
-    networks:
-      - synmetrix_default
-
   postgres:
     image: postgres:${POSTGRES_VERSION}
     restart: always
