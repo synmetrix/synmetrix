@@ -20,18 +20,9 @@ const buildSecurityContext = (user_id, dataSource, branch, version) => {
     throw new Error("No dataSource provided");
   }
 
-  let credentials = null;
-
-  if (dataSource?.auth === "shared") {
-    credentials = dataSource?.credentials?.[0];
-  } else if (dataSource?.auth === "private") {
-    credentials = dataSource?.credentials.find(
-      (credential) => credential.user_id === user_id
-    );
-  }
-
+  let credentials = dataSource?.credentials?.[0];
   if (!credentials) {
-    throw new Error("No dbParams provided");
+    throw new Error("You have no access to this data source. Please contact your administrator.");
   }
 
   const data = {
