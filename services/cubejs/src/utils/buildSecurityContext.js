@@ -15,19 +15,24 @@ import prepareDbParams from "./prepareDbParams.js";
  *
  * @throws {Error} - Throws an error if no data source or no dbParams are provided.
  */
-const buildSecurityContext = (dataSource, branch, version) => {
+const buildSecurityContext = (user_id, dataSource, branch, version) => {
   if (!dataSource) {
     throw new Error("No dataSource provided");
   }
 
-  if (!dataSource?.db_params) {
-    throw new Error("No dbParams provided");
+  let credentials = dataSource?.credentials?.[0];
+  if (!credentials) {
+    throw new Error("You have no access to this data source. Please contact your administrator.");
   }
 
   const data = {
     dataSourceId: dataSource.id,
     dbType: dataSource.db_type?.toLowerCase(),
-    dbParams: dataSource.db_params,
+    dbParams: {
+      ...dataSource.db_params,
+      username: credentials.username,
+      password: credentials.password,
+    },
   };
 
   data.dbParams = prepareDbParams(data.dbParams, data.dbType);

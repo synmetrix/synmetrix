@@ -1,11 +1,22 @@
 import { fetchGraphQL } from "./graphql.js";
 
+const credentialsFragment = `
+  id
+  user_id
+  datasource_id
+  username
+  password
+`;
+
 const sourceFragment = `
   id
   name
   db_type
-  db_params
   team_id
+  auth
+  credentials {
+    ${credentialsFragment}
+  }
 `;
 
 const modelsFragment = `

@@ -10,7 +10,7 @@ const scheduledRefreshContexts = async () => {
   const dataSources = await getDataSources();
 
   return (dataSources || []).map((dataSource) => {
-    const userScopeDataSource = buildSecurityContext(dataSource);
+    const userScopeDataSource = buildSecurityContext(null, dataSource);
 
     return {
       securityContext: {

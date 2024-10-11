@@ -25,7 +25,7 @@ const driverError = (err) => {
  */
 const driverFactory = async ({ securityContext, dataSource }) => {
   const { userScope, user } = securityContext || {};
-
+  console.log("driverFactory");
   let dbParams;
   let dbType;
 
@@ -34,6 +34,7 @@ const driverFactory = async ({ securityContext, dataSource }) => {
     dbType = userScope.dataSource.dbType;
   } else {
     const nextUserScope = defineUserScope(
+      user.id,
       user.dataSources,
       user.members,
       dataSource
