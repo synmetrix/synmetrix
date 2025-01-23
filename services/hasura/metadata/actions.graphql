@@ -101,6 +101,7 @@ type Mutation {
 
 input SourceTable {
   name: String!
+  schema: String!
 }
 
 input events_create_input {

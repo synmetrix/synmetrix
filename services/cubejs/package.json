@@ -14,7 +14,7 @@
     "@cubejs-backend/crate-driver": "^0.36.5",
     "@cubejs-backend/cubestore-driver": "^0.36.5",
     "@cubejs-backend/databricks-jdbc-driver": "^0.36.5",
-    "@cubejs-backend/dremio-driver": "^0.36.5",
+    "@cubejs-backend/dremio-driver": "^1.1.16",
     "@cubejs-backend/druid-driver": "^0.36.5",
     "@cubejs-backend/duckdb-driver": "^0.36.5",
     "@cubejs-backend/elasticsearch-driver": "^0.36.5",
