@@ -33,8 +33,7 @@ const normalizeTables = (schema, tables, dbType) => {
 
   if (dbType === "dremio") {
     normalizedTables = tables.map((table) => {
-      const parts = table?.name?.split(".");
-      return [parts.slice(0, -1).join("."), parts[parts.length - 1]];
+      return [table?.schema, table?.name];
     });
   }
 
