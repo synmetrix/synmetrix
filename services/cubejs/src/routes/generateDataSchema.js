@@ -4,7 +4,7 @@ import {
   findDataSchemas,
 } from "../utils/dataSourceHelpers.js";
 import createMd5Hex from "../utils/md5Hex.js";
-
+import { NO_SCHEMA_KEY } from "./getSchema.js";
 const filterFiles = (mainFiles, addFiles) => {
   const fileNames = mainFiles.map((f) => f.fileName);
   return [
@@ -14,14 +14,20 @@ const filterFiles = (mainFiles, addFiles) => {
 };
 
 const normalizeTables = (schema, tables) => {
+  const normalizedSchema = schema;
+  if (normalizedSchema?.[NO_SCHEMA_KEY]) {
+    normalizedSchema[""] = normalizedSchema[NO_SCHEMA_KEY];
+    delete normalizedSchema[NO_SCHEMA_KEY];
+  }
+
   let normalizedTables = tables.map((table) => [
-    table?.schema.replace("/", ".") || "",
+    table?.schema !== NO_SCHEMA_KEY ? table?.schema.replace("/", ".") : "",
     table?.name,
   ]);
 
   return {
     tables: normalizedTables,
-    schema,
+    schema: normalizedSchema,
   };
 };
 
