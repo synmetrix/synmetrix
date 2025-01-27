@@ -4,7 +4,7 @@ import {
   findDataSchemas,
 } from "../utils/dataSourceHelpers.js";
 import createMd5Hex from "../utils/md5Hex.js";
-
+import { NO_SCHEMA_KEY } from "./getSchema.js";
 const filterFiles = (mainFiles, addFiles) => {
   const fileNames = mainFiles.map((f) => f.fileName);
   return [
@@ -13,47 +13,29 @@ const filterFiles = (mainFiles, addFiles) => {
   ];
 };
 
-const normalizeTables = (schema, tables, dbType) => {
-  let normalizedTables = tables.map((table) => table?.name?.replace("/", "."));
+const normalizeTables = (schema, tables) => {
+  const normalizedSchema = { ...schema };
 
-  if (dbType === "questdb") {
-    normalizedTables = tables.map((table) => [
-      "",
-      table?.name?.replace("/", ""),
-    ]);
+  if (normalizedSchema?.[NO_SCHEMA_KEY]) {
+    normalizedSchema[""] = normalizedSchema[NO_SCHEMA_KEY];
+    delete normalizedSchema[NO_SCHEMA_KEY];
   }
 
-  if (dbType === "elasticsearch") {
-    schema = { "": schema.main };
-    normalizedTables = normalizedTables.map((table) => [
-      "",
-      table?.replace("main.", ""),
-    ]);
-  }
-
-  if (dbType === "dremio") {
-    normalizedTables = tables.map((table) => {
-      return [table?.schema, table?.name];
-    });
-  }
-
-  if (dbType === "ksql") {
-    normalizedTables = tables.map((table) => [
-      "",
-      table?.name?.replace(".", ""),
-    ]);
-  }
+  let normalizedTables = tables.map((table) => [
+    table?.schema !== NO_SCHEMA_KEY ? table?.schema.replace("/", ".") : "",
+    table?.name,
+  ]);
 
   return {
     tables: normalizedTables,
-    schema,
+    schema: normalizedSchema,
   };
 };
 
 export default async (req, res, cubejs) => {
   const { securityContext } = req;
   const { userScope, userId, authToken } = securityContext;
-  const { dataSourceId, dbType } = userScope.dataSource;
+  const { dataSourceId } = userScope.dataSource;
 
   const driver = await cubejs.options.driverFactory({ securityContext });
 
@@ -67,7 +49,7 @@ export default async (req, res, cubejs) => {
     } = req.body || {};
 
     const { tables: normalizedTables, schema: normalizedSchema } =
-      normalizeTables(schema, tables, dbType);
+      normalizeTables(schema, tables);
 
     const scaffoldingTemplate = new ScaffoldingTemplate(
       normalizedSchema,

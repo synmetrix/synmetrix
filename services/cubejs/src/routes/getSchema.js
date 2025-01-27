@@ -1,3 +1,5 @@
+export const NO_SCHEMA_KEY = "no_schema";
+
 /**
  * Asynchronous function to get the schema from the database.
  *
@@ -15,6 +17,12 @@ export default async (req, res, cubejs) => {
 
   try {
     const schema = await driver.tablesSchema();
+
+    if (schema?.[""]) {
+      schema[NO_SCHEMA_KEY] = schema[""];
+      delete schema[""];
+    }
+
     res.json(schema);
   } catch (err) {
     console.error(err);
