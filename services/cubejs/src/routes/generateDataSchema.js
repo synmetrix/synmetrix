@@ -14,7 +14,8 @@ const filterFiles = (mainFiles, addFiles) => {
 };
 
 const normalizeTables = (schema, tables) => {
-  const normalizedSchema = schema;
+  const normalizedSchema = { ...schema };
+
   if (normalizedSchema?.[NO_SCHEMA_KEY]) {
     normalizedSchema[""] = normalizedSchema[NO_SCHEMA_KEY];
     delete normalizedSchema[NO_SCHEMA_KEY];
