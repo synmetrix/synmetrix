@@ -68,16 +68,13 @@ const prepareDbParams = (dbParams, dbType) => {
       };
       break;
     case "clickhouse":
-      const auth = [dbConfig.user, dbConfig.password].filter(Boolean).join(":");
-
       dbConfig = {
         host: dbConfig.host,
         port: dbConfig.port,
-        auth,
+        username: dbConfig.user,
+        password: dbConfig.password,
         protocol: dbConfig.ssl ? "https:" : "http:",
-        queryOptions: {
-          database: dbConfig.database || "default",
-        },
+        database: dbConfig.database || "default",
       };
       break;
     case "athena":
