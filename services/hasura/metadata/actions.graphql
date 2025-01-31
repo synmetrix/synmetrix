@@ -64,6 +64,7 @@ type Mutation {
     email: String!
     teamId: uuid
     role: String
+    magicLink: Boolean
   ): InviteTeamMemberOutput
 }
 
