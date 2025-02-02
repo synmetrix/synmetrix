@@ -2,7 +2,6 @@ import fetch from "node-fetch";
 
 import apiError from "../utils/apiError.js";
 import { fetchGraphQL, parseResponse } from "../utils/graphql.js";
-import logger from "../utils/logger.js";
 
 const { HASURA_PLUS_ENDPOINT } = process.env;
 
@@ -49,14 +48,6 @@ const inviteMemberMutation = `
 const insertMemberRoleMutation = `
   mutation ($memberId: uuid!, $role: team_roles_enum!) {
     insert_member_roles_one(object: {member_id: $memberId, team_role: $role}) {
-      id
-    }
-  }
-`;
-
-const deleteUserMutation = `
-  mutation ($id: uuid!) {
-    delete_users_by_pk(id: $id) {
       id
     }
   }
