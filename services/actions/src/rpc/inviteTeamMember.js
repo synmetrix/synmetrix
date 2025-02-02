@@ -70,19 +70,6 @@ const deleteMemberMutation = `
   }
 `;
 
-const register = async ({ email }) => {
-  const result = await fetch(`${HASURA_PLUS_ENDPOINT}/auth/register`, {
-    method: "POST",
-    body: JSON.stringify({ email }),
-    headers: {
-      Accept: "application/json",
-      "Content-Type": "application/json",
-    },
-  });
-
-  return parseResponse(result);
-};
-
 const sendMagicLink = async ({ email }) => {
   const result = await fetch(`${HASURA_PLUS_ENDPOINT}/auth/login`, {
     method: "POST",
@@ -96,18 +83,9 @@ const sendMagicLink = async ({ email }) => {
   return parseResponse(result);
 };
 
-const createUserAccount = async ({ email }, authToken) => {
-  let newUser = false;
-
-  try {
-    await register({ email });
-    newUser = true;
-  } catch (err) {
-    logger.error(err);
-  }
-
+const checkUserAccount = async ({ email }, authToken) => {
   const res = await fetchGraphQL(checkAccountQuery, { email }, authToken);
-  return [res?.data?.auth_accounts?.[0], newUser];
+  return res?.data?.auth_accounts?.[0];
 };
 
 export const createTeamMember = async ({ userId, teamId, role }) => {
@@ -139,7 +117,6 @@ export default async (session, input, headers) => {
 
   let userAccount = {};
   let teamMember = {};
-  let newUser = false;
 
   try {
     const team = await fetchGraphQL(teamQuery, { id: teamId }, authToken);
@@ -149,10 +126,10 @@ export default async (session, input, headers) => {
       throw new Error("You have no permissions to invite users");
     }
 
-    [userAccount, newUser] = await createUserAccount({ email });
+    userAccount = await checkUserAccount({ email });
 
     if (!userAccount?.user_id) {
-      throw new Error("User account was not created, something went wrong");
+      throw new Error("User was not found");
     }
 
     teamMember = await createTeamMember({
@@ -179,10 +156,6 @@ export default async (session, input, headers) => {
       memberId: teamMember.id,
     };
   } catch (err) {
-    if (userAccount?.user_id && newUser) {
-      await fetchGraphQL(deleteUserMutation, { id: userAccount?.user_id });
-    }
-
     if (teamMember?.id) {
       await fetchGraphQL(deleteMemberMutation, { id: teamMember.id });
     }
