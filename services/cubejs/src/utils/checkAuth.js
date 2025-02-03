@@ -70,6 +70,7 @@ const checkAuth = async (req) => {
   }
 
   const userScope = defineUserScope(
+    userId,
     user.dataSources,
     user.members,
     dataSourceId,
