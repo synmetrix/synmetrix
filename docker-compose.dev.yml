@@ -213,3 +213,4 @@ services:
 volumes:
   pgstorage-data:
   minio-data:
+  redshift-data:

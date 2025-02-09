@@ -24,6 +24,7 @@ export const getDataSourceAccessList = (
 };
 
 const defineUserScope = (
+  user_id,
   allDataSources,
   allMembers,
   selectedDataSourceId,
@@ -82,6 +83,7 @@ const defineUserScope = (
   );
 
   const dataSourceContext = buildSecurityContext(
+    user_id,
     dataSource,
     selectedBranch,
     selectedVersion

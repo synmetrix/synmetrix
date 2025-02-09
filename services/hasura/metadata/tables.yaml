@@ -198,6 +198,18 @@
                         - owner
                         - admin
 - table:
+    name: access_types
+    schema: public
+  is_enum: true
+  array_relationships:
+    - name: credentials
+      using:
+        foreign_key_constraint_on:
+          column: access_type
+          table:
+            name: credentials
+            schema: public
+- table:
     name: alerts
     schema: public
   object_relationships:
@@ -337,9 +349,29 @@
         schedule: 0 0 * * *
         timeout: 60
 - table:
+    name: auth_options
+    schema: public
+  is_enum: true
+  array_relationships:
+    - name: datasources
+      using:
+        foreign_key_constraint_on:
+          column: auth
+          table:
+            name: datasources
+            schema: public
+- table:
     name: branch_statuses
     schema: public
   is_enum: true
+  array_relationships:
+    - name: branches
+      using:
+        foreign_key_constraint_on:
+          column: status
+          table:
+            name: branches
+            schema: public
 - table:
     name: branches
     schema: public
@@ -436,6 +468,124 @@
                         _in:
                           - owner
                           - admin
+- table:
+    name: credentials
+    schema: public
+  object_relationships:
+    - name: accessTypeByAccessType
+      using:
+        foreign_key_constraint_on: access_type
+    - name: datasource
+      using:
+        foreign_key_constraint_on: datasource_id
+    - name: user
+      using:
+        foreign_key_constraint_on: user_id
+  array_relationships:
+    - name: member_credentials
+      using:
+        foreign_key_constraint_on:
+          column: credential_id
+          table:
+            name: member_credentials
+            schema: public
+  insert_permissions:
+    - role: user
+      permission:
+        check:
+          _or:
+            - user_id:
+                _eq: X-Hasura-User-Id
+            - datasource:
+                team:
+                  user:
+                    id:
+                      _eq: X-Hasura-User-Id
+        columns:
+          - access_type
+          - datasource_id
+          - password
+          - user_id
+          - username
+      comment: ""
+  select_permissions:
+    - role: user
+      permission:
+        columns:
+          - access_type
+          - created_at
+          - datasource_id
+          - id
+          - updated_at
+          - user_id
+          - username
+        filter:
+          _or:
+            - datasource:
+                team:
+                  members:
+                    _and:
+                      - user:
+                          id:
+                            _eq: X-Hasura-User-Id
+                      - member_roles:
+                          team_role:
+                            _neq: member
+            - member_credentials:
+                member:
+                  user:
+                    id:
+                      _eq: X-Hasura-User-Id
+        allow_aggregations: true
+      comment: ""
+  update_permissions:
+    - role: user
+      permission:
+        columns:
+          - access_type
+          - datasource_id
+          - password
+          - user_id
+          - username
+        filter:
+          _or:
+            - datasource:
+                team:
+                  members:
+                    _and:
+                      - user:
+                          id:
+                            _eq: X-Hasura-User-Id
+                      - member_roles:
+                          team_role:
+                            _neq: member
+            - member_credentials:
+                member:
+                  user:
+                    id:
+                      _eq: X-Hasura-User-Id
+        check: {}
+      comment: ""
+  delete_permissions:
+    - role: user
+      permission:
+        filter:
+          _or:
+            - datasource:
+                team:
+                  members:
+                    _and:
+                      - user:
+                          id:
+                            _eq: X-Hasura-User-Id
+                      - member_roles:
+                          team_role:
+                            _neq: member
+            - member_credentials:
+                credential:
+                  user_id:
+                    _eq: X-Hasura-User-Id
+      comment: ""
 - table:
     name: dashboards
     schema: public
@@ -614,6 +764,9 @@
     name: datasources
     schema: public
   object_relationships:
+    - name: auth_option
+      using:
+        foreign_key_constraint_on: auth
     - name: team
       using:
         foreign_key_constraint_on: team_id
@@ -627,6 +780,13 @@
           column: datasource_id
           table:
             name: branches
+            schema: public
+    - name: credentials
+      using:
+        foreign_key_constraint_on:
+          column: datasource_id
+          table:
+            name: credentials
             schema: public
     - name: dataschemas
       using:
@@ -656,12 +816,6 @@
           table:
             name: sql_credentials
             schema: public
-  computed_fields:
-    - name: db_params_computed
-      definition:
-        function:
-          name: hide_password
-          schema: public
   insert_permissions:
     - role: user
       permission:
@@ -686,14 +840,13 @@
       permission:
         columns:
           - created_at
+          - db_params
           - db_type
           - id
           - name
           - team_id
           - updated_at
           - user_id
-        computed_fields:
-          - db_params_computed
         filter:
           _or:
             - user_id:
@@ -841,6 +994,61 @@
                       _eq: X-Hasura-User-Id
         allow_aggregations: true
 - table:
+    name: member_credentials
+    schema: public
+  object_relationships:
+    - name: credential
+      using:
+        foreign_key_constraint_on: credential_id
+    - name: member
+      using:
+        foreign_key_constraint_on: member_id
+  insert_permissions:
+    - role: user
+      permission:
+        check:
+          _or:
+            - credential:
+                datasource:
+                  team:
+                    user:
+                      id:
+                        _eq: X-Hasura-User-Id
+            - credential:
+                user:
+                  id:
+                    _eq: X-Hasura-User-Id
+        columns:
+          - credential_id
+          - datasource_id
+          - member_id
+      comment: ""
+  select_permissions:
+    - role: user
+      permission:
+        columns:
+          - created_at
+          - updated_at
+          - credential_id
+          - id
+          - member_id
+        filter: {}
+      comment: ""
+  update_permissions:
+    - role: user
+      permission:
+        columns:
+          - credential_id
+          - member_id
+        filter: {}
+        check: {}
+      comment: ""
+  delete_permissions:
+    - role: user
+      permission:
+        filter: {}
+      comment: ""
+- table:
     name: member_roles
     schema: public
   object_relationships:
@@ -934,6 +1142,13 @@
       using:
         foreign_key_constraint_on: user_id
   array_relationships:
+    - name: member_credentials
+      using:
+        foreign_key_constraint_on:
+          column: member_id
+          table:
+            name: member_credentials
+            schema: public
     - name: member_roles
       using:
         foreign_key_constraint_on:
@@ -1480,6 +1695,13 @@
           column: user_id
           table:
             name: branches
+            schema: public
+    - name: credentials
+      using:
+        foreign_key_constraint_on:
+          column: user_id
+          table:
+            name: credentials
             schema: public
     - name: dataschemas
       using:

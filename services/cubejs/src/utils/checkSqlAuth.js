@@ -18,7 +18,10 @@ const buildSqlSecurityContext = (sqlCredentials) => {
     teamId
   );
 
-  const dataSourceContext = buildSecurityContext(sqlCredentials?.datasource);
+  const dataSourceContext = buildSecurityContext(
+    sqlCredentials?.user?.id,
+    sqlCredentials?.datasource
+  );
 
   return {
     dataSource: dataSourceContext,
